@@ -65,3 +65,7 @@ group :development do
   gem "web-console"
   gem 'annotaterb', '~> 4.13'
 end
+
+group :development, :staging do
+  gem "letter_opener_web"
+end
