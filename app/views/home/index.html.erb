@@ -1,0 +1,10 @@
+<h1>Home#index</h1>
+<p>Find me in app/views/home/index.html.erb</p>
+
+<% unless current_user %>
+  <div>
+    <%= button_to user_saml_omniauth_authorize_path, data: {turbo: "false"} do %>
+      <div class="px-1 shadow-sm font-medium rounded text-blue-900 bg-yellow-550 hover:bg-yellow-500 hover:underline">Sign In</div>
+    <% end %>
+  </div>
+<% end %>
