@@ -22,11 +22,5 @@ test:
   <<: *default
   database: biorepository_portal_test
 
-staging:
-  <<: *default
-  database: lsa_ride_share_staging
-  username: lsa_ride_share
-  password: <%= ENV["LSA_RIDE_SHARE_DATABASE_PASSWORD"] %>
-
 production:
   url: <%= ENV["DATABASE_URL"] %>
