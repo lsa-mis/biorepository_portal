@@ -107,11 +107,15 @@ GEM
       warden (~> 1.2.3)
     drb (2.2.1)
     erubi (1.13.1)
+    ffi (1.17.0-arm64-darwin)
     globalid (1.2.1)
       activesupport (>= 6.1)
     hashie (5.0.0)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
+    image_processing (1.13.0)
+      mini_magick (>= 4.9.5, < 5)
+      ruby-vips (>= 2.0.17, < 3)
     importmap-rails (2.1.0)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -135,6 +139,7 @@ GEM
       net-smtp
     marcel (1.0.4)
     matrix (0.4.2)
+    mini_magick (4.13.2)
     mini_mime (1.1.5)
     minitest (5.25.5)
     msgpack (1.8.0)
@@ -244,6 +249,9 @@ GEM
     ruby-saml (1.18.0)
       nokogiri (>= 1.13.10)
       rexml
+    ruby-vips (2.2.2)
+      ffi (~> 1.12)
+      logger
     rubyzip (2.4.1)
     securerandom (0.4.1)
     selenium-webdriver (4.31.0)
@@ -304,6 +312,7 @@ DEPENDENCIES
   capybara
   debug
   devise (~> 4.9.4)
+  image_processing (~> 1.2)
   importmap-rails
   jbuilder
   omniauth-rails_csrf_protection (~> 1.0)
