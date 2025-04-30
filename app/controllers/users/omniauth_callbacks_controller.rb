@@ -64,8 +64,6 @@ def create_user
 
   @user = User.create(
     email: auth.info.email,
-    uniqname: get_uniqname(auth.info.email),
-    uid: auth.info.uid,
     principal_name: auth.info.principal_name,
     display_name: auth.info.name,
     person_affiliation: auth.info.person_affiliation,
