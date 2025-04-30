@@ -9,6 +9,45 @@
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
+  
+  idp_login_url = Rails.application.credentials.staging_idp_sso_target_url
+  idp_logout_url = Rails.application.credentials.staging_idp_slo_target_url
+  idp_fingerprint = Rails.application.credentials.staging_idp_cert_fingerprint
+  consumer_service_url = Rails.application.credentials.dev_assertion_consumer_service_url
+  entity_id = Rails.application.credentials.dev_entity_id
+
+  if Rails.env.staging?
+    consumer_service_url = Rails.application.credentials.staging_assertion_consumer_service_url
+    entity_id = Rails.application.credentials.staging_entity_id
+  end
+
+  if Rails.env.production?
+    idp_login_url = Rails.application.credentials.production_idp_sso_target_url
+    idp_logout_url = Rails.application.credentials.production_idp_slo_target_url
+    idp_fingerprint = Rails.application.credentials.production_idp_cert_fingerprint
+    consumer_service_url = Rails.application.credentials.production_assertion_consumer_service_url
+    entity_id = Rails.application.credentials.production_entity_id
+  end
+
+  config.omniauth :saml,
+    :assertion_consumer_service_url     => consumer_service_url,
+    :issuer                             => entity_id,
+    :idp_sso_service_url                => idp_login_url,
+    :idp_slo_service_url                => idp_logout_url,
+    :name_identifier_format             => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
+    :attribute_statements               => {email: ['urn:oid:0.9.2342.19200300.100.1.3'],
+                                                  name: ['urn:oid:2.16.840.1.113730.3.1.241'],
+                                                  uid: ['urn:oid:0.9.2342.19200300.100.1.1'],
+                                                  person_affiliation: ['urn:oid:1.3.6.1.4.1.5923.1.1.1.1'],
+                                                  principal_name: ['urn:oid:1.3.6.1.4.1.5923.1.1.1.6']},
+    :request_attributes                 => {},
+    :idp_cert_fingerprint => idp_fingerprint,
+    :idp_cert_fingerprint_algorithm => 'http://www.w3.org/2000/09/xmldsig#sha256',
+    :allowed_clock_drift                => 10,
+    :private_key                        => Rails.application.credentials.service_provider_private_key,
+    :certificate                        => Rails.application.credentials.service_provider_certificate,
+    :security                           => {want_assertions_signed: true, want_assertions_encrypted: true}
+
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
   # confirmation, reset password and unlock tokens in the database.
