@@ -1,0 +1,365 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+html, body {
+  height: 100%;
+  font-family: Noto Sans;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0em;
+  color: #212529;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  flex-shrink: 0;
+  border-top: 1px solid $um_blue;
+}
+
+.footer-text-bold {
+  font-weight: 700;
+  color: $um_blue;
+}
+.footer-text {
+  color: #212529;
+  font-family: Noto Sans;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  letter-spacing: 0em;
+}
+
+.footer-link {
+  text-decoration: none;
+}
+
+.bold-label {
+  font-weight: 700;
+}
+
+h1 {
+  font-family: Roboto;
+  font-size: 45px;
+  font-weight: 900;
+  line-height: 54px;
+  letter-spacing: 0em;
+  margin-top: 2rem;
+}
+
+h2 {
+  font-family: Roboto;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 38.4px;
+  letter-spacing: 0em;
+  margin-top: 1rem;
+}
+
+h3, h4, h5, h6 {
+  font-family: Roboto;
+  margin-top: 1rem;
+}
+
+p {
+  font-family: Noto Sans;
+  font-size: 1rem; // 16px
+  line-height: 1.5;
+  color: #212529;
+}
+
+.body-md-text {
+  font-size: 1rem;
+  line-height: 1.5rem; 
+  font-weight: 400; 
+}
+
+.body-sm-text {
+  font-size: 0.875rem;
+  line-height: 1.25rem; 
+  font-weight: 400; 
+}
+
+/* Custom CSS to center-align h1 on small screens, considering Bootstrap's small breakpoint */
+@media (max-width: 576px) {
+  h1 {
+    font-size: 1.75rem; // 28px
+  }
+}
+
+#LSAlogo {
+  display: flex;
+  align-items: start; // Align items to the top of the container
+  padding-left: 82px;
+
+  .navbar-brand {
+    margin-right: auto; // Pushes all subsequent siblings to the end of the flex container
+  
+  }
+
+  .nav-title {
+    position: relative;
+    font-family: Noto Sans;
+    font-size: 48px;
+    font-weight: 300;
+    line-height: 60px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: white;
+    margin-right: 20px;
+  }
+  
+}
+
+.a-nav{
+  text-decoration: none;
+  color: black;
+}
+
+.avatar {
+  width: 50px; // 2 * radius for a diameter of 150px
+  height: 50px; // 2 * radius for a diameter of 150px
+  border-radius: 50%; // This creates the circular shape
+  object-fit: cover; // Ensures the image fits within the circle
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; // Ensures no part of the image leaks outside the circular boundary
+  // Optional: Add border, box-shadow, etc., as needed
+}
+
+.btn-sign {
+  color: #00274c !important; 
+  background-color: #FFCF01 !important;
+}
+
+.btn-sign:hover {
+  background-color: #374151 !important;
+  color: #93C5FD !important; 
+}
+
+.dropdown {
+  border: $um_maize 2px outset;
+  border-radius: 7px;
+}
+
+.bold{
+  font-weight: 700;
+}
+/* FORMS */
+
+form label.required:after {
+  color: red;
+  content: " *";
+}
+
+#error_explanation {
+  background-color: $warning;
+  border: solid $rigorous_red 1px;
+  border-radius: 4px;
+  padding: 20px;
+  li {
+    color: $rigorous_red;
+    font-size: 1rem;
+    padding-bottom: 2px;
+  }
+}
+
+.field_with_errors {
+  display: inline;
+  label {
+    color: $rigorous_red;
+    max-width: 160px;
+  }
+  input, textarea, select {
+    background: $warning;
+  }
+}
+
+.flash {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 1.5rem; // Customize this value
+  right: 0.5rem; // Customize this value
+  padding: 1rem 1.25rem; // Equivalent to py-3 px-5
+  border-radius: .5rem; // Similar to Bootstrap's rounded-lg
+}
+
+.flash_notice {
+  background-color: $flash-notice-color;
+}
+
+.flash_alert {
+  background-color: $flash-alert-color;
+}
+
+svg.wh6 {
+  width: 24px;
+  height: 24px;
+}
+
+.link_to {
+  color: $um_blue;
+  text-decoration: none; /* Ensures no underline by default */
+}
+
+.link_to:hover {
+  text-decoration: underline; /* Adds underline on hover */
+  cursor: pointer;
+}
+
+.navbar_dropdown_item {
+  color: white;
+}
+
+.navbar_dropdown_item:hover {
+  color: $um_maize;
+}
+
+.navbar_dropdown_item:focus {
+  background-color: $um_blue;
+  outline: none; 
+  border: 2px solid #E5E5E5;
+  border-radius: .25rem;
+}
+
+.nav-item.dropdown:hover > .dropdown-menu {
+  display: block;
+}
+
+//hide name of user on mobile
+@media (max-width: 950px) {
+  .hide-on-mobile {
+    display: none;
+  }
+}
+
+.navbar-collapse.d-md-none {
+  display: none;
+}
+
+@media (max-width: 770px) {
+  .navbar-collapse.d-md-none.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+
+.nav-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;      
+  text-align: center; 
+  width: 100%;   
+}
+
+.nav-section p {
+  color: #fff;
+  margin-bottom: 0;
+}
+
+.nav-section hr {
+  margin: 0.5rem 0;
+  width: 100%;
+  border-color: #fff;
+}
+
+.dropdown-item.navbar_dropdown_item {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: #fff;
+  text-decoration: none;
+}
+
+.dropdown-item.navbar_dropdown_item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+@media (min-width: 768px) {
+  .navbar-collapse.d-md-none {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  #navbarBurgerMenu {
+    display: none !important;
+  }
+}
+
+.nav-item.dropdown:hover > .dropdown-menu {
+  display: block;
+}
+
+@media (max-width: 770px) {
+  #LSAlogo {
+    padding-left: 10px;
+  }
+  .logo_image {
+    width: 100px;
+  }
+  .nav-title {
+    font-size: 30px !important;
+    margin-right: 0px !important;
+  }
+}
+
+@media (max-width: 950px) {
+  .hide-on-mobile {
+    display: none;
+  }
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+@media (min-width: 1400px) {
+  .nowrap-card {
+    white-space: nowrap;
+  }
+}
+
+.nav-user {
+  font-size: 0.875rem; 
+  width: 150px; 
+}
+
+.card-header p {
+  font-size: 1.25em;
+  margin-top: 1em;
+  font-family: roboto;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--bs-heading-color);
+}
+
+.card-title p {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.2;
+  font-family: roboto;
+  margin-bottom: 1rem;
+  color: var(--bs-heading-color);
+}
+
+.btn {
+  --bs-btn-focus-shadow-rgb: 0, 124, 186;
+}
+
+.turbo-progress-bar {
+  height: 10px !important;
+  background-color: #00AEEF;
+}
