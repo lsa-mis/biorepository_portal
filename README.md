@@ -13,7 +13,7 @@ The finished application allows researchers and public health professionals to s
 To get a local copy up and running clone the repo, navigate to the local instance and start the application
 ```
 git clone git@github.com:lsa-mis/biorepository_portal.git
-cd room_ready
+cd biorepository_portal
 bundle
 bin/rails db:create
 bin/rails db:migrate
