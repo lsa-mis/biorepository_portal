@@ -1,0 +1,102 @@
+<%= form_with(model: identification) do |form| %>
+  <% if identification.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(identification.errors.count, "error") %> prohibited this identification from being saved:</h2>
+
+      <ul>
+        <% identification.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :type_status, style: "display: block" %>
+    <%= form.text_field :type_status %>
+  </div>
+
+  <div>
+    <%= form.label :identified_by, style: "display: block" %>
+    <%= form.text_field :identified_by %>
+  </div>
+
+  <div>
+    <%= form.label :date_identified, style: "display: block" %>
+    <%= form.text_field :date_identified %>
+  </div>
+
+  <div>
+    <%= form.label :identification_remarks, style: "display: block" %>
+    <%= form.textarea :identification_remarks %>
+  </div>
+
+  <div>
+    <%= form.label :scientific_name, style: "display: block" %>
+    <%= form.text_field :scientific_name %>
+  </div>
+
+  <div>
+    <%= form.label :scientific_name_authorship, style: "display: block" %>
+    <%= form.text_field :scientific_name_authorship %>
+  </div>
+
+  <div>
+    <%= form.label :kingdom, style: "display: block" %>
+    <%= form.text_field :kingdom %>
+  </div>
+
+  <div>
+    <%= form.label :phylum, style: "display: block" %>
+    <%= form.text_field :phylum %>
+  </div>
+
+  <div>
+    <%= form.label :class_name, style: "display: block" %>
+    <%= form.text_field :class_name %>
+  </div>
+
+  <div>
+    <%= form.label :order_name, style: "display: block" %>
+    <%= form.text_field :order_name %>
+  </div>
+
+  <div>
+    <%= form.label :family, style: "display: block" %>
+    <%= form.text_field :family %>
+  </div>
+
+  <div>
+    <%= form.label :genus, style: "display: block" %>
+    <%= form.text_field :genus %>
+  </div>
+
+  <div>
+    <%= form.label :specific_epithet, style: "display: block" %>
+    <%= form.text_field :specific_epithet %>
+  </div>
+
+  <div>
+    <%= form.label :infraspecific_epithet, style: "display: block" %>
+    <%= form.text_field :infraspecific_epithet %>
+  </div>
+
+  <div>
+    <%= form.label :taxon_rank, style: "display: block" %>
+    <%= form.number_field :taxon_rank %>
+  </div>
+
+  <div>
+    <%= form.label :vernacular_name, style: "display: block" %>
+    <%= form.text_field :vernacular_name %>
+  </div>
+
+  <div>
+    <%= form.label :item_id, style: "display: block" %>
+    <%= form.text_field :item_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

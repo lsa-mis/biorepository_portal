@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_30_181738) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -52,6 +52,103 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_30_181738) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "collections", force: :cascade do |t|
+    t.string "division"
+    t.string "admin_group"
+    t.text "description"
+    t.string "division_page_url"
+    t.string "link_to_policies"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "identifications", force: :cascade do |t|
+    t.string "type_status"
+    t.string "identified_by"
+    t.string "date_identified"
+    t.text "identification_remarks"
+    t.string "scientific_name"
+    t.string "scientific_name_authorship"
+    t.string "kingdom"
+    t.string "phylum"
+    t.string "class_name"
+    t.string "order_name"
+    t.string "family"
+    t.string "genus"
+    t.string "specific_epithet"
+    t.string "infraspecific_epithet"
+    t.integer "taxon_rank"
+    t.string "vernacular_name"
+    t.bigint "item_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_identifications_on_item_id"
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.string "occurrence_id"
+    t.string "catalog_number"
+    t.date "modified"
+    t.string "recorded_by"
+    t.integer "individual_count"
+    t.string "sex"
+    t.string "life_stage"
+    t.string "reproductive_condition"
+    t.string "vitality"
+    t.string "other_catalog_numbers"
+    t.text "occurrence_remarks"
+    t.text "organism_remarks"
+    t.string "associated_sequences"
+    t.string "field_number"
+    t.date "event_date_start"
+    t.date "event_date_end"
+    t.string "verbatim_event_date"
+    t.string "sampling_protocol"
+    t.text "event_remarks"
+    t.string "continent"
+    t.string "country"
+    t.string "state_province"
+    t.string "county"
+    t.string "locality"
+    t.string "verbatim_locality"
+    t.string "verbatim_elevation"
+    t.float "minimum_elevation_in_meters"
+    t.float "maximum_elevation_in_meters"
+    t.float "decimal_latitude"
+    t.float "decimal_longitude"
+    t.float "coordinate_uncertainty_in_meters"
+    t.string "verbatim_coordinates"
+    t.string "georeferenced_by"
+    t.date "georeferenced_date"
+    t.string "geodetic_datum"
+    t.string "georeference_protocol"
+    t.boolean "archived"
+    t.bigint "collection_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id"], name: "index_items_on_collection_id"
+  end
+
+  create_table "map_fields", force: :cascade do |t|
+    t.string "table"
+    t.string "specify_field"
+    t.string "rails_field"
+    t.string "caption"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "preparations", force: :cascade do |t|
+    t.string "prep_type"
+    t.integer "count"
+    t.string "barcode"
+    t.string "description"
+    t.bigint "item_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_preparations_on_item_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -77,4 +174,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_30_181738) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "identifications", "items"
+  add_foreign_key "items", "collections"
+  add_foreign_key "preparations", "items"
 end

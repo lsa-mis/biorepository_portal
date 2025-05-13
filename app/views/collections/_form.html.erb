@@ -1,0 +1,42 @@
+<%= form_with(model: collection) do |form| %>
+  <% if collection.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(collection.errors.count, "error") %> prohibited this collection from being saved:</h2>
+
+      <ul>
+        <% collection.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :division, style: "display: block" %>
+    <%= form.text_field :division %>
+  </div>
+
+  <div>
+    <%= form.label :admin_group, style: "display: block" %>
+    <%= form.text_field :admin_group %>
+  </div>
+
+  <div>
+    <%= form.label :description, style: "display: block" %>
+    <%= form.textarea :description %>
+  </div>
+
+  <div>
+    <%= form.label :division_page_url, style: "display: block" %>
+    <%= form.text_field :division_page_url %>
+  </div>
+
+  <div>
+    <%= form.label :link_to_policies, style: "display: block" %>
+    <%= form.text_field :link_to_policies %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

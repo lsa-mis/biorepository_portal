@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @identification %>
+
+<div>
+  <%= link_to "Edit this identification", edit_identification_path(@identification) %> |
+  <%= link_to "Back to identifications", identifications_path %>
+
+  <%= button_to "Destroy this identification", @identification, method: :delete %>
+</div>
