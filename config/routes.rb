@@ -2,7 +2,11 @@ Rails.application.routes.draw do
   resources :identifications
   resources :preparations
   resources :items
-  resources :collections
+  resources :collections do
+    collection do
+      post :import
+    end
+  end
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", sessions: "users/sessions"} do
     delete 'sign_out', :to => 'users/sessions#destroy', :as => :destroy_user_session
   end

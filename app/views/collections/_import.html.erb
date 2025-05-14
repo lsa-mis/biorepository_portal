@@ -1,0 +1,4 @@
+<%= form_tag import_collections_path, method: :post, multipart: true do %>
+  <%= file_field_tag :file, accept: ".csv", multiple: true %>
+  <%= submit_tag '⚙️ Import' %>
+<% end %>
