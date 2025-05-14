@@ -16,42 +16,13 @@
     <!-- this is regular navbar-->
     <div class="collapse navbar-collapse d-none d-md-block">
       <% if user_signed_in? %>
-      <% if is_admin? || is_readonly? %>
-        <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0">
-          <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Main
-          </a>
-          <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item">
-            <li>
-              <%= link_to "Dashboard", dashboard_path, class: 'dropdown-item navbar_dropdown_item' if policy(:static_page).dashboard? %>
-            </li>
-            <li>
-              <%= link_to "Zones", zones_path, class: 'dropdown-item navbar_dropdown_item' if policy(Zone).index? %>
-            </li>
-            <li>
-              <%= link_to "Buildings", buildings_path, class: 'dropdown-item navbar_dropdown_item' if policy(Building).index?%>
-            </li>
-          </ul>
-        </div>
-        <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0">
-          <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Admin
-          </a>
-        </div>
+        <%# if is_admin? || is_readonly? %>
+          <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+            <%= link_to "Collections", collections_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2' %>
+          </div>
+        <%# end %>
       <% end %>
-      <% if is_rover? || is_admin? %>
-      <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
-        <%= link_to "Rover Form", zones_rover_navigation_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2' if policy(:rover_navigation).zones? %>
-      </div>
-      <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item">
-        <li>
-          <%= link_to "Choose Room", zones_rover_navigation_path, class: 'dropdown-item navbar_dropdown_item' if policy(:rover_navigation).zones? %>
-        </li>
-      </ul>
     </div>
-    <% end %>
-    <% end %>
-  </div>
   <!-- this is the hamburger menu-->
   <div class="collapse navbar-collapse d-md-none" id="navbarBurgerMenu">
     <% if user_signed_in? %>
@@ -73,28 +44,8 @@
           </div>
         </div>
         <br />
-        <% if is_admin? || is_readonly? %>
-          <p style="font-weight: bold;">Main</p>
-          <hr>
-          <%= link_to "Dashboard", dashboard_path, class: 'dropdown-item navbar_dropdown_item' if policy(:static_page).dashboard? %>
-          <%= link_to "Zones", zones_path, class: 'dropdown-item navbar_dropdown_item' if policy(Zone).index? %>
-          <%= link_to "Buildings", buildings_path, class: 'dropdown-item navbar_dropdown_item' if policy(Building).index?%>
-          <br>
-          <p style="font-weight: bold;">Admin</p>
-          <hr>
-          <%= link_to "Common Attributes", common_attributes_path, class: 'dropdown-item navbar_dropdown_item' if policy(CommonAttribute).index? %>
-          <%= link_to "Create Preferences", app_preferences_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).index? %>
-          <%= link_to "App Preferences", configure_prefs_app_preferences_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).configure_prefs? %>
-          <%= link_to "Announcements", announcements_path, class: 'dropdown-item navbar_dropdown_item' if policy(Announcement).update? %>
-          <%= link_to "Rovers", rovers_path, class: 'dropdown-item navbar_dropdown_item'if policy(Rover).index? %>
-          <%= link_to "Reports", reports_path, class: 'dropdown-item navbar_dropdown_item'if policy(:report).index? %>
-          <%= link_to "Docs", "https://docs.google.com/document/u/2/d/e/2PACX-1vTMubvxusmTGWEiRYq9EkYuC_0B_ylkCxFwA9uXlMZSjPW5r4KX20fcDCkRmIVgB3Ma5wA1Nm9CxNYO/pub", target: "_blank", class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).configure_prefs? %>
-        <% end %>
-        <br>
-        <% if is_rover? || is_admin? %>
-          <%= link_to "Rover Form", zones_rover_navigation_path, class: 'dropdown-item navbar_dropdown_item font-weight: bold' if policy(:rover_navigation).zones? %>
-          <hr>
-        <% end %>
+        
+        
       </div>
     <% end %>
   </div>
