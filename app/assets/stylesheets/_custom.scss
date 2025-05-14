@@ -16,8 +16,8 @@ $flash-alert-color:  #FFE1DE;
 $accordion: #F2F2F2;
 
 // Import Bootstrap's functions and variables
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
+// @import "bootstrap/scss/functions";
+// @import "bootstrap/scss/variables";
 
 // Override Bootstrap's default variables
 $theme-colors: (
@@ -58,8 +58,5 @@ $spacers: map-merge(
   $spacers
 );
 
-// Import the rest of Bootstrap now that variables are overridden
-@import "bootstrap/scss/bootstrap";
-
 // Import Bootstrap icons if needed
-@import 'bootstrap-icons/font/bootstrap-icons';
+// @import 'bootstrap-icons/font/bootstrap-icons';
