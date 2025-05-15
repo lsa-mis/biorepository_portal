@@ -6,7 +6,7 @@
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
     <% @collections.each do |collection| %>
       <div class="col">
-        <%= render partial: "collection", locals: { collection: collection } %>
+        <%= render partial: "collection_card", locals: { collection: collection } %>
       </div>
     <% end %>
   </div>
