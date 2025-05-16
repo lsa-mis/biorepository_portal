@@ -39,12 +39,12 @@ def set_user
     @user = create_user
   end
 
-  # if @user
+  if @user
   #   session[:user_email] = @user.email
-
-  #   if LdapLookup.is_member_of_group?(@user.uniqname, 'lsa-spaceready-developers')
-  #     session[:role] = "developer"
-  #   elsif LdapLookup.is_member_of_group?(@user.uniqname, 'lsa-spaceready-admins')
+    uniqname = get_uniqname(@user.  email)
+    if LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-super-admins')
+      session[:role] = "super_admin"
+  #   elsif LdapLookup.is_member_of_group?(@user.uniqname, 'lsa-biorepository-super-admins')
   #     session[:role] = "admin"
   #   elsif LdapLookup.is_member_of_group?(@user.uniqname, 'lsa-spaceready-admins-readonly')
   #     session[:role] = "readonly"
@@ -52,8 +52,8 @@ def set_user
   #     session[:role] = "rover"
   #   else
   #     session[:role] = "none"
-  #   end
-  # end
+    end
+  end
 end
 
 def get_uniqname(email)
