@@ -65,6 +65,6 @@ class CollectionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def collection_params
-      params.expect(collection: [ :division, :admin_group, :description, :division_page_url, :link_to_policies, :image ])
+      params.expect(collection: [ :division, :admin_group, :description, :division_page_url, :link_to_policies ])
     end
 end
