@@ -8,5 +8,28 @@ module ApplicationHelper
       "alert-success"
     end
   end
+
+  def user_role
+    if is_super_admin?
+      " - super admin"
+    elsif is_admin?
+      " - admin"
+    else
+      ""
+    end
+  end
+
+  def is_super_admin?
+    session[:role] == "super_admin"
+  end
+
+  def is_admin?
+    session[:role] == "admin" || session[:role] == "super_admin"
+  end
+
+  def is_user?
+    session[:role] == "user" || session[:role] == "admin" || session[:role] == "super_admin"
+  end
+  
   
 end

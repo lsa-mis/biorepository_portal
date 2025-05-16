@@ -40,18 +40,20 @@ def set_user
   end
 
   if @user
-  #   session[:user_email] = @user.email
-    uniqname = get_uniqname(@user.  email)
+    uniqname = get_uniqname(@user.email)
+    user_membership = []
+    access_groups = Collection.pluck(:admin_group)
+    access_groups.each do |group|
+      if  LdapLookup.is_member_of_group?(uniqname, group)
+        user_membership.append(group)
+      end
+    end
     if LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-super-admins')
       session[:role] = "super_admin"
-  #   elsif LdapLookup.is_member_of_group?(@user.uniqname, 'lsa-biorepository-super-admins')
-  #     session[:role] = "admin"
-  #   elsif LdapLookup.is_member_of_group?(@user.uniqname, 'lsa-spaceready-admins-readonly')
-  #     session[:role] = "readonly"
-  #   elsif  Rover.exists?(uniqname: @user.uniqname)
-  #     session[:role] = "rover"
-  #   else
-  #     session[:role] = "none"
+    elsif user_membership.present?
+        session[:role] = 'admin'
+    else
+      session[:role] = "user"
     end
   end
 end
