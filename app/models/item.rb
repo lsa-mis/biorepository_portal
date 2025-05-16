@@ -54,4 +54,6 @@
 #
 class Item < ApplicationRecord
   belongs_to :collection
+  has_many :identifications, dependent: :destroy
+  has_many :preparations, dependent: :destroy
 end
