@@ -58,12 +58,13 @@ class CollectionsController < ApplicationController
   end
 
   def import
+    collection_id = params[:collection_id]
     return redirect_to request.referer, notice: 'No file added' if params[:file].nil?
     return redirect_to request.referer, notice: 'Only CSV files allowed' unless params[:file].content_type == 'text/csv'
 
     files = Array(params[:file])
     files.each do |file|
-      CsvImportService.new.call(file)
+      CsvImportService.new.call(file, collection_id)
     end
 
     redirect_to request.referer, notice: 'Import started...'

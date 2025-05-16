@@ -1,8 +1,9 @@
 class CsvImportService
   # require 'csv'
 
-  def call(file)
-    File.open(file) do |f| 
+  def call(file, collection_id)
+    @collection_id = collection_id
+    File.open(file) do |f|
       header = f.readline.strip.split(",")
       @items_in_db = Item.pluck(:occurrence_id)
       @field_names = {}
@@ -38,7 +39,7 @@ class CsvImportService
 
   def save_item(record)
     @item = Item.new
-    @item.collection_id = 2
+    @item.collection_id = @collection_id
     @field_names.each_with_index do |(field, table), index|
       if field.include?('ignore')
         next
