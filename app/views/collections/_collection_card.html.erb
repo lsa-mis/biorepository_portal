@@ -1,13 +1,11 @@
 <div class="card h-100 shadow-sm" id="<%= dom_id collection %>">
-  <#=Image to be placed here#>
 
   <% if collection.image.attached? %>
     <%= image_tag collection.image.variant(:thumb), alt: "image_#{collection.image.id}", class: "img-fluid img-thumbnail" %>
   <% end %>
 
   <div class="card-body">
-    <h5 class="card-title fw-bold"> <%= collection.division %> </h5>
-    <%= link_to collection.division, collection_path(collection), class: "link_to" %>
+    <%= link_to collection.division, collection_path(collection), class: "text-dark text-decoration-none h5" %>
     <p class="card-text">
       <strong>Admin Group: </strong> <%= collection.admin_group %> <br>
       <strong>Description: </strong> <%= collection.description %> <br>
@@ -16,13 +14,11 @@
 
   <ul class="list-group list-group-flush">
     <li class="list-group-item">
-      <strong>Division page url:</strong>
-      <%= collection.division_page_url %>
+      Division page url: <%= link_to (collection.division + " Info Page"), collection.division_page_url, class: "text-dark text-decoration-none h6" %>
     </li>
 
     <li class="list-group-item">
-      <strong>Link to policies:</strong>
-      <%= collection.link_to_policies %>
+      Link to policies: <%= link_to (collection.division + " Policy Page"), collection.link_to_policies, class: "text-dark text-decoration-none h6" %>
     </li>
   </ul>
 </div>
