@@ -1,27 +1,26 @@
-<div id="<%= dom_id collection %>">
-  <p>
-    <strong>Division:</strong>
-    <%= collection.division %>
-  </p>
+<div class="card h-100 shadow-sm" id="<%= dom_id collection %>">
 
-  <p>
-    <strong>Admin group:</strong>
-    <%= collection.admin_group %>
-  </p>
+  <% if collection.image.attached? %>
+    <%= image_tag collection.image.variant(:thumb), alt: "image_#{collection.image.id}", class: "img-fluid img-thumbnail", style: "max-width: 30%" %>
+  <% end %>
 
-  <p>
-    <strong>Description:</strong>
-    <%= collection.description %>
-  </p>
+  <div class="card-body">
+    <h5 class="card-title fw-bold"> <%= collection.division %> </h5>
+    <p class="card-text">
+      <strong>Admin Group: </strong> <%= collection.admin_group %> <br>
+      <strong>Description: </strong> <%= collection.description %> <br>
+    </p>
+  </div>
 
-  <p>
-    <strong>Division page url:</strong>
-    <%= collection.division_page_url %>
-  </p>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">
+      <strong>Division page url:</strong>
+      <%= collection.division_page_url %>
+    </li>
 
-  <p>
-    <strong>Link to policies:</strong>
-    <%= collection.link_to_policies %>
-  </p>
-
+    <li class="list-group-item">
+      <strong>Link to policies:</strong>
+      <%= collection.link_to_policies %>
+    </li>
+  </ul>
 </div>
