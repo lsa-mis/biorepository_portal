@@ -1,0 +1,30 @@
+<footer class="footer mx-5 mt-auto py-3 bg-white">
+  <div class="d-flex flex-lg-row justify-content-between flex-column">
+    <div class="center text-center">
+      <p class="d-none d-md-block">
+        <%= image_tag 'LSA_Technology_logo.svg', alt: 'LSA Technology Logo', class: "img-fluid" %>
+      </p>
+      <p class="text-center footer-bold d-md-none">
+        LSA Technology Services
+      </p><!-- Left column content for small viewports -->
+    </div>
+    <div>
+      <p class="text-center mb-0 small">
+        <a href="https://umich.edu/about/privacy/" class="footer-text footer-link" >Privacy Notice</a> |
+        <a id="myCustomTrigger" class="footer-text footer-link" href="#" data-email="<%= session[:user_email]%>">Report an Issue</a> |
+        <span class="footer-text">734.615.0100</span>
+      </p>
+    </div>
+    <div>
+      <p class="d-none d-md-block text-center footer-text">
+        ©<%= Time.now.year %>
+        <a href="https://regents.umich.edu/" class="footer-text footer-link">|The Regents of the University of Michigan</a>
+      </p>
+      <p class="d-md-none text-center mb-0 footer-text">
+        <a href="https://regents.umich.edu/" class="footer-text footer-link" >The Regents of the University of Michigan</a>
+        <br>©<%= Time.now.year %>
+      </p><!-- Right column content -->
+    </div>
+  </div>
+  <script type="text/javascript" src="https://umlsait.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/1kwsvv/b/8/c95134bc67d3a521bb3f4331beb9b804/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=54564fa1"></script>
+</footer>
