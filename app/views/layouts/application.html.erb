@@ -12,6 +12,11 @@
 
   <body>
     <%= render partial: "layouts/navbar" %>
-    <%= yield %>
+    <main class="container mx-auto px-4 px-sm-8 pb-5">
+      <div>
+        <%= yield %>
+      </div>
+    </main>
+    <%= render partial: "layouts/footer" %>
   </body>
 </html>
