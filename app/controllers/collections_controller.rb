@@ -64,7 +64,7 @@ class CollectionsController < ApplicationController
 
     files = Array(params[:file])
     files.each do |file|
-      CsvImportService.new.call(file, collection_id)
+      CsvImportService.new(file, collection_id).call
     end
 
     redirect_to request.referer, notice: 'Import started...'

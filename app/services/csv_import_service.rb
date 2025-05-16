@@ -1,9 +1,13 @@
 class CsvImportService
-  # require 'csv'
+  attr_accessor :file, :collection_id
 
-  def call(file, collection_id)
+  def initialize(file, collection_id)
+    @file = file
     @collection_id = collection_id
-    File.open(file) do |f|
+  end
+
+  def call
+    File.open(@file) do |f|
       header = f.readline.strip.split(",")
       @items_in_db = Item.pluck(:occurrence_id)
       @field_names = {}
