@@ -26,9 +26,8 @@ class CsvImportService
     if @items_in_db.present?
       @items_in_db.each do |occurrence_id|
         item = Item.find_by(occurrence_id: occurrence_id)
-        item.update(archived: true)
-        Identification.where(item_id: item.id).update_all(archived: true)
-        Preparation.where(item_id: item.id).delete_all
+        # check
+        item.destroy if item.present?
       end
     end
   end
