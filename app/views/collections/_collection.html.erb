@@ -1,18 +1,18 @@
 <div id="<%= dom_id collection %>">
-  <p>
-    <strong>Division:</strong>
-    <%= collection.division %>
-  </p>
 
-  <p>
-    <strong>Admin group:</strong>
-    <%= collection.admin_group %>
-  </p>
+  </div>
+    <% if collection.image.attached? %>
+      <%= image_tag collection.image, alt: "image_#{collection.image.id}", class: "img-fluid img-thumbnail", style: "max-width: 30%" %>
+    <% end %>
+  </div>
 
-  <p>
-    <strong>Description:</strong>
-    <%= collection.description %>
-  </p>
+  <div>
+    <h5 class="card-title fw-bold"> <%= collection.division %> </h5>
+    <p class="card-text">
+      <strong>Admin Group: </strong> <%= collection.admin_group %> <br>
+      <strong>Description: </strong> <%= collection.description %> <br>
+    </p>
+  </div>
 
   <p>
     <strong>Division page url:</strong>

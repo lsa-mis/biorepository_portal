@@ -1,16 +1,17 @@
 <p style="color: green"><%= notice %></p>
 
-<% content_for :title, "Collections" %>
+<div class="container my-5">
+  <h1 class="fw-bold">Explore Collection Catalog</h1>
 
-<h1>Collections</h1>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    <% @collections.each do |collection| %>
+      <div class="col">
+        <%= render partial: "collection_card", locals: { collection: collection } %>
+      </div>
+    <% end %>
+  </div>
 
-<div id="collections">
-  <% @collections.each do |collection| %>
-    <%= render collection %>
-    <p>
-      <%= link_to "Show this collection", collection %>
-    </p>
-  <% end %>
+  <div class="mt-4 text-end">
+    <%= link_to "New Collection", new_collection_path, class: "btn btn-success" %>
+  </div>
 </div>
-
-<%= link_to "New collection", new_collection_path %>
