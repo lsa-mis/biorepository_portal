@@ -59,6 +59,19 @@ class CollectionsController < ApplicationController
     end
   end
 
+  def import
+    collection_id = params[:collection_id]
+    return redirect_to request.referer, notice: 'No file added' if params[:file].nil?
+    return redirect_to request.referer, notice: 'Only CSV files allowed' unless params[:file].content_type == 'text/csv'
+
+    files = Array(params[:file])
+    files.each do |file|
+      CsvImportService.new(file, collection_id).call
+    end
+
+    redirect_to request.referer, notice: 'Import started...'
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
@@ -68,6 +81,6 @@ class CollectionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def collection_params
-      params.expect(collection: [ :division, :admin_group, :description, :division_page_url, :link_to_policies ])
+      params.expect(collection: [ :division, :admin_group, :description, :division_page_url, :link_to_policies, :image ])
     end
 end
