@@ -4,6 +4,7 @@ class CollectionsController < ApplicationController
   # GET /collections or /collections.json
   def index
     @collections = Collection.all
+    authorize @collections
   end
 
   # GET /collections/1 or /collections/1.json
@@ -13,6 +14,7 @@ class CollectionsController < ApplicationController
   # GET /collections/new
   def new
     @collection = Collection.new
+    authorize @collection
   end
 
   # GET /collections/1/edit
@@ -74,6 +76,7 @@ class CollectionsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
       @collection = Collection.find(params.expect(:id))
+      authorize @collection
     end
 
     # Only allow a list of trusted parameters through.

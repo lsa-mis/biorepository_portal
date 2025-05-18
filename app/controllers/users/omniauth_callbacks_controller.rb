@@ -1,4 +1,5 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  include ApplicationHelper
   skip_before_action :verify_authenticity_token, only: :saml
   before_action :set_user
   attr_reader :user, :service
@@ -39,25 +40,23 @@ def set_user
     @user = create_user
   end
 
-  # if @user
-  #   session[:user_email] = @user.email
-
-  #   if LdapLookup.is_member_of_group?(@user.uniqname, 'lsa-spaceready-developers')
-  #     session[:role] = "developer"
-  #   elsif LdapLookup.is_member_of_group?(@user.uniqname, 'lsa-spaceready-admins')
-  #     session[:role] = "admin"
-  #   elsif LdapLookup.is_member_of_group?(@user.uniqname, 'lsa-spaceready-admins-readonly')
-  #     session[:role] = "readonly"
-  #   elsif  Rover.exists?(uniqname: @user.uniqname)
-  #     session[:role] = "rover"
-  #   else
-  #     session[:role] = "none"
-  #   end
-  # end
-end
-
-def get_uniqname(email)
-  email.split("@").first
+  if @user
+    uniqname = get_uniqname(@user.email)
+    user_membership = []
+    access_groups = Collection.pluck(:admin_group)
+    access_groups.each do |group|
+      if  LdapLookup.is_member_of_group?(uniqname, group)
+        user_membership.append(group)
+      end
+    end
+    if LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-super-admins')
+      session[:role] = "super_admin"
+    elsif user_membership.present?
+        session[:role] = 'admin'
+    else
+      session[:role] = "user"
+    end
+  end
 end
 
 def create_user

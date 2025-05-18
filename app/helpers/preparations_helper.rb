@@ -1,2 +1,0 @@
-module PreparationsHelper
-end
