@@ -1,4 +1,5 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  include ApplicationHelper
   skip_before_action :verify_authenticity_token, only: :saml
   before_action :set_user
   attr_reader :user, :service
@@ -56,10 +57,6 @@ def set_user
       session[:role] = "user"
     end
   end
-end
-
-def get_uniqname(email)
-  email.split("@").first
 end
 
 def create_user

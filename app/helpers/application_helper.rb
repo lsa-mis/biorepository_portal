@@ -31,5 +31,8 @@ module ApplicationHelper
     session[:role] == "user" || session[:role] == "admin" || session[:role] == "super_admin"
   end
   
+  def get_uniqname(email)
+    email.split("@").first
+  end
   
 end
