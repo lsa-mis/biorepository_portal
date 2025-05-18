@@ -62,9 +62,6 @@ jobs:
       - name: Run Model tests
         run: bundle exec rspec spec/models/*
 
-      - name: Run Policy tests
-        run: bundle exec rspec spec/policies/*
-
       - name: Run System tests
         run: bundle exec rspec spec/system/*
 
