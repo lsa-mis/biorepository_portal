@@ -43,8 +43,7 @@ def set_user
   if @user
     uniqname = get_uniqname(@user.email)
     user_membership = []
-    access_groups = Collection.pluck(:admin_group)
-    puts "************************* access_groups: #{access_groups}"
+    access_groups = Collection.pluck(:admin_group).compact
     access_groups.each do |group|
       if  LdapLookup.is_member_of_group?(uniqname, group)
         user_membership.append(group)
