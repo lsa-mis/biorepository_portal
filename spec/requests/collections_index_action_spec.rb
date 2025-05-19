@@ -13,7 +13,6 @@ RSpec.describe Collection, type: :request do
         uniqname = get_uniqname(super_admin_user.email)
         # make a user a member of the SUPER_ADMIN_LDAP_GROUP group
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(true)
-        puts "************* 1 ************* collection.admin_group: #{collection.admin_group}"
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
         mock_login(super_admin_user)
       end
@@ -32,7 +31,6 @@ RSpec.describe Collection, type: :request do
         uniqname = get_uniqname(admin_user.email)
         # make a user a member of the SUPER_ADMIN_LDAP_GROUP group
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(false)
-        puts "************* 2 ************* collection.admin_group: #{collection.admin_group}"
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(true)
         mock_login(admin_user)
       end
@@ -50,7 +48,6 @@ RSpec.describe Collection, type: :request do
       before do
         uniqname = get_uniqname(super_admin_user.email)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(true)
-        puts "************* 3 ************* collection.admin_group: #{collection.admin_group}"
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
         mock_login(super_admin_user)
       end
@@ -69,7 +66,6 @@ RSpec.describe Collection, type: :request do
         uniqname = get_uniqname(admin_user.email)
         # make a user a member of the SUPER_ADMIN_LDAP_GROUP group
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(false)
-        puts "************* 4 ************* collection.admin_group: #{collection.admin_group}"
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(true)
         mock_login(admin_user)
       end
