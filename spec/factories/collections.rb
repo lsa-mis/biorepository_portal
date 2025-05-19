@@ -13,8 +13,8 @@
 #
 FactoryBot.define do
   factory :collection do
-    division { Faker::Company.name }
-    admin_group { Faker::Alphanumeric.alpha(number: 10) }
+    division { "MPABI" }
+    admin_group { "admin_group" }
     # description { "MyText" }
     # division_page_url { "MyString" }
     # link_to_policies { "MyString" }
