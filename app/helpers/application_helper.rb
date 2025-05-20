@@ -30,6 +30,15 @@ module ApplicationHelper
   def is_user?
     session[:role] == "user" || session[:role] == "admin" || session[:role] == "super_admin"
   end
+
+  def is_collection_admin?(collection)
+    return false unless is_admin?
+    return false unless session[:collection_ids].present?
+    return false unless collection.present?
+    return false unless collection.admin_group.present?
+    return false unless session[:collection_ids].include?(collection.id)
+    true
+  end
   
   def get_uniqname(email)
     email.split("@").first
