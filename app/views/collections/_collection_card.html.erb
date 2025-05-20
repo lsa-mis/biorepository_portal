@@ -5,21 +5,26 @@
     <% end %>
   </div>
 
+  <div class="card-header">
+    <% if is_collection_admin?(collection) %>
+      <%= link_to collection.division, collection_path(collection), class: "link_to" %>
+    <% else %>
+      <%= collection.division %>
+    <% end %>
+  </div>
   <div class="card-body">
-    <%= link_to collection.division, collection_path(collection), class: "text-dark text-decoration-none h5" %>
     <p class="card-text">
-      <strong>Admin Group: </strong> <%= collection.admin_group %> <br>
       <strong>Description: </strong> <%= collection.description %> <br>
     </p>
+
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        Division page url: <%= link_to (collection.division + " Info Page"), collection.division_page_url, class: "text-dark text-decoration-none h6" %>
+      </li>
+
+      <li class="list-group-item">
+        Link to policies: <%= link_to (collection.division + " Policy Page"), collection.link_to_policies, class: "text-dark text-decoration-none h6" %>
+      </li>
+    </ul>
   </div>
-
-  <ul class="list-group list-group-flush">
-    <li class="list-group-item">
-      Division page url: <%= link_to (collection.division + " Info Page"), collection.division_page_url, class: "text-dark text-decoration-none h6" %>
-    </li>
-
-    <li class="list-group-item">
-      Link to policies: <%= link_to (collection.division + " Policy Page"), collection.link_to_policies, class: "text-dark text-decoration-none h6" %>
-    </li>
-  </ul>
 </div>
