@@ -10,7 +10,7 @@
   <% end %>
 </div>
 
-<% if is_admin? %>
+<% if is_admin? && is_super_admin? %>
   <div>
     <%= render 'import' %>
   </div>

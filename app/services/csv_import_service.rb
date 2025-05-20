@@ -1,40 +1,41 @@
+require 'csv'
+require 'set'
+
 class CsvImportService
-  attr_accessor :file, :collection_id
+  attr_reader :file, :collection_id
 
   def initialize(file, collection_id)
     @file = file
     @collection_id = collection_id
+    @items_in_db = Set.new(Item.pluck(:occurrence_id))
+    @field_names = {}
   end
 
+  # This method is the main entry point for the CSV import process.
+  # It reads the CSV file, processes each row, and updates or creates items in the database.
   def call
-    File.open(@file) do |f|
-      header = f.readline.strip.split(",")
-      @items_in_db = Item.pluck(:occurrence_id)
-      @field_names = {}
-      header.map { |h| @field_names[ MapField.find_by(specify_field: h.strip).rails_field ] = MapField.find_by(specify_field: h.strip).table }
-      f.each_line.with_index do |line, index|
-        s_cleaned = line.gsub(/"(.*?)"/) { |match| match.gsub(",", "") }
-        record = s_cleaned.split(",")
-        if record[0].blank?
-          next
-        end
-        # check if record exists in database
-        # item = Item.find_by(occurrence_id: record[0]&.strip)
-        if item_exist?(record[0]&.strip)
-          update_item(record)
-        else
-          save_item(record)
-        end
+    return unless valid_csv_file?
+
+    CSV.foreach(@file.path, headers: true) do |row|
+      record = row.fields.map { |val| val&.delete('"')&.strip }
+
+      next if record[0].blank?
+
+      if item_exist?(record[0])
+        update_item(record)
+      else
+        save_item(record)
       end
     end
-    # check if items table has data that is not in Specify any more
-    if @items_in_db.present?
-      @items_in_db.each do |occurrence_id|
-        item = Item.find_by(occurrence_id: occurrence_id)
-        # check
-        item.destroy if item.present?
-      end
-    end
+
+    cleanup_removed_items
+  end
+
+  private
+
+  def valid_csv_file?
+    File.extname(@file.original_filename).downcase == ".csv" &&
+      @file.content_type == "text/csv"
   end
 
   def item_exist?(occurrence_id)
@@ -42,145 +43,146 @@ class CsvImportService
   end
 
   def save_item(record)
-    @item = Item.new
-    @item.collection_id = @collection_id
-    @field_names.each_with_index do |(field, table), index|
-      if field.include?('ignore')
-        next
-      end
-      # check the table in MapField
-      value = record[index]&.delete('"').strip
-      case table
-      when "items"
-        if value.present?
-          if field == "event_date"
-            handle_event_date(value)
-          else
-            # Assign the value to the item object
-            @item.assign_attributes(field => value)
-          end
-        end
-      when "preparations"
-        if value.present?
-          @preparations_string = value
-        end
-      else
-        puts "saving item - ignore field for table: #{table}"
-        next
-      end
-    end
-    # Save the item and handle errors
-    if @item.save
-      unless create_preparations(@item, @preparations_string)
-        puts "Failed to save preparation: #{@preparation.errors.full_messages.join(', ')}"
-      end
+    item = Item.new(collection_id: @collection_id)
+    preparations_string = assign_fields(item, record)
+
+    if item.save
+      create_preparations(item, preparations_string)
     else
-      puts "Failed to save item: #{@item.errors.full_messages.join(', ')}"
+      Rails.logger.error("Failed to save item: #{item.errors.full_messages.join(', ')}")
     end
-  rescue StandardError => e
-    puts "Error saving item: #{e.message}"
+  rescue => e
+    Rails.logger.error("Error saving item: #{e.message}")
   end
-  
+
   def update_item(record)
-    @item = Item.find_by(occurrence_id: record[0]&.strip)
+    item = Item.find_by(occurrence_id: record[0])
+    return unless item
+
+    preparations_string = assign_fields(item, record)
+
+    if item.save
+      @items_in_db.delete(item.occurrence_id)
+      update_preparations(item, preparations_string)
+    else
+      Rails.logger.error("Failed to update item: #{item.errors.full_messages.join(', ')}")
+    end
+  rescue => e
+    Rails.logger.error("Error updating item: #{e.message}")
+  end
+
+  def assign_fields(item, record)
+    preparations_string = nil
+
+    @field_names = build_field_names if @field_names.empty?
+
     @field_names.each_with_index do |(field, table), index|
-      if field == "occurrence_id"
-        next
-      end
-      if field.include?('ignore')
-        next
-      end
-      value = record[index]&.delete('"').strip
+      next if field.include?("ignore")
+
+      value = record[index]
+      next unless value.present?
+
       case table
       when "items"
-        if value.present?
-          if field == "event_date"
-            handle_event_date(value)
-          else
-            # Assign the value to the item object
-            @item.assign_attributes(field => value)
-          end
-        end
+        field == "event_date" ? handle_event_date(item, value) : item.assign_attributes(field => value)
       when "preparations"
-        if value.present?
-          @preparations_string = value
-        end
+        preparations_string = value
       else
-        puts "updating item - ignore fields for table: #{table}"
-        next
+        Rails.logger.debug("Skipping field from unknown table: #{table}")
       end
     end
-    if @item.save
-      @items_in_db.delete(@item.occurrence_id)
-      unless update_preparations(@item, @preparations_string)
-        puts "Failed to update preparations for item: #{@item.occurrence_id}"
-      end
-    else
-      puts "Failed to save item: #{@item.errors.full_messages.join(', ')}"
-    end
-  rescue StandardError => e
-    puts "Error updating item: #{e.message}"
+
+    preparations_string
   end
-  
+
+  def build_field_names
+    header = CSV.open(@file.path, &:readline)
+    header.each_with_object({}) do |h, hash|
+      map_field = MapField.find_by(specify_field: h.strip)
+      hash[map_field.rails_field] = map_field.table if map_field
+    end
+  end
+
+  def handle_event_date(item, value)
+    if value.include?('/')
+      start_str, end_str = value.split('/', 2).map(&:strip)
+      item.event_date_start = Date.parse(start_str)
+      item.event_date_end   = Date.parse(end_str)
+    else
+      date = Date.parse(value.strip)
+      item.event_date_start = date
+      item.event_date_end   = date
+    end
+  rescue ArgumentError => e
+    Rails.logger.error("Invalid eventDate format: '#{value}' — #{e.message}")
+  end
+
+
   def create_preparations(item, preparations_string)
-    preparations = preparations_string.split(';')
-    preparations.each do |prep|
-      preparation = Preparation.new
-      values = prep.split(":")
-      values_first = values[0].split('-')
-      preparation.prep_type = values_first[0]&.strip
-      preparation.count = values_first[1].to_i
-      preparation.barcode = values[1]&.strip
-      preparation.description = values[2]&.strip
-      preparation.item = item
+    return true if preparations_string.blank?
+
+    preparations_string.split(';').each do |prep|
+      preparation = build_preparation(item, prep)
       unless preparation.save
-        puts "Failed to save preparation: #{preparation.errors.full_messages.join(', ')}"
+        Rails.logger.error("Failed to save preparation: #{preparation.errors.full_messages.join(', ')}")
         return false
       end
     end
-    return true
-  rescue StandardError => e
-    puts "Error creating preparation: #{e.message}"
-    return false
+    true
+  rescue => e
+    Rails.logger.error("Error creating preparation: #{e.message}")
+    false
   end
-  
+
   def update_preparations(item, preparations_string)
-    preparations = preparations_string.split(';')
-    preparations.each do |prep|
+    return true if preparations_string.blank?
+
+    preparations_string.split(';').each do |prep|
       values = prep.split(":")
-      values_first = values[0].split('-')
-      preparation = Preparation.find_by(item: item, prep_type: values_first[0]&.strip)
-      if preparation.present?
-        preparation.count = values_first[1].to_i
-        preparation.barcode = values[1]&.strip
-        preparation.description = values[2]&.strip
-        preparation.item = item
+      prep_type = values[0].split('-')[0]&.strip
+
+      preparation = Preparation.find_by(item: item, prep_type: prep_type)
+
+      if preparation
+        update_prep_fields(preparation, values)
         unless preparation.save
-          puts "Failed to update preparation: #{preparation.errors.full_messages.join(', ')}"
+          Rails.logger.error("Failed to update preparation: #{preparation.errors.full_messages.join(', ')}")
           return false
         end
       else
-        unless create_preparations(item, prep)
-          puts "Failed to create preparation: #{preparation.errors.full_messages.join(', ')}"
-          return false
-        end
+        return false unless create_preparations(item, prep)
       end
     end
-    return true
-  rescue StandardError => e
-    puts "Error updating preparation: #{e.message}"
-    return false
+    true
+  rescue => e
+    Rails.logger.error("Error updating preparations: #{e.message}")
+    false
   end
-  
-  def handle_event_date(value)
-    if value.include? '/'
-      event_date_start = value.split("-")[0]
-      event_date_end = value.split("-")[1]
-    else
-      event_date_start = value.strip.to_date
-      event_date_end = value.strip.to_date
+
+  def build_preparation(item, prep_string)
+    values = prep_string.split(":")
+    values_first = values[0].split('-')
+
+    Preparation.new(
+      item: item,
+      prep_type: values_first[0]&.strip,
+      count: values_first[1].to_i,
+      barcode: values[1]&.strip,
+      description: values[2]&.strip
+    )
+  end
+
+  def update_prep_fields(preparation, values)
+    values_first = values[0].split('-')
+    preparation.count = values_first[1].to_i
+    preparation.barcode = values[1]&.strip
+    preparation.description = values[2]&.strip
+  end
+
+  def cleanup_removed_items
+    @items_in_db.each do |occurrence_id|
+      item = Item.find_by(occurrence_id: occurrence_id)
+      item&.destroy
     end
-    @item.event_date_start = event_date_start
-    @item.event_date_end = event_date_end
   end
 end
