@@ -69,7 +69,7 @@ class CollectionsController < ApplicationController
       CsvImportService.new(file, collection_id).call
     end
 
-    redirect_to request.referer, notice: 'Import started...'
+    redirect_to request.referer, notice: 'Import Finished!'
   end
 
   private
