@@ -38,25 +38,12 @@ class ApplicationPolicy
     false
   end
 
-  class Scope
-    def initialize(user, scope)
-      @user = user
-      @scope = scope
-    end
-
-    def resolve
-      raise NoMethodError, "You must define #resolve in #{self.class}"
-    end
+  def is_admin?
+    @role == "admin" || @role == "super_admin"
   end
 
-  private
-
-    def is_admin?
-      @role == "admin"
-    end
-
-    def is_super_admin?
-      @role == "super_admin"
-    end
+  def is_super_admin?
+    @role == "super_admin"
+  end
 
 end

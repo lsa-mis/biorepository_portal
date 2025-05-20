@@ -11,7 +11,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def create?
-    false
+    is_super_admin?
   end
 
   def new?
@@ -19,7 +19,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def update?
-    true
+    is_admin?
   end
 
   def edit?
@@ -27,21 +27,18 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def destroy?
-    false
+    is_super_admin?
   end
 
-  class Scope
-    def initialize(user, scope)
-      @user = user
-      @scope = scope
-    end
+  private
 
-    def resolve
-      raise NoMethodError, "You must define #resolve in #{self.class}"
-    end
-
-    private
-
-    attr_reader :user, :scope
+  def is_collection_admin?
+    return false unless is_admin?
+    return false unless @collection_ids.present?
+    return false unless @record.present?
+    return false unless @record.admin_group.present?
+    return false unless @collection_ids.include?(@record.id)
+    true 
   end
+  
 end
