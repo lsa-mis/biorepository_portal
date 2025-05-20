@@ -6,11 +6,7 @@
   </div>
 
   <div class="card-header">
-    <% if is_collection_admin?(collection) %>
-      <%= link_to collection.division, collection_path(collection), class: "link_to" %>
-    <% else %>
-      <%= collection.division %>
-    <% end %>
+    <%= link_to collection.division, collection_path(collection), class: "link_to" %>
   </div>
   <div class="card-body">
     <p class="card-text">

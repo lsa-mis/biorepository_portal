@@ -2,7 +2,9 @@
 <%= render @collection %>
 
 <div>
-  <%= link_to "Edit this collection", edit_collection_path(@collection) %> |
+  <% if is_collection_admin?(@collection) %>
+    <%= link_to "Edit this collection", edit_collection_path(@collection) %> |
+  <% end %>
   <%= link_to "Back to collections", collections_path %>
 
   <% if is_super_admin? %>
