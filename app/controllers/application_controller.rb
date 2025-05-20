@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
 
   def pundit_user
-    { user: current_user, role: session[:role] }
+    { user: current_user, role: session[:role], collection_ids: session[:collection_ids] }
   end
   
   private
