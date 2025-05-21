@@ -1,12 +1,9 @@
 
 <%= render @collection %>
 
-<% if is_admin? %>
-  <br>
-  <div>
-    <%= render 'import' %>
-  </div>
-<% end %>
+<div>
+  <%= render 'import' if policy(@collection).import? %>
+</div>
 
 <br>
 <div id="collection_items">
@@ -29,7 +26,7 @@
                       <table class="table text-center">
                         <tbody class="table-group-divider">
 
-                          <%if item.catalog_number.present?%>
+                          <% if item.catalog_number.present?  %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Item Catalog Number
@@ -38,9 +35,9 @@
                                 <%= item.catalog_number %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.modified.present?%>
+                          <% if item.modified.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Date Modified
@@ -49,9 +46,9 @@
                                 <%= item.modified %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.recorded_by.present?%>
+                          <% if item.recorded_by.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Recorded By
@@ -60,9 +57,9 @@
                                 <%= item.recorded_by %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.individual_count.present?%>
+                          <% if item.individual_count.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Individual Count
@@ -71,9 +68,9 @@
                                 <%= item.individual_count %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.sex.present?%>
+                          <% if item.sex.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Sex
@@ -82,9 +79,9 @@
                                 <%= item.sex %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.life_stage.present?%>
+                          <% if item.life_stage.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Life Stage
@@ -93,9 +90,9 @@
                                 <%= item.life_stage %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.reproductive_condition.present?%>
+                          <% if item.reproductive_condition.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Reproductive Condition
@@ -104,9 +101,9 @@
                                 <%= item.reproductive_condition %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.vitality.present?%>
+                          <% if item.vitality.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Vitality
@@ -115,9 +112,9 @@
                                 <%= item.vitality %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.other_catalog_numbers.present?%>
+                          <% if item.other_catalog_numbers.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Other Catalog Numbers
@@ -126,9 +123,9 @@
                                 <%= item.other_catalog_numbers %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.occurrence_remarks.present?%>
+                          <% if item.occurrence_remarks.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Occurrence Remarks
@@ -137,9 +134,9 @@
                                 <%= item.occurrence_remarks %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.organism_remarks.present?%>
+                          <% if item.organism_remarks.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Organism Remarks
@@ -148,9 +145,9 @@
                                 <%= item.organism_remarks %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.associated_sequences.present?%>
+                          <% if item.associated_sequences.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Associated Sequences
@@ -159,9 +156,9 @@
                                 <%= item.associated_sequences %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.field_number.present?%>
+                          <% if item.field_number.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Field Number
@@ -170,9 +167,9 @@
                                 <%= item.field_number %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.event_date_start.present?%>
+                          <% if item.event_date_start.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Event Date Start
@@ -181,9 +178,9 @@
                                 <%= item.event_date_start %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.event_date_end.present?%>
+                          <% if item.event_date_end.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Event Date End
@@ -192,9 +189,9 @@
                                 <%= item.event_date_end %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.verbatim_event_date.present?%>
+                          <% if item.verbatim_event_date.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Verbatim Event Date
@@ -203,9 +200,9 @@
                                 <%= item.verbatim_event_date %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.sampling_protocol.present?%>
+                          <% if item.sampling_protocol.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Sampling Protocol
@@ -214,9 +211,9 @@
                                 <%= item.sampling_protocol %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.event_remarks.present?%>
+                          <% if item.event_remarks.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Event Remarks
@@ -225,9 +222,9 @@
                                 <%= item.event_remarks %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.continent.present?%>
+                          <% if item.continent.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Continent
@@ -236,9 +233,9 @@
                                 <%= item.continent %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.country.present?%>
+                          <% if item.country.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Country
@@ -247,9 +244,9 @@
                                 <%= item.country %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.state_province.present?%>
+                          <% if item.state_province.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 State Province
@@ -258,9 +255,9 @@
                                 <%= item.state_province %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.county.present?%>
+                          <% if item.county.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 County
@@ -269,9 +266,9 @@
                                 <%= item.county %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.locality.present?%>
+                          <% if item.locality.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Locality
@@ -280,9 +277,9 @@
                                 <%= item.locality %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.verbatim_locality.present?%>
+                          <% if item.verbatim_locality.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Verbatim Locality
@@ -291,9 +288,9 @@
                                 <%= item.verbatim_locality %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.verbatim_elevation.present?%>
+                          <% if item.verbatim_elevation.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Verbatim Elevation
@@ -302,9 +299,9 @@
                                 <%= item.verbatim_elevation %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.minimum_elevation_in_meters.present?%>
+                          <% if item.minimum_elevation_in_meters.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Minimum Elevation in Meters
@@ -313,9 +310,9 @@
                                 <%= item.minimum_elevation_in_meters %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.maximum_elevation_in_meters.present?%>
+                          <% if item.maximum_elevation_in_meters.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Maximum Elevation in Meters
@@ -324,9 +321,9 @@
                                 <%= item.maximum_elevation_in_meters %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.decimal_latitude.present?%>
+                          <% if item.decimal_latitude.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Decimal Latitude
@@ -335,9 +332,9 @@
                                 <%= item.decimal_latitude %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.decimal_longitude.present?%>
+                          <% if item.decimal_longitude.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Decimal Longitude
@@ -346,9 +343,9 @@
                                 <%= item.decimal_longitude %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.coordinate_uncertainty_in_meters.present?%>
+                          <% if item.coordinate_uncertainty_in_meters.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Coordinate Uncertainty in Meters
@@ -357,9 +354,9 @@
                                 <%= item.coordinate_uncertainty_in_meters %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.verbatim_coordinates.present?%>
+                          <% if item.verbatim_coordinates.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Verbatim Coordinates
@@ -368,9 +365,9 @@
                                 <%= item.verbatim_coordinates %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.georeferenced_by.present?%>
+                          <% if item.georeferenced_by.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Georeferenced By
@@ -379,9 +376,9 @@
                                 <%= item.georeferenced_by %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.georeferenced_date.present?%>
+                          <% if item.georeferenced_date.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Georeferenced Date
@@ -390,9 +387,9 @@
                                 <%= item.georeferenced_date %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.geodetic_datum.present?%>
+                          <% if item.geodetic_datum.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Geodetic Datum
@@ -401,9 +398,9 @@
                                 <%= item.geodetic_datum %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
 
-                          <%if item.georeference_protocol.present?%>
+                          <% if item.georeference_protocol.present? %>
                             <tr class="rover_tbody_tr">
                               <td class="rover_tbody_td">
                                 Georeference Protocol
@@ -412,7 +409,7 @@
                                 <%= item.georeference_protocol %>
                               </td>
                             </tr>
-                          <%end%>
+                          <% end %>
                         </tbody>
                       </table>
                     </div>
