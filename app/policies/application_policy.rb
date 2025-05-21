@@ -6,7 +6,7 @@ class ApplicationPolicy
   def initialize(context, record)
     @user = context[:user]
     @role = context[:role]
-    @unit_ids = context[:unit_ids]
+    @collection_ids = context[:collection_ids]
     @record = record
   end
 
