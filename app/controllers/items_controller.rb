@@ -8,6 +8,8 @@ class ItemsController < ApplicationController
 
   # GET /items/1 or /items/1.json
   def show
+    @identifications = @item.identifications
+    @preparations = @item.preparations
   end
 
   # GET /items/new

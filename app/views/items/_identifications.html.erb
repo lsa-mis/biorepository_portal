@@ -1,0 +1,89 @@
+<% @identifications.each do |identification| %>
+  <div id="<%= dom_id identification %>">
+  <p>
+      <strong>Type status:</strong>
+      <%= identification.type_status %>
+  </p>
+
+  <p>
+      <strong>Identified by:</strong>
+      <%= identification.identified_by %>
+  </p>
+
+  <p>
+      <strong>Date identified:</strong>
+      <%= identification.date_identified %>
+  </p>
+
+  <p>
+      <strong>Identification remarks:</strong>
+      <%= identification.identification_remarks %>
+  </p>
+
+  <p>
+      <strong>Scientific name:</strong>
+      <%= identification.scientific_name %>
+  </p>
+
+  <p>
+      <strong>Scientific name authorship:</strong>
+      <%= identification.scientific_name_authorship %>
+  </p>
+
+  <p>
+      <strong>Kingdom:</strong>
+      <%= identification.kingdom %>
+  </p>
+
+  <p>
+      <strong>Phylum:</strong>
+      <%= identification.phylum %>
+  </p>
+
+  <p>
+      <strong>Class name:</strong>
+      <%= identification.class_name %>
+  </p>
+
+  <p>
+      <strong>Order name:</strong>
+      <%= identification.order_name %>
+  </p>
+
+  <p>
+      <strong>Family:</strong>
+      <%= identification.family %>
+  </p>
+
+  <p>
+      <strong>Genus:</strong>
+      <%= identification.genus %>
+  </p>
+
+  <p>
+      <strong>Specific epithet:</strong>
+      <%= identification.specific_epithet %>
+  </p>
+
+  <p>
+      <strong>Infraspecific epithet:</strong>
+      <%= identification.infraspecific_epithet %>
+  </p>
+
+  <p>
+      <strong>Taxon rank:</strong>
+      <%= identification.taxon_rank %>
+  </p>
+
+  <p>
+      <strong>Vernacular name:</strong>
+      <%= identification.vernacular_name %>
+  </p>
+
+  <p>
+      <strong>Item:</strong>
+      <%= identification.item_id %>
+  </p>
+
+  </div>
+<% end %>
