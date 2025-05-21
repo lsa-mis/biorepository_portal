@@ -1,5 +1,5 @@
 <%= form_tag import_collections_path, method: :post, multipart: true, onsubmit: "return showImportStart()" do %>
-  <%= file_field_tag :file, accept: ".csv", multiple: true %>
+  <%= file_field_tag 'files[]', accept: ".csv", multiple: true %>
   <%= hidden_field_tag :collection_id, @collection.id %>
   <%= submit_tag '⚙️ Import' %>
 <% end %>

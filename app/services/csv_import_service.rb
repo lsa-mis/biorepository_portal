@@ -14,8 +14,9 @@ class CsvImportService
   # This method is the main entry point for the CSV import process.
   # It reads the CSV file, processes each row, and updates or creates items in the database.
   def call
-    return unless valid_csv_file?
-
+    Rails.logger.info("********************: #{@file.original_filename}")
+    return
+    
     CSV.foreach(@file.path, headers: true) do |row|
       record = row.fields.map { |val| val&.delete('"')&.strip }
 
@@ -29,14 +30,10 @@ class CsvImportService
     end
 
     cleanup_removed_items
+
   end
 
   private
-
-  def valid_csv_file?
-    File.extname(@file.original_filename).downcase == ".csv" &&
-      @file.content_type == "text/csv"
-  end
 
   def item_exist?(occurrence_id)
     @items_in_db.include?(occurrence_id)
