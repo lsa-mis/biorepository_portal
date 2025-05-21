@@ -9,6 +9,7 @@ class CollectionsController < ApplicationController
 
   # GET /collections/1 or /collections/1.json
   def show
+    @items = @collection.items.page(params[:page]).per(15)
   end
 
   # GET /collections/new
