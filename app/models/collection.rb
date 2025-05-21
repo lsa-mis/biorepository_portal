@@ -12,5 +12,6 @@
 #  updated_at        :datetime         not null
 #
 class Collection < ApplicationRecord
+  has_many :items, dependent: :destroy
   has_one_attached :image
 end
