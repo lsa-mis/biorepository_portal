@@ -1,3 +1,15 @@
+<div class="d-flex overflow-auto gap-3 pb-2">
+  <% @preparations.each_with_index do |prep, index| %>
+    <div class="prep-detail d-none mt-4" id="prep-detail-<%= index %>">
+
+      <button class="btn btn-outline-secondary flex-shrink-0 prep-btn" 
+              data-prep-id="<%= index %>">
+        <%= prep %>
+      </button>
+    </div>
+  <% end %>
+</div>
+
 <% @preparations.each do |preparation| %>
 
   <div id="<%= dom_id preparation %>">
