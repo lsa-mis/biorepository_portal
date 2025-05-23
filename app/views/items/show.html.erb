@@ -13,8 +13,14 @@
         <!-- Collections -->
         <div class="mb-5">
           <h5 class="fw-bold mb-3">Collections</h5>
-          <select class="form-select border border-1 border-secondary-subtle shadow-sm">
-            <option selected>Change Collection</option>
+          <select class="form-select border border-1 border-secondary-subtle shadow-sm"
+                  onchange="if (this.value) window.location.href = this.value;">
+            <option selected disabled>Change Collection</option>
+            <% @collections.each do |collection| %>
+              <option value="<%= collection_path(collection) %>">
+                <%= collection.division %>
+              </option>
+            <% end %>
           </select>
         </div>
 
@@ -48,7 +54,7 @@
     <!-- Main Content Area -->
     <div class="col-md-9">
       <div class="bg-light p-4 rounded shadow-sm mb-4">
-        <h2><--ITEM NAME --></h2>
+        <h2><%= @item.display_name %></h2>
         <h5 class="fw-bold mb-3"><%= @item.collection.division %> Collection</h5>
         <%= render "preparations" %>
       </div>
@@ -62,7 +68,7 @@
         <h3 class="fw-bold mb-3">Identifications</h3>
         <%= render "identifications" %>
       </div>
-      
+
     </div>
 
   </div>

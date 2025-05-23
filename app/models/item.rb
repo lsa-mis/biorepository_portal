@@ -56,4 +56,9 @@ class Item < ApplicationRecord
   belongs_to :collection
   has_many :identifications, dependent: :destroy
   has_many :preparations, dependent: :destroy
+
+  def display_name
+    # Placeholder for displaying the item name
+    "#{self.catalog_number} - #{self.sex} - #{self.country}"
+  end
 end
