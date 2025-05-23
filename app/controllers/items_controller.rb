@@ -10,6 +10,7 @@ class ItemsController < ApplicationController
   def show
     @identifications = @item.identifications
     @preparations = @item.preparations
+    # @preparation = @preparations[0]
   end
 
   # GET /items/new
