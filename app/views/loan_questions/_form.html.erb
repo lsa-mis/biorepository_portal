@@ -1,0 +1,27 @@
+<%= form_with(model: loan_question) do |form| %>
+  <% if loan_question.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(loan_question.errors.count, "error") %> prohibited this loan_question from being saved:</h2>
+
+      <ul>
+        <% loan_question.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :question, class: "form-label" %>
+    <%= form.text_field :question %>
+  </div>
+
+  <div>
+    <%= form.label :question_type, class: "form-label" %>
+    <%= form.select :question_type, @question_types, { include_blank: "Select ...", required: true }, { class: "iform-control form-control-sm" } %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

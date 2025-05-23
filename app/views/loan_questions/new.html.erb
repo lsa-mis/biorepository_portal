@@ -1,0 +1,11 @@
+<% content_for :title, "New loan question" %>
+
+<h1>New loan question</h1>
+
+<%= render "form", loan_question: @loan_question %>
+
+<br>
+
+<div>
+  <%= link_to "Back to loan questions", loan_questions_path %>
+</div>

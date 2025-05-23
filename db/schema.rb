@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_22_233756) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -129,6 +129,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
     t.index ["collection_id"], name: "index_items_on_collection_id"
   end
 
+  create_table "loan_questions", force: :cascade do |t|
+    t.string "question"
+    t.integer "question_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "map_fields", force: :cascade do |t|
     t.string "table"
     t.string "specify_field"
@@ -136,6 +143,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
     t.string "caption"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "options", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "value"
+    t.bigint "loan_question_id", null: false
+    t.index ["loan_question_id"], name: "index_options_on_loan_question_id"
   end
 
   create_table "preparations", force: :cascade do |t|
@@ -176,5 +191,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "identifications", "items"
   add_foreign_key "items", "collections"
+  add_foreign_key "options", "loan_questions"
   add_foreign_key "preparations", "items"
 end

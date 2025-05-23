@@ -1,0 +1,10 @@
+<div class="container-fluid">
+  <h1 class="mb-3">Loan Questions</h1>
+
+  <%= turbo_frame_tag 'new_loan_question_form' do %>
+    <%= render 'form', loan_question: @new_loan_question %>
+  <% end %>
+
+  
+    <%= render 'loan_questions_list' %>
+</div>

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :loan_questions
   resources :identifications
   resources :preparations
   resources :items

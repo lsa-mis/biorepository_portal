@@ -1,0 +1,18 @@
+<%= turbo_frame_tag 'loan_questions_list' do %>
+  <table class="table text-center mt-4">
+    <thead class="table-group-divider">
+    <tr>
+      <th scope="col" class="text-start">Question</th>
+      <th scope="col">Question Type</th>
+      <th scope="col">Edit</th>
+      <th scope="col">Delete</th>
+    </tr>
+    </thead>
+    <tbody class="table-group-divider" id="loan_questions">
+    
+      <% @loan_questions.each do |loan_question| %>
+        <%= render loan_question %>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
