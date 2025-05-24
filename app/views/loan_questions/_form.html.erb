@@ -18,11 +18,13 @@
 
   <div>
     <%= form.label :question_type, class: "form-label" %>
-    <%= form.select :question_type, @question_types, { include_blank: "Select ...", required: true }, { class: "iform-control form-control-sm" } %>
+    <%= form.select :question_type, @question_types, { include_blank: "Select ...", required: true }, { class: "input_text_field" } %>
   </div>
 
+  <div id="options"></div>
+
   <div>
-    <%= button_tag "Add Option", type: :button %>
+    <%= button_tag "Add Option", formaction: new_option_path, formmethod: :get, data: {turbo_stream: true} %>
   </div>
 
   <div>
