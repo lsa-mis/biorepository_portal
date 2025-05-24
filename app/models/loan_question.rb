@@ -10,6 +10,7 @@
 #
 class LoanQuestion < ApplicationRecord
   has_many :options, dependent: :destroy
+  accepts_nested_attributes_for :options
 
   enum :question_type, [:string, :dropdown, :checkbox], prefix: true
   validates :question, presence: true
