@@ -1,10 +1,76 @@
-<p style="color: green"><%= notice %></p>
+<div class="mt-3 ms-3">
+  <%= link_to items_path, class: "btn btn-outline-primary position-fixed start-0 m-3 z-3 shadow" do %>
+    <i class="bi bi-arrow-left me-2"></i> Back To Items
+  <% end %>
+</div>
 
-<%= render @item %>
+<div class="container mt-4">
+  <div class="row">
+    
+    <!-- Sidebar: Collections + Status -->
+    <div class="col-md-3">
+      <div class="bg-light p-4 rounded shadow-sm">
+        <!-- Collections -->
+        <div class="mb-5" data-controller="collection-dropdown">
+          <h5 class="fw-bold mb-3">Collections</h5>
+          <select class="form-select border border-1 border-secondary-subtle shadow-sm"
+                data-action="change->collection-dropdown#handleChange"
+                data-collection-dropdown-target="select">
+            <option selected disabled>Change Collection</option>
+            <% @collections.each do |collection| %>
+              <option value="<%= collection_path(collection) %>">
+                <%= collection.division %>
+              </option>
+            <% end %>
+          </select>
+        </div>
 
-<div>
-  <%= link_to "Edit this item", edit_item_path(@item) %> |
-  <%= link_to "Back to items", items_path %>
+        <!-- Status -->
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="fw-bold mb-0">Status</h5>
+            <button class="btn btn-sm" data-bs-toggle="collapse" data-bs-target="#statusList" aria-expanded="true" aria-controls="statusList">
+              <i class="bi bi-chevron-down"></i>
+            </button>
+          </div>
 
-  <%= button_to "Destroy this item", @item, method: :delete %>
+          <div class="collapse show" id="statusList">
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <span>Available to ship</span>
+                <span class="float-end">--Placeholder--</span>
+              </li>
+              <li>
+                <span>Information Only</span>
+                <span class="float-end">--Placeholder--</span>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="col-md-9">
+      <div class="bg-light p-4 rounded shadow-sm mb-4">
+        <h2><%= @item.display_name %></h2>
+        <h5 class="fw-bold mb-3"><%= @item.collection.division %> Collection</h5>
+        <%= render "preparations" %>
+      </div>
+
+      <div class="bg-light p-4 rounded shadow-sm mb-4">
+        <h3 class="fw-bold mb-3">Record Details</h3>
+        <%= render @item %>
+      </div>
+
+      <div class="bg-light p-4 rounded shadow-sm mb-4">
+        <h3 class="fw-bold mb-3">Identifications</h3>
+        <%= render "identifications" %>
+      </div>
+
+    </div>
+
+  </div>
 </div>
