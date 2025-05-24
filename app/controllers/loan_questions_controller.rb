@@ -42,7 +42,7 @@ class LoanQuestionsController < ApplicationController
     if @loan_question.save 
       flash.now[:notice] = "Loan question was successfully created."
       @new_loan_question = LoanQuestion.new
-      @loan_questions = LoanQuestion.all.order(:last_name)
+      @loan_questions = LoanQuestion.all
     else
       render :index, status: :unprocessable_entity
     end
@@ -63,11 +63,9 @@ class LoanQuestionsController < ApplicationController
 
   # DELETE /loan_questions/1 or /loan_questions/1.json
   def destroy
-    @loan_question.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to loan_questions_path, status: :see_other, notice: "Loan question was successfully destroyed." }
-      format.json { head :no_content }
+    if @loan_question.destroy
+      @loan_questions = LoanQuestion.all
+      flash.now[:notice] = "Loan question was successfully deleted."
     end
   end
 
