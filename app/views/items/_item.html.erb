@@ -1,192 +1,213 @@
 <div id="<%= dom_id item %>">
-  <p>
-    <strong>Occurrence:</strong>
-    <%= item.occurrence_id %>
-  </p>
-
-  <p>
-    <strong>Catalog number:</strong>
-    <%= item.catalog_number %>
-  </p>
-
-  <p>
-    <strong>Modified:</strong>
-    <%= item.modified %>
-  </p>
-
-  <p>
-    <strong>Recorded by:</strong>
-    <%= item.recorded_by %>
-  </p>
-
-  <p>
-    <strong>Individual count:</strong>
-    <%= item.individual_count %>
-  </p>
-
-  <p>
-    <strong>Sex:</strong>
-    <%= item.sex %>
-  </p>
-
-  <p>
-    <strong>Life stage:</strong>
-    <%= item.life_stage %>
-  </p>
-
-  <p>
-    <strong>Reproductive condition:</strong>
-    <%= item.reproductive_condition %>
-  </p>
-
-  <p>
-    <strong>Vitality:</strong>
-    <%= item.vitality %>
-  </p>
-
-  <p>
-    <strong>Other catalog numbers:</strong>
-    <%= item.other_catalog_numbers %>
-  </p>
-
-  <p>
-    <strong>Occurrence remarks:</strong>
-    <%= item.occurrence_remarks %>
-  </p>
-
-  <p>
-    <strong>Organism remarks:</strong>
-    <%= item.organism_remarks %>
-  </p>
-
-  <p>
-    <strong>Associated sequences:</strong>
-    <%= item.associated_sequences %>
-  </p>
-
-  <p>
-    <strong>Field number:</strong>
-    <%= item.field_number %>
-  </p>
-
-  <p>
-    <strong>Event date start:</strong>
-    <%= item.event_date_start %>
-  </p>
-
-  <p>
-    <strong>Event date end:</strong>
-    <%= item.event_date_end %>
-  </p>
-
-  <p>
-    <strong>Verbatim event date:</strong>
-    <%= item.verbatim_event_date %>
-  </p>
-
-  <p>
-    <strong>Sampling protocol:</strong>
-    <%= item.sampling_protocol %>
-  </p>
-
-  <p>
-    <strong>Event remarks:</strong>
-    <%= item.event_remarks %>
-  </p>
-
-  <p>
-    <strong>Continent:</strong>
-    <%= item.continent %>
-  </p>
-
-  <p>
-    <strong>Country:</strong>
-    <%= item.country %>
-  </p>
-
-  <p>
-    <strong>State province:</strong>
-    <%= item.state_province %>
-  </p>
-
-  <p>
-    <strong>County:</strong>
-    <%= item.county %>
-  </p>
-
-  <p>
-    <strong>Locality:</strong>
-    <%= item.locality %>
-  </p>
-
-  <p>
-    <strong>Verbatim locality:</strong>
-    <%= item.verbatim_locality %>
-  </p>
-
-  <p>
-    <strong>Verbatim elevation:</strong>
-    <%= item.verbatim_elevation %>
-  </p>
-
-  <p>
-    <strong>Minimum elevation in meters:</strong>
-    <%= item.minimum_elevation_in_meters %>
-  </p>
-
-  <p>
-    <strong>Maximum elevation in meters:</strong>
-    <%= item.maximum_elevation_in_meters %>
-  </p>
-
-  <p>
-    <strong>Decimal latitude:</strong>
-    <%= item.decimal_latitude %>
-  </p>
-
-  <p>
-    <strong>Decimal longitude:</strong>
-    <%= item.decimal_longitude %>
-  </p>
-
-  <p>
-    <strong>Coordinate uncertainty in meters:</strong>
-    <%= item.coordinate_uncertainty_in_meters %>
-  </p>
-
-  <p>
-    <strong>Verbatim coordinates:</strong>
-    <%= item.verbatim_coordinates %>
-  </p>
-
-  <p>
-    <strong>Georeferenced by:</strong>
-    <%= item.georeferenced_by %>
-  </p>
-
-  <p>
-    <strong>Georeferenced date:</strong>
-    <%= item.georeferenced_date %>
-  </p>
-
-  <p>
-    <strong>Geodetic datum:</strong>
-    <%= item.geodetic_datum %>
-  </p>
-
-  <p>
-    <strong>Georeference protocol:</strong>
-    <%= item.georeference_protocol %>
-  </p>
-
-  <p>
-    <strong>Archived:</strong>
-    <%= item.archived %>
-  </p>
-
-  <p>
-    <strong>Collection:</strong>
-    <%= item.collection_id %>
-  </p>
+  <% if item.catalog_number.present? %>
+    <p>
+      <strong>Catalog number:</strong>
+      <%= item.catalog_number %>
+    </p>
+  <% end %>
+  <% if item.modified.present? %>
+    <p>
+      <strong>Modified:</strong>
+      <%= item.modified %>
+    </p>
+  <% end %>
+  <% if item.recorded_by.present? %>
+    <p>
+      <strong>Recorded by:</strong>
+      <%= item.recorded_by %>
+    </p>
+  <% end %>
+  <% if item.individual_count.present? %>
+    <p>
+      <strong>Individual count:</strong>
+      <%= item.individual_count %>
+    </p>
+  <% end %>
+  <% if item.sex.present? %>
+    <p>
+      <strong>Sex:</strong>
+      <%= item.sex %>
+    </p>
+  <% end %>
+  <% if item.life_stage.present? %>
+    <p>
+      <strong>Life stage:</strong>
+      <%= item.life_stage %>
+    </p>
+  <% end %>
+  <% if item.reproductive_condition.present? %>
+    <p>
+      <strong>Reproductive condition:</strong>
+      <%= item.reproductive_condition %>
+    </p>
+  <% end %>
+  <% if item.vitality.present? %>
+    <p>
+      <strong>Vitality:</strong>
+      <%= item.vitality %>
+    </p>
+  <% end %>
+  <% if item.other_catalog_numbers.present? %>
+    <p>
+      <strong>Other catalog numbers:</strong>
+      <%= item.other_catalog_numbers %>
+    </p>
+  <% end %>
+  <% if item.occurrence_remarks.present? %>
+    <p>
+      <strong>Occurrence remarks:</strong>
+      <%= item.occurrence_remarks %>
+    </p>
+  <% end %>
+  <% if item.organism_remarks.present? %>
+    <p>
+      <strong>Organism remarks:</strong>
+      <%= item.organism_remarks %>
+    </p>
+  <% end %>
+  <% if item.associated_sequences.present? %>
+    <p>
+      <strong>Associated sequences:</strong>
+      <%= item.associated_sequences %>
+    </p>
+  <% end %>
+  <% if item.field_number.present? %>
+    <p>
+      <strong>Field number:</strong>
+      <%= item.field_number %>
+    </p>
+  <% end %>
+  <% if item.event_date_start.present? %>
+    <p>
+      <strong>Event date start:</strong>
+      <%= item.event_date_start %>
+    </p>
+  <% end %>
+  <% if item.event_date_end.present? %>
+    <p>
+      <strong>Event date end:</strong>
+      <%= item.event_date_end %>
+    </p>
+  <% end %>
+  <% if item.verbatim_event_date.present? %>
+    <p>
+      <strong>Verbatim event date:</strong>
+      <%= item.verbatim_event_date %>
+    </p>
+  <% end %>
+  <% if item.sampling_protocol.present? %>
+    <p>
+      <strong>Sampling protocol:</strong>
+      <%= item.sampling_protocol %>
+    </p>
+  <% end %>
+  <% if item.event_remarks.present? %>
+    <p>
+      <strong>Event remarks:</strong>
+      <%= item.event_remarks %>
+    </p>
+  <% end %>
+  <% if item.continent.present? %>
+    <p>
+      <strong>Continent:</strong>
+      <%= item.continent %>
+    </p>
+  <% end %>
+  <% if item.country.present? %>
+    <p>
+      <strong>Country:</strong>
+      <%= item.country %>
+    </p>
+  <% end %>
+  <% if item.state_province.present? %>
+    <p>
+      <strong>State province:</strong>
+      <%= item.state_province %>
+    </p>
+  <% end %>
+  <% if item.county.present? %>
+    <p>
+      <strong>County:</strong>
+      <%= item.county %>
+    </p>
+  <% end %>
+  <% if item.locality.present? %>
+    <p>
+      <strong>Locality:</strong>
+      <%= item.locality %>
+    </p>
+  <% end %>
+  <% if item.verbatim_locality.present? %>
+    <p>
+      <strong>Verbatim locality:</strong>
+      <%= item.verbatim_locality %>
+    </p>
+  <% end %>
+  <% if item.verbatim_elevation.present? %>
+    <p>
+      <strong>Verbatim elevation:</strong>
+      <%= item.verbatim_elevation %>
+    </p>
+  <% end %>
+  <% if item.minimum_elevation_in_meters.present? %>
+    <p>
+      <strong>Minimum elevation in meters:</strong>
+      <%= item.minimum_elevation_in_meters %>
+    </p>
+  <% end %>
+  <% if item.maximum_elevation_in_meters.present? %>
+    <p>
+      <strong>Maximum elevation in meters:</strong>
+      <%= item.maximum_elevation_in_meters %>
+    </p>
+  <% end %>
+  <% if item.decimal_latitude.present? %>
+    <p>
+      <strong>Decimal latitude:</strong>
+      <%= item.decimal_latitude %>
+    </p>
+  <% end %>
+  <% if item.decimal_longitude.present? %>
+    <p>
+      <strong>Decimal longitude:</strong>
+      <%= item.decimal_longitude %>
+    </p>
+  <% end %>
+  <% if item.coordinate_uncertainty_in_meters.present? %>
+    <p>
+      <strong>Coordinate uncertainty in meters:</strong>
+      <%= item.coordinate_uncertainty_in_meters %>
+    </p>
+  <% end %>
+  <% if item.verbatim_coordinates.present? %>
+    <p>
+      <strong>Verbatim coordinates:</strong>
+      <%= item.verbatim_coordinates %>
+    </p>
+  <% end %>
+  <% if item.georeferenced_by.present? %>
+    <p>
+      <strong>Georeferenced by:</strong>
+      <%= item.georeferenced_by %>
+    </p>
+  <% end %>
+  <% if item.georeferenced_date.present? %>
+    <p>
+      <strong>Georeferenced date:</strong>
+      <%= item.georeferenced_date %>
+    </p>
+  <% end %>
+  <% if item.geodetic_datum.present? %>
+    <p>
+      <strong>Geodetic datum:</strong>
+      <%= item.geodetic_datum %>
+    </p>
+  <% end %>
+  <% if item.georeference_protocol.present? %>
+    <p>
+      <strong>Georeference protocol:</strong>
+      <%= item.georeference_protocol %>
+    </p>
+  <% end %>
 
 </div>

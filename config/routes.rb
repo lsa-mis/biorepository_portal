@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :identifications
   resources :preparations
-  resources :items
+  resources :items, only: [ :index, :show ]
   resources :collections do
     collection do
       post :import
