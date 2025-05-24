@@ -11,10 +11,11 @@
     <div class="col-md-3">
       <div class="bg-light p-4 rounded shadow-sm">
         <!-- Collections -->
-        <div class="mb-5">
+        <div class="mb-5" data-controller="collection-dropdown">
           <h5 class="fw-bold mb-3">Collections</h5>
           <select class="form-select border border-1 border-secondary-subtle shadow-sm"
-                  onchange="if (this.value) window.location.href = this.value;">
+                data-action="change->collection-dropdown#handleChange"
+                data-collection-dropdown-target="select">
             <option selected disabled>Change Collection</option>
             <% @collections.each do |collection| %>
               <option value="<%= collection_path(collection) %>">
