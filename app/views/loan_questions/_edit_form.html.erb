@@ -1,4 +1,4 @@
-<%= form_with(model: loan_question, data: {controller: "options"}) do |form| %>
+<%= form_with(model: loan_question, data: {controller: "edit-options"}) do |form| %>
   <% if loan_question.errors.any? %>
     <div style="color: red">
       <h2><%= pluralize(loan_question.errors.count, "error") %> prohibited this loan_question from being saved:</h2>
@@ -25,20 +25,20 @@
     <p>
       <%= fields_for 'options[]', option, index: "option_#{option.id}" do |form| %>
         <div class="mx-3">
-          <%= form.label :value, "Option" %> (<%= button_tag "Remove", type: :button, class: "btn btn-sm", data: {action: "options#remove"} %>)
+          <%= form.label :value, "Option" %> (<%= button_tag "Remove", type: :button, class: "btn btn-sm", data: {action: "edit-options#remove"} %>)
           <%= form.text_field :value, required: true, class: "input_text_field" %>
         </div>
       <% end %>
     </p>
   <% end %>
 
-  <div id="options" data-options-target="fields"></div>
+  <div id="options" data-edit-options-target="fields"></div>
 
-  <%= button_tag "Add Option", type: :button, class: "btn btn-sm", data: {action: "options#append"} %>
-  <div class="invisible" data-options-target="show_options">
+  <%= button_tag "Add Option", type: :button, class: "btn btn-sm", data: {action: "edit-options#append"} %>
+  <div class="invisible" data-edit-options-target="show_options">
     
 
-    <template data-options-target="template">
+    <template data-edit-options-target="template">
       <%= fields_for 'options[]', Option.new, index: "__INDEX__" do |form| %>
         <%= render "loan_questions/option_value", form: form %>
       <% end %>

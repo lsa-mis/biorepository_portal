@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Connects to data-controller="options"
+// Connects to data-controller="edit_options"
 export default class extends Controller {
   static targets = ["fields", "show_options", "template", "question_type"];
   
