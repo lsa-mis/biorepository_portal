@@ -25,21 +25,13 @@ class LoanQuestionsController < ApplicationController
   # POST /loan_questions or /loan_questions.json
   def create
     @loan_question = LoanQuestion.new(loan_question_params)
+    if loan_question_params[:question_type] == "dropdown" || loan_question_params[:question_type] == "checkbox"
+      options = params[:options].values
+    end
     authorize @loan_question
 
-    # respond_to do |format|
-    #   if @cloan_question.save
-    #     notice = "Loan question was successfully created."
-    #     format.turbo_stream do
-    #       @new_cloan_question = LoanQuestion.new
-    #       flash.now[:notice] = notice
-    #     end
-    #     format.html { redirect_to loan_questions_path, notice: notice }
-    #   else
-    #     format.html { render :new, status: :unprocessable_entity }
-    #   end
-    # end
-    if @loan_question.save 
+    if @loan_question.save
+      options.map { |option| Option.create(value: option[:value], loan_question_id: @loan_question.id) }
       flash.now[:notice] = "Loan question was successfully created."
       @new_loan_question = LoanQuestion.new
       @loan_questions = LoanQuestion.all

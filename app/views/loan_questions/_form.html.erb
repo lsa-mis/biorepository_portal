@@ -13,7 +13,7 @@
 
   <div>
     <%= form.label :question, class: "form-label" %>
-    <%= form.text_field :question %>
+    <%= form.text_field :question, required: true, class: "input_text_field"  %>
   </div>
 
   <div>
@@ -21,12 +21,12 @@
     <%= form.select :question_type, @question_types, { include_blank: "Select ...", required: true }, { class: "input_text_field", "data-options-target": "question_type", :"data-action" => "change->options#showOptions" } %>
   </div>
 
-  <div id="options"></div>
-
-  <div data-options-target="fields"></div>
-
   <div class="invisible" data-options-target="show_options">
-    <%= button_tag "Add Option", type: :button, data: {action: "options#append"} %>
+    <div id="options" data-options-target="fields"></div>
+    <%= fields_for 'options[]', Option.new, index: "#{DateTime.now()}" do |form| %>
+      <%= render "loan_questions/option_value", form: form %>
+    <% end %>
+    <%= button_tag "Add Option", type: :button, class: "btn btn-sm", data: {action: "options#append"} %>
 
     <template data-options-target="template">
       <%= fields_for 'options[]', Option.new, index: "__INDEX__" do |form| %>
