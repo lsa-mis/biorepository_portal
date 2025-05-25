@@ -18,14 +18,14 @@
 
   <div>
     <%= form.label :question_type, class: "form-label" %>
-    <%= form.select :question_type, @question_types, { include_blank: "Select ...", required: true }, { class: "input_text_field" } %>
+    <%= form.select :question_type, @question_types, { include_blank: "Select ...", required: true }, { class: "input_text_field", "data-options-target": "question_type", :"data-action" => "change->options#showOptions" } %>
   </div>
 
   <div id="options"></div>
 
   <div data-options-target="fields"></div>
 
-  <div>
+  <div class="invisible" data-options-target="show_options">
     <%= button_tag "Add Option", type: :button, data: {action: "options#append"} %>
 
     <template data-options-target="template">
