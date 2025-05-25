@@ -1,0 +1,51 @@
+<%= form_with(model: loan_question, data: {controller: "options"}) do |form| %>
+  <% if loan_question.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(loan_question.errors.count, "error") %> prohibited this loan_question from being saved:</h2>
+
+      <ul>
+        <% loan_question.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :question, class: "form-label" %>
+    <%= form.text_field :question, required: true, class: "input_text_field"  %>
+  </div>
+
+  <p>
+    <strong>Question type:</strong>
+    <%= loan_question.question_type %>
+  </p>
+
+   <% @loan_question.options.each do |option| %>
+    <p>
+      <%= fields_for 'options[]', option, index: "option_#{option.id}" do |form| %>
+        <div class="mx-3">
+          <%= form.label :value, "Option" %> (<%= button_tag "Remove", type: :button, class: "btn btn-sm", data: {action: "options#remove"} %>)
+          <%= form.text_field :value, required: true, class: "input_text_field" %>
+        </div>
+      <% end %>
+    </p>
+  <% end %>
+
+  <div id="options" data-options-target="fields"></div>
+
+  <%= button_tag "Add Option", type: :button, class: "btn btn-sm", data: {action: "options#append"} %>
+  <div class="invisible" data-options-target="show_options">
+    
+
+    <template data-options-target="template">
+      <%= fields_for 'options[]', Option.new, index: "__INDEX__" do |form| %>
+        <%= render "loan_questions/option_value", form: form %>
+      <% end %>
+    </template>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

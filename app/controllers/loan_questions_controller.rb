@@ -31,7 +31,7 @@ class LoanQuestionsController < ApplicationController
     authorize @loan_question
 
     if @loan_question.save
-      options.map { |option| Option.create(value: option[:value], loan_question_id: @loan_question.id) }
+      options.map { |option| Option.create(value: option[:value], loan_question_id: @loan_question.id) if value.present? }
       flash.now[:notice] = "Loan question was successfully created."
       @new_loan_question = LoanQuestion.new
       @loan_questions = LoanQuestion.all
