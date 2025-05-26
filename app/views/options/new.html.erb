@@ -1,0 +1,30 @@
+<%= turbo_frame_tag("new_option") do %>
+  <div>
+    <div></div>
+      <div class="option-list-item">
+        <%= fields_for 'options[]', Option.new, index: "#{DateTime.now()}" do |form| %>
+          <div class="mx-3">
+            <%#= form.label :value, "Option" %>
+            <label data-edit-options-target="option_label"></label>
+            <%= form.text_field :value, required: true, class: "input_text_field", "data-edit-options-target": "option_value" %>
+          </div>
+        <% end %>
+        <div class="">
+          <button
+              type="button"
+              title="Remove option"
+              class="remove-option-button mt-4"
+              data-action="click->edit-options#removeOption">
+            <i class="bi bi-trash-fill text-danger"></i>
+          </button>
+        </div>
+        <input data-edit-options-target="option_number" autocomplete="off" type="hidden"/>
+      </div>
+
+      <div>
+        <%= turbo_frame_tag("new_option") do %>
+          <%= link_to "New option", new_option_path %>
+        <% end %>
+      </div>
+  </div>
+<% end %>
