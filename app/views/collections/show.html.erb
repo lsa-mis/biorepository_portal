@@ -8,16 +8,17 @@
 <br>
 <div id="collection_items">
   <h2>Items in this Collection</h2>
-  <%= search_form_for @q, url: search_items_path, method: :post do |f| %>
+  <%= search_form_for @q, url: collection_path(@collection), urbo_frame: "collection_items", method: :post do |f| %>
     <div>
-      <%= f.label :catalog_number, "Catalog Number" %>
-      <%= f.search_field :catalog_number %>
+      <%= f.label :catalog_number_eq, "Catalog Number" %>
+      <%= f.search_field :catalog_number_eq %>
     </div>
     <div>
       <%= f.submit "Search" %>
     </div>
   <% end %>
 
+  <%= turbo_frame_tag "collection_items" do %>
     <% if @items.empty? %>
       No items available in this collection.
     <% else %>
@@ -97,4 +98,5 @@
       </div>
       <%= paginate @items %>
     <% end %>
-  </div>
+  <% end %>
+</div>
