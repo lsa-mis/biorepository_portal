@@ -6,9 +6,13 @@
 </div>
 
 <br>
-<div id="collection_items">
+<div>
   <h2>Items in this Collection</h2>
   <%= search_form_for @q, url: collection_path(@collection), urbo_frame: "collection_items", method: :post do |f| %>
+    <div class="mb-2">
+      <%= f.label :country_or_state_province_or_identifications_cont, "Quick Search" %>
+      <%= f.search_field :country_or_state_province_or_identifications_scientific_name_cont, placeholder: 'Country or State or Province or Scientific Name contains', class: "form-control form-control-sm" %>
+    </div>
     <div>
       <%= f.label :catalog_number_eq, "Catalog Number" %>
       <%= f.search_field :catalog_number_eq %>
@@ -34,7 +38,7 @@
                     <legend style="display: none;">Tabs to display item information</legend>
 
                     <div>
-                      <%= link_to item_path(item), class: "btn btn-primary my-2" do %>
+                      <%= link_to item_path(item), class: "btn btn-primary my-2", data: { turbo_frame: "_top" } do %>
                         Item Details Page 
                       <% end %>
                       <table class="table text-center">
