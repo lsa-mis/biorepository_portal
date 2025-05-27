@@ -1,7 +1,12 @@
 Rails.application.routes.draw do
   resources :identifications
   resources :preparations
-  resources :items, only: [ :index, :show ]
+  resources :items, only: [ :index, :show ] do
+    collection do
+      match 'search' => 'people#search', via: [:get, :post], as: :search
+    end
+  end
+  
   resources :collections do
     collection do
       post :import

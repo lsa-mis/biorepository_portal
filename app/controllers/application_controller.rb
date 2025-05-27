@@ -9,6 +9,11 @@ class ApplicationController < ActionController::Base
   def pundit_user
     { user: current_user, role: session[:role], collection_ids: session[:collection_ids] }
   end
+
+  def search
+    index
+    render :index
+  end
   
   private
 
