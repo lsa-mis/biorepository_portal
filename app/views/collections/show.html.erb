@@ -34,10 +34,9 @@
                     <legend style="display: none;">Tabs to display item information</legend>
 
                     <div>
-                      <%= link_to item_path(item), class: "btn btn-primary h-50 mt-auto mb-auto" do%>
+                      <%= link_to item_path(item), class: "btn btn-primary my-2" do %>
                         Item Details Page 
-                      <%end%>
-                      <br>
+                      <% end %>
                       <table class="table text-center">
                         <tbody class="table-group-divider">
                           <% display_fields = {
