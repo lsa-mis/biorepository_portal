@@ -71,4 +71,8 @@ class Item < ApplicationRecord
     "sex", "state_province", "updated_at", "verbatim_coordinates", "verbatim_elevation", "verbatim_event_date", "verbatim_locality", "vitality"]
   end
 
+  def self.ransackable_associations(auth_object = nil)
+    [ "collection", "identifications", "preparations" ]
+  end
+
 end
