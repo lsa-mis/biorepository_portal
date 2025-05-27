@@ -6,42 +6,12 @@ export default class extends Controller {
   
   connect() {
     console.log("Options controller connected");
-    // let thisOptionsNumber = -1 + document.querySelectorAll(".option-list-item").length;
-
-    // let option_label = this.option_labelTarget;
-    // console.log("option_label", option_label);
-
-    // this.option_labelTarget.setAttribute("for", `option_attributes_${thisOptionsNumber}_option`);
-    // this.option_labelTarget.textContent = `Option ${thisOptionsNumber}:`;
-
-    // this.option_valueTarget.setAttribute("value", `loan_question[options_attributes][${thisOptionsNumber}][option]`);
-    // this.option_valueTarget.setAttribute("id", `options_attributes_${thisOptionsNumber}_option`);
-
-    // this.option_numberTarget.setAttribute("value", thisOptionsNumber);
-    // this.option_numberTarget.setAttribute("name", `loan_question[options_attributes][${thisOptionsNumber}][number]`);
-    // this.option_numberTarget.setAttribute("id", `loan_question_options_attributes_${thisOptionsNumber}_number`);
-
-    // this.showOnlyLastRemoveOptionButton();
-  }
-
-
-  showOptions() {
-    const questionType = this.question_typeTarget.value;
-    console.log("Selected question type:", questionType);
-    if (questionType === "dropdown" || questionType === "checkbox") {
-      this.show_optionsTarget.classList.remove("invisible")
-      this.show_optionsTarget.classList.add("visible")
-    } else {
-      console.log("Hiding options");
-      this.show_optionsTarget.classList.remove("visible")
-      this.show_optionsTarget.classList.add("invisible")
-    }
   }
 
   append() {
     console.log("append called");
     this.fieldsTarget.insertAdjacentHTML("beforeend", this.#templateContent);
-    let thisOptionsNumber = -1 + document.querySelectorAll(".option-list-item").length;
+    let thisOptionsNumber = document.querySelectorAll(".option-list-item").length;
 
     let option_label = this.option_labelTarget;
     console.log("option_label", option_label);
@@ -49,7 +19,6 @@ export default class extends Controller {
     this.option_labelTarget.setAttribute("for", `option_attributes_${thisOptionsNumber}_option`);
     this.option_labelTarget.textContent = `Option ${thisOptionsNumber}:`;
 
-    this.option_valueTarget.setAttribute("value", `loan_question[options_attributes][${thisOptionsNumber}][option]`);
     this.option_valueTarget.setAttribute("id", `options_attributes_${thisOptionsNumber}_option`);
 
     this.option_numberTarget.setAttribute("value", thisOptionsNumber);
@@ -64,6 +33,8 @@ export default class extends Controller {
   }
 
   removeOption() {
+    console.log("removeOption called");
+    console.log("this.element", this.element);
     this.element.remove();
     this.showOnlyLastRemoveOptionButton();
   }
@@ -71,12 +42,23 @@ export default class extends Controller {
   showOnlyLastRemoveOptionButton() {
     console.log("showOnlyLastRemoveOptionButton called");
     let btns = document.querySelectorAll(".remove-option-button")
-    let btnsCount = btns.length;
+    let btnsCount = btns.length -1;
+    console.log("btnsCount", btnsCount);
     btns.forEach((btn, i) => {
-      if (i !== btnsCount - 1) {
-        btn.classList.add("display-none");
+      console.log("btn", btn);
+      console.log("i", i);
+      if (i < 2) {
+        btn.classList.add("invisible");
+      } else if (i !== btnsCount) {
+        console.log("not equal to btnsCount")
+        console.log("i", i)
+        btn.classList.add("invisible");
       } else {
-        btn.classList.remove("display-none");
+        console.log("equal to btnsCount")
+        console.log("i", i)
+        console.log("before", btn.classList)
+        btn.classList.remove("invisible");
+        console.log("after", btn.classList)
       }
     });
   }
