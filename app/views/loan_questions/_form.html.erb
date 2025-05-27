@@ -24,8 +24,8 @@
   <%= turbo_frame_tag("options_list") do %>
     <div class="invisible" data-show-options-target="show_options">
       <div id="options" data-controller="edit-options" data-edit-options-target="fields"></div>
-        <div class="option-list-item">
-            <div class="mx-3">
+        <div class="option-list-item d-flex justify-content-between align-items-center"">
+            <div class="flex-grow-1 mx-3">
               <label data-edit-options-target="option_label"></label>
               <%= form.text_field :value, required: true, class: "input_text_field", "data-edit-options-target": "option_value" %>
             </div>
