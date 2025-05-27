@@ -1,4 +1,4 @@
-<%= form_with(model: loan_question, data: {controller: "edit-options"}) do |form| %>
+<%= form_with(model: loan_question, data: {controller: "show-options"}) do |form| %>
   <% if loan_question.errors.any? %>
     <div style="color: red">
       <h2><%= pluralize(loan_question.errors.count, "error") %> prohibited this loan_question from being saved:</h2>
@@ -18,12 +18,12 @@
 
   <div>
     <%= form.label :question_type, class: "form-label" %>
-    <%= form.select :question_type, @question_types, { include_blank: "Select ...", required: true }, { class: "input_text_field", "data-edit-options-target": "question_type", :"data-action" => "change->edit-options#showOptions" } %>
+    <%= form.select :question_type, @question_types, { include_blank: "Select ...", required: true }, { class: "input_text_field", "data-show-options-target": "question_type", :"data-action" => "change->show-options#showOptions" } %>
   </div>
 
-  <%= turbo_frame_tag("new_option") do %>
-    <div class="invisible" data-edit-options-target="show_options">
-      <div id="options" data-edit-options-target="fields"></div>
+  <%= turbo_frame_tag("options_list") do %>
+    <div class="invisible" data-show-options-target="show_options">
+      <div id="options" data-controller="edit-options" data-edit-options-target="fields"></div>
         <div class="option-list-item">
             <div class="mx-3">
               <label data-edit-options-target="option_label"></label>
@@ -42,9 +42,9 @@
         </div>
 
         <div>
-          <%= turbo_frame_tag("new_option") do %>
+          
             <%= button_tag "Add Option", type: :button, class: "btn btn-sm", data: {action: "edit-options#append"} %>
-          <% end %>
+          
         </div>
 
         <template data-edit-options-target="template">
@@ -65,7 +65,7 @@
             <input data-edit-options-target="option_number" autocomplete="off" type="hidden"/>
           </div>
         </template>
-
+      </div>
     </div>
   <% end %>
 

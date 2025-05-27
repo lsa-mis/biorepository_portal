@@ -6,22 +6,22 @@ export default class extends Controller {
   
   connect() {
     console.log("Options controller connected");
-    let thisOptionsNumber = -1 + document.querySelectorAll(".option-list-item").length;
+    // let thisOptionsNumber = -1 + document.querySelectorAll(".option-list-item").length;
 
-    let option_label = this.option_labelTarget;
-    console.log("option_label", option_label);
+    // let option_label = this.option_labelTarget;
+    // console.log("option_label", option_label);
 
-    this.option_labelTarget.setAttribute("for", `option_attributes_${thisOptionsNumber}_option`);
-    this.option_labelTarget.textContent = `Option ${thisOptionsNumber}:`;
+    // this.option_labelTarget.setAttribute("for", `option_attributes_${thisOptionsNumber}_option`);
+    // this.option_labelTarget.textContent = `Option ${thisOptionsNumber}:`;
 
-    this.option_valueTarget.setAttribute("value", `loan_question[options_attributes][${thisOptionsNumber}][option]`);
-    this.option_valueTarget.setAttribute("id", `options_attributes_${thisOptionsNumber}_option`);
+    // this.option_valueTarget.setAttribute("value", `loan_question[options_attributes][${thisOptionsNumber}][option]`);
+    // this.option_valueTarget.setAttribute("id", `options_attributes_${thisOptionsNumber}_option`);
 
-    this.option_numberTarget.setAttribute("value", thisOptionsNumber);
-    this.option_numberTarget.setAttribute("name", `loan_question[options_attributes][${thisOptionsNumber}][number]`);
-    this.option_numberTarget.setAttribute("id", `loan_question_options_attributes_${thisOptionsNumber}_number`);
+    // this.option_numberTarget.setAttribute("value", thisOptionsNumber);
+    // this.option_numberTarget.setAttribute("name", `loan_question[options_attributes][${thisOptionsNumber}][number]`);
+    // this.option_numberTarget.setAttribute("id", `loan_question_options_attributes_${thisOptionsNumber}_number`);
 
-    this.showOnlyLastRemoveOptionButton();
+    // this.showOnlyLastRemoveOptionButton();
   }
 
 
@@ -39,6 +39,7 @@ export default class extends Controller {
   }
 
   append() {
+    console.log("append called");
     this.fieldsTarget.insertAdjacentHTML("beforeend", this.#templateContent);
     let thisOptionsNumber = -1 + document.querySelectorAll(".option-list-item").length;
 

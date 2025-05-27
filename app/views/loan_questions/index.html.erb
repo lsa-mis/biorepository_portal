@@ -1,10 +1,11 @@
 <div class="container-fluid">
   <h1 class="mb-3">Loan Questions</h1>
 
-  <%= turbo_frame_tag 'new_loan_question_form' do %>
-    <%= render 'form', loan_question: @new_loan_question %>
+  <% if is_super_admin? %>
+    <div class="mt-4 text-end">
+      <%= link_to "New Loan Question", new_loan_question_path, class: "btn btn-success" %>
+    </div>
   <% end %>
-
   
-    <%= render 'loan_questions_list' %>
+  <%= render 'loan_questions_list' %>
 </div>
