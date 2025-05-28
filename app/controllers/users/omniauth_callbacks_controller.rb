@@ -32,30 +32,45 @@ def auth
 end
 
 def set_user
-  if user_signed_in?
-    @user = current_user
-  elsif User.where(email: auth.info.email).any?
-    @user = User.find_by(email: auth.info.email)
-  else
-    @user = create_user
-  end
+  @user = find_or_create_user
+  return unless @user
 
-  if @user
-    uniqname = get_uniqname(@user.email)
-    user_membership = []
-    access_groups = Collection.pluck(:admin_group).compact
-    access_groups.each do |group|
-      if  LdapLookup.is_member_of_group?(uniqname, group)
-        user_membership.append(group)
-      end
-    end
-    if LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-super-admins')
-      session[:role] = "super_admin"
-    elsif user_membership.present?
-        session[:role] = 'admin'
-    else
-      session[:role] = "user"
-    end
+  uniqname = get_uniqname(@user.email)
+  user_membership = find_user_membership(uniqname)
+
+  session[:collection_ids] = determine_collection_ids(user_membership)
+  session[:role] = determine_user_role(uniqname, user_membership)
+end
+
+private
+
+def find_or_create_user
+  return current_user if user_signed_in?
+
+  User.find_by(email: auth.info.email) || create_user
+end
+
+def find_user_membership(uniqname)
+  access_groups = Collection.pluck(:admin_group).compact
+  access_groups.select { |group| LdapLookup.is_member_of_group?(uniqname, group) }
+end
+
+def determine_collection_ids(user_membership)
+  if user_membership.present?
+    Collection.where(admin_group: user_membership).pluck(:id)
+  else
+    []
+  end
+end
+
+def determine_user_role(uniqname, user_membership)
+  if LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-super-admins')
+    session[:collection_ids] = Collection.pluck(:id)
+    'super_admin'
+  elsif user_membership.present?
+    'admin'
+  else
+    'user'
   end
 end
 

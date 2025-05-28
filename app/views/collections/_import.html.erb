@@ -1,7 +1,15 @@
+<h2> Import Items into Collection </h2>
+<p>To import items into this collection, please upload two CSV files in the following order:</p>
+<ul>
+  <li><strong>First file:</strong> Occurrence data</li>
+  <li><strong>Second file:</strong> Identification data</li>
+</ul>
 <%= form_tag import_collections_path, method: :post, multipart: true, onsubmit: "return showImportStart()" do %>
   <%= file_field_tag 'files[]', accept: ".csv", multiple: true %>
   <%= hidden_field_tag :collection_id, @collection.id %>
-  <%= submit_tag '⚙️ Import' %>
+  <%= button_tag type: 'submit', class: 'btn btn-primary' do %>
+  Import <i class="bi bi-box-arrow-in-down"></i>
+  <% end %>
 <% end %>
 
 <script>
