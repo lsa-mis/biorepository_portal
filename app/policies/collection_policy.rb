@@ -10,6 +10,10 @@ class CollectionPolicy < ApplicationPolicy
     true
   end
 
+  def search?
+    true
+  end
+
   def create?
     is_super_admin?
   end

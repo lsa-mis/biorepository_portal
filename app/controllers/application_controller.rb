@@ -11,8 +11,9 @@ class ApplicationController < ActionController::Base
   end
 
   def search
-    index
-    render :index
+    @q = Item.ransack(params[:q])
+    @items = @q.result.page(params[:page]).per(15)
+    render :show
   end
   
   private

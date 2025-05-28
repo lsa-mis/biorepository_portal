@@ -1,15 +1,14 @@
 Rails.application.routes.draw do
   resources :identifications
   resources :preparations
-  resources :items, only: [ :index, :show ] do
-    collection do
-      match 'search' => 'people#search', via: [:get, :post], as: :search
-    end
-  end
+  resources :items, only: [ :index, :show ]
   
   resources :collections do
     collection do
       post :import
+    end
+    member do
+      match 'search' => 'collections#search', via: [:get, :post]
     end
   end
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", sessions: "users/sessions"} do
