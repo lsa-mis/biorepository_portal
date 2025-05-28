@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_28_203412) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -77,11 +77,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
     t.string "genus"
     t.string "specific_epithet"
     t.string "infraspecific_epithet"
-    t.integer "taxon_rank"
+    t.string "taxon_rank"
     t.string "vernacular_name"
     t.bigint "item_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "current", default: false, null: false
     t.index ["item_id"], name: "index_identifications_on_item_id"
   end
 
@@ -122,7 +123,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
     t.date "georeferenced_date"
     t.string "geodetic_datum"
     t.string "georeference_protocol"
-    t.boolean "archived"
     t.bigint "collection_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

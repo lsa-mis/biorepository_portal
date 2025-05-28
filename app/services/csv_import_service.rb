@@ -1,20 +1,20 @@
 require 'csv'
 require 'set'
 
-class CsvImportService
+class ItemImportService
   attr_reader :file, :collection_id
 
   def initialize(file, collection_id)
     @file = file
     @collection_id = collection_id
-    @items_in_db = Set.new(Item.pluck(:occurrence_id))
+    @items_in_db = Set.new(Item.where(collection_id: @collection_id).pluck(:occurrence_id))
     @field_names = {}
   end
 
   # This method is the main entry point for the CSV import process.
   # It reads the CSV file, processes each row, and updates or creates items in the database.
   def call
-    Rails.logger.info("********************: #{@file.original_filename}")
+    Rails.logger.info("***** Processing Items File: #{@file.original_filename}")
     return
     
     CSV.foreach(@file.path, headers: true) do |row|
@@ -44,7 +44,7 @@ class CsvImportService
     preparations_string = assign_fields(item, record)
 
     if item.save
-      create_preparations(item, preparations_string)
+      update_preparations(item, preparations_string)
     else
       Rails.logger.error("Failed to save item: #{item.errors.full_messages.join(', ')}")
     end
@@ -76,12 +76,24 @@ class CsvImportService
     @field_names.each_with_index do |(field, table), index|
       next if field.include?("ignore")
 
-      value = record[index]
+      value = record[index]&.strip
       next unless value.present?
 
       case table
       when "items"
-        field == "event_date" ? handle_event_date(item, value) : item.assign_attributes(field => value)
+        case field
+        when "event_date"
+          handle_event_date(item, value)
+        when "modified", "georeferenced_date"
+          item.assign_attributes(field => parse_date(value))
+        when "individual_count"
+          item.assign_attributes(field => value.to_i)
+        when "minimum_elevation_in_meters", "maximum_elevation_in_meters",
+            "decimal_latitude", "decimal_longitude", "coordinate_uncertainty_in_meters"
+          item.assign_attributes(field => value.to_f)
+        else
+          item.assign_attributes(field => value)
+        end
       when "preparations"
         preparations_string = value
       else
@@ -90,6 +102,10 @@ class CsvImportService
     end
 
     preparations_string
+  end
+
+  def parse_date(value)
+    Date.parse(value) rescue nil
   end
 
   def build_field_names
@@ -115,63 +131,49 @@ class CsvImportService
   end
 
 
-  def create_preparations(item, preparations_string)
-    return true if preparations_string.blank?
+  def update_preparations(item, preparations_string)
+    if preparations_string.blank?
+      item.destroy
+      return true
+    end
 
-    preparations_string.split(';').each do |prep|
-      preparation = build_preparation(item, prep)
+    # Remove all existing preparations for the item
+    item.preparations.destroy_all
+
+    prep_entries = preparations_string.split(';').map(&:strip)
+
+    prep_entries.each do |entry|
+      values = entry.split(':')
+      prep_type, count = extract_prep_type_and_count(values)
+
+      next if prep_type.blank?
+
+      preparation = Preparation.new(item: item, prep_type: prep_type, count: count)
+
+      update_prep_fields(preparation, values)
       unless preparation.save
-        Rails.logger.error("Failed to save preparation: #{preparation.errors.full_messages.join(', ')}")
+        Rails.logger.error("Failed to save preparation (#{prep_type}): #{preparation.errors.full_messages.join(', ')}")
         return false
       end
     end
-    true
-  rescue => e
-    Rails.logger.error("Error creating preparation: #{e.message}")
-    false
-  end
 
-  def update_preparations(item, preparations_string)
-    return true if preparations_string.blank?
-
-    preparations_string.split(';').each do |prep|
-      values = prep.split(":")
-      prep_type = values[0].split('-')[0]&.strip
-
-      preparation = Preparation.find_by(item: item, prep_type: prep_type)
-
-      if preparation
-        update_prep_fields(preparation, values)
-        unless preparation.save
-          Rails.logger.error("Failed to update preparation: #{preparation.errors.full_messages.join(', ')}")
-          return false
-        end
-      else
-        return false unless create_preparations(item, prep)
-      end
-    end
     true
   rescue => e
     Rails.logger.error("Error updating preparations: #{e.message}")
     false
   end
 
-  def build_preparation(item, prep_string)
-    values = prep_string.split(":")
-    values_first = values[0].split('-')
 
-    Preparation.new(
-      item: item,
-      prep_type: values_first[0]&.strip,
-      count: values_first[1].to_i,
-      barcode: values[1]&.strip,
-      description: values[2]&.strip
-    )
+  def extract_prep_type_and_count(values)
+    parts = values[0].to_s.split('-').map(&:strip)
+    prep_type = parts[0]
+
+    # FIXME: Default Count to 0?
+    count = parts[1].to_i if parts[1]
+    [prep_type, count || 0]
   end
 
   def update_prep_fields(preparation, values)
-    values_first = values[0].split('-')
-    preparation.count = values_first[1].to_i
     preparation.barcode = values[1]&.strip
     preparation.description = values[2]&.strip
   end
@@ -181,5 +183,104 @@ class CsvImportService
       item = Item.find_by(occurrence_id: occurrence_id)
       item&.destroy
     end
+  end
+end
+
+
+class IdentificationImportService
+  attr_reader :file
+
+  def initialize(file)
+    @file = file
+    @field_names = {}
+  end
+
+  # Assumes:
+  # - First column is occurrence_id (linked to Item)
+  def call
+    Rails.logger.info("***** Processing Identifications File: #{@file.original_filename}")
+
+    # Group rows by occurrence_id
+    grouped_rows = Hash.new { |h, k| h[k] = [] }
+
+    CSV.foreach(@file.path, headers: true) do |row|
+      occurrence_id = row.fields[0]&.delete('"')&.strip
+      next if occurrence_id.blank?
+
+      grouped_rows[occurrence_id] << row
+    end
+
+    grouped_rows.each do |occurrence_id, rows|
+      item = Item.find_by(occurrence_id: occurrence_id)
+      next unless item
+
+      # Remove existing identifications for this item
+      item.identifications.destroy_all
+
+      rows.each do |row|
+        save_identification(item, row)
+      end
+    end
+
+    Rails.logger.info("Identification import completed.")
+  rescue => e
+    Rails.logger.error("Error importing identifications: #{e.message}")
+  end
+
+  private
+
+  def save_identification(item, row)
+    identification = Identification.new(item_id: item.id)
+    assign_fields(identification, row)
+
+    if identification.save
+      Rails.logger.info("Saved identification for item #{item.occurrence_id}")
+    else
+      Rails.logger.error("Failed to save identification: #{identification.errors.full_messages.join(', ')}")
+    end
+  rescue => e
+    Rails.logger.error("Error saving identification: #{e.message}")
+  end
+
+  def assign_fields(identification, row)
+    @field_names = build_field_names if @field_names.empty?
+
+    @field_names.each_with_index do |(field, _table), index|
+      next if field.include?("ignore")
+
+      value = row.fields[index]&.strip
+      next if value.blank?
+
+      case field
+      when "current"
+        identification.current = handle_current(value)
+      when "taxon_rank"
+        identification.taxon_rank = value.to_i
+      else
+        identification.assign_attributes(field => value)
+      end
+    end
+  end
+
+  def parse_date(value)
+    Date.parse(value) rescue nil
+  end
+
+  def build_field_names
+    header = CSV.open(@file.path, &:readline)
+    header.each_with_object({}) do |h, hash|
+      map_field = MapField.find_by(specify_field: h.strip)
+      hash[map_field.rails_field] = map_field.table if map_field
+    end
+  end
+
+  def handle_current(value)
+    case value.downcase
+    when "true", "1", "yes" then true
+    when "false", "0", "no" then false
+    else nil
+    end
+  rescue
+    nil
   end
 end
