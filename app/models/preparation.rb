@@ -21,4 +21,6 @@
 #
 class Preparation < ApplicationRecord
   belongs_to :item
+  has_many :requestables
+  has_many :checkouts, through: :requestables
 end

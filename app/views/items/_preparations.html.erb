@@ -28,15 +28,14 @@
         <% end %>
         <div class="mt-3">
           <h6 class="fw-semibold mb-1">Select Quantity</h6>
-          <div class="d-flex gap-3">
-            <select class="form-select w-auto">
-              <% (1..prep.count).each do |n| %>
-                <option><%= n %></option>
-              <% end %>
-            </select>
-            <button class="btn btn-primary">Add to Cart</button>
-          </div>
         </div>
+        <%= form_with(url: checkout_add_path) do |form| %>
+          <%= form.hidden_field :id, value: prep.id %>
+          <%= form.select :count, options_for_select(1..prep.count), class: "form-select w-auto" %>
+          <div class="mt-3">
+            <%= form.submit "Add to Checkout", class: "btn btn-primary" %>
+          </div>
+        <% end %>
       </div>
     </div>
   <% end %>

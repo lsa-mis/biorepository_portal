@@ -1,0 +1,20 @@
+<% @checkout.requestables.each do |requestable| %>
+  <% item = requestable.preparation.item %>
+  <% preparation = requestable.preparation %>
+  <div id="<%= "checkout-#{item.id}" %>">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div><%= item.display_name %></div>
+    <div>
+      <%= preparation.prep_type %>
+    </div>
+    <%= form_with(url: checkout_add_path) do |form| %>
+      <%= form.hidden_field :id, value: preparation.id %>
+      <%= form.select :count, options_for_select(0..preparation.count, requestable.count) %>
+      <%= form.submit "Add To Checkout" %>
+    <% end %>
+    <%= form_with(url: checkout_remove_path) do |form| %>
+      <%= form.hidden_field :id, value: requestable.id %>
+      <%= form.submit "X" %>
+    <% end %>
+  </div>
+<% end %>

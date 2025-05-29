@@ -17,6 +17,7 @@
       <div id="flash">
         <%= render "layouts/flash" %>
       </div>
+      <%= render partial: "checkout/checkout" if @render_checkout %>
       <div>
         <%= yield %>
       </div>

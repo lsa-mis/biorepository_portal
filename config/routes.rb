@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get "checkout", to: "checkout#show"
+  post "checkout/add"
+  post "checkout/remove"
   resources :identifications
   resources :preparations
   resources :items, only: [ :index, :show ]
