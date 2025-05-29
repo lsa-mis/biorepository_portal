@@ -20,7 +20,8 @@ class CheckoutController < ApplicationController
         render turbo_stream: [turbo_stream.replace('checkout',
                                                    partial: 'checkout/checkout',
                                                    locals: { checkout: @checkout }),
-                              turbo_stream.replace(@preparation)]
+                              turbo_stream.replace(@preparation),
+                              turbo_stream.update('total', partial: 'checkout/total')]
       end
     end
   end
@@ -29,9 +30,10 @@ class CheckoutController < ApplicationController
     Requestable.find(params[:id])&.destroy
     respond_to do |format|
       format.turbo_stream do
-        render turbo_stream: turbo_stream.replace('checkout',
+        render turbo_stream: [turbo_stream.replace('checkout',
                                                   partial: 'checkout/checkout',
-                                                  locals: { checkout: @checkout })
+                                                  locals: { checkout: @checkout }),
+                              turbo_stream.update('total', partial: 'checkout/total')]
       end
     end
   end

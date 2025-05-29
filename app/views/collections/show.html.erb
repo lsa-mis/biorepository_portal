@@ -23,7 +23,7 @@
                     <legend style="display: none;">Tabs to display item information</legend>
 
                     <div>
-                      <%= link_to item_path(item), class: "btn btn-primary my-2" do %>
+                      <%= link_to item_path(item), class: "btn btn-primary my-2", data: { turbo_frame: "_top" }  do %>
                         Item Details Page 
                       <% end %>
                       <table class="table text-center">
