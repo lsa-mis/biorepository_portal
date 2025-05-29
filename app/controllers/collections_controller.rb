@@ -1,10 +1,10 @@
 class CollectionsController < ApplicationController
+  skip_before_action :authenticate_user!, only: [ :index, :show ]
   before_action :set_collection, only: %i[ show edit update destroy ]
 
   # GET /collections or /collections.json
   def index
     @collections = Collection.all
-    authorize @collections
   end
 
   # GET /collections/1 or /collections/1.json
