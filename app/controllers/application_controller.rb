@@ -31,6 +31,8 @@ class ApplicationController < ActionController::Base
       @checkout = Checkout.create
       session[:checkout_id] = @checkout.id
     end
+  end
+  
   def make_q
     @q = Item.ransack(params[:q])
   end
