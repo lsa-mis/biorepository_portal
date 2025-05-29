@@ -10,10 +10,6 @@ class ApplicationController < ActionController::Base
   def pundit_user
     { user: current_user, role: session[:role], collection_ids: session[:collection_ids] }
   end
-
-  def search
-    @q = Item.ransack(params[:q])
-  end
   
   private
 

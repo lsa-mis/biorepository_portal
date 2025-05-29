@@ -8,7 +8,7 @@
 <br>
 <div>
   <h2>Items in this Collection</h2>
-  <%= search_form_for @q, url: search_collection_path(@collection), method: :post do |f| %>
+  <%= search_form_for @q1, url: search_collection_path(@collection), turbo_frame: "collection_items", method: :post, as: :q1 do |f| %>
     <div class="mb-2">
       <%= f.label :country_or_state_province_or_identifications_cont, "Search Items in Collection" %>
       <%= f.search_field :country_or_state_province_or_identifications_scientific_name_cont, placeholder: 'Country, State, Province, or Scientific Name', class: "form-control form-control-sm" %>
