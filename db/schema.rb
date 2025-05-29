@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_28_230351) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -52,6 +52,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "checkouts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "collections", force: :cascade do |t|
     t.string "division"
     t.string "admin_group"
@@ -77,11 +82,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
     t.string "genus"
     t.string "specific_epithet"
     t.string "infraspecific_epithet"
-    t.integer "taxon_rank"
+    t.string "taxon_rank"
     t.string "vernacular_name"
     t.bigint "item_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "current", default: false, null: false
     t.index ["item_id"], name: "index_identifications_on_item_id"
   end
 
@@ -122,11 +128,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
     t.date "georeferenced_date"
     t.string "geodetic_datum"
     t.string "georeference_protocol"
-    t.boolean "archived"
     t.bigint "collection_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["collection_id"], name: "index_items_on_collection_id"
+  end
+
+  create_table "loan_questions", force: :cascade do |t|
+    t.string "question"
+    t.integer "question_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "map_fields", force: :cascade do |t|
@@ -138,6 +150,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "options", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "value"
+    t.bigint "loan_question_id", null: false
+    t.index ["loan_question_id"], name: "index_options_on_loan_question_id"
+  end
+
   create_table "preparations", force: :cascade do |t|
     t.string "prep_type"
     t.integer "count"
@@ -147,6 +167,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_preparations_on_item_id"
+  end
+
+  create_table "requestables", force: :cascade do |t|
+    t.bigint "preparation_id", null: false
+    t.bigint "checkout_id", null: false
+    t.integer "count"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["checkout_id"], name: "index_requestables_on_checkout_id"
+    t.index ["preparation_id"], name: "index_requestables_on_preparation_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -176,5 +206,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_202448) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "identifications", "items"
   add_foreign_key "items", "collections"
+  add_foreign_key "options", "loan_questions"
   add_foreign_key "preparations", "items"
+  add_foreign_key "requestables", "checkouts"
+  add_foreign_key "requestables", "preparations"
 end
