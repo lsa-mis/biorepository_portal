@@ -61,4 +61,18 @@ class Item < ApplicationRecord
     # Placeholder for displaying the item name
     "#{self.catalog_number} - #{self.sex} - #{self.country}"
   end
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["archived", "associated_sequences", "catalog_number", "collection_id", "continent", "coordinate_uncertainty_in_meters",
+    "country", "county", "created_at", "decimal_latitude", "decimal_longitude", "event_date_end", "event_date_start", "event_remarks",
+    "field_number", "geodetic_datum", "georeference_protocol", "georeferenced_by", "georeferenced_date", "id", "individual_count",
+    "life_stage", "locality", "maximum_elevation_in_meters", "minimum_elevation_in_meters", "modified", "occurrence_id",
+    "occurrence_remarks", "organism_remarks", "other_catalog_numbers", "recorded_by", "reproductive_condition", "sampling_protocol",
+    "sex", "state_province", "updated_at", "verbatim_coordinates", "verbatim_elevation", "verbatim_event_date", "verbatim_locality", "vitality"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    [ "collection", "identifications", "preparations" ]
+  end
+
 end

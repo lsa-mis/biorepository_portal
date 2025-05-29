@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
   before_action :authenticate_user!
+  before_action :make_q
 
   def pundit_user
     { user: current_user, role: session[:role], collection_ids: session[:collection_ids] }
@@ -15,6 +16,10 @@ class ApplicationController < ActionController::Base
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
     redirect_to(root_path)
+  end
+
+  def make_q
+    @q = Item.ransack(params[:q])
   end
 
 end
