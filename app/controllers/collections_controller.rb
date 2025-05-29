@@ -9,9 +9,13 @@ class CollectionsController < ApplicationController
 
   # GET /collections/1 or /collections/1.json
   def show
-    # @items = @collection.items.page(params[:page]).per(15)
+    @items = @collection.items.page(params[:page]).per(15)
+  end
+
+  def search
     @q = @collection.items.ransack(params[:q])
     @items = @q.result.page(params[:page]).per(15)
+    render :show
   end
 
   # GET /collections/new

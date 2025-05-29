@@ -1,29 +1,5 @@
-
-<%= render @collection %>
-
-<div>
-  <%= render 'import' if policy(@collection).import? %>
-</div>
-
-<br>
-<div>
-  <h2>Items in this Collection</h2>
-  <%= search_form_for @q, url: search_collection_path(@collection), method: :post do |f| %>
-    <div class="mb-2">
-      <%= f.label :country_or_state_province_or_identifications_cont, "Search Items in Collection" %>
-      <%= f.search_field :country_or_state_province_or_identifications_scientific_name_cont, placeholder: 'Country, State, Province, or Scientific Name', class: "form-control form-control-sm" %>
-    </div>
-    <div>
-      <%# = f.label :catalog_number_eq, "Catalog Number" %>
-      <%#= f.search_field :catalog_number_eq %>
-    </div>
-    <div>
-      <%= f.submit "Search" %>
-    </div>
-  <% end %>
-
-  <%= turbo_frame_tag "collection_items" do %>
-    <% if @items.empty? %>
+<h1>Search Results for Items</h1>
+<% if @items.empty? %>
       No items available in this collection.
     <% else %>
       <div class="accordion" id="accordionPanelsStayOpenExample">
@@ -101,5 +77,3 @@
       </div>
       <%= paginate @items %>
     <% end %>
-  <% end %>
-</div>

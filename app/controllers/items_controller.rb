@@ -13,6 +13,12 @@ class ItemsController < ApplicationController
     @collections = Collection.all
   end
 
+  def search
+    @q = Item.ransack(params[:q])
+    @items = @q.result.page(params[:page]).per(15)
+    render :search_result
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_item
