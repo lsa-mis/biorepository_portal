@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :set_render_checkout
   before_action :initialize_checkout
+  before_action :make_q
 
   def pundit_user
     { user: current_user, role: session[:role], collection_ids: session[:collection_ids] }
@@ -30,6 +31,8 @@ class ApplicationController < ActionController::Base
       @checkout = Checkout.create
       session[:checkout_id] = @checkout.id
     end
+  def make_q
+    @q = Item.ransack(params[:q])
   end
 
 end
