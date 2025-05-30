@@ -24,20 +24,26 @@ class LoanQuestionsController < ApplicationController
 
   # POST /loan_questions or /loan_questions.json
   def create
-    fail
     @loan_question = LoanQuestion.new(loan_question_params)
     if loan_question_params[:question_type] == "dropdown" || loan_question_params[:question_type] == "checkbox"
-      options = params[:options].values
+      options = params[:option_attributes].values
     end
     authorize @loan_question
 
-    if @loan_question.save
-      options.map { |option| Option.create(value: option[:value], loan_question_id: @loan_question.id) if value.present? }
-      flash.now[:notice] = "Loan question was successfully created."
-      @new_loan_question = LoanQuestion.new
-      @loan_questions = LoanQuestion.all
-    else
-      render :index, status: :unprocessable_entity
+    respond_to do |format|
+      if @loan_question.save
+        if loan_question_params[:question_type] == "dropdown" || loan_question_params[:question_type] == "checkbox" 
+            options = params[:option_attributes].values        
+            options.each do |option|
+              Option.create(value: option[:value], loan_question_id: @loan_question.id)
+            end
+        end
+        format.html { redirect_to @loan_question, notice: "Loan question was successfully created." }
+        format.json { render :show, status: :ok, location: @loan_question }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @loan_question.errors, status: :unprocessable_entity }
+      end
     end
   end
 
