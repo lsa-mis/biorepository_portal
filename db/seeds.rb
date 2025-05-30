@@ -51,6 +51,7 @@ fields = MapField.create!([
 {table: "items", specify_field: "geodeticDatum", rails_field: "geodetic_datum", caption: ""},
 {table: "items", specify_field: "georeferenceProtocol", rails_field: "georeference_protocol", caption: ""},
 {table: "identifications", specify_field: "catalogNumber", rails_field: "catalog_number_ignore", caption: ""},
+{table: "identifications", specify_field: "isCurrent", rails_field: "current", caption: ""},
 {table: "identifications", specify_field: "typeStatus", rails_field: "type_status", caption: ""},
 {table: "identifications", specify_field: "identifiedBy", rails_field: "identified_by", caption: ""},
 {table: "identifications", specify_field: "dateIdentified", rails_field: "date_identified", caption: ""},
@@ -75,8 +76,8 @@ fields = MapField.create!([
 {table: "collections", specify_field: "mpabi", rails_field: "MPABI", caption: ""},
 ])
 
-collections = Collection.create!([
-  { division: "MPABI" },
-  { division: "Mammals Tissue" },
-  { division: "Herpetology Tissue" }
-])
+# collections = Collection.create!([
+#   { division: "MPABI" },
+#   { division: "Mammals Tissue" },
+#   { division: "Herpetology Tissue" }
+# ])
