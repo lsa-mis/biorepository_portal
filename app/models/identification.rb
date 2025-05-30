@@ -34,4 +34,17 @@
 #
 class Identification < ApplicationRecord
   belongs_to :item
+
+  def self.ransackable_attributes(auth_object = nil)
+    [
+      "class_name", "date_identified", "family", "genus", "identification_remarks",
+      "identified_by", "infraspecific_epithet", "kingdom", "order_name",
+      "phylum", "scientific_name", "scientific_name_authorship",
+      "specific_epithet", "taxon_rank", "type_status", "vernacular_name"
+    ]
+  end
+  
+  def self.ransackable_associations(auth_object = nil)
+    [ :item ]
+  end
 end

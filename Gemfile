@@ -32,6 +32,9 @@ gem "redis", ">= 4.0.1"
 # Use Kaminari for pagination
 gem "kaminari"
 
+# Use Ransack for advanced search functionality
+gem "ransack"
+
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
 

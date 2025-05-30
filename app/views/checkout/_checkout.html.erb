@@ -1,0 +1,8 @@
+<%= turbo_frame_tag "checkout" do %>
+  <h1>Checkout</h1>
+  <% if @checkout.requestables.count > 0 %>
+    <%= render "checkout/requestables" %>
+  <% else %>
+    <p>Your checkout is empty</p>
+  <% end %>
+<% end %>

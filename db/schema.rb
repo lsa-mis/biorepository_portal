@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_28_203412) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_28_230351) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_28_203412) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "checkouts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "collections", force: :cascade do |t|
@@ -164,6 +169,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_28_203412) do
     t.index ["item_id"], name: "index_preparations_on_item_id"
   end
 
+  create_table "requestables", force: :cascade do |t|
+    t.bigint "preparation_id", null: false
+    t.bigint "checkout_id", null: false
+    t.integer "count"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["checkout_id"], name: "index_requestables_on_checkout_id"
+    t.index ["preparation_id"], name: "index_requestables_on_preparation_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -193,4 +208,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_28_203412) do
   add_foreign_key "items", "collections"
   add_foreign_key "options", "loan_questions"
   add_foreign_key "preparations", "items"
+  add_foreign_key "requestables", "checkouts"
+  add_foreign_key "requestables", "preparations"
 end

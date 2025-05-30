@@ -1,13 +1,22 @@
 Rails.application.routes.draw do
-  # get "options/new"
   resources :loan_questions
-  # resources :options, only: [ :new ]
+  get "checkout", to: "checkout#show"
+  post "checkout/add"
+  post "checkout/remove"
   resources :identifications
   resources :preparations
-  resources :items, only: [ :index, :show ]
+  resources :items, only: [ :index, :show ] do
+    collection do
+      match 'search' => 'items#search', via: [:get, :post]
+    end
+  end
+  
   resources :collections do
     collection do
       post :import
+    end
+    member do
+      match 'search' => 'collections#search', via: [:get, :post]
     end
   end
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", sessions: "users/sessions"} do

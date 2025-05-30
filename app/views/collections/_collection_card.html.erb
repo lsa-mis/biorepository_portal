@@ -6,7 +6,7 @@
   </div>
 
   <div class="card-header">
-    <%= link_to collection.division, collection_path(collection), class: "link_to" %>
+    <%= link_to collection.division, collection_path(collection), class: "link_to", data: { turbo_frame: "_top" }  %>
   </div>
   <div class="card-body">
     <p class="card-text">
