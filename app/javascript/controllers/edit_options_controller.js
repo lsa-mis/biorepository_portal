@@ -10,43 +10,54 @@ export default class extends Controller {
 
   append() {
     console.log("append called");
-    let thisOptionsNumber = document.querySelectorAll(".option-list-item").length;
+
+    const thisOptionsNumber = document.querySelectorAll(".option-list-item").length;
+    const newOptionNumber = thisOptionsNumber + 1;
     console.log("thisOptionsNumber", thisOptionsNumber);
-    let newOptionNumber = thisOptionsNumber + 1;
 
-    console.log("thisOptionsNumber", thisOptionsNumber);
-    let addButton = this.add_option_buttonTarget;
-    const newElement = document.createElement('div');
-    newElement.innerHTML = this.#templateContent
-    addButton.parentNode.insertBefore(newElement, addButton);
+    // Clone template and extract the DOM node
+    const templateContent = this.templateTarget.content.cloneNode(true);
+    const newOptionElement = templateContent.querySelector(".option-list-item");
 
-    let option_label = this.option_labelTarget;
-    console.log("option_label", option_label);
+    // Update label
+    const optionLabel = newOptionElement.querySelector('[data-edit-options-target="option_label"]');
+    optionLabel.textContent = `Option ${newOptionNumber}`;
+    optionLabel.setAttribute("for", `option_attributes_${newOptionNumber}_option`);
 
-    this.option_labelTarget.setAttribute("for", `option_attributes_${newOptionNumber}_option`);
-    this.option_labelTarget.textContent = `Option ${newOptionNumber}:`;
+    // Update input field
+    const optionInput = newOptionElement.querySelector('[data-edit-options-target="option_value"]');
+    optionInput.setAttribute("id", `option_attributes_${newOptionNumber}_option`);
+    optionInput.setAttribute("name", `option_attributes[${newOptionNumber}][value]`);
 
-    this.option_valueTarget.setAttribute("id", `options_attributes_${newOptionNumber}_option`);
+    // Update remove button
+    const removeButton = newOptionElement.querySelector('[data-edit-options-target="remove_button"]');
+    removeButton.setAttribute("id", `remove-option-${newOptionNumber}`);
 
-    this.remove_buttonTarget.setAttribute("id", `remove-option-${newOptionNumber}`);
+    // Update option number input (if needed)
+    const optionNumber = newOptionElement.querySelector('[data-edit-options-target="option_number"]');
+    if (optionNumber) {
+      optionNumber.setAttribute("value", newOptionNumber);
+      optionNumber.setAttribute("id", `option_number_${newOptionNumber}`);
+      optionNumber.setAttribute("name", `option_attributes[${newOptionNumber}][number]`);
+    }
 
-    // this.option_numberTarget.setAttribute("value", newOptionNumber);
-    // console.log("option_numberTarget", this.option_numberTarget);
-    // this.option_numberTarget.setAttribute("name", `option_number_[${newOptionNumber}]`);
-    // this.option_numberTarget.setAttribute("id", `option_number_${newOptionNumber}`);
+    // Append new option block
+    this.fieldsTarget.appendChild(newOptionElement);
 
     this.showOnlyLastRemoveOptionButton();
   }
 
-  get #templateContent() {
-    return this.templateTarget.innerHTML;
-  }
+  removeOption(event) {
+    event.preventDefault();
+    if (document.querySelectorAll(".option-list-item").length <= 2) return;
+    
+    const button = event.currentTarget;
+    const optionItem = button.closest(".option-list-item");
 
-  removeOption() {
-    console.log("removeOption called");
-    console.log("this.element", this.element);
-    this.element.remove();
-    this.showOnlyLastRemoveOptionButton();
+    if (optionItem) {
+      optionItem.remove();
+      this.showOnlyLastRemoveOptionButton();
+    }
   }
 
   showOnlyLastRemoveOptionButton() {

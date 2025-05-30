@@ -22,71 +22,66 @@
   </div>
   <div class="invisible" data-controller="edit-options" data-show-options-target="display_options">
     <%= turbo_frame_tag("options_list") do %>
-      <div id="options" data-edit-options-target="fields"></div>
+
+      <div id="options" data-edit-options-target="fields">
+        <!-- Option 1 -->
         <div class="option-list-item d-flex justify-content-between align-items-center">
           <div class="flex-grow-1 mx-3">
-            <label for "option_attributes_1_option">Option 1</label>
+            <label for="option_attributes_1_option">Option 1</label>
             <%= form.text_field :value, required: true, class: "input_text_field", id: "option_attributes_1_option" %>
           </div>
           <div class="">
-            <button
-                type="button"
-                title="Remove option"
-                class="remove-option-button mt-4 invisible"
-                id="remove-option-1"
-                data-action="click->edit-options#removeOption">
+            <button type="button" title="Remove option" class="remove-option-button mt-4 invisible"
+              id="remove-option-1"
+              data-action="click->edit-options#removeOption">
               <i class="bi bi-trash-fill text-danger"></i>
             </button>
           </div>
-          <input data-edit-options-target="option_number" autocomplete="off" id="option_number_1" value="1"/>
         </div>
 
         <div class="option-list-item d-flex justify-content-between align-items-center">
           <div class="flex-grow-1 mx-3">
-            <label for "option_attributes_2_option">Option 2</label>
+            <label for="option_attributes_2_option">Option 2</label>
             <%= form.text_field :value, required: true, class: "input_text_field", id: "option_attributes_2_option" %>
           </div>
           <div class="">
-            <button
-                type="button"
-                title="Remove option"
-                class="remove-option-button mt-4 invisible"
-                id="remove-option-2"
-                data-action="click->edit-options#removeOption">
+            <button type="button" title="Remove option" class="remove-option-button mt-4 invisible"
+              id="remove-option-2"
+              data-action="click->edit-options#removeOption">
               <i class="bi bi-trash-fill text-danger"></i>
             </button>
           </div>
-          <input data-edit-options-target="option_number" autocomplete="off" id="option_number_2" value="2"/>
         </div>
-
-        <div>
-          <%= button_tag "Add Option", type: :button, class: "btn btn-sm", data: {action: "edit-options#append", "edit-options-target": "add_option_button"} %>
-        </div>
-
-        <template data-edit-options-target="template">
-          <div class="option-list-item d-flex justify-content-between align-items-center">
-              <div class="flex-grow-1 mx-3">
-                <label data-edit-options-target="option_label"></label>
-                <%= form.text_field :value, required: true, class: "input_text_field", "data-edit-options-target": "option_value" %>
-              </div>
-            <div class="">
-              <button
-                  type="button"
-                  title="Remove option"
-                  class="remove-option-button mt-4"
-                  data-edit-options-target="remove_button"
-                  data-action="click->edit-options#removeOption">
-                <i class="bi bi-trash-fill text-danger"></i>
-              </button>
-            </div>
-            <input data-edit-options-target="option_number" autocomplete="off"/>
-          </div>
-        </template>
       </div>
+
+      <div>
+        <%= button_tag "Add Option", type: :button, class: "btn btn-sm",
+            data: { action: "edit-options#append", "edit-options-target": "add_option_button" } %>
+      </div>
+
+      <template data-edit-options-target="template">
+        <div class="option-list-item d-flex justify-content-between align-items-center">
+          <div class="flex-grow-1 mx-3">
+            <label data-edit-options-target="option_label"></label>
+            <input type="text" class="input_text_field" required data-edit-options-target="option_value" />
+          </div>
+          <div class="">
+            <button type="button" class="remove-option-button mt-4"
+              data-edit-options-target="remove_button"
+              data-action="click->edit-options#removeOption">
+              <i class="bi bi-trash-fill text-danger"></i>
+            </button>
+          </div>
+          <input type="hidden" data-edit-options-target="option_number" />
+        </div>
+      </template>
+
     <% end %>
   </div>
+
   <div>
     <%= form.submit %>
   </div>
+
  
 <% end %>

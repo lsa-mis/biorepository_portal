@@ -3,7 +3,6 @@
 # Table name: items
 #
 #  id                               :bigint           not null, primary key
-#  archived                         :boolean
 #  associated_sequences             :string
 #  catalog_number                   :string
 #  continent                        :string

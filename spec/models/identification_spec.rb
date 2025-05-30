@@ -4,6 +4,7 @@
 #
 #  id                         :bigint           not null, primary key
 #  class_name                 :string
+#  current                    :boolean          default(FALSE), not null
 #  date_identified            :string
 #  family                     :string
 #  genus                      :string
@@ -16,7 +17,7 @@
 #  scientific_name            :string
 #  scientific_name_authorship :string
 #  specific_epithet           :string
-#  taxon_rank                 :integer
+#  taxon_rank                 :string
 #  type_status                :string
 #  vernacular_name            :string
 #  created_at                 :datetime         not null
