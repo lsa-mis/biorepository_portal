@@ -18,6 +18,11 @@
       <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
         <%= link_to "Collections", collections_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2' %>
       </div>
+      <% if user_signed_in? %>
+        <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+          <%= link_to "Loan Questions", loan_questions_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2' if policy(LoanQuestion).index? %>
+        </div>
+      <% end %>
       <div class="d-flex align-items-center gap-2 nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
         <%= link_to "Checkout", checkout_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2' %>
         <%= turbo_frame_tag "total" do %>

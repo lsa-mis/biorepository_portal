@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :loan_questions
   get "checkout", to: "checkout#show"
   post "checkout/add"
   post "checkout/remove"
