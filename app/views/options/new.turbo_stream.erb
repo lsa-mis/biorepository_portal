@@ -1,5 +1,0 @@
-<%= turbo_stream.append "options" do %>
-  <%= fields_for 'options[]', Option.new, index: Time.current.to_i do |form| %>
-    <%= render "loan_questions/option_value", form: form %>
-  <% end %>
-<% end %>

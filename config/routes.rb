@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  get "options/new"
+  # get "options/new"
   resources :loan_questions
-  resources :options, only: [ :new ]
+  # resources :options, only: [ :new ]
   resources :identifications
   resources :preparations
   resources :items, only: [ :index, :show ]
