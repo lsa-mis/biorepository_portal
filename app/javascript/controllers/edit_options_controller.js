@@ -6,12 +6,14 @@ export default class extends Controller {
   
   connect() {
     console.log("Options controller connected");
+    this.showOnlyLastRemoveOptionButton();
   }
 
   append() {
     console.log("append called");
 
-    const thisOptionsNumber = document.querySelectorAll(".option-list-item").length;
+    const thisOptionsNumber = Array.from(document.querySelectorAll(".option-list-item"))
+                               .filter(item => item.style.display !== "none").length;
     const newOptionNumber = thisOptionsNumber + 1;
     console.log("thisOptionsNumber", thisOptionsNumber);
 
@@ -45,43 +47,65 @@ export default class extends Controller {
     this.fieldsTarget.appendChild(newOptionElement);
 
     this.showOnlyLastRemoveOptionButton();
+
+    this.renumberOptionLabels();
   }
 
   removeOption(event) {
     event.preventDefault();
 
-    const allOptions = document.querySelectorAll(".option-list-item");
+    const allOptionItems = Array.from(document.querySelectorAll(".option-list-item"));
+    const visibleOptions = allOptionItems.filter(item => item.style.display !== "none");
+
+    if (visibleOptions.length <= 2) return;
+
     const button = event.currentTarget;
     const optionItem = button.closest(".option-list-item");
 
-    if (allOptions.length <= 2) return;
+    // Only allow removing the last visible option
+    if (optionItem !== visibleOptions[visibleOptions.length - 1]) return;
+
+    const destroyField = optionItem.querySelector('input[name*="_destroy"]');
+    const idField = optionItem.querySelector('input[name*="[id]"]');
     
-    if (optionItem) {
+    if (destroyField && idField && idField.value) {
+      destroyField.value = "1";
+      destroyField.checked = true;
+      optionItem.style.display = "none";
+    } else {
       optionItem.remove();
-      this.showOnlyLastRemoveOptionButton();
     }
+
+    this.showOnlyLastRemoveOptionButton();
+
+    this.renumberOptionLabels();
   }
 
   showOnlyLastRemoveOptionButton() {
-    console.log("showOnlyLastRemoveOptionButton called");
-    let btns = document.querySelectorAll(".remove-option-button")
-    let btnsCount = btns.length -1;
-    console.log("btnsCount", btnsCount);
-    btns.forEach((btn, i) => {
-      // console.log("btn", btn);
-      // console.log("i", i);
-      if (i < 2) {
-        btn.classList.add("invisible");
-      } else if (i !== btnsCount) {
-        // console.log("not equal to btnsCount")
-        // console.log("i", i)
+    const allOptionItems = Array.from(document.querySelectorAll(".option-list-item"));
+    const visibleOptionItems = allOptionItems.filter(item => item.style.display !== "none");
+
+    const removeButtons = visibleOptionItems.map(item =>
+      item.querySelector(".remove-option-button")
+    );
+
+    removeButtons.forEach((btn, i) => {
+      if (i < 2 || i !== removeButtons.length - 1) {
         btn.classList.add("invisible");
       } else {
-        // console.log("equal to btnsCount")
-        // console.log("i", i)
-        // console.log("before", btn.classList)
         btn.classList.remove("invisible");
-        // console.log("after", btn.classList)
+      }
+    });
+  }
+
+  renumberOptionLabels() {
+    const visibleItems = Array.from(document.querySelectorAll(".option-list-item"))
+                              .filter(item => item.style.display !== "none");
+
+    visibleItems.forEach((item, index) => {
+      const label = item.querySelector('[data-edit-options-target="option_label"]');
+      if (label) {
+        label.textContent = `Option ${index + 1}`;
       }
     });
   }

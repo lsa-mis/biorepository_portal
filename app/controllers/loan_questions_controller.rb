@@ -11,6 +11,7 @@ class LoanQuestionsController < ApplicationController
 
   # GET /loan_questions/1 or /loan_questions/1.json
   def show
+    @options = @loan_question.options.order(:position)
   end
 
   # GET /loan_questions/new
@@ -20,6 +21,7 @@ class LoanQuestionsController < ApplicationController
 
   # GET /loan_questions/1/edit
   def edit
+    @options = @loan_question.options.order(:position)
   end
 
   # POST /loan_questions or /loan_questions.json
@@ -56,13 +58,13 @@ class LoanQuestionsController < ApplicationController
           Rails.logger.info("Updating options for question: #{@loan_question.id}")
           Rails.logger.info("Params: #{params[:option_attributes].inspect}")
 
-          # Remove old options and recreate
-          @loan_question.options.destroy_all
-          Rails.logger.info("Old options destroyed.")
-
-          params[:option_attributes].values.each do |option_param|
-            Rails.logger.info("Creating option with value: #{option_param[:value]}")
-            @loan_question.options.create(value: option_param[:value])
+          params[:option_attributes].values.each_with_index do |option_param, index|
+            if option_param[:id].present?
+              option = @loan_question.options.find_by(id: option_param[:id])
+              option&.update(value: option_param[:value], position: index)
+            else
+              @loan_question.options.create(value: option_param[:value], position: index)
+            end
           end
         end
         format.html { redirect_to @loan_question, notice: "Loan question was successfully updated." }
