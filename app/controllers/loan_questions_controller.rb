@@ -51,6 +51,20 @@ class LoanQuestionsController < ApplicationController
   def update
     respond_to do |format|
       if @loan_question.update(loan_question_params)
+        # If the question type supports options, update them
+        if @loan_question.question_type.in?(%w[dropdown checkbox]) && params[:option_attributes].present?
+          Rails.logger.info("Updating options for question: #{@loan_question.id}")
+          Rails.logger.info("Params: #{params[:option_attributes].inspect}")
+
+          # Remove old options and recreate
+          @loan_question.options.destroy_all
+          Rails.logger.info("Old options destroyed.")
+
+          params[:option_attributes].values.each do |option_param|
+            Rails.logger.info("Creating option with value: #{option_param[:value]}")
+            @loan_question.options.create(value: option_param[:value])
+          end
+        end
         format.html { redirect_to @loan_question, notice: "Loan question was successfully updated." }
         format.json { render :show, status: :ok, location: @loan_question }
       else
@@ -71,7 +85,7 @@ class LoanQuestionsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_loan_question
-      @loan_question = LoanQuestion.find(params.expect(:id))
+      @loan_question = LoanQuestion.find(params[:id])
     end
 
     def set_question_types
@@ -80,6 +94,10 @@ class LoanQuestionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def loan_question_params
-      params.expect(loan_question: [ :question, :question_type, options: [ :value ] ])
+      params.require(:loan_question).permit(
+        :question,
+        :question_type,
+        options_attributes: [:id, :value, :_destroy]
+      )
     end
 end

@@ -49,11 +49,13 @@ export default class extends Controller {
 
   removeOption(event) {
     event.preventDefault();
-    if (document.querySelectorAll(".option-list-item").length <= 2) return;
-    
+
+    const allOptions = document.querySelectorAll(".option-list-item");
     const button = event.currentTarget;
     const optionItem = button.closest(".option-list-item");
 
+    if (allOptions.length <= 2) return;
+    
     if (optionItem) {
       optionItem.remove();
       this.showOnlyLastRemoveOptionButton();
