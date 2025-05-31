@@ -11,7 +11,7 @@ class LoanQuestionsController < ApplicationController
 
   # GET /loan_questions/1 or /loan_questions/1.json
   def show
-    @options = @loan_question.options.order(:position)
+    @options = @loan_question.options
   end
 
   # GET /loan_questions/new
@@ -21,7 +21,7 @@ class LoanQuestionsController < ApplicationController
 
   # GET /loan_questions/1/edit
   def edit
-    @options = @loan_question.options.order(:position)
+    @options = @loan_question.options
   end
 
   # POST /loan_questions or /loan_questions.json
@@ -51,28 +51,20 @@ class LoanQuestionsController < ApplicationController
 
   # PATCH/PUT /loan_questions/1 or /loan_questions/1.json
   def update
-    respond_to do |format|
-      if @loan_question.update(loan_question_params)
+    authorize @loan_question
+    transaction = ActiveRecord::Base.transaction do
+      # raise ActiveRecord::Rollback unless 
+      @loan_question.update(question: loan_question_params[:question])
         # If the question type supports options, update them
-        if @loan_question.question_type.in?(%w[dropdown checkbox]) && params[:option_attributes].present?
-          Rails.logger.info("Updating options for question: #{@loan_question.id}")
-          Rails.logger.info("Params: #{params[:option_attributes].inspect}")
-
-          params[:option_attributes].values.each_with_index do |option_param, index|
-            if option_param[:id].present?
-              option = @loan_question.options.find_by(id: option_param[:id])
-              option&.update(value: option_param[:value], position: index)
-            else
-              @loan_question.options.create(value: option_param[:value], position: index)
-            end
-          end
-        end
-        format.html { redirect_to @loan_question, notice: "Loan question was successfully updated." }
-        format.json { render :show, status: :ok, location: @loan_question }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @loan_question.errors, status: :unprocessable_entity }
+      if @loan_question.question_type.in?(%w[dropdown checkbox]) && params[:option_attributes].present?
+        # raise ActiveRecord::Rollback unless 
+        update_options(@loan_question, params[:option_attributes].values)          
       end
+    end
+    if transaction
+      redirect_to @loan_question, notice: "Loan question was successfully updated."
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -85,6 +77,17 @@ class LoanQuestionsController < ApplicationController
   end
 
   private
+
+    def update_options(loan_question, option_attributes)
+      if loan_question.options.present?
+        Option.where(loan_question_id: loan_question.id).destroy_all
+        option_attributes.each do |option|
+          # raise ActiveRecord::Rollback unless 
+          Option.create(value: option[:value], loan_question_id: loan_question.id)
+        end
+      end
+      true
+    end
     # Use callbacks to share common setup or constraints between actions.
     def set_loan_question
       @loan_question = LoanQuestion.find(params[:id])
