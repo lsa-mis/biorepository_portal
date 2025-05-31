@@ -40,7 +40,6 @@ class ItemImportService
   def save_item(record)
     item = Item.new(collection_id: @collection_id)
     preparations_string = assign_fields(item, record)
-
     if item.save
       update_preparations(item, preparations_string)
     else
@@ -70,7 +69,6 @@ class ItemImportService
     preparations_string = nil
 
     @field_names = build_field_names if @field_names.empty?
-fail
     @field_names.each_with_index do |(field, table), index|
       next if field.include?("ignore")
 

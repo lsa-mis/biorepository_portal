@@ -50,6 +50,7 @@ fields = MapField.create!([
 {table: "items", specify_field: "georeferencedDate", rails_field: "georeferenced_date", caption: ""},
 {table: "items", specify_field: "geodeticDatum", rails_field: "geodetic_datum", caption: ""},
 {table: "items", specify_field: "georeferenceProtocol", rails_field: "georeference_protocol", caption: ""},
+{table: "identifications", specify_field: "occurrenceID", rails_field: "occurrence_id_ignore", caption: ""},
 {table: "identifications", specify_field: "catalogNumber", rails_field: "catalog_number_ignore", caption: ""},
 {table: "identifications", specify_field: "isCurrent", rails_field: "current", caption: ""},
 {table: "identifications", specify_field: "typeStatus", rails_field: "type_status", caption: ""},

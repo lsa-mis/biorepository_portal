@@ -67,9 +67,10 @@ class CollectionsController < ApplicationController
 
     # TODO: Enforce the first file to be the occurrence file and the second to be the identification file?
     files = params[:files]
-    occurrence_file, identification_file = files[0], files[1]
+    # occurrence_file, identification_file = files[0], files[1]
+    identification_file = files[0]
 
-    ItemImportService.new(occurrence_file, collection_id).call
+    # ItemImportService.new(occurrence_file, collection_id).call
     IdentificationImportService.new(identification_file).call
 
     redirect_to request.referer, notice: 'Import Finished!'

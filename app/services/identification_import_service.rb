@@ -13,7 +13,6 @@ class IdentificationImportService
   # - First column is occurrence_id (linked to Item)
   def call
     Rails.logger.info("***** Processing Identifications File: #{@file.original_filename}")
-fail
     # Group rows by occurrence_id
     grouped_rows = Hash.new { |h, k| h[k] = [] }
 
@@ -21,9 +20,9 @@ fail
       occurrence_id = row.fields[0]&.delete('"')&.strip
       next if occurrence_id.blank?
 
-      grouped_rows[occurrence_id] << row
+      grouped_rows[occurrence_id] << row.drop(1)
     end
-
+fail
     grouped_rows.each do |occurrence_id, rows|
       item = Item.find_by(occurrence_id: occurrence_id)
       next unless item
@@ -37,14 +36,15 @@ fail
     end
 
     Rails.logger.info("Identification import completed.")
-  rescue => e
-    Rails.logger.error("Error importing identifications: #{e.message}")
+  # rescue => e
+  #   Rails.logger.error("Error importing identifications: #{e.message}")
   end
 
   private
 
   def save_identification(item, row)
     identification = Identification.new(item_id: item.id)
+
     assign_fields(identification, row)
 
     if identification.save
@@ -52,24 +52,26 @@ fail
     else
       Rails.logger.error("Failed to save identification: #{identification.errors.full_messages.join(', ')}")
     end
-  rescue => e
-    Rails.logger.error("Error saving identification: #{e.message}")
+  # rescue => e
+  #   Rails.logger.error("Error saving identification: #{e.message}")
   end
 
   def assign_fields(identification, row)
     @field_names = build_field_names if @field_names.empty?
-
+    row_hash = Hash[*row.flatten]
     @field_names.each_with_index do |(field, _table), index|
+      next unless _table == "identifications"
       next if field.include?("ignore")
-
-      value = row.fields[index]&.strip
+fail
+      value = row_hash[field]&.strip
       next if value.blank?
 
       case field
       when "current"
+        fail
         identification.current = handle_current(value)
-      when "taxon_rank"
-        identification.taxon_rank = value.to_i
+      # when "taxon_rank"
+      #   identification.taxon_rank = value.to_i
       else
         identification.assign_attributes(field => value)
       end
@@ -89,6 +91,7 @@ fail
   end
 
   def handle_current(value)
+    fail
     case value.downcase
     when "true", "1", "yes" then true
     when "false", "0", "no" then false
