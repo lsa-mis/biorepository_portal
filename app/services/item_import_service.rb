@@ -26,9 +26,7 @@ class ItemImportService
         save_item(record)
       end
     end
-
     cleanup_removed_items
-
   end
 
   private
@@ -57,6 +55,7 @@ class ItemImportService
 
     if item.save
       @items_in_db.delete(item.occurrence_id)
+  
       update_preparations(item, preparations_string)
     else
       Rails.logger.error("Failed to update item: #{item.errors.full_messages.join(', ')}")
