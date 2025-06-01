@@ -68,6 +68,11 @@ class LoanQuestionsController < ApplicationController
     end
   end
 
+  # GET /loan_questions/preview
+  def preview
+    @loan_questions = LoanQuestion.all
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_loan_question

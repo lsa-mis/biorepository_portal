@@ -1,0 +1,41 @@
+<% content_for :title, "Preview Loan Questions" %>
+
+<div class="mt-3 ms-3">
+    <%= link_to loan_questions_path, class: "btn btn-outline-primary position-fixed start-0 m-3 z-3 shadow" do %>
+      <i class="bi bi-arrow-left me-2"></i> Back To Loan Questions
+    <% end %>
+</div>
+
+<h1>Loan Questions Preview</h1>
+
+<div class="card p-4 shadow-sm">
+  <div class="card-body">
+    <% @loan_questions.each do |loan_question| %>
+      <div class="mb-4 border rounded p-3 bg-light">
+        Question: <label class="form-label fw-bold"><%= loan_question.question %></label>
+        
+        <% if loan_question.question_type == "text" %>
+          <div class="ms-3">
+            <input type="text" class="form-control" placeholder="User input..." disabled>
+          </div>
+
+        <% else %>
+          <% if loan_question.question_type == "checkbox" %>
+            <div class="form-label">Pick one or more options below.</div>
+          <% end %>
+          <div class="ms-3">
+            <% loan_question.options.each do |option| %>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" disabled>
+                <label class="form-check-label"><%= option.value %></label>
+              </div>
+            <% end %>
+          </div>
+          
+        <% end %>
+      </div>
+
+    <% end %>
+
+  </div>
+</div>
