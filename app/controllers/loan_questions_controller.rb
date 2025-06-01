@@ -56,9 +56,9 @@ class LoanQuestionsController < ApplicationController
     ActiveRecord::Base.transaction do
       begin
         @loan_question.update(loan_question_params)
-          if @loan_question.question_type.in?(%w[dropdown checkbox]) && params[:options_attributes].present?
-            update_options(@loan_question, params[:options_attributes].values)
-          end
+        if @loan_question.question_type.in?(%w[dropdown checkbox]) && params[:options_attributes].present?
+          update_options(@loan_question, params[:options_attributes].values)
+        end
         success = true
       rescue StandardError => e
         raise ActiveRecord::Rollback
