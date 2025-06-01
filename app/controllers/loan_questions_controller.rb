@@ -28,14 +28,14 @@ class LoanQuestionsController < ApplicationController
   def create
     @loan_question = LoanQuestion.new(loan_question_params)
     if loan_question_params[:question_type] == "dropdown" || loan_question_params[:question_type] == "checkbox"
-      options = params[:option_attributes].values
+      options = params[:options_attributes].values
     end
     authorize @loan_question
 
     respond_to do |format|
       if @loan_question.save
         if loan_question_params[:question_type] == "dropdown" || loan_question_params[:question_type] == "checkbox" 
-            options = params[:option_attributes].values        
+            options = params[:options_attributes].values        
             options.each do |option|
               Option.create(value: option[:value], loan_question_id: @loan_question.id)
             end
@@ -54,8 +54,8 @@ class LoanQuestionsController < ApplicationController
     authorize @loan_question
     begin
       @loan_question.update(loan_question_params)
-        if @loan_question.question_type.in?(%w[dropdown checkbox]) && params[:option_attributes].present?
-          update_options(@loan_question, params[:option_attributes].values)
+        if @loan_question.question_type.in?(%w[dropdown checkbox]) && params[:options_attributes].present?
+          update_options(@loan_question, params[:options_attributes].values)
         end
       success = true
     rescue StandardError => e
@@ -82,10 +82,10 @@ class LoanQuestionsController < ApplicationController
 
   private
 
-    def update_options(loan_question, option_attributes)
+    def update_options(loan_question, options_attributes)
       if loan_question.options.present?
         Option.where(loan_question_id: loan_question.id).destroy_all
-        option_attributes.each do |option|
+        options_attributes.each do |option|
           # raise ActiveRecord::Rollback unless 
           Option.create(value: option[:value], loan_question_id: loan_question.id)
         end

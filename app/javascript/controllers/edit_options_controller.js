@@ -29,7 +29,7 @@ export default class extends Controller {
     // Update input field
     const optionInput = newOptionElement.querySelector('[data-edit-options-target="option_value"]');
     optionInput.setAttribute("id", `option_attributes_${newOptionNumber}_option`);
-    optionInput.setAttribute("name", `option_attributes[${newOptionNumber}][value]`);
+    optionInput.setAttribute("name", `options_attributes[${newOptionNumber}][value]`);
 
     // Update remove button
     const removeButton = newOptionElement.querySelector('[data-edit-options-target="remove_button"]');
@@ -40,7 +40,7 @@ export default class extends Controller {
     if (optionNumber) {
       optionNumber.setAttribute("value", newOptionNumber);
       optionNumber.setAttribute("id", `option_number_${newOptionNumber}`);
-      optionNumber.setAttribute("name", `option_attributes[${newOptionNumber}][number]`);
+      optionNumber.setAttribute("name", `options_attributes[${newOptionNumber}][number]`);
     }
 
     // Append new option block

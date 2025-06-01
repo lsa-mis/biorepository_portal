@@ -31,8 +31,8 @@
               <%#= option_form.check_box :_destroy, class: "d-none", data: { edit_options_target: "destroy_field" } %>
 
               <label class="form-label" name=<%= "option_attributes_#{index}" %> value=<%= option.value %> data-edit-options-target="option_label"><%= "Option #{index + 1}" %></label>
-              <%= text_field_tag("option_attributes[#{index+1}][value]", option.value, {required: true, class: "input_text_field"}) %>
-              <%= hidden_field_tag "option_attributes[#{index+1}][number]", index+1 %>
+              <%= text_field_tag("options_attributes[#{index+1}][value]", option.value, {required: true, class: "input_text_field"}) %>
+              <%= hidden_field_tag "options_attributes[#{index+1}][number]", index+1 %>
 
               <%= check_box_tag :_destroy, 1, class: "d-none", data: { edit_options_target: "destroy_field" } %>
 
