@@ -12,12 +12,12 @@
 
   <div class="mb-3">
     <%= form.label :question, class: "form-label" %>
-    <%= form.text_field :question, required: true, class: "form-control" %>
+    <%= form.text_field :question, required: true %>
   </div>
   
   <div class="mb-3">
     <%= form.label :question_type, class: "form-label" %>
-    <%= text_field_tag :question_type_display, loan_question.question_type.humanize, class: "form-control", disabled: true %>
+    <%= text_field_tag :question_type_display, loan_question.question_type.humanize, disabled: true %>
     <%= form.hidden_field :question_type %>
   </div>
 
@@ -31,7 +31,7 @@
               <%#= option_form.check_box :_destroy, class: "d-none", data: { edit_options_target: "destroy_field" } %>
 
               <label class="form-label" name=<%= "option_attributes_#{index}" %> value=<%= option.value %> data-edit-options-target="option_label"><%= "Option #{index + 1}" %></label>
-              <%= text_field_tag("options_attributes[#{index+1}][value]", option.value, {required: true, class: "input_text_field"}) %>
+              <%= text_field_tag("options_attributes[#{index+1}][value]", option.value, {required: true}) %>
               <%= hidden_field_tag "options_attributes[#{index+1}][number]", index+1 %>
 
               <%= check_box_tag :_destroy, 1, class: "d-none", data: { edit_options_target: "destroy_field" } %>
@@ -59,7 +59,7 @@
   <template data-edit-options-target="template">
     <div class="option-list-item mb-2">
       <label class="form-label" data-edit-options-target="option_label">Option</label>
-      <input type="text" class="form-control" data-edit-options-target="option_value" required=true />
+      <input type="text" data-edit-options-target="option_value" required=true />
       <input type="hidden" data-edit-options-target="option_number" />
       <button type="button"
               class="btn btn-sm btn-danger remove-option-button mt-1"
