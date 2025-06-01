@@ -58,7 +58,7 @@ class Item < ApplicationRecord
 
   def display_name
     # Placeholder for displaying the item name
-    "#{occurrence_id} - #{Identification.find_by(item_id: self.id, current: true).scientific_name}"
+    "#{occurrence_id} - #{Identification.find_by(item_id: self.id, current: true)&.scientific_name}"
   end
 
   def self.ransackable_attributes(auth_object = nil)
