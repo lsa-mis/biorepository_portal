@@ -17,7 +17,8 @@ class ItemImportService
   # It reads the CSV file, processes each row, and updates or creates items in the database.
   def call
     total_time = Benchmark.measure {
-      @log.import_logger.info("#{DateTime.now} - Processing Occurrence File: #{@file.original_filename}")
+    @collection_id = collection_id
+      @log.import_logger.info("#{DateTime.now} - #{Collection.find(collection_id).division} - Processing Occurrence File: #{@file.original_filename}")
       CSV.foreach(@file.path, headers: true) do |row|
         record = row.fields.map { |val| val&.delete('"')&.strip }
 

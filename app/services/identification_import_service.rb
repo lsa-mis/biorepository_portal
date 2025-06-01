@@ -15,7 +15,7 @@ class IdentificationImportService
   # - First column is occurrence_id (linked to Item)
   def call
     total_time = Benchmark.measure {
-      @log.import_logger.info("#{DateTime.now} - Processing Identifications File: #{@file.original_filename}")
+      @log.import_logger.info("#{DateTime.now} - #{Collection.find(collection_id).division} - Processing Identifications File: #{@file.original_filename}")
       # Group rows by occurrence_id
       grouped_rows = Hash.new { |h, k| h[k] = [] }
 
