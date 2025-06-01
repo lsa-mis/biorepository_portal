@@ -7,12 +7,13 @@ class IdentificationImportService
   def initialize(file)
     @file = file
     @field_names = {}
+    @log = ImportLog.new
   end
 
   # Assumes:
   # - First column is occurrence_id (linked to Item)
   def call
-    Rails.logger.info("***** Processing Identifications File: #{@file.original_filename}")
+    @log.import_logger.info("#{DateTime.now} - Processing Identifications File: #{@file.original_filename}")
     # Group rows by occurrence_id
     grouped_rows = Hash.new { |h, k| h[k] = [] }
 
@@ -34,9 +35,9 @@ class IdentificationImportService
       end
     end
 
-    Rails.logger.info("***********************Identification import completed.")
+    @log.import_logger.info("***********************Identification import completed.")
   rescue => e
-    Rails.logger.error("***********************Error importing identifications: #{e.message}")
+    @log.import_logger.error("***********************Error importing identifications: #{e.message}")
   end
 
   private
@@ -47,12 +48,12 @@ class IdentificationImportService
     assign_fields(identification, row)
 
     if identification.save
-      Rails.logger.info("************************Saved identification for item #{item.occurrence_id}")
+      @log.import_logger.info("************************Saved identification for item #{item.occurrence_id}")
     else
-      Rails.logger.error("************************Failed to save identification: #{identification.errors.full_messages.join(', ')}")
+      @log.import_logger.error("************************Failed to save identification: #{identification.errors.full_messages.join(', ')}")
     end
   rescue => e
-    Rails.logger.error("***************************Error saving identification: #{e.message}")
+    @log.import_logger.error("***************************Error saving identification: #{e.message}")
   end
 
   def assign_fields(identification, row)
@@ -89,7 +90,7 @@ class IdentificationImportService
   end
 
   def handle_current(value)
-    Rails.logger.debug("*************************current field in identification: #{value}")
+    @log.import_logger.debug("*************************current field in identification: #{value}")
     case value.downcase
     when "true", "1", "yes" then true
     when "false", "0", "no" then false
