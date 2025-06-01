@@ -34,9 +34,9 @@ class IdentificationImportService
       end
     end
 
-    Rails.logger.info("Identification import completed.")
+    Rails.logger.info("***********************Identification import completed.")
   rescue => e
-    Rails.logger.error("Error importing identifications: #{e.message}")
+    Rails.logger.error("***********************Error importing identifications: #{e.message}")
   end
 
   private
@@ -47,12 +47,12 @@ class IdentificationImportService
     assign_fields(identification, row)
 
     if identification.save
-      Rails.logger.info("Saved identification for item #{item.occurrence_id}")
+      Rails.logger.info("************************Saved identification for item #{item.occurrence_id}")
     else
-      Rails.logger.error("Failed to save identification: #{identification.errors.full_messages.join(', ')}")
+      Rails.logger.error("************************Failed to save identification: #{identification.errors.full_messages.join(', ')}")
     end
   rescue => e
-    Rails.logger.error("Error saving identification: #{e.message}")
+    Rails.logger.error("***************************Error saving identification: #{e.message}")
   end
 
   def assign_fields(identification, row)
@@ -89,6 +89,7 @@ class IdentificationImportService
   end
 
   def handle_current(value)
+    Rails.logger.debug("*************************current field in identification: #{value}")
     case value.downcase
     when "true", "1", "yes" then true
     when "false", "0", "no" then false
