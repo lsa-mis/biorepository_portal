@@ -43,5 +43,13 @@ module ApplicationHelper
   def get_uniqname(email)
     email.split("@").first
   end
+
+  def show_current(identification)
+    if identification.current
+      "Current"
+    else
+      ""
+    end
+  end
   
 end
