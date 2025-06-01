@@ -60,6 +60,7 @@ class LoanQuestionsController < ApplicationController
         # raise ActiveRecord::Rollback unless 
         update_options(@loan_question, params[:option_attributes].values)          
       end
+      true
     end
     if transaction
       redirect_to @loan_question, notice: "Loan question was successfully updated."
