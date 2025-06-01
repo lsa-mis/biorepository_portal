@@ -4,8 +4,9 @@ require 'set'
 class IdentificationImportService
   attr_reader :file
 
-  def initialize(file)
+  def initialize(file, collection_id)
     @file = file
+    @collection_id = collection_id
     @field_names = {}
     @log = ImportLog.new
     total_time = 0
@@ -15,7 +16,7 @@ class IdentificationImportService
   # - First column is occurrence_id (linked to Item)
   def call
     total_time = Benchmark.measure {
-      @log.import_logger.info("#{DateTime.now} - Processing Identifications File: #{@file.original_filename}")
+      @log.import_logger.info("#{DateTime.now} - #{Collection.find(@collection_id).division} - Processing Identifications File: #{@file.original_filename}")
       # Group rows by occurrence_id
       grouped_rows = Hash.new { |h, k| h[k] = [] }
 
