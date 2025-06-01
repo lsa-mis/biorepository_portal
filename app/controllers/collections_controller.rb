@@ -65,13 +65,19 @@ class CollectionsController < ApplicationController
     return redirect_to request.referer, notice: 'No file added' if params[:files].nil?
     return redirect_to request.referer, notice: 'Only CSV files allowed' unless valid_csv_files?(params[:files])
 
-    # TODO: Enforce the first file to be the occurrence file and the second to be the identification file?
     files = params[:files]
-    # occurrence_file, identification_file = files[0], files[1]
-    identification_file = files[0]
+    identification_file = nil
+    occurrence_file = nil
 
-    # ItemImportService.new(occurrence_file, collection_id).call
-    IdentificationImportService.new(identification_file).call
+    files.each do |file|
+      if file.original_filename.include?("identification")
+        identification_file = file
+      elsif file.original_filename.include?("occurrence")
+        occurrence_file = file
+      end
+    end
+    ItemImportService.new(occurrence_file, collection_id).call if occurrence_file.present?
+    IdentificationImportService.new(identification_file).call if identification_file.present?
 
     redirect_to request.referer, notice: 'Import Finished!'
   end
