@@ -55,8 +55,8 @@
     <!-- Main Content Area -->
     <div class="col-md-9">
       <div class="bg-light p-4 rounded shadow-sm mb-4">
-        <h2><%= @item.display_name %></h2>
-        <h5 class="fw-bold mb-3"><%= @item.collection.division %> Collection</h5>
+        <h2 class="fw-bold mb-3"><%= @item.collection.division %> Collection</h2>
+        <h3><%= @item.display_name %></h3>
         <%= render "preparations" %>
       </div>
 
