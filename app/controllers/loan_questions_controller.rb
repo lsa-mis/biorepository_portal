@@ -43,7 +43,7 @@ class LoanQuestionsController < ApplicationController
         format.html { redirect_to @loan_question, notice: "Loan question was successfully created." }
         format.json { render :show, status: :ok, location: @loan_question }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @loan_question.errors, status: :unprocessable_entity }
       end
     end
@@ -52,20 +52,23 @@ class LoanQuestionsController < ApplicationController
   # PATCH/PUT /loan_questions/1 or /loan_questions/1.json
   def update
     authorize @loan_question
-    transaction = ActiveRecord::Base.transaction do
-      # raise ActiveRecord::Rollback unless 
-      @loan_question.update(question: loan_question_params[:question])
-        # If the question type supports options, update them
-      if @loan_question.question_type.in?(%w[dropdown checkbox]) && params[:option_attributes].present?
-        # raise ActiveRecord::Rollback unless 
-        update_options(@loan_question, params[:option_attributes].values)          
-      end
-      true
+    begin
+      @loan_question.update(loan_question_params)
+        if @loan_question.question_type.in?(%w[dropdown checkbox]) && params[:option_attributes].present?
+          update_options(@loan_question, params[:option_attributes].values)
+        end
+      success = true
+    rescue StandardError => e
+      raise ActiveRecord::Rollback
+      flash.now[:alert] = "Manager has reservations and can't be removed: " + e.message
+      success = false
     end
-    if transaction
-      redirect_to @loan_question, notice: "Loan question was successfully updated."
-    else
-      render :edit, status: :unprocessable_entity
+    respond_to do |format|
+      if success
+        format.html { redirect_to @loan_question, notice: "Loan question was successfully updated." }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
