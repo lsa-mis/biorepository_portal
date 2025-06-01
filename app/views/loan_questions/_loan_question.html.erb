@@ -1,0 +1,33 @@
+<div id="<%= dom_id loan_question %>">
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>Loan Question Details</h1>
+    <div class="d-flex align-items-end flex-column gap-1 mt-2">
+      <%= link_to "Back to Loan Questions", loan_questions_path, class: "link_to" %>
+      <%= link_to "Edit Loan Question", edit_loan_question_path(loan_question), class: "btn btn-primary h-50 mt-auto mb-auto" %>
+      <%#= link_to "Delete Loan Question", loan_question_path(loan_question), class: "link_to", data: { turbo_confirm: "Are you sure you want to delete this question?", turbo_method: :delete } %>
+    </div>
+  </div>
+  <p>
+    <strong>Question:</strong>
+    <%= loan_question.question %>
+  </p>
+
+  <p>
+    <strong>Question type:</strong>
+    <%= loan_question.question_type %>
+  </p>
+
+  <% if loan_question.options.present? %>
+    <p>
+      <strong>Options:</strong>
+    </p>
+    <div class="m-3">
+      <% loan_question.options.each do |option| %>
+        <p>
+          <%= option.value %>
+        </p>
+      <% end %>
+    </div>
+  <% end %>
+
+</div>

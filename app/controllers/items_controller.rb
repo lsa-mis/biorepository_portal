@@ -1,4 +1,5 @@
 class ItemsController < ApplicationController
+  skip_before_action :authenticate_user!, only: [ :index, :show ]
   before_action :set_item, only: %i[ show ]
 
   # GET /items or /items.json
@@ -11,6 +12,12 @@ class ItemsController < ApplicationController
     @identifications = @item.identifications.order(current: :desc)
     @preparations = @item.preparations
     @collections = Collection.all
+  end
+
+  def search
+    @q = Item.ransack(params[:q])
+    @items = @q.result.page(params[:page]).per(15)
+    render :search_result
   end
 
   private

@@ -1,0 +1,19 @@
+<tr id="<%= dom_id(loan_question) %>">
+  <td class="text-start"><%= loan_question.question %></td>
+  <td class="text-start"><%= loan_question.question_type %></td>
+  <td>
+    <%= link_to loan_question_path(loan_question), 'aria-label': "edit_#{loan_question.id}", data: { turbo_frame: "_top" } do %>
+      <i class="bi bi-eye-fill text-primary"></i>
+    <% end %>
+  </td>
+  <td>
+    <%= link_to edit_loan_question_path(loan_question), 'aria-label': "edit_#{loan_question.id}", data: { turbo_frame: "_top" } do %>
+      <i class="bi bi-pencil-square text-primary"></i>
+    <% end %>
+  </td>
+  <td>
+    <%= link_to loan_question_path(loan_question), 'aria-label': "delete_#{loan_question.id}", data: { turbo_confirm: "Are you sure you want to delete this common attribute?" , turbo_method: :delete } do %>
+      <i class="bi bi-trash-fill text-danger"></i>
+    <% end %>
+  </td>
+</tr>

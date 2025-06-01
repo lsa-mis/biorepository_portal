@@ -1,0 +1,7 @@
+<%= turbo_stream.update 'new_loan_question_form' do %>
+  <%= render 'form', loan_question: @new_loan_question %>
+<% end %>
+<%= turbo_stream.update "loan_questions_list" do %>
+  <%= render 'loan_questions_list' %>
+<% end %>
+<%= render_flash_stream %>
