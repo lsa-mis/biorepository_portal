@@ -35,8 +35,8 @@ class IdentificationImportService
     end
 
     Rails.logger.info("Identification import completed.")
-  # rescue => e
-  #   Rails.logger.error("Error importing identifications: #{e.message}")
+  rescue => e
+    Rails.logger.error("Error importing identifications: #{e.message}")
   end
 
   private
@@ -51,8 +51,8 @@ class IdentificationImportService
     else
       Rails.logger.error("Failed to save identification: #{identification.errors.full_messages.join(', ')}")
     end
-  # rescue => e
-  #   Rails.logger.error("Error saving identification: #{e.message}")
+  rescue => e
+    Rails.logger.error("Error saving identification: #{e.message}")
   end
 
   def assign_fields(identification, row)
