@@ -9,7 +9,7 @@ class ItemsController < ApplicationController
 
   # GET /items/1 or /items/1.json
   def show
-    @identifications = @item.identifications
+    @identifications = @item.identifications.order(current: :desc)
     @preparations = @item.preparations
     @collections = Collection.all
   end
@@ -17,6 +17,7 @@ class ItemsController < ApplicationController
   def search
     @q = Item.ransack(params[:q])
     @items = @q.result.page(params[:page]).per(15)
+    @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
     render :search_result
   end
 

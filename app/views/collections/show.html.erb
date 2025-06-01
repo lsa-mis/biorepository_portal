@@ -10,8 +10,8 @@
   <h2>Items in this Collection</h2>
   <%= search_form_for @q1, url: search_collection_path(@collection), turbo_frame: "collection_items", method: :post, as: :q1 do |f| %>
     <div class="mb-2">
-      <%= f.label :country_or_state_province_or_identifications_cont, "Search Items in Collection" %>
-      <%= f.search_field :country_or_state_province_or_identifications_scientific_name_cont, placeholder: 'Country, State, Province, or Scientific Name', class: "form-control form-control-sm" %>
+      <%= f.label :country_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont, "Search Items in Collection" %>
+      <%= f.search_field :country_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont, placeholder: 'Country, State, Province, or Scientific Name or Vernacular Name', class: "form-control form-control-sm" %>
     </div>
     <div>
       <%# = f.label :catalog_number_eq, "Catalog Number" %>
@@ -26,11 +26,14 @@
     <% if @items.empty? %>
       No items available in this collection.
     <% else %>
+      <div class="mt-2 ml-4">
+        <%= page_entries_info @items %>
+      </div>
       <div class="accordion" id="accordionPanelsStayOpenExample">
         <% @items.each_with_index do |item, index| %>
           <div class="accordion-item mb-2">
             <button class="accordion-button collapsed bg-accordion"" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse<%= (index + 1) %>" aria-expanded="false" aria-controls="panelsStayOpen-collapseOne">
-              <%= item.display_name %>, Occurrence ID: <%= item.occurrence_id %>
+              <%= item.display_name %>
             </button>
             <div id="panelsStayOpen-collapse<%= (index + 1) %>" class="accordion-collapse collapse">
               <div class="accordion-body">  

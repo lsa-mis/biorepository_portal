@@ -1,9 +1,9 @@
 <%= search_form_for @q, url: search_items_path, method: :post do |f| %>
 <div class="m-2">
-    <%= f.label :country_or_state_province_or_identifications_cont, "What can we help you find?" %>
+    <%= f.label :country_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont, "What can we help you find?" %>
 </div>
 <div class="d-flex text-nowrap align-items-center m-2">
-    <%= f.search_field :country_or_state_province_or_identifications_scientific_name_cont, placeholder: 'Country, State, Province, or Scientific Name', class: "form-control form-control-sm" %>
+    <%= f.search_field :country_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont, placeholder: 'Country, State, Province, or Scientific Name or Vernacular Name', class: "form-control form-control-sm" %>
     <%= f.submit "Search" %>
 </div>
 <div>

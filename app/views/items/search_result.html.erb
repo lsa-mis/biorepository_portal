@@ -2,11 +2,14 @@
 <% if @items.empty? %>
       No items available in this collection.
     <% else %>
+      <div class="mt-2 ml-4">
+        <%= page_entries_info @items %> from <%= @collections %>
+      </div>
       <div class="accordion" id="accordionPanelsStayOpenExample">
         <% @items.each_with_index do |item, index| %>
           <div class="accordion-item mb-2">
             <button class="accordion-button collapsed bg-accordion"" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse<%= (index + 1) %>" aria-expanded="false" aria-controls="panelsStayOpen-collapseOne">
-              <%= item.display_name %>, Occurrence ID: <%= item.occurrence_id %>
+              <%= item.collection.division %>: <%= item.display_name %>
             </button>
             <div id="panelsStayOpen-collapse<%= (index + 1) %>" class="accordion-collapse collapse">
               <div class="accordion-body">  
