@@ -69,15 +69,24 @@ class CollectionsController < ApplicationController
 
   def import
     collection_id = params[:collection_id]
-    return redirect_to request.referer, notice: 'No file added' if params[:file].nil?
-    return redirect_to request.referer, notice: 'Only CSV files allowed' unless params[:file].content_type == 'text/csv'
+    return redirect_to request.referer, notice: 'No file added' if params[:files].nil?
+    return redirect_to request.referer, notice: 'Only CSV files allowed' unless valid_csv_files?(params[:files])
 
-    files = Array(params[:file])
+    files = params[:files]
+    identification_file = nil
+    occurrence_file = nil
+
     files.each do |file|
-      CsvImportService.new(file, collection_id).call
+      if file.original_filename.include?("identification")
+        identification_file = file
+      elsif file.original_filename.include?("occurrence")
+        occurrence_file = file
+      end
     end
+    ItemImportService.new(occurrence_file, collection_id).call if occurrence_file.present?
+    IdentificationImportService.new(identification_file).call if identification_file.present?
 
-    redirect_to request.referer, notice: 'Import started...'
+    redirect_to request.referer, notice: 'Import Finished!'
   end
 
   private
@@ -85,6 +94,14 @@ class CollectionsController < ApplicationController
     def set_collection
       @collection = Collection.find(params.expect(:id))
       authorize @collection
+    end
+
+    def valid_csv_files?(files)
+      files.each do |file|
+        return false unless file.content_type == 'text/csv'
+        return false unless File.extname(file.original_filename).downcase == ".csv"
+      end
+      true
     end
 
     # Only allow a list of trusted parameters through.

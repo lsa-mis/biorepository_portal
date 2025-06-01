@@ -9,7 +9,7 @@ class ItemsController < ApplicationController
 
   # GET /items/1 or /items/1.json
   def show
-    @identifications = @item.identifications
+    @identifications = @item.identifications.order(current: :desc)
     @preparations = @item.preparations
     @collections = Collection.all
   end

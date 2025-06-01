@@ -1,5 +1,8 @@
 <% @identifications.each do |identification| %>
   <div id="<%= dom_id identification %>">
+    <p>
+      <%= show_current(identification) %>
+    </p>
     <% if identification.type_status.present? %>
       <p>
           <strong>Type status:</strong>
@@ -101,6 +104,7 @@
           <strong>Item:</strong>
           <%= identification.item_id %>
       </p>
+      <hr>
     <% end %>
   </div>
 <% end %>

@@ -44,6 +44,14 @@ module ApplicationHelper
     email.split("@").first
   end
 
+  def show_current(identification)
+    if identification.current
+      "Current"
+    else
+      ""
+    end
+  end
+
   def render_flash_stream
     turbo_stream.update "flash", partial: "layouts/flash"
   end
