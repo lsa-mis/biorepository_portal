@@ -84,7 +84,7 @@ class CollectionsController < ApplicationController
       end
     end
     ItemImportService.new(occurrence_file, collection_id).call if occurrence_file.present?
-    IdentificationImportService.new(identification_file).call if identification_file.present?
+    IdentificationImportService.new(identification_file, collection_id).call if identification_file.present?
 
     redirect_to request.referer, notice: 'Import Finished!'
   end
