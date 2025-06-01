@@ -22,7 +22,6 @@ class IdentificationImportService
 
       grouped_rows[occurrence_id] << row.drop(1)
     end
-fail
     grouped_rows.each do |occurrence_id, rows|
       item = Item.find_by(occurrence_id: occurrence_id)
       next unless item
@@ -62,13 +61,12 @@ fail
     @field_names.each_with_index do |(field, _table), index|
       next unless _table == "identifications"
       next if field.include?("ignore")
-fail
-      value = row_hash[field]&.strip
+      field_in_row = MapField.find_by(rails_field: field, table: _table).specify_field
+      value = row_hash[field_in_row]&.strip
       next if value.blank?
 
       case field
       when "current"
-        fail
         identification.current = handle_current(value)
       # when "taxon_rank"
       #   identification.taxon_rank = value.to_i
@@ -91,7 +89,6 @@ fail
   end
 
   def handle_current(value)
-    fail
     case value.downcase
     when "true", "1", "yes" then true
     when "false", "0", "no" then false
