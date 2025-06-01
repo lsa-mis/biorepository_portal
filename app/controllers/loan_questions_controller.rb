@@ -52,16 +52,19 @@ class LoanQuestionsController < ApplicationController
   # PATCH/PUT /loan_questions/1 or /loan_questions/1.json
   def update
     authorize @loan_question
-    begin
-      @loan_question.update(loan_question_params)
-        if @loan_question.question_type.in?(%w[dropdown checkbox]) && params[:options_attributes].present?
-          update_options(@loan_question, params[:options_attributes].values)
-        end
-      success = true
-    rescue StandardError => e
-      raise ActiveRecord::Rollback
-      flash.now[:alert] = "Manager has reservations and can't be removed: " + e.message
-      success = false
+    success = true
+    ActiveRecord::Base.transaction do
+      begin
+        @loan_question.update(loan_question_params)
+          if @loan_question.question_type.in?(%w[dropdown checkbox]) && params[:options_attributes].present?
+            update_options(@loan_question, params[:options_attributes].values)
+          end
+        success = true
+      rescue StandardError => e
+        raise ActiveRecord::Rollback
+        flash.now[:alert] = "Error updating loan question with options: " + e.message
+        success = false
+      end
     end
     respond_to do |format|
       if success
