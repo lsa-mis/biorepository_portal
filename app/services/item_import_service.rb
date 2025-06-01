@@ -9,24 +9,32 @@ class ItemImportService
     @collection_id = collection_id
     @items_in_db = Set.new(Item.where(collection_id: @collection_id).pluck(:occurrence_id))
     @field_names = {}
+    @log = ImportLog.new
+    total_time = 0
   end
 
   # This method is the main entry point for the CSV import process.
   # It reads the CSV file, processes each row, and updates or creates items in the database.
   def call
-    Rails.logger.info("***** Processing Items File: #{@file.original_filename}")
-    CSV.foreach(@file.path, headers: true) do |row|
-      record = row.fields.map { |val| val&.delete('"')&.strip }
+    total_time = Benchmark.measure {
+      @log.import_logger.info("#{DateTime.now} - Processing Occurrence File: #{@file.original_filename}")
+      CSV.foreach(@file.path, headers: true) do |row|
+        record = row.fields.map { |val| val&.delete('"')&.strip }
 
-      next if record[0].blank?
+        next if record[0].blank?
 
-      if item_exist?(record[0])
-        update_item(record)
-      else
-        save_item(record)
+        if item_exist?(record[0])
+          update_item(record)
+        else
+          save_item(record)
+        end
       end
-    end
-    cleanup_removed_items
+      cleanup_removed_items
+    }
+    task_time = ((total_time.real / 60) % 60).round(2)
+    @log.import_logger.info("***********************Occurrence import completed. Total time: #{task_time} minutes.")
+    rescue => e
+      @log.import_logger.error("***********************Error importing Item: #{e.message}")
   end
 
   private
@@ -41,10 +49,10 @@ class ItemImportService
     if item.save
       update_preparations(item, preparations_string)
     else
-      Rails.logger.error("Failed to save item: #{item.errors.full_messages.join(', ')}")
+      @log.import_logger.error("***********************Failed to save item: #{item.errors.full_messages.join(', ')}")
     end
   rescue => e
-    Rails.logger.error("Error saving item: #{e.message}")
+    @log.import_logger.error("***********************Error saving item: #{e.message}")
   end
 
   def update_item(record)
@@ -58,10 +66,10 @@ class ItemImportService
   
       update_preparations(item, preparations_string)
     else
-      Rails.logger.error("Failed to update item: #{item.errors.full_messages.join(', ')}")
+      @log.import_logger.error("***********************Failed to update item: #{item.errors.full_messages.join(', ')}")
     end
   rescue => e
-    Rails.logger.error("Error updating item: #{e.message}")
+    @log.import_logger.error("***********************Error updating item: #{e.message}")
   end
 
   def assign_fields(item, record)
@@ -92,7 +100,7 @@ class ItemImportService
       when "preparations"
         preparations_string = value
       else
-        Rails.logger.debug("Skipping field from unknown table: #{table}")
+        # @log.import_logger.error("***********************Item - skipping field from: #{table}")
       end
     end
 
@@ -110,21 +118,6 @@ class ItemImportService
       hash[map_field.rails_field] = map_field.table if map_field
     end
   end
-
-  def handle_event_date(item, value)
-    if value.include?('/')
-      start_str, end_str = value.split('/', 2).map(&:strip)
-      item.event_date_start = Date.parse(start_str)
-      item.event_date_end   = Date.parse(end_str)
-    else
-      date = Date.parse(value.strip)
-      item.event_date_start = date
-      item.event_date_end   = date
-    end
-  rescue ArgumentError => e
-    Rails.logger.error("Invalid eventDate format: '#{value}' — #{e.message}")
-  end
-
 
   def update_preparations(item, preparations_string)
     if preparations_string.blank?
@@ -147,14 +140,14 @@ class ItemImportService
 
       update_prep_fields(preparation, values)
       unless preparation.save
-        Rails.logger.error("Failed to save preparation (#{prep_type}): #{preparation.errors.full_messages.join(', ')}")
+        @log.import_logger.error("***********************Failed to save preparation (#{prep_type}): #{preparation.errors.full_messages.join(', ')}")
         return false
       end
     end
 
     true
   rescue => e
-    Rails.logger.error("Error updating preparations: #{e.message}")
+    @log.import_logger.error("***********************Error updating preparations: #{e.message}")
     false
   end
 
@@ -177,6 +170,63 @@ class ItemImportService
     @items_in_db.each do |occurrence_id|
       item = Item.find_by(occurrence_id: occurrence_id)
       item&.destroy
+    end
+  end
+
+  def is_date?(string)
+    return true if string.to_date
+    rescue ArgumentError
+      false
+  end
+
+  def handle_event_date(item, value)
+    date = parse_flexible_date(value)
+    if date
+      item.event_date_start = date
+    else
+      @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+      item.verbatim_event_date = value.strip
+    end
+    rescue ArgumentError => e
+      @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+  end
+
+  # def handle_event_date(item, value)
+  #   if is_date?(value)
+  #     if value.include?('/')
+  #       start_str, end_str = value.split('/', 2).map(&:strip)
+  #       item.event_date_start = Date.parse(start_str)
+  #       item.event_date_end   = Date.parse(end_str)
+  #     else
+  #       date = Date.parse(value.strip)
+  #       item.event_date_start = date
+  #       item.event_date_end   = date
+  #     end
+  #   else
+  #     @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+  #     item.verbatim_event_date = value.strip
+  #   end
+  # # rescue ArgumentError => e
+  # #   @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+  # end
+
+  def parse_flexible_date(string)
+    return nil if string.blank?
+    formats = [
+      '%m/%d/%Y', '%-m/%-d/%Y', '%Y', '%d-%m-%Y', '%-d-%-m-%Y', '%m/%d/%y', '%-m/%-d/%y', '%d-%m-%y', '%-d-%-m-%y', '%Y-%m-%d'
+    ]
+    formats.each do |fmt|
+      begin
+        return Date.strptime(string, fmt)
+      rescue ArgumentError
+        next
+      end
+    end
+    # Fallback to Date.parse for other valid formats
+    begin
+      return Date.parse(string)
+    rescue ArgumentError
+      false
     end
   end
 end

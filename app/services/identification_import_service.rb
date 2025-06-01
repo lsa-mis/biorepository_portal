@@ -8,34 +8,37 @@ class IdentificationImportService
     @file = file
     @field_names = {}
     @log = ImportLog.new
+    total_time = 0
   end
 
   # Assumes:
   # - First column is occurrence_id (linked to Item)
   def call
-    @log.import_logger.info("#{DateTime.now} - Processing Identifications File: #{@file.original_filename}")
-    # Group rows by occurrence_id
-    grouped_rows = Hash.new { |h, k| h[k] = [] }
+    total_time = Benchmark.measure {
+      @log.import_logger.info("#{DateTime.now} - Processing Identifications File: #{@file.original_filename}")
+      # Group rows by occurrence_id
+      grouped_rows = Hash.new { |h, k| h[k] = [] }
 
-    CSV.foreach(@file.path, headers: true) do |row|
-      occurrence_id = row.fields[0]&.delete('"')&.strip
-      next if occurrence_id.blank?
+      CSV.foreach(@file.path, headers: true) do |row|
+        occurrence_id = row.fields[0]&.delete('"')&.strip
+        next if occurrence_id.blank?
 
-      grouped_rows[occurrence_id] << row.drop(1)
-    end
-    grouped_rows.each do |occurrence_id, rows|
-      item = Item.find_by(occurrence_id: occurrence_id)
-      next unless item
-
-      # Remove existing identifications for this item
-      item.identifications.destroy_all
-
-      rows.each do |row|
-        save_identification(item, row)
+        grouped_rows[occurrence_id] << row.drop(1)
       end
-    end
+      grouped_rows.each do |occurrence_id, rows|
+        item = Item.find_by(occurrence_id: occurrence_id)
+        next unless item
 
-    @log.import_logger.info("***********************Identification import completed.")
+        # Remove existing identifications for this item
+        item.identifications.destroy_all
+
+        rows.each do |row|
+          save_identification(item, row)
+        end
+      end
+    }
+    task_time = ((total_time.real / 60) % 60).round(2)
+    @log.import_logger.info("***********************Identification import completed. Total time: #{task_time} minutes.")
   rescue => e
     @log.import_logger.error("***********************Error importing identifications: #{e.message}")
   end
@@ -47,13 +50,11 @@ class IdentificationImportService
 
     assign_fields(identification, row)
 
-    if identification.save
-      @log.import_logger.info("************************Saved identification for item #{item.occurrence_id}")
-    else
-      @log.import_logger.error("************************Failed to save identification: #{identification.errors.full_messages.join(', ')}")
+    unless identification.save
+      @log.import_logger.error("***********************Failed to save identification: #{identification.errors.full_messages.join(', ')}")
     end
   rescue => e
-    @log.import_logger.error("***************************Error saving identification: #{e.message}")
+    @log.import_logger.error("***********************Error saving identification: #{e.message}")
   end
 
   def assign_fields(identification, row)
@@ -66,11 +67,8 @@ class IdentificationImportService
       value = row_hash[field_in_row]&.strip
       next if value.blank?
 
-      case field
-      when "current"
+      if field == "current"
         identification.current = handle_current(value)
-      # when "taxon_rank"
-      #   identification.taxon_rank = value.to_i
       else
         identification.assign_attributes(field => value)
       end
@@ -90,7 +88,6 @@ class IdentificationImportService
   end
 
   def handle_current(value)
-    @log.import_logger.debug("*************************current field in identification: #{value}")
     case value.downcase
     when "true", "1", "yes" then true
     when "false", "0", "no" then false
