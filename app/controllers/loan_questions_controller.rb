@@ -11,6 +11,7 @@ class LoanQuestionsController < ApplicationController
 
   # GET /loan_questions/1 or /loan_questions/1.json
   def show
+    @options = @loan_question.options
   end
 
   # GET /loan_questions/new
@@ -20,20 +21,21 @@ class LoanQuestionsController < ApplicationController
 
   # GET /loan_questions/1/edit
   def edit
+    @options = @loan_question.options
   end
 
   # POST /loan_questions or /loan_questions.json
   def create
     @loan_question = LoanQuestion.new(loan_question_params)
     if loan_question_params[:question_type] == "dropdown" || loan_question_params[:question_type] == "checkbox"
-      options = params[:option_attributes].values
+      options = params[:options_attributes].values
     end
     authorize @loan_question
 
     respond_to do |format|
       if @loan_question.save
         if loan_question_params[:question_type] == "dropdown" || loan_question_params[:question_type] == "checkbox" 
-            options = params[:option_attributes].values        
+            options = params[:options_attributes].values        
             options.each do |option|
               Option.create(value: option[:value], loan_question_id: @loan_question.id)
             end
@@ -41,7 +43,7 @@ class LoanQuestionsController < ApplicationController
         format.html { redirect_to @loan_question, notice: "Loan question was successfully created." }
         format.json { render :show, status: :ok, location: @loan_question }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @loan_question.errors, status: :unprocessable_entity }
       end
     end
@@ -49,13 +51,26 @@ class LoanQuestionsController < ApplicationController
 
   # PATCH/PUT /loan_questions/1 or /loan_questions/1.json
   def update
+    authorize @loan_question
+    success = true
+    ActiveRecord::Base.transaction do
+      begin
+        @loan_question.update(loan_question_params)
+        if @loan_question.question_type.in?(%w[dropdown checkbox]) && params[:options_attributes].present?
+          update_options(@loan_question, params[:options_attributes].values)
+        end
+        success = true
+      rescue StandardError => e
+        raise ActiveRecord::Rollback
+        flash.now[:alert] = "Error updating loan question with options: " + e.message
+        success = false
+      end
+    end
     respond_to do |format|
-      if @loan_question.update(loan_question_params)
+      if success
         format.html { redirect_to @loan_question, notice: "Loan question was successfully updated." }
-        format.json { render :show, status: :ok, location: @loan_question }
       else
         format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @loan_question.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -74,9 +89,20 @@ class LoanQuestionsController < ApplicationController
   end
 
   private
+
+    def update_options(loan_question, options_attributes)
+      if loan_question.options.present?
+        Option.where(loan_question_id: loan_question.id).destroy_all
+        options_attributes.each do |option|
+          # raise ActiveRecord::Rollback unless 
+          Option.create(value: option[:value], loan_question_id: loan_question.id)
+        end
+      end
+      true
+    end
     # Use callbacks to share common setup or constraints between actions.
     def set_loan_question
-      @loan_question = LoanQuestion.find(params.expect(:id))
+      @loan_question = LoanQuestion.find(params[:id])
     end
 
     def set_question_types
@@ -85,6 +111,10 @@ class LoanQuestionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def loan_question_params
-      params.expect(loan_question: [ :question, :question_type, options: [ :value ] ])
+      params.require(:loan_question).permit(
+        :question,
+        :question_type,
+        options_attributes: [:id, :value, :_destroy]
+      )
     end
 end
