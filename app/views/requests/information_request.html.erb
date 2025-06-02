@@ -1,0 +1,27 @@
+<h1>Requests#send_information_request</h1>
+<p>Find me in app/views/requests/send_information_request.html.erb</p>
+
+<%= form_with(model: @information_request, url: send_information_request_path(@information_request)) do |form| %>
+  <% if @information_request.errors.any? %>
+    <div class="text-danger">
+    <h2><%= pluralize(@information_request.errors.count, "error") %></h2>
+    <ul>
+      <% @information_request.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
+    </div>
+  <% end %>
+  <div>
+    <%= form.label :send_to, "Select the Email Address *" %>
+    <%= form.select(:send_to, options_for_select(@send_to)) %>
+  </div>
+  <div>
+    <div>Email Message *</div>
+    <%= form.rich_text_area :question %>
+  </div>
+  <div class="mt-1 gap-1 d-flex flex-row justify-content-start align-items-center">
+    <%= form.submit %>
+    <button type="button" class="btn btn-secondary">Cancel</button>
+  </div>
+<% end %>
