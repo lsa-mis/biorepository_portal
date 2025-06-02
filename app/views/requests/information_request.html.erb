@@ -1,5 +1,4 @@
-<h1>Requests#send_information_request</h1>
-<p>Find me in app/views/requests/send_information_request.html.erb</p>
+<h1>Send Information Request</h1>
 
 <%= form_with(model: @information_request, url: send_information_request_path(@information_request)) do |form| %>
   <% if @information_request.errors.any? %>
@@ -14,11 +13,23 @@
   <% end %>
   <div>
     <%= form.label :send_to, "Select the Email Address *" %>
-    <%= form.select(:send_to, options_for_select(@send_to)) %>
+    <% @send_to.each do |email| %>
+      <div>
+        <%= check_box_tag 'information_request[send_to][]', email, @information_request.send_to&.include?(email), id: "send_to_#{email}" %>
+        <%= label_tag "send_to_#{email}", email %>
+      </div>
+    <% end %>
   </div>
   <div>
+    <p>
+    Include Items from Checkout
+    </p>
+    <div class="form-check">
+      <%= check_box_tag :include_items_from_checkout, '1', id: 'include_items_from_checkout' %>
+      <%= label_tag 'include_items_from_checkout', 'Include Items from Checkout' %>
+    </div>
     <div>Email Message *</div>
-    <%= form.rich_text_area :question %>
+    <%= form.rich_text_area :question, required: true %>
   </div>
   <div class="mt-1 gap-1 d-flex flex-row justify-content-start align-items-center">
     <%= form.submit %>
