@@ -6,11 +6,20 @@
   <body>
     <p>BioRepository Information Request</p>
     <p>
-      <b>Submitted: </b><%= @user.email %>
+      Submitted by <%= @user.email %>
     </p>
     <p>
       <%= raw(@message) %>
     </p>
-    
+    <% if @checkout_items.present? %>
+      <p>
+        <b>Checkout Items:</b>
+      </p>
+      <p>
+        <% @checkout_items.each do |item| %>
+          <%= item %> <br>
+        <% end %>
+      </p>
+    <% end %>
   </body>
 </html>

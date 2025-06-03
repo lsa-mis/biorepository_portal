@@ -2,12 +2,12 @@
 #
 # Table name: information_requests
 #
-#  id         :bigint           not null, primary key
-#  items      :string
-#  send_to    :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  user_id    :bigint           not null
+#  id             :bigint           not null, primary key
+#  checkout_items :string
+#  send_to        :string
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  user_id        :bigint           not null
 #
 # Indexes
 #
@@ -20,6 +20,6 @@
 FactoryBot.define do
   factory :information_request do
     send_to { "MyString" }
-    items { "MyString" }
+    checkout_items { "MyString" }
   end
 end
