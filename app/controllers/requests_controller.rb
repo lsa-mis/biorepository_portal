@@ -6,6 +6,7 @@ class RequestsController < ApplicationController
   end
 
   def send_information_request
+    checkout_items = ""
     message = params[:information_request][:question]
     send_to = params[:information_request][:send_to]
     if params[:include_items_from_checkout] == "1"
