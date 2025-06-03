@@ -12,6 +12,11 @@
   <% end %>
 
   <div>
+    <%= form.check_box :required, class: "form-check-input", id: "loan_question_required" %>
+    <%= form.label :required, "Required", class: "form-check-label", for: "loan_question_required" %>
+  </div>
+
+  <div>
     <%= form.label :question, class: "form-label" %>
     <%= form.text_field :question, required: true  %>
   </div>
