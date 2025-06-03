@@ -41,8 +41,8 @@ Rails.application.configure do
 
   # config.action_mailer.perform_caching = false
 
-  host = 'https://biorepository-staging.lsa.umich.edu/'
-  config.action_mailer.default_url_options = { host: host }
+  host = 'biorepository-staging.lsa.umich.edu'
+  config.action_mailer.default_url_options = { host: host, protocol: 'https' }
   config.action_mailer.perform_caching = false
   config.action_mailer.raise_delivery_errors = true
 

@@ -5,7 +5,9 @@ export default class extends Controller {
   static targets = ["checkboxes", "form"]
 
   connect() {
-   console.log("CheckboxGroupRequiredController connected")
+    if (process.env.NODE_ENV !== "production") {
+      console.log("CheckboxGroupRequiredController connected")
+    }  
   }
 
   submitForm(event) {
