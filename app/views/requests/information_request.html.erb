@@ -1,6 +1,10 @@
 <h1>Send Information Request</h1>
 
-<%= form_with(model: @information_request, url: send_information_request_path(@information_request)) do |form| %>
+<%= form_with(model: @information_request, url: send_information_request_path(@information_request),
+        data: { controller: "checkbox-group-required",
+          target: "form",
+          action: "submit->checkbox-group-required#submitForm"
+        } ) do |form| %>
   <% if @information_request.errors.any? %>
     <div class="text-danger">
     <h2><%= pluralize(@information_request.errors.count, "error") %></h2>
@@ -15,11 +19,12 @@
     <%= form.label :send_to, "Select Email Addresses you want to sent the request to*" %>
     <% @send_to.each do |email| %>
       <div class="ms-3">
-        <%= check_box_tag 'information_request[send_to][]', email, @information_request.send_to&.include?(email), id: "send_to_#{email}", required: true %>
-        <%= label_tag "send_to_#{email}", email %>
+        <%= check_box_tag 'information_request[send_to][]', email, @information_request.send_to&.include?(email), id: "send_to_#{email}", required: false, "data-checkbox-group-required-target": "checkboxes" %>
+        <%= label_tag "send_to_#{email}", email %>"
       </div>
     <% end %>
   </div>
+  <div class="text-danger" id="checkbox_error"></div>
 
   <div class="mt-3">
     <%= check_box_tag :include_items_from_checkout, '1', id: 'include_items_from_checkout' %>
