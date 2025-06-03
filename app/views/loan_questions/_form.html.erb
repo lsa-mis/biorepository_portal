@@ -13,22 +13,12 @@
 
   <div>
     <%= form.label :question, class: "form-label" %>
-    <%= form.text_field :question, required: true, class: "input_text_field"  %>
+    <%= form.text_field :question, required: true  %>
   </div>
 
   <div>
     <%= form.label :question_type, class: "form-label" %>
-    <%= form.select :question_type, @question_types,
-         { include_blank: "Select ...", required: true },
-         { class: "input_text_field",
-           "data-show-options-target": "question_type",
-           "data-action" => "change->show-options#showOptions"
-         } %>
-  </div>
-  
-  <div class="mb-3 form-check">
-    <%= form.check_box :required, class: "form-check-input", id: "loan_question_required" %>
-    <%= form.label :required, "Required?", class: "form-check-label", for: "loan_question_required" %>
+    <%= form.select :question_type, @question_types, { include_blank: "Select ...", required: true }, { "data-show-options-target": "question_type", :"data-action" => "change->show-options#showOptions" } %>
   </div>
 
   <div class="invisible" data-controller="edit-options" data-show-options-target="display_options">
@@ -39,7 +29,7 @@
         <div class="option-list-item d-flex justify-content-between align-items-center">
           <div class="flex-grow-1 mx-3">
             <label for="option_attributes_1_option">Option 1</label>
-            <%= text_field_tag("option_attributes[1][value]", nil, {class: "input_text_field"}) %>
+            <%= text_field_tag("options_attributes[1][value]", nil, {required: true}) %>
           </div>
           <div class="">
             <button type="button" title="Remove option" class="remove-option-button mt-4 invisible"
@@ -53,7 +43,7 @@
         <div class="option-list-item d-flex justify-content-between align-items-center">
           <div class="flex-grow-1 mx-3">
             <label for="option_attributes_2_option">Option 2</label>
-            <%= text_field_tag("option_attributes[2][value]", nil, {class: "input_text_field"}) %>
+            <%= text_field_tag("options_attributes[2][value]", nil, {required: true}) %>
           </div>
           <div class="">
             <button type="button" title="Remove option" class="remove-option-button mt-4 invisible"
@@ -74,7 +64,7 @@
         <div class="option-list-item d-flex justify-content-between align-items-center">
           <div class="flex-grow-1 mx-3">
             <label data-edit-options-target="option_label"></label>
-            <input type="text" class="input_text_field" required data-edit-options-target="option_value" />
+            <input type="text" required data-edit-options-target="option_value" />
           </div>
           <div class="">
             <button type="button" class="remove-option-button mt-4"
