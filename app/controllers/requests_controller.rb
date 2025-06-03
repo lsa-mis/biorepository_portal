@@ -30,7 +30,8 @@ class RequestsController < ApplicationController
       ).send_information_request.deliver_now
       redirect_to root_path, notice: "Information request sent successfully."
     else
-      flash.now[:alert] = "Failed to send information request. Please try again. "
+      flash.now[:alert] = "Failed to send information request."
+      @send_to = Collection.pluck(:admin_group).compact
       render :information_request
     end
   end
