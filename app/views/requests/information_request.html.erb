@@ -20,7 +20,7 @@
     <% @send_to.each do |email| %>
       <div class="ms-3">
         <%= check_box_tag 'information_request[send_to][]', email, @information_request.send_to&.include?(email), id: "send_to_#{email}", required: false, "data-checkbox-group-required-target": "checkboxes" %>
-        <%= label_tag "send_to_#{email}", email %>"
+        <%= label_tag "send_to_#{email}", email %>
       </div>
     <% end %>
   </div>
