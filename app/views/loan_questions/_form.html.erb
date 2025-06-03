@@ -18,8 +18,19 @@
 
   <div>
     <%= form.label :question_type, class: "form-label" %>
-    <%= form.select :question_type, @question_types, { include_blank: "Select ...", required: true }, { class: "input_text_field", "data-show-options-target": "question_type", :"data-action" => "change->show-options#showOptions" } %>
+    <%= form.select :question_type, @question_types,
+         { include_blank: "Select ...", required: true },
+         { class: "input_text_field",
+           "data-show-options-target": "question_type",
+           "data-action" => "change->show-options#showOptions"
+         } %>
   </div>
+  
+  <div class="mb-3 form-check">
+    <%= form.check_box :required, class: "form-check-input", id: "loan_question_required" %>
+    <%= form.label :required, "Required?", class: "form-check-label", for: "loan_question_required" %>
+  </div>
+
   <div class="invisible" data-controller="edit-options" data-show-options-target="display_options">
     <%= turbo_frame_tag("options_list") do %>
 

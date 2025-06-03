@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_28_230351) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_02_194233) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -139,6 +139,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_28_230351) do
     t.integer "question_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "required"
   end
 
   create_table "map_fields", force: :cascade do |t|
