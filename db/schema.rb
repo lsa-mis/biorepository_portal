@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_28_230351) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_02_213519) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -89,6 +89,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_28_230351) do
     t.datetime "updated_at", null: false
     t.boolean "current", default: false, null: false
     t.index ["item_id"], name: "index_identifications_on_item_id"
+  end
+
+  create_table "information_requests", force: :cascade do |t|
+    t.string "send_to"
+    t.string "checkout_items"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_information_requests_on_user_id"
   end
 
   create_table "items", force: :cascade do |t|
@@ -205,6 +214,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_28_230351) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "identifications", "items"
+  add_foreign_key "information_requests", "users"
   add_foreign_key "items", "collections"
   add_foreign_key "options", "loan_questions"
   add_foreign_key "preparations", "items"
