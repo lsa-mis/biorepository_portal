@@ -21,5 +21,6 @@ FactoryBot.define do
   factory :information_request do
     send_to { "MyString" }
     checkout_items { "MyString" }
+    association :user
   end
 end

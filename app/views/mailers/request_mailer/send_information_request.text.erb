@@ -3,5 +3,7 @@ Submitted: </b><%= @user.email %>
 <%= strip_tags(@message) %>
 <% if @checkout_items.present? %>
   Items from Checkout:
-  <%= @checkout_items %>
+  <% @checkout_items.each do |item| %>
+    <%= item %> <br>
+  <% end %>
 <% end %>

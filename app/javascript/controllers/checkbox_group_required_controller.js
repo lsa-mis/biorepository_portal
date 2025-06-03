@@ -12,7 +12,7 @@ export default class extends Controller {
     var checkbox_error_place = document.getElementById('checkbox_error')
     checkbox_error_place.innerHTML = ''
     if (!this.checkboxesTargets.map(x => x.checked).includes(true)) {
-      checkbox_error_place.innerHTML = "Please select at least one emails."
+      checkbox_error_place.innerHTML = "Please select at least one email address."
       event.preventDefault()
     }
   }

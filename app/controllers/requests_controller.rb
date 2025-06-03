@@ -43,7 +43,7 @@ class RequestsController < ApplicationController
       if preparation.barcode.present?
         checkout_items += "barcode: #{preparation.barcode}"
       end
-      if preparation.barcode.present?
+      if preparation.description.present?
         checkout_items += ", description: #{preparation.description}"
       end
       checkout_items += ", count: #{requestable.count}. "
