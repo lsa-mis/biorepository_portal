@@ -22,5 +22,6 @@ class InformationRequest < ApplicationRecord
   has_rich_text :question
 
   validates :send_to, presence: true
+  validates :question, presence: true
 
 end
