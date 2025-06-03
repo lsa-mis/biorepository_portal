@@ -13,5 +13,6 @@
 #
 class Collection < ApplicationRecord
   has_many :items, dependent: :destroy
+  has_many :collection_questions, dependent: :destroy
   has_one_attached :image
 end
