@@ -54,6 +54,7 @@ class AppPreferencesController < ApplicationController
       @app_preference.collection_id = collection.id
       unless @app_preference.save
         @app_preferences = AppPreference.distinct.pluck(:name, :description, :pref_type)
+        flash.now[:alert] = "Error creating app preference."
         return
       end
     end
