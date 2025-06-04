@@ -5,8 +5,8 @@ class AppPreferencesController < ApplicationController
   # GET /app_preferences or /app_preferences.json
   def index
     @app_preference = AppPreference.new
-    @app_preferences = AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type)
     authorize AppPreference
+    @app_preferences = AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type)
   end
 
   def app_prefs
@@ -89,6 +89,6 @@ class AppPreferencesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def app_preference_params
-      params.require(:app_preference).permit(:name, :description, :on_off, :value, :pref_type, :collection_id)
+      params.require(:app_preference).permit(:name, :description, :value, :pref_type, :collection_id)
     end
 end
