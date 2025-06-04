@@ -1,0 +1,33 @@
+<%= turbo_frame_tag 'new_preference' do %>
+  <%= form_with(model: app_preference, class: "contents") do |form| %>
+    <% if app_preference.errors.any? %>
+      <div id="error_explanation" class="text-red-umred px-3 py-2 font-medium rounded-lg mt-3">
+        <h2><%= pluralize(app_preference.errors.count, "error") %> prohibited this app_preference from being saved:</h2>
+        <ul>
+          <% app_preference.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="my-5">
+      <%= form.label :name, "Name *", class: "fancy_label" %>
+      <%= form.text_field :name, required: true, class: "input_text_field" %>
+    </div>
+
+    <div class="my-5">
+      <%= form.label :description, "Description *", class: "fancy_label" %>
+      <%= form.text_field :description, required: true, class: "input_text_field" %>
+    </div>
+
+    <div class="my-5">
+      <%= form.label :pref_type, 'Type *', class: "fancy_label" %>
+      <%= form.select :pref_type, @pref_types.map{ |key| [key.titleize, key] }, { include_blank: "Select ...", required: true }, { class: "input_text_field" } %>
+    </div>
+
+    <div class="inline">
+      <%= form.submit 'Create Unit Preference', class: "secondary_blue_button" %>
+    </div>
+  <% end %>
+<% end %>

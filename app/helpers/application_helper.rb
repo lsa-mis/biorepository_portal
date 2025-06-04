@@ -14,9 +14,15 @@ module ApplicationHelper
       " - super admin"
     elsif is_admin?
       " - admin"
+    elsif is_developer?
+      " - developer"
     else
       ""
     end
+  end
+
+  def is_developer?
+    session[:role] == "developer"
   end
 
   def is_super_admin?
@@ -54,6 +60,10 @@ module ApplicationHelper
 
   def render_flash_stream
     turbo_stream.update "flash", partial: "layouts/flash"
+  end
+
+  def pref_types
+    AppPreference.pref_types.keys.map{ |key| [key.titleize, key] }
   end
   
 end

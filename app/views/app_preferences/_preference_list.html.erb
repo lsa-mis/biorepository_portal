@@ -1,0 +1,32 @@
+<%= turbo_frame_tag 'app_preferences' do %>
+  <div class="min-w-full">
+    <table class="mi_table">
+      <thead class="mi_thead">
+        <tr>
+          <th class="header_th">Name</th>
+          <th class="header_th">Description</th>
+          <th class="header_th">Type</th>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <% @app_preferences.each do |name, descr, pref_type| %>
+          <tr class="mi_tbody_tr">
+            <td class="mi_tbody_td">
+              <%= name %>
+            </td>
+            <td class="mi_tbody_td">
+              <%= descr %>
+            </td>
+            <td class="mi_tbody_td">
+              <%= pref_type %>
+            </td>
+            <td>
+              <%= link_to 'Delete', delete_preference_path(name), data: { turbo_confirm: 'Are you sure?', turbo_method: :get }, class: "link_to" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

@@ -1,0 +1,36 @@
+<div class="mx-auto w-full">
+  <h1>Unit Preferences</h1>
+  
+    <%= form_with model: @unit_prefs, url: unit_prefs_path, method: :post do |form| %>
+      <% @units.each do |unit| %>
+        <h2 class="m-2"><%= unit.name %></h2>
+        <% @unit_prefs.where(unit_id: unit).each do |pref| %>
+          <%= fields_for 'unit_prefs[]' do %>
+            <div>
+              <% if pref.pref_type == "boolean" %>
+                <label for=<%= "unit_prefs_#{unit.id}_#{pref.name}" %> class="hidden"><%= pref.description %></label>
+                <%= check_box_tag "unit_prefs[#{unit.id}][#{pref.name}]", 1, pref.on_off, class: "check_box" %>
+                <span class="check_box_text"><%= pref.description %></span>
+              <% elsif pref.pref_type == "string" %>
+                <label for=<%= "unit_prefs_#{unit.id}_#{pref.name}" %> class="fancy_label"><%= pref.description %></label>
+                <%= text_field_tag("unit_prefs[#{unit.id}][#{pref.name}]", pref.value, {class: "input_text_field"}) %>
+              <% elsif pref.pref_type == "integer" %>
+                <label for=<%= "unit_prefs_#{unit.id}_#{pref.name}" %> class="fancy_label"><%= pref.description %></label>
+                <%= number_field_tag("unit_prefs[#{unit.id}][#{pref.name}]", pref.value, {class: "input_text_field"}) %>
+              <% elsif pref.pref_type == "time" %>
+                <label for=<%= "unit_prefs_#{unit.id}_#{pref.name}" %> class="fancy_label"><%= pref.description %> *</label>
+                <%#= text_field_tag("unit_prefs[#{unit.id}][#{pref.name}]", pref.value, {required: true, class: "input_text_field"}) %>
+                <%= select_tag "unit_prefs[#{unit.id}][#{pref.name}]", options_for_select(time_list, pref.value), class: "input_text_field" %>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <div class="my-4">
+        <div class="inline">
+          <%= submit_tag 'Update your preferences', class: "secondary_blue_button" %>
+        </div>
+      <div>
+    <% end %>
+</div>
