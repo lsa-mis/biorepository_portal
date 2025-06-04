@@ -1,6 +1,6 @@
 <div class="mx-auto w-full">
   <h1>Application Preferences</h1>
-  
+  <%= turbo_frame_tag 'all_preferences' do %>
     <%= form_with model: @app_prefs, url: app_prefs_path, method: :post do |form| %>
       <% @collections.each do |collection| %>
         <h2 class="m-4"><%= collection.division %></h2>
@@ -29,4 +29,5 @@
         </div>
       <div>
     <% end %>
+  <% end %>
 </div>

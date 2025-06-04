@@ -22,16 +22,13 @@ class AppPreferencesController < ApplicationController
       params[:app_prefs].each do |collection, p|
         collection_id = collection.to_i
         p.each do |k, v|
-          pref = AppPreference.find_by(collection_id: collection_id, name: k)
-          if pref.pref_type == 'boolean'
-            value = v == '1' ? '1' : '0'
-            pref.update(value: value)
-          end
-          if pref.pref_type == 'integer'
-            pref.update(value: v.to_s)
-          end
-          if pref.pref_type == 'string'
-            pref.update(value: v.to_s)
+          app_pref = AppPreference.find_by(collection_id: collection_id, name: k)
+          unless false
+            # app_pref&.update(value: v)
+            flash.now[:alert] = "Error updating app preference: #{app_pref&.errors&.full_messages&.join(', ') || 'Preference not found.'}"
+            @collections = Collection.where(id: session[:collection_ids])
+            @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
+            render :app_prefs, formats: :turbo_stream, status: :unprocessable_entity and return
           end
         end
       end
