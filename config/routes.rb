@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "requests/information_request", to: "requests#information_request", as: :information_request
+  post "requests/send_information_request", to: "requests#send_information_request", as: :send_information_request
   get "loan_questions/preview", to: "loan_questions#preview", as: :preview_loan_questions
   resources :loan_questions
   get "checkout", to: "checkout#show"
