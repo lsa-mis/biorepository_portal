@@ -1,5 +1,4 @@
 class AppPreferencesController < ApplicationController
-  before_action :set_collections
   before_action :set_pref_types, only: %i[ index new create]
 
   # GET /app_preferences or /app_preferences.json
@@ -10,6 +9,7 @@ class AppPreferencesController < ApplicationController
   end
 
   def app_prefs
+    @collections = Collection.where(id: session[:collection_ids])
     @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
     authorize @app_prefs
   end
@@ -43,7 +43,6 @@ class AppPreferencesController < ApplicationController
   def new
     @app_preference = AppPreference.new
     authorize @app_preference
-    @collections = App.all
   end
 
   # POST /app_preferences or /app_preferences.json

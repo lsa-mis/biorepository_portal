@@ -22,7 +22,7 @@
               <%= pref_type %>
             </td>
             <td class="text-center">
-              <%= link_to delete_preference_path(name), 'aria-label': "delete_#{name}", data: { turbo_confirm: "Are you sure you want to delete this preference?" , turbo_method: :delete } do %>
+              <%= link_to delete_preference_path(name), 'aria-label': "delete_#{name}", data: { turbo_confirm: "Are you sure you want to delete this preference?" , turbo_method: :get } do %>
                 <i class="bi bi-trash-fill text-danger"></i>
               <% end %>
             </td>

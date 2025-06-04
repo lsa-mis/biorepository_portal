@@ -11,19 +11,19 @@
       </div>
     <% end %>
 
-    <div class="my-5">
-      <%= form.label :name, "Name *", class: "fancy_label" %>
-      <%= form.text_field :name, required: true, class: "input_text_field" %>
+    <div class="">
+      <%= form.label :name, "Name *" %>
+      <%= form.text_field :name, required: true %>
     </div>
 
-    <div class="my-5">
-      <%= form.label :description, "Description *", class: "fancy_label" %>
-      <%= form.text_field :description, required: true, class: "input_text_field" %>
+    <div class="">
+      <%= form.label :description, "Description *" %>
+      <%= form.text_field :description, required: true %>
     </div>
 
-    <div class="my-5">
-      <%= form.label :pref_type, 'Type *', class: "fancy_label" %>
-      <%= form.select :pref_type, @pref_types.map{ |key| [key.titleize, key] }, { include_blank: "Select ...", required: true }, { class: "input_text_field" } %>
+    <div class="">
+      <%= form.label :pref_type, 'Type *' %>
+      <%= form.select :pref_type, @pref_types.map{ |key| [key.titleize, key] }, { include_blank: "Select ...", required: true } %>
     </div>
 
     <div class="inline">
