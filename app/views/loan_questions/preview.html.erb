@@ -13,6 +13,9 @@
     <% @loan_questions.each do |loan_question| %>
       <div class="mb-4 border rounded p-3 bg-light">
         <label class="form-label"><%= loan_question.question %></label>
+        <% if loan_question.required? %>
+          <span class="text-danger">*</span>
+        <% end %>
         
         <% if loan_question.question_type == "text" %>
           <div class="ms-3">

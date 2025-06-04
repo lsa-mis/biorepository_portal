@@ -7,6 +7,12 @@
       <%#= link_to "Delete Loan Question", loan_question_path(loan_question), class: "link_to", data: { turbo_confirm: "Are you sure you want to delete this question?", turbo_method: :delete } %>
     </div>
   </div>
+
+  <p>
+    <strong>Required: </strong>
+    <%= show_boolean(loan_question.required) %>
+  </p>
+
   <p>
     <strong>Question:</strong>
     <%= loan_question.question %>
