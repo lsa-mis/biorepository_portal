@@ -1,6 +1,12 @@
 
 <%= render @collection %>
 
+<% if is_collection_admin?(@collection) %>
+  <%= link_to "Add Collection-Specific Loan Question", 
+              new_collection_collection_question_path(@collection),
+              class: "btn btn-success mb-3" %>
+<% end %>
+
 <div>
   <%= render 'import' if policy(@collection).import? %>
 </div>

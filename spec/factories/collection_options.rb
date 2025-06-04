@@ -1,28 +1,24 @@
 # == Schema Information
 #
-# Table name: collection_answers
+# Table name: collection_options
 #
 #  id                     :bigint           not null, primary key
-#  answer                 :text
+#  value                  :string           not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  collection_question_id :bigint           not null
-#  user_id                :bigint           not null
 #
 # Indexes
 #
-#  index_collection_answers_on_collection_question_id  (collection_question_id)
-#  index_collection_answers_on_user_id                 (user_id)
+#  index_collection_options_on_collection_question_id  (collection_question_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (collection_question_id => collection_questions.id)
-#  fk_rails_...  (user_id => users.id)
 #
 FactoryBot.define do
-  factory :collection_answer do
+  factory :collection_option do
+    value { "MyString" }
     collection_question { nil }
-    user { nil }
-    answer { "MyText" }
   end
 end

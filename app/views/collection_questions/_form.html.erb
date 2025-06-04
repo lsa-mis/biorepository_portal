@@ -1,0 +1,71 @@
+<%= form_with(model: [@collection, @collection_question], data: { controller: "show-options" }) do |form| %>
+  <% if @collection_question.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(@collection_question.errors.count, "error") %> prohibited this question from being saved:</h2>
+      <ul>
+        <% @collection_question.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :question, class: "form-label" %>
+    <%= form.text_field :question, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :question_type, class: "form-label" %>
+    <%= form.select :question_type, @question_types, { include_blank: "Select ...", required: true }, { "data-show-options-target": "question_type", :"data-action" => "change->show-options#showOptions" } %>
+  </div>
+
+  <div class="invisible" data-controller="edit-options" data-show-options-target="display_options">
+    <%= turbo_frame_tag("options_list") do %>
+      <div id="options" data-edit-options-target="fields">
+        <%= form.fields_for :collection_options do |opt_form| %>
+          <div class="option-list-item d-flex justify-content-between align-items-center">
+            <div class="flex-grow-1 mx-3">
+              <%= opt_form.label :value, "Option", class: "form-label" %>
+              <%= opt_form.text_field :value, required: true, class: "form-control" %>
+            </div>
+            <div>
+              <%= opt_form.hidden_field :_destroy %>
+              <%= opt_form.hidden_field :id %>
+              <button type="button" title="Remove option" class="remove-option-button mt-4 invisible"
+                      data-action="click->edit-options#removeOption">
+                <i class="bi bi-trash-fill text-danger"></i>
+              </button>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <div>
+        <%= button_tag "Add Option", type: :button, class: "btn btn-sm",
+            data: { action: "edit-options#append", "edit-options-target": "add_option_button" } %>
+      </div>
+
+      <template data-edit-options-target="template">
+        <div class="option-list-item d-flex justify-content-between align-items-center">
+          <div class="flex-grow-1 mx-3">
+            <label data-edit-options-target="option_label"></label>
+            <input type="text" required data-edit-options-target="option_value" />
+          </div>
+          <div class="">
+            <button type="button" class="remove-option-button mt-4"
+              data-edit-options-target="remove_button"
+              data-action="click->edit-options#removeOption">
+              <i class="bi bi-trash-fill text-danger"></i>
+            </button>
+          </div>
+          <input type="hidden" data-edit-options-target="option_number" />
+        </div>
+      </template>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
