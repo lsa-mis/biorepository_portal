@@ -43,7 +43,7 @@ class ApplicationPolicy
   end
 
   def is_super_admin?
-    @role == "super_admin"
+    @role == "super_admin" || @role == "developer"
   end
 
   def is_developer?

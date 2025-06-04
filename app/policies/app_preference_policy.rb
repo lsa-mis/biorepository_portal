@@ -15,23 +15,15 @@ class AppPreferencePolicy < ApplicationPolicy
     create?
   end
 
-  def update?
-    is_developer?
-  end
-  
-  def edit?
-    update?
-  end
-
-  def destroy?
+  def delete_preference?
     is_developer?
   end
 
-  def configure_prefs?
+  def save_app_prefs?
     is_admin?
   end
 
-  def save_configured_prefs?
+  def app_prefs?
     is_admin?
   end
 

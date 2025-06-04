@@ -17,19 +17,20 @@ class AppPreferencesController < ApplicationController
   def save_app_prefs
     @app_prefs = AppPreference.where(collection_id: session[:collection_ids])
     authorize @app_prefs
-    @app_prefs.where(pref_type: 'boolean').update(on_off: false)
+    @app_prefs.where(pref_type: 'boolean').update(value: "0")
     if params[:app_prefs].present?
       params[:app_prefs].each do |collection, p|
         collection_id = collection.to_i
         p.each do |k, v|
           pref = AppPreference.find_by(collection_id: collection_id, name: k)
           if pref.pref_type == 'boolean'
-            pref.update(on_off: true)
-          end
-          if pref.pref_type == 'time' || pref.pref_type == 'string'
-            pref.update(value: v)
+            value = v == '1' ? '1' : '0'
+            pref.update(value: value)
           end
           if pref.pref_type == 'integer'
+            pref.update(value: v.to_s)
+          end
+          if pref.pref_type == 'string'
             pref.update(value: v.to_s)
           end
         end
@@ -48,7 +49,7 @@ class AppPreferencesController < ApplicationController
   # POST /app_preferences or /app_preferences.json
   def create
     # create preference for every collection
-    App.all.each do |collection|
+    Collection.all.each do |collection|
       @app_preference = AppPreference.new(app_preference_params)
       authorize @app_preference
       @app_preference.collection_id = collection.id

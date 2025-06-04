@@ -26,7 +26,7 @@ module ApplicationHelper
   end
 
   def is_super_admin?
-    session[:role] == "super_admin"
+    session[:role] == "super_admin" || session[:role] == "developer"
   end
 
   def is_admin?
@@ -64,6 +64,11 @@ module ApplicationHelper
 
   def pref_types
     AppPreference.pref_types.keys.map{ |key| [key.titleize, key] }
+  end
+
+  def string_to_boolean(value)
+    return true if value == "1"
+    return false if value == "0"
   end
   
 end

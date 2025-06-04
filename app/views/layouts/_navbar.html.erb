@@ -31,7 +31,7 @@
               <%= link_to "Create Preferences", app_preferences_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).index? %>
             </li>
             <li>
-              <%= link_to "App Preferences", app_prefs_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).configure_prefs? %>
+              <%= link_to "App Preferences", app_prefs_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).app_prefs? %>
             </li>
           </ul>
         </div>
