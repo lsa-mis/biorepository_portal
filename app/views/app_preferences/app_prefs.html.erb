@@ -13,10 +13,10 @@
                 <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %> class="invisible"><%= pref.description %></label>
               <% elsif pref.pref_type == "string" %>
                 <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %>><%= pref.description %></label>
-                <%= text_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value, {class: "input_text_field"}) %>
+                <%= text_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value) %>
               <% elsif pref.pref_type == "integer" %>
                 <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %>><%= pref.description %></label>
-                <%= number_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value, {class: "input_text_field"}) %>
+                <%= number_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value) %>
               <% end %>
             </div>
           <% end %>
