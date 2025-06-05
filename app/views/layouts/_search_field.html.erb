@@ -1,0 +1,9 @@
+<div class="search-row d-flex align-items-center mb-2" data-search-target="row">
+  <%= select_tag "q[conditions][][attribute]",
+        options_for_select([["Associated_Sequences", "associated_sequences_cont"], ["County", "county_cont"], ["Geodetic Datum", "geodetic_datum_cont"]]),
+        class: "form-select me-2" %>
+
+  <%= text_field_tag "q[conditions][][value]", nil, class: "form-control me-2" %>
+
+  <button type="button" class="btn btn-outline-danger" data-action="click->search#removeField">✕</button>
+</div>
