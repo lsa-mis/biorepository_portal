@@ -60,7 +60,7 @@
         <%if @continents.present?%>
           <% @continents.each do |continent| %>
             <div class="form-check">
-              <%= check_box_tag "q[continent_in][]", continent, params.dig(:q, :continent_in)&.include?(continent), id: "continent_#{continent}" %>
+              <%= check_box_tag "q[continent_in][]", continent, params.dig(:q, :continent_in)&.include?(continent), id: "continent_#{continent.parameterize}" %>
               <%= label_tag "continent_#{continent.parameterize}", continent.downcase.titleize %>
             </div>
           <% end %>
@@ -70,16 +70,12 @@
       </div>
     </div>
     <div>
-      <%= f.label :collection_division_i_cont, "Associated Sequences" %>
-      <%= f.search_field :collection_division_i_cont, class: "form-control form-control-sm" %>
-    </div>
-    <div>
       <%= f.label :associated_sequences_i_cont, "Associated Sequences" %>
       <%= f.search_field :associated_sequences_i_cont, class: "form-control form-control-sm" %>
     </div>
     <div>
       <%= f.label :catalog_number_eq, "Catalog Number" %>
-      <%= f.search_field :catalog_number_eq , placeholder: 'Country, State, Province, or Scientific Name or Vernacular Name', class: "form-control form-control-sm" %>
+      <%= f.search_field :catalog_number_eq , placeholder: 'Enter Catalog Number', class: "form-control form-control-sm" %>
     </div>
     <div>
       <%= f.label :county_i_cont, "County" %>
