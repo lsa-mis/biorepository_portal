@@ -1,0 +1,30 @@
+<%= turbo_frame_tag 'all_preferences' do %>
+  <%= form_with model: @app_prefs, url: app_prefs_path, method: :post do |form| %>
+    <% @collections.each do |collection| %>
+      <h2 class="m-4"><%= collection.division %></h2>
+      <% @app_prefs.where(collection_id: collection).each do |pref| %>
+        <%= fields_for 'app_prefs[]' do %>
+          <div>
+            <% if pref.pref_type == "boolean" %>
+              <%= check_box_tag "app_prefs[#{collection.id}][#{pref.name}]", 1, string_to_boolean(pref.value), class: "form-check-input" %>
+              <span class="check_box_text"><%= pref.description %></span>
+              <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %> class="invisible"><%= pref.description %></label>
+            <% elsif pref.pref_type == "string" %>
+              <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %>><%= pref.description %></label>
+              <%= text_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value) %>
+            <% elsif pref.pref_type == "integer" %>
+              <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %>><%= pref.description %></label>
+              <%= number_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value) %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <div class="my-4">
+      <div class="inline">
+        <%= submit_tag 'Update your preferences', class: "secondary_blue_button" %>
+      </div>
+    <div>
+  <% end %>
+<% end %>
