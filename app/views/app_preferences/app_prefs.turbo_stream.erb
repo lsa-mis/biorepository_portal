@@ -1,0 +1,5 @@
+<%= render_flash_stream %>
+
+<%= turbo_stream.update "all_preferences" do %>
+  <%= render 'all_preferences' %>
+<% end %>
