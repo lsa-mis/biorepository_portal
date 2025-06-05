@@ -41,6 +41,10 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
+  #letter_opener settings
+  config.action_mailer.delivery_method = :letter_opener_web
+  config.action_mailer.perform_deliveries = true
+
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 

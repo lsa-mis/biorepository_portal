@@ -52,6 +52,7 @@
 // Utilities
 @import "bootstrap/utilities/api";
 // scss-docs-end import-stack
+@import "trix";
 
 input[type=text], input[type=number], select {
   width: 100%;

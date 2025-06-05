@@ -1,0 +1,9 @@
+<%= render_flash_stream %>
+
+<%= turbo_stream.update "new_preference" do %>
+  <%= render "form", app_preference: @app_preference %>
+<% end %>
+
+<%= turbo_stream.update "app_preferences" do %>
+  <%= render "preference_list" %>
+<% end %>
