@@ -5,6 +5,7 @@ export default class extends Controller {
   static targets = ["display_options", "question_type"];
   
   connect() {
+    this.showOptions();
     console.log("Show Options controller connected");
   }
 
