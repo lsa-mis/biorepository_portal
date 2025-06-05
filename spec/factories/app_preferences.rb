@@ -21,6 +21,10 @@
 #
 FactoryBot.define do
   factory :app_preference do
-    
+    name { "Default Name" }
+    description { "Default Description" }
+    pref_type { 1 }
+    value { "Default Value" }
+    association :collection
   end
 end
