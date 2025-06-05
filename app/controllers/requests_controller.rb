@@ -2,7 +2,9 @@ class RequestsController < ApplicationController
 
   def information_request
     @information_request = InformationRequest.new
-    @send_to = Collection.pluck(:admin_group).compact
+    @send_to = Collection.pluck(:admin_group)
+    @send_to << AppPreference.find_by(name: "generic_contact_email")&.value
+    @send_to.compact!
   end
 
   def send_information_request
