@@ -159,6 +159,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_03_184215) do
     t.integer "question_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "required", default: false, null: false
   end
 
   create_table "map_fields", force: :cascade do |t|

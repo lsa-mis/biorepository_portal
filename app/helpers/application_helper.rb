@@ -71,4 +71,8 @@ module ApplicationHelper
     return false if value == "0"
   end
   
+  def show_boolean(value)
+    value ? "Yes" : "No" 
+  end
+  
 end
