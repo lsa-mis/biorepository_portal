@@ -10,7 +10,7 @@
 <% if @collection_questions.present? %>
   <div class="mt-4">
     <h2>Collection-Specific Questions</h2>
-    <%= render partial: 'collection_questions/collection_questions_list', locals: { collection_questions: @collection_questions } %>
+    <%= render partial: 'collection_questions_list', locals: { collection_questions: @collection_questions } %>
   </div>
 <% end %>
 

@@ -1,8 +1,14 @@
-class CollectionQuestionsController < ApplicationController
+class Collections::CollectionQuestionsController < ApplicationController
   before_action :set_collection
   before_action :set_collection_question, only: %i[ show edit update destroy ]
   before_action :set_question_types, only: %i[ new edit create update ]
 
+  def index
+  end
+
+  def show
+  end
+  
   def new
     @collection_question = @collection.collection_questions.build
     2.times { @collection_question.collection_options.build }
@@ -20,7 +26,7 @@ class CollectionQuestionsController < ApplicationController
             CollectionOption.create(value: option[:value], collection_question_id: @collection_question.id)
           end
         end
-        format.html { redirect_to collection_path(@collection), notice: "Collection question created." }
+        format.html { redirect_to collection_collection_question_path(@collection, @collection_question), notice: "Collection question created." }
       else
         format.html { render :new, status: :unprocessable_entity }
       end

@@ -21,7 +21,7 @@ Rails.application.routes.draw do
     member do
       match 'search' => 'collections#search', via: [:get, :post]
     end
-    resources :collection_questions
+    resources :collection_questions, module: :collections
   end
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", sessions: "users/sessions"} do
     delete 'sign_out', :to => 'users/sessions#destroy', :as => :destroy_user_session
