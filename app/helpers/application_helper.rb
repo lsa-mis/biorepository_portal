@@ -10,12 +10,12 @@ module ApplicationHelper
   end
 
   def user_role
-    if is_super_admin?
+    if is_developer?
+      " - developer"
+    elsif is_super_admin?
       " - super admin"
     elsif is_admin?
       " - admin"
-    elsif is_developer?
-      " - developer"
     else
       ""
     end
