@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_03_235559) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_04_205159) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -71,6 +71,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_03_235559) do
     t.boolean "required", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "question_type"
     t.index ["collection_id"], name: "index_collection_questions_on_collection_id"
   end
 

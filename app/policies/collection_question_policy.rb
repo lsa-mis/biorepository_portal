@@ -12,7 +12,7 @@ class CollectionQuestionPolicy < ApplicationPolicy
   end
 
   def create?
-    is_collection_admin?
+    is_collection_admin? || is_super_admin?
   end
 
   def edit?
@@ -20,11 +20,11 @@ class CollectionQuestionPolicy < ApplicationPolicy
   end
 
   def update?
-    is_collection_admin?
+    is_collection_admin? || is_super_admin?
   end
 
   def destroy?
-    is_collection_admin?
+    is_collection_admin? || is_super_admin?
   end
 
   private
@@ -33,8 +33,9 @@ class CollectionQuestionPolicy < ApplicationPolicy
     return false unless is_admin?
     return false unless @collection_ids.present?
     return false unless @record.present?
-    return false unless @record.admin_group.present?
-    return false unless @collection_ids.include?(@record.id)
-    true 
+    return false unless @record.collection.present?
+    return false unless @record.collection.admin_group.present?
+    return false unless @collection_ids.include?(@record.collection.id)
+    true
   end
 end

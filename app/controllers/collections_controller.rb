@@ -11,6 +11,7 @@ class CollectionsController < ApplicationController
   def show
     @q1 = @collection.items.ransack(params[:q1])
     @items = @collection.items.page(params[:page]).per(15)
+    @collection_questions = @collection.collection_questions.includes(:collection_options)
   end
 
   def search
