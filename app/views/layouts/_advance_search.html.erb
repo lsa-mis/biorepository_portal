@@ -2,20 +2,6 @@
 <%= search_form_for @q, url: search_items_path, method: :post do |f| %>
   <div class="m-2">
 
-    <%= search_form_for @q, url: search_items_path, html: { id: "advanced-search-form", data: { controller: "search" } } do |f| %>
-      <div id="search-fields" data-search-target="fields">
-        <!-- one row by default -->
-        <%= render partial: "search_field", locals: { f: f, index: 0 } %>
-      </div>
-
-      <div class="mt-2">
-        <button type="button" class="btn btn-outline-secondary" data-action="search#addField">Add another field</button>
-      </div>
-
-      <%= f.submit "🔍 Advanced Search", class: "btn btn-primary mt-3" %>
-    <% end %>
-
-
     <!-- Strings - use _i_cont (contains) or _eq (exact match) -->
     <div class="btn-group-toggle" data-toggle="buttons">
       <h5>Select Collections:</h5>
@@ -38,7 +24,7 @@
         <%else%>
           <% @countries.each do |country| %>
             <div class="form-check">
-              <%= check_box_tag "q[country_in][]", country, params.dig(:q, :country_in)&.include?(country), id: "country_#{country.parameterize}" %>
+              <%= check_box_tag "q[country_in][]", country, params.dig(:q, :country_in)&.include?(country), id: "country_#{country}" %>
               <%= label_tag "q_country_in_#{country.parameterize}", country.downcase.titleize %>
             </div>
           <% end %>
@@ -57,7 +43,7 @@
         <%else%>
           <% @states.each do |state| %>
             <div class="form-check">
-              <%= check_box_tag "q[state_province_in][]", state, params.dig(:q, :state_province_in)&.include?(state), id: "state_#{state.parameterize}" %>
+              <%= check_box_tag "q[state_province_in][]", state, params.dig(:q, :state_province_in)&.include?(state), id: "state_#{state}" %>
               <%= label_tag "q_state_province_in_#{state.parameterize}", state.downcase.titleize %>
             </div>
           <% end %>
