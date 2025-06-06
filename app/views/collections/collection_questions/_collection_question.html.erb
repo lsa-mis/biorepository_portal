@@ -2,7 +2,7 @@
   <div class="d-flex justify-content-between align-items-center">
     <h1>Collection Question Details</h1>
     <div class="d-flex align-items-end flex-column gap-1 mt-2">
-      <%= link_to "Back to Collection", collection_path(@collection), class: "link_to" %>
+      <%= link_to "Back to Collection Questions", collection_collection_questions_path(@collection), class: "link_to" %>
       <%= link_to "Edit Collection Question", edit_collection_collection_question_path(@collection, @collection_question), class: "btn btn-primary h-50 mt-auto mb-auto" %>
       <%#= link_to "Delete Collection Question", collection_collection_question_path(@collection, @collection_question), class: "link_to", data: { turbo_confirm: "Are you sure you want to delete this question?", turbo_method: :delete } %>
     </div>

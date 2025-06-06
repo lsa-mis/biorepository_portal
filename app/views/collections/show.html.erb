@@ -2,16 +2,9 @@
 <%= render @collection %>
 
 <% if is_super_admin? %>
-  <%= link_to "Add Collection-Specific Loan Question", 
-              new_collection_collection_question_path(@collection),
+  <%= link_to "Collection-Specific Loan Question", 
+              collection_collection_questions_path(@collection),
               class: "btn btn-success mb-3" %>
-<% end %>
-
-<% if @collection_questions.present? %>
-  <div class="mt-4">
-    <h2>Collection-Specific Questions</h2>
-    <%= render partial: 'collection_questions_list', locals: { collection_questions: @collection_questions } %>
-  </div>
 <% end %>
 
 <div>

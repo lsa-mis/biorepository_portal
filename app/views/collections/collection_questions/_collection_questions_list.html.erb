@@ -11,7 +11,7 @@
     </thead>
     <tbody class="table-group-divider" id="collection_questions">
       <% @collection.collection_questions.each do |collection_question| %>
-        <%= render 'collection_question_row', collection_question: collection_question, collection: @collection %>
+        <%= render 'collections/collection_questions/collection_question_row', collection_question: collection_question, collection: @collection %>
       <% end %>
     </tbody>
   </table>

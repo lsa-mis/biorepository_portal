@@ -56,13 +56,18 @@ class Collections::CollectionQuestionsController < ApplicationController
 
     respond_to do |format|
       if success
-        format.html { redirect_to collection_path(@collection), notice: "Collection question updated." }
+        format.html { redirect_to collection_collection_question_path(@collection, @collection_question), notice: "Collection question updated." }
       else
         format.html { render :edit, status: :unprocessable_entity }
       end
     end
   end
 
+  def preview
+    @collection = Collection.find(params[:collection_id])
+    @collection_questions = @collection.collection_questions
+  end
+  
   def destroy
     authorize @collection_question
     @collection_question.destroy
