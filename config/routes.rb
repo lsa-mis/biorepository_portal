@@ -24,8 +24,15 @@ Rails.application.routes.draw do
     collection do
       post :import
     end
+
     member do
       match 'search' => 'collections#search', via: [:get, :post]
+    end
+
+    resources :collection_questions, module: :collections do
+      collection do
+        get :preview
+      end
     end
   end
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", sessions: "users/sessions"} do

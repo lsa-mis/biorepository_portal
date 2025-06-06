@@ -30,7 +30,7 @@ module ApplicationHelper
   end
 
   def is_admin?
-    session[:role] == "admin" || session[:role] == "super_admin"
+    session[:role] == "admin" || session[:role] == "super_admin" || session[:role] == "developer"
   end
 
   def is_user?

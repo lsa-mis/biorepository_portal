@@ -34,4 +34,5 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :trackable, :lockable,
          :omniauthable, omniauth_providers: [ :saml ]
+  has_many :collection_answers, dependent: :destroy
 end
