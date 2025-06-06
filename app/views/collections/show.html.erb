@@ -1,7 +1,7 @@
 
 <%= render @collection %>
 
-<% if is_super_admin? %>
+<% if is_admin? %>
   <%= link_to "Collection-Specific Loan Question", 
               collection_collection_questions_path(@collection),
               class: "btn btn-success mb-3" %>
