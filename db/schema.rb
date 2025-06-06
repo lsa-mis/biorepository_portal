@@ -52,6 +52,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_04_205159) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "app_preferences", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.integer "pref_type"
+    t.string "value"
+    t.bigint "collection_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id"], name: "index_app_preferences_on_collection_id"
+  end
+
   create_table "checkouts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -166,6 +177,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_04_205159) do
     t.integer "question_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "required", default: false, null: false
   end
 
   create_table "map_fields", force: :cascade do |t|
@@ -232,8 +244,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_04_205159) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "collection_options", "collection_questions"
-  add_foreign_key "collection_questions", "collections"
+  add_foreign_key "app_preferences", "collections"
   add_foreign_key "identifications", "items"
   add_foreign_key "information_requests", "users"
   add_foreign_key "items", "collections"

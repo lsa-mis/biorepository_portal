@@ -64,7 +64,10 @@ def determine_collection_ids(user_membership)
 end
 
 def determine_user_role(uniqname, user_membership)
-  if LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-super-admins')
+  if LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-developers')
+    session[:collection_ids] = Collection.pluck(:id)
+    session[:role] = "developer"
+  elsif LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-super-admins')
     session[:collection_ids] = Collection.pluck(:id)
     'super_admin'
   elsif user_membership.present?

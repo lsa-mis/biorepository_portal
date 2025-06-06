@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+
+  get 'app_preference/:name', to: 'app_preferences#delete_preference', as: :delete_preference
+  get 'app_preferences/app_prefs', to: 'app_preferences#app_prefs', as: :app_prefs
+  post 'app_preferences/app_prefs/', to: 'app_preferences#save_app_prefs'
+  resources :app_preferences
+  
   get "requests/information_request", to: "requests#information_request", as: :information_request
   post "requests/send_information_request", to: "requests#send_information_request", as: :send_information_request
   get "loan_questions/preview", to: "loan_questions#preview", as: :preview_loan_questions

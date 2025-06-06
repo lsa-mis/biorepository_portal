@@ -6,12 +6,50 @@ RSpec.describe Collection, type: :request do
 
   context 'index action' do
 
+    context 'with developer role' do
+      let!(:developer) { FactoryBot.create(:user) }
+      let!(:collection) { FactoryBot.create(:collection) }
+      before do
+        uniqname = get_uniqname(developer.email)
+        # make a user a member of the SUPER_ADMIN_LDAP_GROUP group
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(true)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
+        mock_login(developer)
+      end
+
+      it 'returns 200' do
+        get collections_path
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    context 'with developer role' do
+      let!(:developer) { FactoryBot.create(:user) }
+      let!(:collection) { FactoryBot.create(:collection) }
+
+      before do
+        uniqname = get_uniqname(developer.email)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(true)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
+        mock_login(developer)
+      end
+
+      it 'should display Create Preferences link in the nav bar' do
+        get collections_path
+        expect(response.body).to include("Create Preferences")
+      end
+    end
+
+
     context 'with super_admin role' do
       let!(:super_admin_user) { FactoryBot.create(:user) }
       let!(:collection) { FactoryBot.create(:collection) }
       before do
         uniqname = get_uniqname(super_admin_user.email)
         # make a user a member of the SUPER_ADMIN_LDAP_GROUP group
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(true)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
         mock_login(super_admin_user)
@@ -30,6 +68,7 @@ RSpec.describe Collection, type: :request do
       before do
         uniqname = get_uniqname(admin_user.email)
         # make a user a member of the SUPER_ADMIN_LDAP_GROUP group
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(true)
         mock_login(admin_user)
@@ -47,6 +86,7 @@ RSpec.describe Collection, type: :request do
 
       before do
         uniqname = get_uniqname(super_admin_user.email)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(true)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
         mock_login(super_admin_user)
@@ -65,6 +105,7 @@ RSpec.describe Collection, type: :request do
       before do
         uniqname = get_uniqname(admin_user.email)
         # make a user a member of the SUPER_ADMIN_LDAP_GROUP group
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(true)
         mock_login(admin_user)

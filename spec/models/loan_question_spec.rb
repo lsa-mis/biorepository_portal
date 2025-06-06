@@ -5,6 +5,7 @@
 #  id            :bigint           not null, primary key
 #  question      :string
 #  question_type :integer
+#  required      :boolean          default(FALSE), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #
