@@ -1,7 +1,7 @@
 <%- if devise_mapping.omniauthable? %>
   <div class="mb-4">
     <p>University of Michigan Community</p>
-    <p>login below with a University of Michigan uniqname or Friend Account</p>
+    <p>Log in below with a University of Michigan uniqname or Friend Account</p>
     <%= button_to "Sign in with U-M account", omniauth_authorize_path(resource_name, 'saml'), class: "btn btn-warning btn-sm m-2", data: { turbo: false } %>
   </div>
   <div>
