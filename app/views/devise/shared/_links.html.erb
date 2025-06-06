@@ -1,7 +1,7 @@
 <%- if devise_mapping.omniauthable? %>
   <%- resource_class.omniauth_providers.each do |provider| %>
     <div>
-      University of Michihan Community<br>
+      University of Michigan Community<br>
       login below with a University of Michigan uniqname or Friend Account
       <%= button_to "Sign in with U-M account", omniauth_authorize_path(resource_name, provider), class: "btn btn-warning btn-sm m-4", data: { turbo: false } %><br />
     </div>
