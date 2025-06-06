@@ -1,0 +1,17 @@
+<%= form_with(model: faq) do |form| %>
+  <% if faq.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(faq.errors.count, "error") %> prohibited this faq from being saved:</h2>
+
+      <ul>
+        <% faq.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
