@@ -27,21 +27,59 @@
     <%= turbo_frame_tag("options_list") do %>
 
       <div id="options" data-edit-options-target="fields">
-        <% @collection_question.collection_options.each_with_index do |opt, i| %>
-          <div class="option-list-item d-flex justify-content-between align-items-center">
-            <div class="flex-grow-1 mx-3">
-              <label for="collection_options_attributes_<%= i + 1 %>_value">Option <%= i + 1 %></label>
-              <%= text_field_tag("options_attributes[#{i + 1}][value]", opt.value, {}) %>
-            </div>
-            <div class="">
-              <button type="button" title="Remove option" class="remove-option-button mt-4 invisible"
-                id="remove-option-<%= i + 1 %>"
-                data-action="click->edit-options#removeOption">
-                <i class="bi bi-trash-fill text-danger"></i>
-              </button>
-            </div>
+        <!-- Option 1 (no longer has required) -->
+        <div class="option-list-item d-flex justify-content-between align-items-center">
+          <div class="flex-grow-1 mx-3">
+            <label for="option_attributes_1_option">Option 1</label>
+            <%= text_field_tag(
+                  "options_attributes[1][value]",
+                  nil,
+                  {
+                    id:   "option_attributes_1_option",
+                    name: "options_attributes[1][value]",
+                    "data-edit-options-target": "option_value"
+                  }
+                ) %>
           </div>
-        <% end %>
+          <div class="">
+            <button
+              type="button"
+              title="Remove option"
+              class="remove-option-button mt-4 invisible"
+              id="remove-option-1"
+              data-action="click->edit-options#removeOption"
+            >
+              <i class="bi bi-trash-fill text-danger"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Option 2 (no longer has required) -->
+        <div class="option-list-item d-flex justify-content-between align-items-center">
+          <div class="flex-grow-1 mx-3">
+            <label for="option_attributes_2_option">Option 2</label>
+            <%= text_field_tag(
+                  "options_attributes[2][value]",
+                  nil,
+                  {
+                    id:   "option_attributes_2_option",
+                    name: "options_attributes[2][value]",
+                    "data-edit-options-target": "option_value"
+                  }
+                ) %>
+          </div>
+          <div class="">
+            <button
+              type="button"
+              title="Remove option"
+              class="remove-option-button mt-4 invisible"
+              id="remove-option-2"
+              data-action="click->edit-options#removeOption"
+            >
+              <i class="bi bi-trash-fill text-danger"></i>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div>
