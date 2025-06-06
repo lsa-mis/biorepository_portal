@@ -64,8 +64,7 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def preview
-    @collection = Collection.find(params[:collection_id])
-    @collection_questions = @collection.collection_questions
+    @collection_questions = @collection.collection_questions.includes(:collection_options)
   end
   
   def destroy
