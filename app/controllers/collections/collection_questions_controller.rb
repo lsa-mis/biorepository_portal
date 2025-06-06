@@ -49,8 +49,8 @@ class Collections::CollectionQuestionsController < ApplicationController
         success = true
       rescue => e
         flash.now[:alert] = "Error updating collection question: #{e.message}"
-        raise ActiveRecord::Rollback
         success = false
+        raise ActiveRecord::Rollback
       end
     end
 
