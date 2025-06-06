@@ -2,7 +2,7 @@
   <div>
     <p>University of Michigan Community</p>
     <p>login below with a University of Michigan uniqname or Friend Account</p>
-    <%= button_to "Sign in with U-M account", omniauth_authorize_path(resource_name, provider), class: "btn btn-warning btn-sm m-4", data: { turbo: false } %><br />
+    <%= button_to "Sign in with U-M account", omniauth_authorize_path(resource_name, 'saml'), class: "btn btn-warning btn-sm m-4", data: { turbo: false } %><br />
   </div>
   <div>
     <p>University of Michigan Guests</p>
