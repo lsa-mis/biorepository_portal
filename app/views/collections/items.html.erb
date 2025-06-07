@@ -1,0 +1,23 @@
+<div class="container my-5">
+  <h1><%= @collection.division %> items</h1>
+  <%= turbo_frame_tag "all_items" do %>
+    <%= form_with url: collection_items_path(@collection), method: :get, local: true, 
+      data: { controller: "autosubmit",
+              autosubmit_target: "form",
+              turbo_frame: "turbo-animals"
+              } do %>
+      <label for="per">Items per page:</label>
+      <%= select_tag :per, options_for_select([15, 30, 50, 100, 150, 200], params[:per]), "data-action": "autosubmit#submit" %>
+    
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
+        <% @items.each do |item| %>
+          <div class="col">
+            <input type="checkbox" aria-labelledby=<%= "items_ids_#{item.id}" %> name="animal_ids[<%= item.id %>]" id="items_ids_<%= item.id %>" value="0" class="check_box">
+            <%= render partial: "item_card", locals: { item: item } %>
+          </div>
+        <% end %>
+      </div>
+      <%= paginate @items %>
+    <% end %>
+  <% end %>
+</div>

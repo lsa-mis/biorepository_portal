@@ -38,6 +38,10 @@ class CollectionPolicy < ApplicationPolicy
     is_super_admin? || is_collection_admin?
   end
 
+  def items?
+    true
+  end
+
   private
 
   def is_collection_admin?

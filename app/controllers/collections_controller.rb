@@ -1,5 +1,5 @@
 class CollectionsController < ApplicationController
-  before_action :set_collection, only: %i[ show edit update destroy search]
+  before_action :set_collection, only: %i[ show edit update destroy search items]
   skip_before_action :authenticate_user!, only: [ :index, :show ]
 
   # GET /collections or /collections.json
@@ -17,6 +17,10 @@ class CollectionsController < ApplicationController
     @q1 = @collection.items.ransack(params[:q1])
     @items = @q1.result.page(params[:page]).per(15)
     render :show
+  end
+
+  def items
+    @items = @collection.items.page(params[:page]).per(params[:per]).max_paginates_per(500)
   end
 
   # GET /collections/new
