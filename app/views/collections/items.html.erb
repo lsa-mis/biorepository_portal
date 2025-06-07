@@ -16,6 +16,7 @@
             <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#exampleModal">
               <i class="fa-light fa-cart-shopping"></i>
             </button>
+            <%= link_to "Checkout", add_item_to_checkout_path(item), class: "btn btn-primary", data: { turbo_frame: "remote_modal" }%>
             <%= render partial: "item_card", locals: { item: item } %>
           </div>
         <% end %>
