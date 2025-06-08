@@ -1,0 +1,24 @@
+<div class="bg-secondary text-white text-center px-2">
+
+    <div class="d-flex flex-row flex-xxl-column justify-content-between align-items-center">
+      <!-- Welcome Message -->
+      <div class="d-xxl-none"></div>
+      <div class="text-center">
+        <h2>Welcome<br><%= current_user.principal_name %>!</h2>
+      </div>
+      <!-- Edit Profile Link -->
+      <div class="align-self-start pt-2">
+        <%= link_to edit_profile_path(current_user), class: 'text-white link-underline link-underline-opacity-0' do %>
+          <i class="bi bi-pencil"></i> <span class="fw-light">Edit</span>
+        <% end %>
+      </div>
+    </div>
+  <hr>
+
+  <!-- Last Updated -->
+  <div class="pb-1">
+    <p class="text-white">
+      <small><em>Last updated:<br> <%= current_user.updated_at.strftime("%B %d, %Y") %></em></small>
+    </p>
+  </div>
+</div>
