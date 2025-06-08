@@ -25,6 +25,7 @@ class CollectionsController < ApplicationController
 
   def add_item_to_checkout
     @item = Item.find(params[:item_id])
+    # @item = Item.find(57405)
   end
 
   # GET /collections/new

@@ -12,7 +12,7 @@
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
         <% @items.each do |item| %>
           <div class="col mb-5">
-            <%= link_to "Checkout", add_item_to_checkout_path(item), class: "btn btn-primary mb-2", data: { turbo_frame: "remote_modal" }%>
+            <%= link_to "Checkout", add_item_to_checkout_path(item), class: "btn btn-sm btn-primary mb-2", data: { turbo_frame: "remote_modal" }%>
             <%= render partial: "item_card", locals: { item: item } %>
           </div>
         <% end %>
