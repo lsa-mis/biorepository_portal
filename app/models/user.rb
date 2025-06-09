@@ -39,4 +39,5 @@ class User < ApplicationRecord
          :omniauthable, omniauth_providers: [ :saml ]
 
   has_many :collection_answers, dependent: :destroy
+  has_many :loan_answers, dependent: :destroy
 end

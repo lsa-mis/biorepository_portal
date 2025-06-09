@@ -3,7 +3,10 @@ Rails.application.routes.draw do
   # get "profile/edit"
   # get "profile/update"
 
-  resources :profiles, only: [:show, :edit, :update]
+  resource :profile, only: [:show, :edit, :update] do
+    get :loan_questions          # profile_loan_questions_path
+    patch :update_loan_questions # profile_update_loan_questions_path
+  end
   resources :users, only: [:edit, :update]
 
   get 'app_preference/:name', to: 'app_preferences#delete_preference', as: :delete_preference
@@ -16,7 +19,6 @@ Rails.application.routes.draw do
   get "loan_questions/preview", to: "loan_questions#preview", as: :preview_loan_questions
   resources :loan_questions
   get "checkout", to: "checkout#show"
-  post "checkout/add"
   post "checkout/remove"
   resources :identifications
   resources :preparations
