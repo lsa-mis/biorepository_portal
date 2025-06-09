@@ -6,6 +6,27 @@ RSpec.describe Collection, type: :request do
 
   context 'index action' do
 
+    context 'when not logged in' do
+      let!(:collection) { FactoryBot.create(:collection) }
+
+    context 'with authenticated user' do
+      let!(:user) { FactoryBot.create(:user) }
+      let!(:collection) { FactoryBot.create(:collection) }
+      before do
+        uniqname = get_uniqname(user.email)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
+        mock_login(user)
+      end
+
+      it 'should display collections but not the New Collections button' do
+        get collections_path
+        expect(response).to have_http_status(200)
+        expect(response.body).not_to include("New Collection")
+      end
+    end
+
     context 'with developer role' do
       let!(:developer) { FactoryBot.create(:user) }
       let!(:collection) { FactoryBot.create(:collection) }

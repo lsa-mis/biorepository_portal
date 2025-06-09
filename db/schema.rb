@@ -11,7 +11,6 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.0].define(version: 2025_06_08_080213) do
-
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -93,6 +92,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_08_080213) do
     t.text "description"
     t.string "division_page_url"
     t.string "link_to_policies"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "faqs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -187,7 +191,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_08_080213) do
     t.integer "question_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "required"
+    t.boolean "required", default: false, null: false
   end
 
   create_table "map_fields", force: :cascade do |t|
@@ -204,7 +208,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_08_080213) do
     t.datetime "updated_at", null: false
     t.string "value"
     t.bigint "loan_question_id", null: false
-    t.integer "position"
     t.index ["loan_question_id"], name: "index_options_on_loan_question_id"
   end
 
