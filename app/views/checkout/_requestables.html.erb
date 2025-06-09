@@ -19,10 +19,14 @@
           <td class="text-start"><%= item.display_name %></td>
           <td class="text-start"><%= preparation.prep_type %></td>
           <td>
-            <%= form_with(url: checkout_add_path) do |form| %>
+            <%= form_with url: checkout_add_path, 
+              data: { controller: "autosubmit",
+                autosubmit_target: "form",
+                turbo_frame: "checkout"
+                } do |form| %>
               <%= form.hidden_field :id, value: preparation.id %>
-              <%= form.select :count, options_for_select(0..preparation.count, requestable.count) %>
-              <%= form.submit "Add To Checkout" %>
+              <%= form.select :count, options_for_select(0..preparation.count, requestable.count), { }, { "data-action": "change->autosubmit#submit" } %>
+              <%#= form.submit "Add To Checkout" %>
             <% end %>
           </td>
           <td>
