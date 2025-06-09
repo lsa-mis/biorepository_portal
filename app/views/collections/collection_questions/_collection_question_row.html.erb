@@ -1,0 +1,20 @@
+<tr id="<%= dom_id(collection_question) %>">
+  <td class="text-start"><%= collection_question.question %></td>
+  <td class="text-start"><%= collection_question.question_type %></td>
+  <td class="text-start"><%= show_boolean(collection_question.required) %></td>
+  <td>
+    <%= link_to collection_collection_question_path(@collection, collection_question), 'aria-label': "view_#{collection_question.id}", data: { turbo_frame: "_top" } do %>
+      <i class="bi bi-eye-fill text-primary"></i>
+    <% end %>
+  </td>
+  <td>
+    <%= link_to edit_collection_collection_question_path(@collection, collection_question), 'aria-label': "edit_#{collection_question.id}", data: { turbo_frame: "_top" } do %>
+      <i class="bi bi-pencil-square text-primary"></i>
+    <% end %>
+  </td>
+  <td>
+    <%= link_to collection_collection_question_path(@collection, collection_question), 'aria-label': "delete_#{collection_question.id}", data: { turbo_confirm: "Are you sure you want to delete this question?", turbo_method: :delete } do %>
+      <i class="bi bi-trash-fill text-danger"></i>
+    <% end %>
+  </td>
+</tr>

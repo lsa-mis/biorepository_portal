@@ -1,0 +1,11 @@
+<% content_for :title, "New Collection-Specific Question" %>
+
+<h1>New Collection-Specific Question</h1>
+
+<%= render "form", collection: @collection, collection_question: @collection_question %>
+
+<br>
+
+<div>
+  <%= link_to "Back to Collection", collection_path(@collection) %>
+</div>

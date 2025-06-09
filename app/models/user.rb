@@ -38,5 +38,5 @@ class User < ApplicationRecord
          :trackable, :lockable,
          :omniauthable, omniauth_providers: [ :saml ]
 
-  
+  has_many :collection_answers, dependent: :destroy
 end

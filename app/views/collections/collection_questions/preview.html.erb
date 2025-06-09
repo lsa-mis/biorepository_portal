@@ -1,0 +1,52 @@
+<% content_for :title, "Preview Collection Questions" %>
+
+<div class="mt-3 ms-3">
+  <%= link_to collection_collection_questions_path(@collection), class: "btn btn-outline-primary position-fixed start-0 m-3 z-3 shadow" do %>
+    <i class="bi bi-arrow-left me-2"></i> Back To Collection Questions
+  <% end %>
+</div>
+
+<h1 class="mb-3 text-center">Collection Questions Preview</h1>
+
+<div class="card p-4 shadow-sm">
+  <div class="card-body">
+    <% @collection_questions.each do |collection_question| %>
+      <div class="mb-4 border rounded p-3 bg-light">
+        <label class="form-label"><%= collection_question.question %></label>
+        
+        <% case collection_question.question_type %>
+        <% when "text" %>
+          <div class="ms-3">
+            <input type="text" class="form-control" placeholder="User input...">
+          </div>
+
+        <% when "checkbox" %>
+          <p>Pick one or more options below</p>
+          <div class="ms-3">
+            <% collection_question.collection_options.each do |option| %>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox">
+                <label class="form-check-label"><%= option.value %></label>
+              </div>
+            <% end %>
+          </div>
+
+        <% when "dropdown" %>
+          <div class="ms-3">
+            <select class="form-select">
+              <option value="" selected disabled>Select ...</option>
+              <% collection_question.collection_options.each do |option| %>
+                <option value="<%= option.value %>"><%= option.value %></option>
+              <% end %>
+            </select>
+          </div>
+
+        <% else %>
+          <div class="alert alert-warning mt-3">
+            <strong>Unsupported question type:</strong> <%= collection_question.question_type %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
