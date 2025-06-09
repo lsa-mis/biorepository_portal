@@ -18,7 +18,8 @@
 #  fk_rails_...  (loan_question_id => loan_questions.id)
 #
 FactoryBot.define do
-  factory :option do
-    
-  end
+ factory :option do
+   value { "Option 1" }
+   loan_question
+ end
 end
