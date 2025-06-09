@@ -17,7 +17,6 @@ class FaqsController < ApplicationController
 
   # GET /faqs/1/edit
   def edit
-    @faq = Faq.find(params[:id])
   end
 
   # POST /faqs or /faqs.json
@@ -39,7 +38,7 @@ class FaqsController < ApplicationController
   def update
     respond_to do |format|
       if @faq.update(faq_params)
-        format.html { redirect_to @faq, notice: "Faq was successfully updated." }
+        format.html { redirect_to @faq, notice: "FAQ was successfully updated." }
         format.json { render :show, status: :ok, location: @faq }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -53,7 +52,7 @@ class FaqsController < ApplicationController
     @faq.destroy!
 
     respond_to do |format|
-      format.html { redirect_to faqs_path, status: :see_other, notice: "Faq was successfully destroyed." }
+      format.html { redirect_to faqs_path, status: :see_other, notice: "FAQ was successfully deleted." }
       format.json { head :no_content }
     end
   end
