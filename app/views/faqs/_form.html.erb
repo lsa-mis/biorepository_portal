@@ -10,8 +10,18 @@
       </ul>
     </div>
   <% end %>
+  <br>
+  <div class="mb-3">
+    <%= form.label :question, class: "form-label" %>
+    <%= form.rich_text_area :question, class: "form-control", required: true %>
+  </div>
 
-  <div>
-    <%= form.submit %>
+  <div class="mb-3">
+    <%= form.label :answer, class: "form-label" %>
+    <%= form.rich_text_area :answer, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3 text-center">
+    <%= form.submit class: "btn btn-primary", value: "Create FAQ" %>
   </div>
 <% end %>

@@ -1,16 +1,17 @@
 <p style="color: green"><%= notice %></p>
 
-<% content_for :title, "Faqs" %>
+<% content_for :title, "FAQs" %>
 
-<h1>Faqs</h1>
+<h1 class="text-center">FAQs</h1>
 
 <div id="faqs">
   <% @faqs.each do |faq| %>
     <%= render faq %>
-    <p>
-      <%= link_to "Show this faq", faq %>
-    </p>
   <% end %>
 </div>
 
-<%= link_to "New faq", new_faq_path %>
+<% if is_super_admin? %>
+  <div class="mt-4 text-end">
+    <%= link_to "New FAQ", new_faq_path, class: "btn btn-primary mb-3" %>
+  </div>
+<% end %>

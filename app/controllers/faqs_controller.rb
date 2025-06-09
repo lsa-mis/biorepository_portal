@@ -17,6 +17,7 @@ class FaqsController < ApplicationController
 
   # GET /faqs/1/edit
   def edit
+    @faq = Faq.find(params[:id])
   end
 
   # POST /faqs or /faqs.json
@@ -25,7 +26,7 @@ class FaqsController < ApplicationController
 
     respond_to do |format|
       if @faq.save
-        format.html { redirect_to @faq, notice: "Faq was successfully created." }
+        format.html { redirect_to faqs_path, notice: "FAQ was successfully created." }
         format.json { render :show, status: :created, location: @faq }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -65,6 +66,6 @@ class FaqsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def faq_params
-      params.fetch(:faq, {})
+      params.require(:faq).permit(:question, :answer)
     end
 end
