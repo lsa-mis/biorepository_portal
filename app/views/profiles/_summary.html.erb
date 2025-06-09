@@ -4,7 +4,7 @@
       <!-- Welcome Message -->
       <div class="d-xxl-none"></div>
       <div class="text-center">
-        <h2>Welcome<br><%= current_user.principal_name %>!</h2>
+        <h2>Welcome<br><%= current_user.first_name.present? ? "#{current_user.first_name}!" : "" %></h2>
       </div>
       <!-- Edit Profile Link -->
       <div class="align-self-start pt-2">
