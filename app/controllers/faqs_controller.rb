@@ -38,11 +38,9 @@ class FaqsController < ApplicationController
   def update
     respond_to do |format|
       if @faq.update(faq_params)
-        format.html { redirect_to @faq, notice: "FAQ was successfully updated." }
-        format.json { render :show, status: :ok, location: @faq }
+        format.html { redirect_to faqs_path, notice: "FAQ was successfully updated." }
       else
         format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @faq.errors, status: :unprocessable_entity }
       end
     end
   end

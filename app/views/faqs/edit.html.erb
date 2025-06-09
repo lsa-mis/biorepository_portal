@@ -1,12 +1,37 @@
 <% content_for :title, "Editing faq" %>
 
-<h1>Editing faq</h1>
-
-<%= render "form", faq: @faq %>
-
-<br>
-
 <div>
-  <%= link_to "Show this faq", @faq %> |
-  <%= link_to "Back to faqs", faqs_path %>
+  <%= link_to faqs_path, class: "btn btn-outline-primary position-fixed start-0 m-3 z-3 shadow" do %>
+    <i class="bi bi-arrow-left me-2"></i> Back To FAQs
+  <% end %>
 </div>
+
+<h1 class="text-center">Edit FAQ</h1>
+
+<%= form_with(model: @faq, local: true) do |form| %>
+  <% if @faq.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(@faq.errors.count, "error") %> prohibited this faq from being saved:</h2>
+
+      <ul>
+        <% @faq.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <br>
+  <div class="mb-3">
+    <%= form.label :question, class: "form-label" %>
+    <%= form.rich_text_area :question, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :answer, class: "form-label" %>
+    <%= form.rich_text_area :answer, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.submit class: "btn btn-primary", value: "Update FAQ" %>
+  </div>
+<% end %>
