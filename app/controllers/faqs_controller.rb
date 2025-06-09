@@ -1,5 +1,6 @@
 class FaqsController < ApplicationController
   before_action :set_faq, only: %i[ show edit update destroy ]
+  skip_before_action :authenticate_user!, only: %i[index]
 
   # GET /faqs or /faqs.json
   def index
@@ -13,15 +14,18 @@ class FaqsController < ApplicationController
   # GET /faqs/new
   def new
     @faq = Faq.new
+    authorize @faq
   end
 
   # GET /faqs/1/edit
   def edit
+    authorize @faq
   end
 
   # POST /faqs or /faqs.json
   def create
     @faq = Faq.new(faq_params)
+    authorize @faq
 
     respond_to do |format|
       if @faq.save
@@ -36,6 +40,7 @@ class FaqsController < ApplicationController
 
   # PATCH/PUT /faqs/1 or /faqs/1.json
   def update
+    authorize @faq
     respond_to do |format|
       if @faq.update(faq_params)
         format.html { redirect_to faqs_path, notice: "FAQ was successfully updated." }
@@ -47,6 +52,7 @@ class FaqsController < ApplicationController
 
   # DELETE /faqs/1 or /faqs/1.json
   def destroy
+    authorize @faq
     @faq.destroy!
 
     respond_to do |format|
