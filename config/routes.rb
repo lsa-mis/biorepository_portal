@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  # get "profile/show"
+  # get "profile/edit"
+  # get "profile/update"
+
+  resources :profiles, only: [:show, :edit, :update]
+  resources :users, only: [:edit, :update]
 
   get 'app_preference/:name', to: 'app_preferences#delete_preference', as: :delete_preference
   get 'app_preferences/app_prefs', to: 'app_preferences#app_prefs', as: :app_prefs
