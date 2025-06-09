@@ -35,6 +35,9 @@ Rails.application.routes.draw do
       end
     end
   end
+  get "collection/:id/items", to: "collections#items", as: :collection_items
+  get 'add_item_to_checkout/:item_id', to: 'collections#add_item_to_checkout', as: :add_item_to_checkout
+
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", sessions: "users/sessions"} do
     delete 'sign_out', :to => 'users/sessions#destroy', :as => :destroy_user_session
   end

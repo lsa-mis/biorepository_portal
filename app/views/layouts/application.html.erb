@@ -21,6 +21,7 @@
       <%#= render partial: "checkout/checkout" if @render_checkout %>
       <div>
         <%= yield %>
+        <%= turbo_frame_tag "remote_modal", target: "_top" %>
       </div>
     </main>
     <%= render partial: "layouts/footer" %>
