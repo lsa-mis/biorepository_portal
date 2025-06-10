@@ -1,9 +1,13 @@
 Rails.application.routes.draw do
+  resources :faqs
   # get "profile/show"
   # get "profile/edit"
   # get "profile/update"
 
-  resources :profiles, only: [:show, :edit, :update]
+  resource :profile, only: [:show, :edit, :update] do
+    get :loan_questions          # profile_loan_questions_path
+    patch :update_loan_questions # profile_update_loan_questions_path
+  end
   resources :users, only: [:edit, :update]
 
   get 'app_preference/:name', to: 'app_preferences#delete_preference', as: :delete_preference

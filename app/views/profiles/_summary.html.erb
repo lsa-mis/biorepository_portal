@@ -8,8 +8,14 @@
       </div>
       <!-- Edit Profile Link -->
       <div class="align-self-start pt-2">
-        <%= link_to edit_profile_path(current_user), class: 'text-white link-underline link-underline-opacity-0' do %>
+        <%= link_to edit_profile_path, class: 'text-white link-underline link-underline-opacity-0' do %>
           <i class="bi bi-pencil"></i> <span class="fw-light">Edit</span>
+        <% end %>
+      </div>
+      <!-- Update Loan Question Link -->
+      <div class="align-self-start pt-2">
+        <%= link_to loan_questions_profile_path, class: 'text-white link-underline link-underline-opacity-0' do %>
+          <i class="bi bi-ui-checks-grid"></i> <span class="fw-light">Edit Loan Info</span>
         <% end %>
       </div>
     </div>

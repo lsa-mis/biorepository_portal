@@ -83,7 +83,7 @@ def create_user
     email: auth.info.email,
     principal_name: auth.info.principal_name,
     display_name: auth.info.name,
-    person_affiliation: auth.info.person_affiliation,
+    affiliation: auth.info.person_affiliation,
     password: Devise.friendly_token[0, 20]
   )
 

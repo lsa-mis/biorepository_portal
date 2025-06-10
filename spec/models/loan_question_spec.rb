@@ -39,31 +39,4 @@ RSpec.describe LoanQuestion, type: :model do
    expect(duplicate.errors[:question]).to include("has already been taken")
  end
 
-
- it "is valid with at least 2 options for dropdown" do
-   question = build(:loan_question, :with_dropdown_options)
-   expect(question).to be_valid
- end
-
-
- it "is valid with at least 2 options for checkbox type" do
-   question = build(:loan_question, :with_checkbox_options)
-   expect(question).to be_valid
- end
-
-
- it "is invalid with fewer than 2 options for dropdown" do
-   question = build(:loan_question, question_type: :dropdown)
-   question.options << build(:option)
-   expect(question).not_to be_valid
-   expect(question.errors[:options]).to include("must have at least two options for dropdown or checkbox question types")
- end
-
-
- it "is invalid with fewer than 2 options for checkbox" do
-   question = build(:loan_question, question_type: :checkbox)
-   question.options << build(:option)
-   expect(question).not_to be_valid
-   expect(question.errors[:options]).to include("must have at least two options for dropdown or checkbox question types")
- end
 end

@@ -1,0 +1,15 @@
+<% content_for :title, "FAQs" %>
+
+<h1 class="text-center">FAQs</h1>
+
+<% if is_admin? %>
+  <div class="mt-4 text-end">
+    <%= link_to "New FAQ", new_faq_path, class: "btn btn-success mb-3" %>
+  </div>
+<% end %>
+
+<div id="faqs">
+  <% @faqs.each do |faq| %>
+    <%= render faq %>
+  <% end %>
+</div>
