@@ -12,35 +12,37 @@
   <% end %>
 
   <div>
-    <%= form.label :division, style: "display: block" %>
+    <%= form.label :division %>
     <%= form.text_field :division %>
   </div>
 
   <div>
-    <%= form.label :admin_group, style: "display: block" %>
+    <%= form.label :admin_group %>
     <%= form.text_field :admin_group %>
   </div>
 
   <div>
-    <%= form.label :description, style: "display: block" %>
-    <%= form.textarea :description %>
+    <%= form.label :description %>
+    <%= form.textarea :description, class: "w-100 mt-2" %>
   </div>
 
   <div>
-    <%= form.label :division_page_url, style: "display: block" %>
+    <%= form.label :division_page_url %>
     <%= form.text_field :division_page_url %>
   </div>
 
   <div>
-    <%= form.label :link_to_policies, style: "display: block" %>
+    <%= form.label :link_to_policies %>
     <%= form.text_field :link_to_policies %>
   </div>
 
   <div>
+    <%= form.label :image, class: "w-100 mb-2" %>
     <%= form.file_field :image %>
   </div>
 
-  <div>
+  <div class="mt-3">
     <%= form.submit %>
+    <%= link_to "Cancel", collections_path, class: "link_to" %>
   </div>
 <% end %>
