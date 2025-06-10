@@ -97,6 +97,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_08_080213) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "faqs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "identifications", force: :cascade do |t|
     t.string "type_status"
     t.string "identified_by"

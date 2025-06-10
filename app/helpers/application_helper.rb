@@ -34,7 +34,7 @@ module ApplicationHelper
   end
 
   def is_user?
-    session[:role] == "user" || session[:role] == "admin" || session[:role] == "super_admin"
+    session[:role] == "user" || session[:role] == "admin" || session[:role] == "super_admin" || session[:role] == "developer"
   end
 
   def is_collection_admin?(collection)
