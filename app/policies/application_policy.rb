@@ -38,6 +38,8 @@ class ApplicationPolicy
     false
   end
 
+  private
+
   def is_admin?
     @role == "admin" || @role == "super_admin" || @role == "developer"
   end
