@@ -10,7 +10,7 @@
     </div>
   <% end %>
 
-  <div>
+  <div class="mb-3">
     <%= form.check_box :required, class: "form-check-input", id: "loan_question_required" %>
     <%= form.label :required, "Required", class: "form-check-label", for: "loan_question_required" %>
   </div>
@@ -127,5 +127,6 @@
 
   <div>
     <%= form.submit %>
+    <%= link_to "Cancel", loan_questions_path, class: "link_to" %>
   </div>
 <% end %>

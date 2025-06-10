@@ -55,7 +55,10 @@
     </div>
   <% end %>
 
-  <%= form.submit "Update Loan Question", class: "btn btn-primary mt-3" %>
+  <div class="mt-3">
+    <%= form.submit "Update Loan Question", class: "btn btn-primary" %>
+    <%= link_to "Cancel", loan_questions_path, class: "link_to" %>
+  </div>
 
   <template data-edit-options-target="template">
     <div class="option-list-item mb-2">
