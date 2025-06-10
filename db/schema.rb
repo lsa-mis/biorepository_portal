@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_08_080213) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_10_172656) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -191,7 +191,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_08_080213) do
     t.integer "question_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "required", default: false, null: false
+    t.boolean "required"
+  end
+
+  create_table "loan_requests", force: :cascade do |t|
+    t.string "send_to"
+    t.string "checkout_items"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_loan_requests_on_user_id"
   end
 
   create_table "map_fields", force: :cascade do |t|
@@ -268,6 +277,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_08_080213) do
   add_foreign_key "items", "collections"
   add_foreign_key "loan_answers", "loan_questions"
   add_foreign_key "loan_answers", "users"
+  add_foreign_key "loan_requests", "users"
   add_foreign_key "options", "loan_questions"
   add_foreign_key "preparations", "items"
   add_foreign_key "requestables", "checkouts"
