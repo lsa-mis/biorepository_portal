@@ -1,10 +1,10 @@
 class CollectionQuestionPolicy < ApplicationPolicy
   def index?
-    is_admin?
+    is_collection_admin? || is_super_admin?
   end
 
   def show?
-    is_admin?
+    is_collection_admin? || is_super_admin?
   end
 
   def new?
