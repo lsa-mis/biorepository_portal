@@ -1,0 +1,22 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- Profile summary: Displayed on all screens, order changes based on viewport size -->
+    <div class="col-8 col-xxl-2 order-2 order-xxl-1">
+      <%= render 'summary' %>
+    </div>
+
+    <!-- Main content -->
+    <div class="col-12 col-xxl-10 mt-4 order-1 order-xxl-2">
+      <div class="row mb-4">
+        <div class="col-12">
+          <%= render "checkout/checkout" %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 submissions-summary" id="submissions-summary">
+          <h2>Submitted Requests</h2>
+          <%#= 'render submitted requests' %>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,6 +1,6 @@
 class CollectionsController < ApplicationController
-  before_action :set_collection, only: %i[ show edit update destroy search]
-  skip_before_action :authenticate_user!, only: [ :index, :show ]
+  before_action :set_collection, only: %i[ show edit update destroy search items ]
+  skip_before_action :authenticate_user!, only: [ :index, :show, :items, :add_item_to_checkout ]
 
   # GET /collections or /collections.json
   def index
@@ -11,12 +11,22 @@ class CollectionsController < ApplicationController
   def show
     @q1 = @collection.items.ransack(params[:q1])
     @items = @collection.items.page(params[:page]).per(15)
+    @collection_questions = @collection.collection_questions.includes(:collection_options)
   end
 
   def search
     @q1 = @collection.items.ransack(params[:q1])
     @items = @q1.result.page(params[:page]).per(15)
     render :show
+  end
+
+  def items
+    @items = @collection.items.page(params[:page]).per(params[:per]).max_paginates_per(500)
+  end
+
+  def add_item_to_checkout
+    @item = Item.find(params[:item_id])
+    # @item = Item.find(57405)
   end
 
   # GET /collections/new

@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_06_194303) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_08_080213) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -66,6 +67,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_06_194303) do
   create_table "checkouts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "collection_options", force: :cascade do |t|
+    t.string "value", null: false
+    t.bigint "collection_question_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_question_id"], name: "index_collection_options_on_collection_question_id"
+  end
+
+  create_table "collection_questions", force: :cascade do |t|
+    t.bigint "collection_id", null: false
+    t.string "question", null: false
+    t.boolean "required", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "question_type"
+    t.index ["collection_id"], name: "index_collection_questions_on_collection_id"
   end
 
   create_table "collections", force: :cascade do |t|
@@ -159,12 +178,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_06_194303) do
     t.index ["collection_id"], name: "index_items_on_collection_id"
   end
 
+  create_table "loan_answers", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "loan_question_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["loan_question_id"], name: "index_loan_answers_on_loan_question_id"
+    t.index ["user_id"], name: "index_loan_answers_on_user_id"
+  end
+
   create_table "loan_questions", force: :cascade do |t|
     t.string "question"
     t.integer "question_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "required", default: false, null: false
+    t.boolean "required"
   end
 
   create_table "map_fields", force: :cascade do |t|
@@ -181,6 +209,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_06_194303) do
     t.datetime "updated_at", null: false
     t.string "value"
     t.bigint "loan_question_id", null: false
+    t.integer "position"
     t.index ["loan_question_id"], name: "index_options_on_loan_question_id"
   end
 
@@ -223,7 +252,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_06_194303) do
     t.datetime "updated_at", null: false
     t.string "principal_name"
     t.string "display_name"
-    t.string "person_affiliation"
+    t.string "affiliation"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "orcid"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -231,9 +263,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_06_194303) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "app_preferences", "collections"
+  add_foreign_key "collection_options", "collection_questions"
+  add_foreign_key "collection_questions", "collections"
   add_foreign_key "identifications", "items"
   add_foreign_key "information_requests", "users"
   add_foreign_key "items", "collections"
+  add_foreign_key "loan_answers", "loan_questions"
+  add_foreign_key "loan_answers", "users"
   add_foreign_key "options", "loan_questions"
   add_foreign_key "preparations", "items"
   add_foreign_key "requestables", "checkouts"
