@@ -9,6 +9,17 @@ RSpec.describe Collection, type: :request do
     context 'when not logged in' do
       let!(:collection) { FactoryBot.create(:collection) }
 
+      before do
+        # Ensure the user is not logged in
+        get collections_path
+      end
+
+      it 'should display collections but not the New Collections button for visitors' do
+        expect(response).to have_http_status(200)
+        expect(response.body).not_to include("New Collection")
+      end
+    end
+
     context 'with authenticated user' do
       let!(:user) { FactoryBot.create(:user) }
       let!(:collection) { FactoryBot.create(:collection) }
@@ -20,7 +31,7 @@ RSpec.describe Collection, type: :request do
         mock_login(user)
       end
 
-      it 'should display collections but not the New Collections button' do
+      it 'should display collections but not the New Collections button for authenticated users' do
         get collections_path
         expect(response).to have_http_status(200)
         expect(response.body).not_to include("New Collection")
