@@ -1,5 +1,10 @@
 <%= turbo_frame_tag "checkout" do %>
-  <h1>Checkout</h1>
+  <div class="d-flex justify-content-between">
+    <h1>Checkout</h1>
+    <% if @checkout.requestables.count > 0 %>
+      <%= link_to "Loan Request", loan_request_path, class: "btn btn-primary h-50 mt-auto mb-auto", data: { turbo_frame: "_top" }  %>
+    <% end %>
+  </div>
   <% if @checkout.requestables.count > 0 %>
     <%= render "checkout/requestables" %>
   <% else %>

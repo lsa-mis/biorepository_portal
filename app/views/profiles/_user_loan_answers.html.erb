@@ -1,0 +1,13 @@
+<h2>User Loan Answers</h2>
+<% if @loan_answers.present? %>
+  <ul>
+    <% @loan_answers.each do |answer| %>
+      <li>
+        <strong><%= answer.loan_question.question %>:</strong>
+        <%= answer.answer %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No loan answers provided.</p>
+<% end %>
