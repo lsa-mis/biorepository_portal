@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   get "loan_questions/preview", to: "loan_questions#preview", as: :preview_loan_questions
   resources :loan_questions
   get "checkout", to: "checkout#show"
+  post "checkout/add"
   post "checkout/remove"
   resources :identifications
   resources :preparations
