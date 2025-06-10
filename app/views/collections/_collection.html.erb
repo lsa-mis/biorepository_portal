@@ -23,11 +23,13 @@
       <%= image_tag collection.image, alt: "image_#{collection.image.id}", class: "img-fluid img-thumbnail", style: "max-width: 30%" %>
     <% end %>
   </div>
-  <div>
-    <p>
-      <strong>Admin Group: </strong> 
-      <%= collection.admin_group %>
-    </p>
+  <div class="mt-3">
+    <% if is_admin? %>
+      <p>
+        <strong>Admin Group: </strong> 
+        <%= collection.admin_group %>
+      </p>
+    <% end %>
 
     <p>
       <strong>Description: </strong> 
