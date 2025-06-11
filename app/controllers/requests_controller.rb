@@ -40,6 +40,18 @@ class RequestsController < ApplicationController
     end
   end
 
+  def loan_request
+    @loan_request = LoanRequest.new
+    @checkout_items = get_checkout_items
+    @user = current_user
+    @loan_answers = @user.loan_answers
+    @collections = @checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq
+  end
+
+  def send_loan_request
+    fail
+  end
+
   def get_checkout_items
     checkout_items = ""
     @checkout.requestables.each do |requestable|
