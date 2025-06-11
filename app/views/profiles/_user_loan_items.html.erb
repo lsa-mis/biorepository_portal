@@ -1,2 +1,6 @@
 <h2>User Loan Items from Checkout</h2>
-<%= @checkout_items %>
+<p>
+  <% @checkout_items.split('. ').each do |item| %>
+    <%= item %> <br>
+  <% end %>
+</p>
