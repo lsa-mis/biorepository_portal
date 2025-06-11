@@ -88,7 +88,7 @@
         <div id="sex-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
           <% if @sexs.blank? %>
             <p>No sex options available to select from.</p>
-          <%else%>
+          <% else %>
             <% @sexs.each do |sex| %>
               <div class="form-check">
                 <%= check_box_tag "q[sex_in][]", sex, params.dig(:q, :sex_in)&.include?(sex), id: "sex_#{sex.parameterize}" %>
