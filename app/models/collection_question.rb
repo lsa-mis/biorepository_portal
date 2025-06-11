@@ -21,9 +21,11 @@
 class CollectionQuestion < ApplicationRecord
   belongs_to :collection
   has_many :collection_options, dependent: :destroy
+  has_many :collection_answers, dependent: :destroy
 
   accepts_nested_attributes_for :collection_options, allow_destroy: true
 
   enum :question_type, [:text, :dropdown, :checkbox], prefix: true
-  validates :question, presence: true
+  validates :question, presence: true, uniqueness: true
+  validates :question_type, presence: true
 end
