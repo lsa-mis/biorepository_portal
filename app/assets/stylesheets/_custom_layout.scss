@@ -373,7 +373,7 @@ svg.wh6 {
 }
 
 .search-group:hover {
-  border-color: primary; /* a purple-ish glow color */
+  border-color: var(--primary); /* a purple-ish glow color */
   box-shadow: 0 0 10px 4px rgba(46, 55, 110, 0.68);
 }
 
