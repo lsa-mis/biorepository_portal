@@ -1,0 +1,30 @@
+<div class="search-row d-flex align-items-center mb-2" data-search-target="row">
+  <%= select_tag "", options_for_select([
+    ["Associated Sequences", "associated_sequences_i_cont"],
+		["Catalog Number", "catalog_number_eq"],
+    ["County", "county_i_cont"],
+		["Event Remarks", "event_remarks_i_cont"],
+		["field_number", "field_number_i_cont"],
+    ["Geodetic Datum", "geodetic_datum_i_cont"],
+		["Georeference Protocol", "georeference_protocol_i_cont"],
+    ["Georeferenced By", "georeferenced_by_i_cont"],
+		["Life Stage", "life_stage_i_cont"],
+		["Locality", "locality_i_cont"],
+		["Occurence Remarks", "occurrence_remarks_i_cont"],
+		["Organism Remarks", "organism_remarks_i_cont"],
+		["Other Catalog Numbers", "other_catalog_numbers_i_cont"],
+		["Recorded by", "recorded_by_i_cont"],
+		["Reproductive Condition", "reproductive_condition_i_cont"],
+		["Sampling Protocol", "sampling_protocol"],
+		["Verbatim Coordinates", "verbatim_coordinates_i_cont"],
+		["Verbatim Elevation", "verbatim_elevation_i_cont"],
+		["Verbatim Event Date", "verbatim_event_date_i_cont"],
+		["Verbatim Locality", "verbatim_locality_i_cont"],
+		["Vitality", "vitality_i_cont"]
+     
+  ]), class: "form-select me-2 dynamic-search-field" %>
+
+  <%= text_field_tag "", nil, class: "form-control me-2 dynamic-search-value" %>
+
+  <button type="button" class="btn btn-outline-danger" data-action="click->search#removeField">✕</button>
+</div>

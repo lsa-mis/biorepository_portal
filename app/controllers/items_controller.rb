@@ -21,7 +21,7 @@ class ItemsController < ApplicationController
     @all_collections = Collection.all
     @countries = Item.distinct.pluck(:country).compact.uniq.sort
     @states = Item.distinct.pluck(:state_province).compact.uniq.sort
-    @counties = Item.distinct.pluck(:county).compact.uniq.sort
+    @sexs = Item.distinct.pluck(:sex).compact.uniq.sort
     @continents = Item.distinct.pluck(:continent).compact.uniq.sort
     render :search_result
   end
