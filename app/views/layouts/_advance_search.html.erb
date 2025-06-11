@@ -1,157 +1,122 @@
-<h2>Advanced Search</h2>
-<%= search_form_for @q, url: search_items_path, method: :post do |f| %>
+<h3>Advanced Search</h3>
+<%= search_form_for @q, url: search_items_path, method: :post, data: { controller: "search", action: "submit->search#submit" } do |f| %>
   <div class="m-2">
 
     <!-- Strings - use _i_cont (contains) or _eq (exact match) -->
-    <div class="btn-group-toggle" data-toggle="buttons">
+    <div class="mb-3">
       <h5>Select Collections:</h5>
-      <% @all_collections.each do |collection| %>
-        <div class="form-check">
-          <%= f.check_box :collection_id_in, { multiple: true, id: "collection_#{collection.id}" }, collection.id, nil %>
-          <%= f.label :collection_id_in, collection.division, value: collection.id, class: "form-check-label" %>
+      <div class="btn-group btn-group-toggle flex-wrap" data-toggle="buttons">
+        <% @all_collections.each do |collection| %>
+          <label class="btn btn-outline-primary m-1">
+            <%= f.check_box :collection_id_in, { multiple: true, id: "collection_#{collection.id}", autocomplete: "off" }, collection.id, nil %>
+            <%= collection.division %>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+
+    <%# dynamic search %>
+    <div>
+      <div id="groups-container" data-search-target="groupsContainer">
+        <div data-search-target="group" class="search-group mb-3 p-3 rounded border border-primary">
+          <div data-search-target="rows">
+            <%= render partial: "layouts/search_field" %>
+          </div>
+
+          <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
         </div>
-      <% end %>
-    </div>
-
-    <div class="mb-3">
-      <h5>Country or Region</h5>
-      <small>Select one or more countries or regions to narrow your results</small>
-      <input type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('country-filters', this.value)">
-
-      <div id="country-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-        <% if @countries.blank? %>
-          <p>No countries available to select from.</p>
-        <%else%>
-          <% @countries.each do |country| %>
-            <div class="form-check">
-              <%= check_box_tag "q[country_in][]", country, params.dig(:q, :country_in)&.include?(country), id: "country_#{country}" %>
-              <%= label_tag "q_country_in_#{country.parameterize}", country.downcase.titleize %>
-            </div>
-          <% end %>
-        <% end %>
       </div>
+
+      <template data-search-target="groupTemplate">
+        <div data-search-target="group" class="search-group mb-3 p-3 rounded border border-primary">
+          <div data-search-target="rows">
+            <%= render partial: "layouts/search_field" %>
+          </div>
+
+          <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
+        </div>
+      </template>
+
+      <button type="button" class="btn btn-outline-primary mb-3" data-action="click->search#addGroup">+ Add OR Group</button>
     </div>
 
-    <div class="mb-3">
-      <h5>State / Province</h5>
-      <small>Select one or more states or provinces to narrow your results</small>
-      <input type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('state-filters', this.value)">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <h5>Country or Region</h5>
+        <small>Select one or more countries or regions to narrow your results</small>
+        <input type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('country-filters', this.value)">
 
-      <div id="state-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-        <% if @states.blank? %>
-          <p>No states or provinces available to select from.</p>
-        <%else%>
-          <% @states.each do |state| %>
-            <div class="form-check">
-              <%= check_box_tag "q[state_province_in][]", state, params.dig(:q, :state_province_in)&.include?(state), id: "state_#{state}" %>
-              <%= label_tag "q_state_province_in_#{state.parameterize}", state.downcase.titleize %>
-            </div>
+        <div id="country-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
+          <% if @countries.blank? %>
+            <p>No countries available to select from.</p>
+          <%else%>
+            <% @countries.each do |country| %>
+              <div class="form-check">
+                <%= check_box_tag "q[country_in][]", country, params.dig(:q, :country_in)&.include?(country), id: "country_#{country}" %>
+                <%= label_tag "q_country_in_#{country.parameterize}", country.downcase.titleize %>
+              </div>
+            <% end %>
           <% end %>
-        <% end %>
+        </div>
       </div>
-    </div>
 
-    <div class="mb-3">
-      <h5>Continent</h5>
-      <small>Select one or more continents to narrow your results</small>
-      <input type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('continent-filters', this.value)">
+      <div class="col-md-6 mb-3">
+        <h5>State / Province</h5>
+        <small>Select one or more states or provinces to narrow your results</small>
+        <input type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('state-filters', this.value)">
 
-      <div id="continent-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-        <%if @continents.present?%>
-          <% @continents.each do |continent| %>
-            <div class="form-check">
-              <%= check_box_tag "q[continent_in][]", continent, params.dig(:q, :continent_in)&.include?(continent), id: "continent_#{continent.parameterize}" %>
-              <%= label_tag "continent_#{continent.parameterize}", continent.downcase.titleize %>
-            </div>
+        <div id="state-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
+          <% if @states.blank? %>
+            <p>No states or provinces available to select from.</p>
+          <%else%>
+            <% @states.each do |state| %>
+              <div class="form-check">
+                <%= check_box_tag "q[state_province_in][]", state, params.dig(:q, :state_province_in)&.include?(state), id: "state_#{state}" %>
+                <%= label_tag "q_state_province_in_#{state.parameterize}", state.downcase.titleize %>
+              </div>
+            <% end %>
           <% end %>
-        <% else %>
-          <p>No continent available to select from.</p>
-        <% end %>
+        </div>
       </div>
-    </div>
-    <div>
-      <%= f.label :associated_sequences_i_cont, "Associated Sequences" %>
-      <%= f.search_field :associated_sequences_i_cont, class: "form-control form-control-sm" %>
-    </div>
-    <div>
-      <%= f.label :catalog_number_eq, "Catalog Number" %>
-      <%= f.search_field :catalog_number_eq , placeholder: 'Enter Catalog Number', class: "form-control form-control-sm" %>
-    </div>
-    <div>
-      <%= f.label :county_i_cont, "County" %>
-      <%= f.search_field :county_i_cont, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :field_number_eq, "Field Number" %>
-      <%= f.search_field :field_number_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :geodetic_datum_i_cont, "Geodetic Datum" %>
-      <%= f.search_field :geodetic_datum_i_cont, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :georeference_protocol_i_cont, "Georeference Protocol" %>
-      <%= f.search_field :georeference_protocol_i_cont, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :georeferenced_by_i_cont, "Georeferenced By" %>
-      <%= f.search_field :georeferenced_by_i_cont, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :life_stage_eq, "Life Stage" %>
-      <%= f.search_field :life_stage_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :locality_i_cont, "Locality" %>
-      <%= f.search_field :locality_i_cont, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :occurrence_remarks_i_cont, "Occurrence Remarks" %>
-      <%= f.search_field :occurrence_remarks_i_cont, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :organism_remarks_i_cont, "Organism Remarks" %>
-      <%= f.search_field :organism_remarks_i_cont, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :other_catalog_numbers_eq, "Other Catalog Numbers" %>
-      <%= f.search_field :other_catalog_numbers_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :recorded_by_i_cont, "Recorded By" %>
-      <%= f.search_field :recorded_by_i_cont, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :reproductive_condition_eq, "Reproductive Condition" %>
-      <%= f.search_field :reproductive_condition_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :sampling_protocol_i_cont, "Sampling Protocol" %>
-      <%= f.search_field :sampling_protocol_i_cont, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :sex_eq, "Sex" %>
-      <%= f.search_field :sex_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :verbatim_coordinates_eq, "Verbatim Coordinates" %>
-      <%= f.search_field :verbatim_coordinates_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :verbatim_elevation_eq, "Verbatim Elevation" %>
-      <%= f.search_field :verbatim_elevation_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :verbatim_event_date_eq, "Verbatim Event Date" %>
-      <%= f.search_field :verbatim_event_date_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :verbatim_locality_i_cont, "Verbatim Locality" %>
-      <%= f.search_field :verbatim_locality_i_cont, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
-    </div>
-    <div>
-      <%= f.label :vitality_eq, "Vitality" %>
-      <%= f.search_field :vitality_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
+
+      <div class="col-md-6 mb-3">
+        <h5>Sex</h5>
+        <small>Select sex to narrow your results</small>
+        <input type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('sex-filters', this.value)">
+
+        <div id="sex-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
+          <% if @sexs.blank? %>
+            <p>No sex options available to select from.</p>
+          <% else %>
+            <% @sexs.each do |sex| %>
+              <div class="form-check">
+                <%= check_box_tag "q[sex_in][]", sex, params.dig(:q, :sex_in)&.include?(sex), id: "sex_#{sex.parameterize}" %>
+                <%= label_tag "q_sex_in_#{sex.parameterize}", sex.downcase.titleize %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <h5>Continent</h5>
+        <small>Select one or more continents to narrow your results</small>
+        <input type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('continent-filters', this.value)">
+
+        <div id="continent-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
+          <%if @continents.present?%>
+            <% @continents.each do |continent| %>
+              <div class="form-check">
+                <%= check_box_tag "q[continent_in][]", continent, params.dig(:q, :continent_in)&.include?(continent), id: "continent_#{continent.parameterize}" %>
+                <%= label_tag "continent_#{continent.parameterize}", continent.downcase.titleize %>
+              </div>
+            <% end %>
+          <% else %>
+            <p>No continent available to select from.</p>
+          <% end %>
+        </div>
+      </div>
     </div>
     <div>
       <!-- Dates - use _gteq / _lteq -->
