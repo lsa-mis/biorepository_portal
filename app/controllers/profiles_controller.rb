@@ -28,24 +28,40 @@ class ProfilesController < ApplicationController
   def update_loan_questions
     return redirect_to profile_path, alert: "No answers submitted." if params[:loan_answers].blank?
 
+    errors = []
     @loan_questions = LoanQuestion.all
 
-    @loan_questions.each do |question|
-      raw_answer = params[:loan_answers][question.id.to_s]
+    ActiveRecord::Base.transaction do
+      @loan_questions.each do |question|
+        raw_answer = params[:loan_answers][question.id.to_s]
 
-      # Skip if nothing submitted for this question
-      next if raw_answer.nil?
+        if question.required?
+          if raw_answer.blank? || (raw_answer.is_a?(Array) && raw_answer.reject(&:blank?).empty?)
+            errors << "Answer required for: #{question.question}"
+            next
+          end
+        end
 
-      # For checkboxes: join multiple values into a single string
-      answer_value = raw_answer.is_a?(Array) ? raw_answer.join(", ") : strip_tags(raw_answer.strip)
+        answer_value = raw_answer.is_a?(Array) ? raw_answer.reject(&:blank?).join(", ") : strip_tags(raw_answer.to_s.strip)
 
-      answer = question.loan_answers.find_or_initialize_by(user: current_user)
-      answer.answer = answer_value
-      answer.save
+        answer = question.loan_answers.find_or_initialize_by(user: current_user)
+        answer.answer = answer_value
+        answer.save!
+      end
+
+      raise ActiveRecord::Rollback unless errors.empty?
     end
 
-    redirect_to profile_path, notice: "Loan questions updated successfully."
+    if errors.any?
+      flash.now[:alert] = errors.join("<br>").html_safe
+      @loan_answers = current_user.loan_answers.includes(:loan_question)
+      @collections = Collection.joins(:collection_questions).distinct
+      render :loan_questions, status: :unprocessable_entity
+    else
+      redirect_to profile_path, notice: "Loan questions updated successfully."
+    end
   end
+
 
   def collection_questions
     @collection = Collection.find(params[:id])
@@ -59,17 +75,37 @@ class ProfilesController < ApplicationController
       return redirect_to profile_path, alert: "No answers submitted."
     end
 
+    errors = []
+
     ActiveRecord::Base.transaction do
-      params[:collection_answers].each do |question_id, raw_answer|
-        question = CollectionQuestion.find(question_id)
+      @collection.collection_questions.each do |question|
+        raw_answer = params[:collection_answers][question.id.to_s]
+
+        if question.required?
+          if raw_answer.blank? || (raw_answer.is_a?(Array) && raw_answer.reject(&:blank?).empty?)
+            errors << "Answer required for: #{question.question}"
+            next
+          end
+        end
+
+        cleaned_answer = raw_answer.is_a?(Array) ? raw_answer.reject(&:blank?).join(", ") : strip_tags(raw_answer.to_s.strip)
+
         answer = current_user.collection_answers.find_or_initialize_by(collection_question: question)
-        cleaned_answer = raw_answer.is_a?(Array) ? raw_answer.join(", ") : strip_tags(raw_answer.to_s.strip)
         answer.answer = cleaned_answer
         answer.save!
       end
+
+      raise ActiveRecord::Rollback unless errors.empty?
     end
 
-    redirect_to profile_path, notice: "Your answers have been saved."
+    if errors.any?
+      flash.now[:alert] = errors.join("<br>").html_safe
+      @collection_questions = @collection.collection_questions
+      @collection_answers = current_user.collection_answers.where(collection_question: @collection_questions)
+      render :collection_questions, status: :unprocessable_entity
+    else
+      redirect_to profile_path, notice: "Your answers have been saved."
+    end
   end
 
   private

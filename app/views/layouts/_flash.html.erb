@@ -1,7 +1,7 @@
-<div class="position-absolute end-0 p-2">
+<div class="position-absolute end-0 p-2" style="z-index: 1055;">
   <% flash.each do |type, message| %>
     <div data-controller="flash" class="alert alert-dismissible fade show <%= css_class_for_flash(type) %>" role="alert">
-      <%= message %>
+      <%= message.html_safe %>
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
   <% end %>
