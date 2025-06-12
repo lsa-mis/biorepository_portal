@@ -59,12 +59,14 @@ class ProfilesController < ApplicationController
       return redirect_to profile_path, alert: "No answers submitted."
     end
 
-    params[:collection_answers].each do |question_id, raw_answer|
-      question = CollectionQuestion.find(question_id)
-      answer = current_user.collection_answers.find_or_initialize_by(collection_question: question)
-      cleaned_answer = raw_answer.is_a?(Array) ? raw_answer.join(", ") : strip_tags(raw_answer.to_s.strip)
-      answer.answer = cleaned_answer
-      answer.save!
+    ActiveRecord::Base.transaction do
+      params[:collection_answers].each do |question_id, raw_answer|
+        question = CollectionQuestion.find(question_id)
+        answer = current_user.collection_answers.find_or_initialize_by(collection_question: question)
+        cleaned_answer = raw_answer.is_a?(Array) ? raw_answer.join(", ") : strip_tags(raw_answer.to_s.strip)
+        answer.answer = cleaned_answer
+        answer.save!
+      end
     end
 
     redirect_to profile_path, notice: "Your answers have been saved."
