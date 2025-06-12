@@ -1,7 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["group", "row", "rows", "groupTemplate", "groupsContainer"]
+  static targets = ["group", "row", "rows", "groupTemplate", "groupsContainer", "form"]
+
+  connect() {
+    console.log("connect search_controller")
+  }
 
   removeField(event) {
     const row = event.currentTarget.closest(".search-row")
@@ -59,24 +63,30 @@ export default class extends Controller {
     })
   }
 
-  submit(event) {
-    const form = this.element
-    form.querySelectorAll("input[name^='q[']").forEach(el => el.remove())
+  // submit(event) {
+  //   console.log("submit search_controller")
+  //   const form = this.element
+  //   form.querySelectorAll("input[name^='q[']").forEach(el => el.remove())
 
-    this.groupTargets.forEach((group, groupIndex) => {
-      const rows = group.querySelectorAll(".search-row")
-      rows.forEach(row => {
-        const field = row.querySelector(".dynamic-search-field")
-        const value = row.querySelector(".dynamic-search-value")
+  //   this.groupTargets.forEach((group, groupIndex) => {
+  //     const rows = group.querySelectorAll(".search-row")
+  //     rows.forEach(row => {
+  //       const field = row.querySelector(".dynamic-search-field")
+  //       const value = row.querySelector(".dynamic-search-value")
 
-        if (field.value && value.value) {
-          const input = document.createElement("input")
-          input.type = "hidden"
-          input.name = `q[groupings][${groupIndex}][${field.value}]`
-          input.value = value.value
-          form.appendChild(input)
-        }
-      })
-    })
+  //       if (field.value && value.value) {
+  //         const input = document.createElement("input")
+  //         input.type = "hidden"
+  //         input.name = `q[groupings][${groupIndex}][${field.value}]`
+  //         input.value = value.value
+  //         form.appendChild(input)
+  //       }
+  //     })
+  //   })
+  // }
+
+  submit() {
+    console.log("submit form")
+    Turbo.navigator.submitForm(this.formTarget)
   }
 }
