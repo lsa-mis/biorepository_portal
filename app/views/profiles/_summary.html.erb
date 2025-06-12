@@ -18,6 +18,15 @@
           <i class="bi bi-ui-checks-grid"></i> <span class="fw-light">Edit Loan Info</span>
         <% end %>
       </div>
+      <!-- Update Collection Specific Question Link -->
+      <% @collections.each do |collection| %>
+        <div class="align-self-start pt-2">
+          <%= link_to collection_questions_profile_path(collection), class: 'text-white link-underline link-underline-opacity-0 text-start d-block' do %>
+            <i class="bi bi-folder2-open"></i>
+            <span class="fw-light">Edit <%= collection.division %></span>
+          <% end %>
+        </div>
+      <% end %>
     </div>
   <hr>
 

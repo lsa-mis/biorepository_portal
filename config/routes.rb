@@ -8,6 +8,9 @@ Rails.application.routes.draw do
     get :loan_questions          # profile_loan_questions_path
     patch :update_loan_questions # profile_update_loan_questions_path
   end
+  get 'profile/collection_questions/:id', to: 'profiles#collection_questions', as: 'collection_questions_profile'
+  patch 'profile/collection_questions/:id', to: 'profiles#update_collection_questions', as: 'update_collection_questions_profile'
+
   resources :users, only: [:edit, :update]
 
   get 'app_preference/:name', to: 'app_preferences#delete_preference', as: :delete_preference
