@@ -10,48 +10,50 @@
 
 <div class="card p-4 shadow-sm">
   <div class="card-body">
-    <% @loan_questions.each do |loan_question| %>
-      <div class="mb-4 border rounded p-3 bg-light">
-        <label class="form-label"><%= loan_question.question %>
-          <% if loan_question.required? %>
-            <span class="text-danger">*</span>
-          <% end %>
-        </label>
-        
-        <% if loan_question.question_type == "text" %>
-          <div class="ms-3">
-            <input type="text" class="form-control" placeholder="User input...">
-          </div>
-        <% elsif loan_question.question_type == "checkbox" %>
-          <p>Pick one or more options below</p>
-          <div class="ms-3">
-            <% loan_question.options.each do |option| %>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox">
-                <label class="form-check-label"><%= option.value %></label>
-              </div>
+    <%= form_with url: "#", local: true, html: { onsubmit: "return false;" } do |f| %>
+      <% @loan_questions.each do |loan_question| %>
+        <div class="mb-4 border rounded p-3 bg-light">
+          <label class="form-label"><%= loan_question.question %>
+            <% if loan_question.required? %>
+              <span class="text-danger">*</span>
             <% end %>
-          </div>
-        <% elsif loan_question.question_type == "dropdown" %>
-          <div class="ms-3">
-            <select class="form-select">
-              <option value="" selected disabled>Select ...</option>
+          </label>
+          
+          <% if loan_question.question_type == "text" %>
+            <div class="ms-3">
+              <input type="text" class="form-control" placeholder="User input...">
+            </div>
+          <% elsif loan_question.question_type == "checkbox" %>
+            <p>Pick one or more options below</p>
+            <div class="ms-3">
               <% loan_question.options.each do |option| %>
-                <option value="<%= option.value %>"><%= option.value %></option>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox">
+                  <label class="form-check-label"><%= option.value %></label>
+                </div>
               <% end %>
-            </select>
-          </div>
-        <% elsif loan_question.question_type == "attachment" %>
-          <div class="ms-3">
-            <input type="file" class="form-control">
-          </div>
-        <% else %>
-          <div class="alert alert-warning mt-3">
-            <strong>Unsupported question type:</strong> <%= loan_question.question_type %>
-          </div>
-        <% end %>
-      </div>
+            </div>
+          <% elsif loan_question.question_type == "dropdown" %>
+            <div class="ms-3">
+              <select class="form-select">
+                <option value="" selected disabled>Select ...</option>
+                <% loan_question.options.each do |option| %>
+                  <option value="<%= option.value %>"><%= option.value %></option>
+                <% end %>
+              </select>
+            </div>
+          <% elsif loan_question.question_type == "attachment" %>
+            <div class="ms-3">
+              <input type="file" class="form-control">
+            </div>
+          <% else %>
+            <div class="alert alert-warning mt-3">
+              <strong>Unsupported question type:</strong> <%= loan_question.question_type %>
+            </div>
+          <% end %>
+        </div>
 
+      <% end %>
     <% end %>
 
   </div>
