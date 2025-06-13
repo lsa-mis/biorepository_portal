@@ -15,6 +15,7 @@ class ItemsController < ApplicationController
   end
 
   def search
+    fail
     @q = Item.ransack(params[:q])
     @items = @q.result.page(params[:page]).per(15)
     @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
