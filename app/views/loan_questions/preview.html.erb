@@ -12,10 +12,11 @@
   <div class="card-body">
     <% @loan_questions.each do |loan_question| %>
       <div class="mb-4 border rounded p-3 bg-light">
-        <label class="form-label"><%= loan_question.question %></label>
-        <% if loan_question.required? %>
-          <span class="text-danger">*</span>
-        <% end %>
+        <label class="form-label"><%= loan_question.question %>
+          <% if loan_question.required? %>
+            <span class="text-danger">*</span>
+          <% end %>
+        </label>
         
         <% if loan_question.question_type == "text" %>
           <div class="ms-3">
@@ -39,6 +40,10 @@
                 <option value="<%= option.value %>"><%= option.value %></option>
               <% end %>
             </select>
+          </div>
+        <% elsif loan_question.question_type == "attachment" %>
+          <div class="ms-3">
+            <input type="file" class="form-control">
           </div>
         <% else %>
           <div class="alert alert-warning mt-3">
