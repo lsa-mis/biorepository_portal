@@ -41,10 +41,11 @@ class RequestsController < ApplicationController
   end
 
   def loan_request
+    @loan_questions = LoanQuestion.all
     @loan_request = LoanRequest.new
     @checkout_items = get_checkout_items
     @user = current_user
-    @loan_answers = @user.loan_answers
+    @loan_answers = @user.loan_answers.includes(:loan_question)
     @collections = @checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq
   end
 

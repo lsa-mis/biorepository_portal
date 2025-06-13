@@ -4,7 +4,6 @@ import { Modal } from "bootstrap"
 export default class extends Controller {
   connect() {
     this.modal = new Modal(this.element)
-    this.modal.show()
   }
 
   hideBeforeRender(event) {
@@ -17,5 +16,12 @@ export default class extends Controller {
 
   isOpen() {
     return this.element.classList.contains("show")
+  }
+
+  showAfterRender(event) {
+    const frame = this.element.querySelector("#modal_content_frame")
+    if (frame && frame.innerHTML.trim() !== "") {
+      this.modal?.show()
+    }
   }
 }
