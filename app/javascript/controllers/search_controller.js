@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["group", "row", "rows", "groupTemplate", "groupsContainer", "form"]
+  static targets = ["group", "row", "rows", "groupTemplate", "groupsContainer"]
 
   connect() {
     console.log("connect search_controller")
@@ -63,30 +63,56 @@ export default class extends Controller {
     })
   }
 
-  // submit(event) {
-  //   console.log("submit search_controller")
-  //   const form = this.element
-  //   form.querySelectorAll("input[name^='q[']").forEach(el => el.remove())
+  submit(event) {
+    console.log("submit search_controller")
+    const form = this.element
+    var filters = form.querySelectorAll("input[name^='q[']:checked")
+    console.log("Filters:", filters);
+    // filters.forEach((filter, index) => {
+    //   console.log("Filter name:", filter.name);
+    //   console.log("Filter value:", filter.value);
+    //   if (filter.name && filter.value) {
+    //       const input = document.createElement("input")
+    //       input.type = "hidden"
+    //       input.name = `q[groupings][${index}][${filter.name}]`
+    //       input.value = filter.value
+    //       form.appendChild(input)
+    //     }
+    // })
+    
 
-  //   this.groupTargets.forEach((group, groupIndex) => {
-  //     const rows = group.querySelectorAll(".search-row")
-  //     rows.forEach(row => {
-  //       const field = row.querySelector(".dynamic-search-field")
-  //       const value = row.querySelector(".dynamic-search-value")
+    form.querySelectorAll("input[name^='q[']").forEach(el => el.remove())
 
-  //       if (field.value && value.value) {
-  //         const input = document.createElement("input")
-  //         input.type = "hidden"
-  //         input.name = `q[groupings][${groupIndex}][${field.value}]`
-  //         input.value = value.value
-  //         form.appendChild(input)
-  //       }
-  //     })
-  //   })
-  // }
+    this.groupTargets.forEach((group, groupIndex) => {
+      const rows = group.querySelectorAll(".search-row")
+      rows.forEach(row => {
+        const field = row.querySelector(".dynamic-search-field")
+        const value = row.querySelector(".dynamic-search-value")
 
-  submit() {
-    console.log("submit form")
-    Turbo.navigator.submitForm(this.formTarget)
+        if (field.value && value.value) {
+          const input = document.createElement("input")
+          input.type = "hidden"
+          input.name = `q[groupings][${groupIndex}][${field.value}]`
+          input.value = value.value
+          form.appendChild(input)
+        }
+      })
+      filters.forEach((filter, index) => {
+        console.log("Filter name:", filter.name);
+        console.log("Filter value:", filter.value);
+        if (filter.name && filter.value) {
+            const input = document.createElement("input")
+            input.type = "hidden"
+            input.name = `q[groupings][${index}][${filter.name}]`
+            input.value = filter.value
+            form.appendChild(input)
+          }
+      })
+    })
   }
+
+  // submit() {
+  //   console.log("submit form")
+  //   Turbo.navigator.submitForm(this.formTarget)
+  // }
 }
