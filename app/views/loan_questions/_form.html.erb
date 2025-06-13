@@ -1,4 +1,4 @@
-<%= form_with(model: loan_question, data: { controller: "show-options" }) do |form| %>
+<%= form_with(model: loan_question, data: { controller: "show-options" }, html: {multipart: true}) do |form| %>
   <% if loan_question.errors.any? %>
     <div style="color: red">
       <h2><%= pluralize(loan_question.errors.count, "error") %> prohibited this loan_question from being saved:</h2>
@@ -33,7 +33,7 @@
         ) %>
   </div>
 
-  <!-- EDIT: This div is hidden by default (class="invisible") and toggled by ShowOptions controller -->
+  <!-- This div is hidden by default (class="invisible") and toggled by ShowOptions controller -->
   <div class="invisible" data-controller="edit-options" data-show-options-target="display_options">
     <%= turbo_frame_tag("options_list") do %>
       <div id="options" data-edit-options-target="fields">
@@ -130,3 +130,4 @@
     <%= link_to "Cancel", loan_questions_path, class: "link_to" %>
   </div>
 <% end %>
+
