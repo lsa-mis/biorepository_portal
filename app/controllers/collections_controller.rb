@@ -10,7 +10,7 @@ class CollectionsController < ApplicationController
   # GET /collections/1 or /collections/1.json
   def show
     @q1 = @collection.items.ransack(params[:q1])
-    @items = @collection.items.order("random()").page(params[:page]).per(15)
+    @items = @collection.items.page(params[:page]).per(15)
     @collection_questions = @collection.collection_questions.includes(:collection_options)
   end
 
@@ -21,7 +21,7 @@ class CollectionsController < ApplicationController
   end
 
   def items
-    @items = @collection.items.order("random()").page(params[:page]).per(params[:per]).max_paginates_per(500)
+    @items = @collection.items.page(params[:page]).per(params[:per]).max_paginates_per(500)
   end
 
   def add_item_to_checkout
