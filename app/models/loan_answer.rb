@@ -23,21 +23,21 @@ class LoanAnswer < ApplicationRecord
   belongs_to :loan_question
   has_rich_text :answer
   has_one_attached :attachment
-  validate :response_file_presence_for_attachment
-  validate :validate_answer_presence
+  # validate :response_file_presence_for_attachment
+  # validate :validate_answer_presence
 
-  private
+  # private
   
-  def response_file_presence_for_attachment
-    if loan_question.question_type_attachment? && loan_question.required? && !attachment.attached?
-      errors.add(:attachment, "must be present for attachment type question")
-    end
-  end
+  # def response_file_presence_for_attachment
+  #   if loan_question.question_type_attachment? && loan_question.required? && !attachment.attached?
+  #     errors.add(:attachment, "must be present for attachment type question")
+  #   end
+  # end
 
-  def validate_answer_presence
-    if loan_question.required? && !loan_question.question_type_attachment? && answer.blank?
-      errors.add(:answer, "must be present for required question")
-    end
-  end
+  # def validate_answer_presence
+  #   if loan_question.required? && !loan_question.question_type_attachment? && answer.blank?
+  #     errors.add(:answer, "must be present for required question")
+  #   end
+  # end
 
 end

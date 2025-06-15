@@ -111,7 +111,7 @@ class LoanQuestionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def loan_question_params
-      params.expect(loan_question: [ :question, :question_type, :required, :attachment, options: [ :value ] ])
+      params.expect(loan_question: [ :question, :question_type, :required, options: [ :value ] ])
     end
 end
 

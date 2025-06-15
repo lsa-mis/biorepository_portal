@@ -23,18 +23,18 @@ class CollectionAnswer < ApplicationRecord
   belongs_to :collection_question
   has_rich_text :answer
   has_one_attached :attachment
-  validate :response_file_presence_for_attachment
+  # validate :response_file_presence_for_attachment
 
-  private
-  def response_file_presence_for_attachment
-    if collection_question.question_type_attachment? && collection_question.required? && !attachment.attached?
-      errors.add(:attachment, "must be present for attachment type question")
-    end
-  end
+  # private
+  # def response_file_presence_for_attachment
+  #   if collection_question.question_type_attachment? && collection_question.required? && !attachment.attached?
+  #     errors.add(:attachment, "must be present for attachment type question")
+  #   end
+  # end
 
-  def validate_answer_presence
-    if collection_question.required? && !collection_question.question_type_attachment? && answer.blank?
-      errors.add(:answer, "must be present for required question")
-    end
-  end
+  # def validate_answer_presence
+  #   if collection_question.required? && !collection_question.question_type_attachment? && answer.blank?
+  #     errors.add(:answer, "must be present for required question")
+  #   end
+  # end
 end
