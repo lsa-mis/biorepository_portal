@@ -10,14 +10,14 @@
       <%= item.county %>
     </p>
     <p>
-      <%= item.decimal_latitude %>, <%= item.decimal_longitude %>
+      <%= item.coordinates %>
     </p>
     <div class="card-text">
       <p class="fw-bold">Preparations</p>
       <ul>
         <% item.preparations.each do |preparation| %>
           <li>
-            <%= preparation.prep_type %><%= "- #{preparation.description}" if preparation.description.present? %>
+            <%= preparation.display_name %>
           </li>
         <% end %>
       </ul>

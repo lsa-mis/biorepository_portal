@@ -61,6 +61,14 @@ class Item < ApplicationRecord
     "#{Identification.find_by(item_id: self.id, current: true)&.scientific_name} - #{Identification.find_by(item_id: self.id, current: true)&.vernacular_name} - #{self.country} - #{self.event_date_start}"
   end
 
+  def coordinates
+    if self.decimal_latitude.present? && self.decimal_longitude.present?
+      "#{self.decimal_latitude}, #{self.decimal_longitude}"
+    else
+      "Coordinates not available"
+    end
+  end
+
   def self.ransackable_attributes(auth_object = nil)
     ["archived", "associated_sequences", "catalog_number", "collection_id", "continent", "coordinate_uncertainty_in_meters",
     "country", "county", "created_at", "decimal_latitude", "decimal_longitude", "event_date_end", "event_date_start", "event_remarks",

@@ -15,13 +15,7 @@
     <div class="prep-detail d-none mt-4" data-preparation-target="detail" data-prep-id="<%= index %>">
       <div class="card p-4 shadow-sm">
         <% if prep.prep_type.present? %>
-          <p><strong>Preparation Type:</strong> <%= prep.prep_type %></p>
-        <% end %>
-        <% if prep.barcode.present? %>
-          <p><strong>Barcode:</strong> <%= prep.barcode %></p>
-        <% end %>
-        <% if prep.description.present? %>
-          <p><strong>Description:</strong> <%= prep.description %></p>
+          <p><strong>Preparation:</strong> <%= prep.display_name %></p>
         <% end %>
         <% if prep.count.present? %>
           <p><strong>Count:</strong> <%= prep.count %></p>
