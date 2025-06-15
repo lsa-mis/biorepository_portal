@@ -5,7 +5,7 @@
 #  id            :bigint           not null, primary key
 #  question      :string
 #  question_type :integer
-#  required      :boolean          default(FALSE), not null
+#  required      :boolean
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #
@@ -13,8 +13,9 @@ class LoanQuestion < ApplicationRecord
   has_many :options, dependent: :destroy
   has_many :loan_answers, dependent: :destroy
   accepts_nested_attributes_for :options, allow_destroy: true
-  enum :question_type, [:text, :dropdown, :checkbox], prefix: true
+  enum :question_type, [:text, :dropdown, :checkbox, :attachment], prefix: true
 
   validates :question, presence: true, uniqueness: true
   validates :question_type, presence: true
 end
+
