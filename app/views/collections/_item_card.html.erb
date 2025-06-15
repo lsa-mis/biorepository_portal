@@ -17,7 +17,7 @@
       <ul>
         <% item.preparations.each do |preparation| %>
           <li>
-            <%= preparation.prep_type %> - <%= preparation.description if preparation.description.present? %>
+            <%= preparation.prep_type %><%= "- #{preparation.description}" if preparation.description.present? %>
           </li>
         <% end %>
       </ul>
