@@ -20,7 +20,7 @@
     <fieldset>
       <% @send_to.each do |collection, email| %>
         <div class="ms-3">
-          <%= check_box_tag 'information_request[send_to][]', email, id: "send_to_#{collection.parameterize.underscore}", required: false, "data-checkbox-group-required-target": "checkboxes" %>
+          <%= check_box_tag 'information_request[send_to][]', email, @information_request.send_to&.include?(email), id: "send_to_#{collection.parameterize.underscore}", required: false, "data-checkbox-group-required-target": "checkboxes" %>
           <%= label_tag "send_to_#{collection.parameterize.underscore}", collection %>
         </div>
       <% end %>
