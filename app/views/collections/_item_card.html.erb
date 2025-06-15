@@ -4,10 +4,26 @@
   </div>
   <div class="card-body">
     <p>
-      <%= item.country %>
-    </p>
-    <p>
       <%= item.state_province %>
     </p>
+    <p>
+      <%= item.county %>
+    </p>
+    <p>
+      <%= item.decimal_latitude %>, <%= item.decimal_longitude %>
+    </p>
+    <div class="card-text">
+      <p class="fw-bold">Preparations</p>
+      <ul>
+        <% item.preparations.each do |preparation| %>
+          <li>
+            <%= preparation.prep_type %> - <%= preparation.description if preparation.description.present? %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+  <div class="card-footer">
+    <%= link_to "Checkout", add_item_to_checkout_path(item), class: "btn btn-sm btn-primary", data: { turbo_frame: "remote_modal" } %>
   </div>
 </div>
