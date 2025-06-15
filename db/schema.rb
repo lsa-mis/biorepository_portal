@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_11_221651) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_15_071643) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -98,7 +98,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_11_221651) do
   create_table "collections", force: :cascade do |t|
     t.string "division"
     t.string "admin_group"
-    t.text "description"
+    t.text "short_description"
     t.string "division_page_url"
     t.string "link_to_policies"
     t.datetime "created_at", null: false
@@ -200,7 +200,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_11_221651) do
     t.integer "question_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "required", default: false, null: false
+    t.boolean "required"
   end
 
   create_table "loan_requests", force: :cascade do |t|
