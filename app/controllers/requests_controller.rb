@@ -2,14 +2,16 @@ class RequestsController < ApplicationController
 
   def information_request
     @information_request = InformationRequest.new
-    @send_to = Collection.pluck(:admin_group)
-    generic_email = AppPreference.find_by(name: "generic_contact_email")&.value
-    @send_to << generic_email if generic_email.present?
-    @send_to.compact!
-    @send_to.uniq!
+    @send_to = {}
+    emails = AppPreference.where(name: "collection_email_to_send_requests").where.not(value: [nil, '']).pluck(:collection_id, :value)
+    emails.map { |id, email| @send_to[Collection.find(id).division] = email }
+    generic_email = AppPreference.find_by(name: "generic_contact_email")&.value || ""
+    generic_contact = AppPreference.find_by(name: "generic_contact_email")&.value if generic_email.present?
+    @send_to["Collections email"] = generic_contact if generic_email.present?
   end
 
   def send_information_request
+
     checkout_items = ""
     message = params[:information_request][:question]
     send_to = params[:information_request][:send_to]
