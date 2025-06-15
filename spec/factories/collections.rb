@@ -4,10 +4,10 @@
 #
 #  id                :bigint           not null, primary key
 #  admin_group       :string
-#  description       :text
 #  division          :string
 #  division_page_url :string
 #  link_to_policies  :string
+#  short_description :text
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #

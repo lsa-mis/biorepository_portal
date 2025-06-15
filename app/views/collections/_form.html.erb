@@ -23,7 +23,12 @@
 
   <div>
     <%= form.label :description %>
-    <%= form.textarea :description, class: "w-100 mt-2" %>
+    <%= form.textarea :short_description, class: "w-100 mt-2" %>
+  </div>
+
+  <div>
+    <%= form.label :long_description %>
+    <%= form.rich_text_area :long_description %>
   </div>
 
   <div>
