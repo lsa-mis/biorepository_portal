@@ -6,8 +6,7 @@ class RequestsController < ApplicationController
     emails = AppPreference.joins(:collection).where(name: "collection_email_to_send_requests").where.not(value: [nil, '']).pluck("collections.division", :value)
     emails.each { |division, email| @send_to[division] = email }
     generic_email = AppPreference.find_by(name: "generic_contact_email")&.value || ""
-    generic_contact = generic_email if generic_email.present?
-    @send_to["Collections email"] = generic_contact if generic_email.present?
+    @send_to["Collections email"] = generic_email if generic_email.present?
   end
 
   def send_information_request
