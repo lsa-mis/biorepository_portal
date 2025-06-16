@@ -76,7 +76,6 @@ module ApplicationHelper
   end
 
   def show_count(preparation, max_number_of_preparations)
-    collection = preparation.item.collection
     max_number_of_preparations > 0 ? [preparation.count, max_number_of_preparations].min : preparation.count
   end
   
