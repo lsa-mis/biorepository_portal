@@ -74,5 +74,15 @@ module ApplicationHelper
   def show_boolean(value)
     value ? "Yes" : "No" 
   end
+
+  def show_count(preparation)
+    collection = preparation.item.collection
+    max_number_of_preparations = AppPreference.find_by(name: "max_number_of_preparations", collection_id: collection.id)&.value.to_i || 0
+    if max_number_of_preparations > 0 && preparation.count > max_number_of_preparations
+      max_number_of_preparations
+    else
+      preparation.count
+    end
+  end
   
 end
