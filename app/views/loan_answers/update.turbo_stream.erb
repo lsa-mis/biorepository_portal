@@ -1,0 +1,39 @@
+<turbo-stream action="replace" target="loan_answer_<%= @answer.id %>">
+  <template>
+    <div id="loan_answer_<%= @answer.id %>" class="border rounded p-3 mb-3">
+      <p><strong><%= @question.question %>:</strong></p>
+      <p><%= @answer.answer.presence || "No answer provided" %></p>
+
+      <%= link_to "Edit",
+                  edit_loan_answer_path(@question, format: :turbo_stream),
+                  data: {
+                    turbo_frame: "modal_content_frame",
+                    bs_toggle: "modal",
+                    bs_target: "#editLoanAnswerModal"
+                  },
+                  class: "btn btn-sm btn-outline-primary" %>
+    </div>
+  </template>
+</turbo-stream>
+
+<turbo-stream action="update" target="modal_content_frame">
+  <template></template>
+</turbo-stream>
+
+<turbo-stream action="remove" target="editLoanAnswerModal"></turbo-stream>
+
+<turbo-stream action="update" target="body">
+  <template>
+    <script>
+      var backdrops = document.querySelectorAll('.modal-backdrop');
+      backdrops.forEach(b => {
+        b.classList.remove('fade', 'show');
+        b.remove();
+      });
+      console.log('Modal backdrop removed');
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = ''; // reset overflow if needed
+      document.body.style.paddingRight = ''; // reset padding if needed
+    </script>
+  </template>
+</turbo-stream>

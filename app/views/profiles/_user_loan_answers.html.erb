@@ -1,11 +1,10 @@
 <h2>User Loan Answers</h2>
 <% if @loan_answers.present? %>
   <% @loan_answers.each do |answer| %>
-    <div class="border rounded p-3 mb-3">
+    <div id="loan_answer_<%= answer.id %>" class="border rounded p-3 mb-3">
       <p><strong><%= answer.loan_question.question %>:</strong></p>
       <p><%= answer.answer.to_plain_text.strip.presence || "No answer provided" %></p>
 
-      <!-- Dynamic Edit button (loads form into modal when clicked) -->
       <%= link_to "Edit",
                   edit_loan_answer_path(answer.loan_question, format: :turbo_stream),
                   data: {
