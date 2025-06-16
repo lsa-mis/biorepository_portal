@@ -37,4 +37,8 @@ class ApplicationController < ActionController::Base
     @q = Item.ransack(params[:q])
   end
 
+  def fetch_max_number_of_preparations(collection.id)
+    AppPreference.find_by(name: "max_number_of_preparations", collection_id: collection.id)&.value.to_i || 0
+  end
+
 end
