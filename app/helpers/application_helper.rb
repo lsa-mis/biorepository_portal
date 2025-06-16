@@ -75,9 +75,8 @@ module ApplicationHelper
     value ? "Yes" : "No" 
   end
 
-  def show_count(preparation)
+  def show_count(preparation, max_number_of_preparations)
     collection = preparation.item.collection
-    max_number_of_preparations = AppPreference.find_by(name: "max_number_of_preparations", collection_id: collection.id)&.value.to_i || 0
     max_number_of_preparations > 0 ? [preparation.count, max_number_of_preparations].min : preparation.count
   end
   

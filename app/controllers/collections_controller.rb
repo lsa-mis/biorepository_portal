@@ -22,10 +22,12 @@ class CollectionsController < ApplicationController
 
   def items
     @items = @collection.items.page(params[:page]).per(params[:per]).max_paginates_per(500)
+    @max_number_of_preparations = AppPreference.find_by(name: "max_number_of_preparations", collection_id: @collection.id)&.value.to_i || 0
   end
 
   def add_item_to_checkout
     @item = Item.find(params[:item_id])
+    @max_number_of_preparations = AppPreference.find_by(name: "max_number_of_preparations", collection_id: @item.collection.id)&.value.to_i || 0
     # @item = Item.find(57405)
   end
 

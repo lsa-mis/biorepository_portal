@@ -10,6 +10,7 @@ class ItemsController < ApplicationController
   # GET /items/1 or /items/1.json
   def show
     @identifications = @item.identifications.order(current: :desc)
+    @max_number_of_preparations = AppPreference.find_by(name: "max_number_of_preparations", collection_id: @item.collection.id)&.value.to_i || 0
     @preparations = @item.preparations
     @collections = Collection.all
   end
