@@ -10,6 +10,7 @@ class ItemsController < ApplicationController
   # GET /items/1 or /items/1.json
   def show
     @identifications = @item.identifications.order(current: :desc)
+    @max_number_of_preparations = fetch_max_number_of_preparations(@item.collection.id)
     @preparations = @item.preparations
     @collections = Collection.all
   end
