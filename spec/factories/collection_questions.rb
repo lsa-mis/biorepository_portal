@@ -20,8 +20,9 @@
 #
 FactoryBot.define do
   factory :collection_question do
-    collection { nil }
-    question { "MyString" }
+    question { "Affiliation" }
+    question_type { :text }
     required { false }
+    association :collection
   end
 end
