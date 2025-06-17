@@ -14,16 +14,9 @@ class LoanAnswersController < ApplicationController
 
   def update
     @question = LoanQuestion.find(params[:id])
-    raw_answer = params[:loan_answers][@question.id.to_s]
 
-    if @question.required?
-      if raw_answer.blank? || (raw_answer.is_a?(Array) && raw_answer.reject(&:blank?).empty?)
-        return respond_to do |format|
-          format.html { redirect_back fallback_location: loan_request_path, alert: "Answer required for: #{@question.question}" }
-          format.turbo_stream { render turbo_stream: turbo_stream.replace("flash", partial: "shared/flash", locals: { alert: "Answer required for: #{@question.question}" }) }
-        end
-      end
-    end
+    submitted_answers = params[:loan_answers] || {}
+    raw_answer = submitted_answers[@question.id.to_s]
 
     answer_value = raw_answer.is_a?(Array) ? raw_answer.reject(&:blank?).join(", ") : strip_tags(raw_answer.to_s.strip)
 
@@ -38,7 +31,10 @@ class LoanAnswersController < ApplicationController
     else
       respond_to do |format|
         format.html { redirect_back fallback_location: loan_request_path, alert: "Failed to update answer." }
-        format.turbo_stream { render turbo_stream: turbo_stream.replace("flash", partial: "shared/flash", locals: { alert: "Failed to update answer." }) }
+        format.turbo_stream { 
+          render turbo_stream: turbo_stream.replace("flash", partial: "layouts/flash", locals: { alert: "Failed to update answer." }),
+                status: :unprocessable_entity
+        }
       end
     end
   end

@@ -2,7 +2,12 @@
 <% if @loan_answers.present? %>
   <% @loan_answers.each do |answer| %>
     <div id="loan_answer_<%= answer.id %>" class="border rounded p-3 mb-3">
-      <p><strong><%= answer.loan_question.question %>:</strong></p>
+      <p>
+        <strong><%= answer.loan_question.question %></strong>
+        <% if answer.loan_question.required? %>
+          <span class="text-danger">*</span>
+        <% end %>
+      </p>
       <p><%= answer.answer.to_plain_text.strip.presence || "No answer provided" %></p>
 
       <%= link_to "Edit",
