@@ -42,8 +42,10 @@
           <% end %>
         </div>
       <% end %>
-
-      <%= submit_tag "Submit", class: "btn btn-primary mt-3" %>
+      <div class="mb-3">
+        <%= submit_tag "Submit", class: "btn btn-primary" %>
+        <%= link_to "Cancel", profile_path, class: "link_to" %>
+      </div>
     </div>
   </div>
 <% end %>
