@@ -8,7 +8,18 @@
           <span class="text-danger">*</span>
         <% end %>
       </p>
-      <p><%= answer.answer.to_plain_text.strip.presence || "No answer provided" %></p>
+      <p>
+        <% plain_answer = answer.answer.to_plain_text.strip.presence %>
+        <% if answer.loan_question.required? %>
+          <% if plain_answer %>
+            <%= plain_answer %>
+          <% else %>
+            <span class="text-danger">Warning: This question is required but not answered.</span>
+          <% end %>
+        <% else %>
+          <%= plain_answer || "No answer provided" %>
+        <% end %>
+      </p>
 
       <%= link_to "Edit",
                   edit_loan_answer_path(answer.loan_question, format: :turbo_stream),

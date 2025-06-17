@@ -1,17 +1,5 @@
 <turbo-stream action="replace" target="loan_answer_<%= @answer.id %>">
   <template>
-    <div id="loan_answer_<%= @answer.id %>" class="border rounded p-3 mb-3">
-      <p><strong><%= @question.question %>:</strong></p>
-      <p><%= @answer.answer.presence || "No answer provided" %></p>
-
-      <%= link_to "Edit",
-                  edit_loan_answer_path(@question, format: :turbo_stream),
-                  data: {
-                    turbo_frame: "modal_content_frame",
-                    bs_toggle: "modal",
-                    bs_target: "#editLoanAnswerModal"
-                  },
-                  class: "btn btn-sm btn-outline-primary" %>
-    </div>
+    <%= render partial: "loan_answers/loan_answer", formats: [:html], locals: { answer: @answer } %>
   </template>
 </turbo-stream>
