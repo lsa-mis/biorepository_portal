@@ -3,7 +3,10 @@
       id="<%= local_assigns[:id] || 'remoteModal' %>"
       tabindex="-1"
       data-controller="remote-modal"
-      data-action="turbo:before-render@window->remote-modal#hideBeforeRender turbo:render@window->remote-modal#showAfterRender"
+      data-action="
+        turbo:before-render@window->remote-modal#hideBeforeRender 
+        turbo:render@window->remote-modal#showAfterRender 
+        turbo:submit-end->remote-modal#hide"
       aria-modal="true"
       role="dialog">
 

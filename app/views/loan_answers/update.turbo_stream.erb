@@ -15,25 +15,3 @@
     </div>
   </template>
 </turbo-stream>
-
-<turbo-stream action="update" target="modal_content_frame">
-  <template></template>
-</turbo-stream>
-
-<turbo-stream action="remove" target="editLoanAnswerModal"></turbo-stream>
-
-<turbo-stream action="update" target="body">
-  <template>
-    <script>
-      var backdrops = document.querySelectorAll('.modal-backdrop');
-      backdrops.forEach(b => {
-        b.classList.remove('fade', 'show');
-        b.remove();
-      });
-      console.log('Modal backdrop removed');
-      document.body.classList.remove('modal-open');
-      document.body.style.overflow = ''; // reset overflow if needed
-      document.body.style.paddingRight = ''; // reset padding if needed
-    </script>
-  </template>
-</turbo-stream>
