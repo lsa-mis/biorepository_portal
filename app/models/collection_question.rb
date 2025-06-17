@@ -26,6 +26,7 @@ class CollectionQuestion < ApplicationRecord
   accepts_nested_attributes_for :collection_options, allow_destroy: true
 
   enum :question_type, [:text, :dropdown, :checkbox, :attachment], prefix: true
-  validates :question, presence: true, uniqueness: true
+  validates :question, presence: true
+  validates :question, uniqueness: { scope: :collection_id, message: "must be unique within the collection" }
   validates :question_type, presence: true
 end

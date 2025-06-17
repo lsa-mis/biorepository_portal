@@ -200,7 +200,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_15_071643) do
     t.integer "question_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "required"
+    t.boolean "required", default: false, null: false
   end
 
   create_table "loan_requests", force: :cascade do |t|
