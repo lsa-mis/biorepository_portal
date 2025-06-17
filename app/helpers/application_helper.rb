@@ -78,5 +78,9 @@ module ApplicationHelper
   def show_count(preparation, max_number_of_preparations)
     max_number_of_preparations > 0 ? [preparation.count, max_number_of_preparations].min : preparation.count
   end
+
+  def fetch_max_number_of_preparations(collection_id)
+    AppPreference.find_by(name: "max_number_of_preparations", collection_id: collection_id)&.value.to_i || 0
+  end
   
 end
