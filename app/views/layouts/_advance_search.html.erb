@@ -54,7 +54,7 @@
             <% @countries.each do |country| %>
               <div class="form-check">
                 <%= check_box_tag "q[country_in][]", country, params.dig(:q, :country_in)&.include?(country), id: "country_#{country}" %>
-                <%= label_tag "q_country_in_#{country.parameterize}", country.downcase.titleize %>
+                <%= label_tag "q_country_in_#{country.parameterize}", country %>
               </div>
             <% end %>
           <% end %>
@@ -73,7 +73,7 @@
             <% @states.each do |state| %>
               <div class="form-check">
                 <%= check_box_tag "q[state_province_in][]", state, params.dig(:q, :state_province_in)&.include?(state), id: "state_#{state}" %>
-                <%= label_tag "q_state_province_in_#{state.parameterize}", state.downcase.titleize %>
+                <%= label_tag "q_state_province_in_#{state.parameterize}", state %>
               </div>
             <% end %>
           <% end %>
@@ -92,7 +92,7 @@
             <% @sexs.each do |sex| %>
               <div class="form-check">
                 <%= check_box_tag "q[sex_in][]", sex, params.dig(:q, :sex_in)&.include?(sex), id: "sex_#{sex.parameterize}" %>
-                <%= label_tag "q_sex_in_#{sex.parameterize}", sex.downcase.titleize %>
+                <%= label_tag "q_sex_in_#{sex.parameterize}", sex %>
               </div>
             <% end %>
           <% end %>
@@ -109,7 +109,7 @@
             <% @continents.each do |continent| %>
               <div class="form-check">
                 <%= check_box_tag "q[continent_in][]", continent, params.dig(:q, :continent_in)&.include?(continent), id: "continent_#{continent.parameterize}" %>
-                <%= label_tag "continent_#{continent.parameterize}", continent.downcase.titleize %>
+                <%= label_tag "continent_#{continent.parameterize}", continent %>
               </div>
             <% end %>
           <% else %>
