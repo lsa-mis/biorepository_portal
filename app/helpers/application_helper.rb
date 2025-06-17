@@ -82,5 +82,9 @@ module ApplicationHelper
   def fetch_max_number_of_preparations(collection_id)
     AppPreference.find_by(name: "max_number_of_preparations", collection_id: collection_id)&.value.to_i || 0
   end
+
+  def collection_max_preparations(collection_id)
+    fetch_max_number_of_preparations(collection_id)
+  end
   
 end
