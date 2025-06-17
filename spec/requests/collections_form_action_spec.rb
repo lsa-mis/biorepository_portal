@@ -14,14 +14,16 @@ RSpec.describe Collection, type: :request do
   }
 
   describe "validations for admin group and division" do
-    described_class.create!(
-      admin_group: "not_admin_group",
-      division: "different_division",
-      division_page_url: "http://example.com",
-      link_to_policies: "http://example.com/policies",
-      short_description: "Short description",
-      long_description: "Long description"
-    )
+    before do
+      described_class.create!(
+        admin_group: "not_admin_group",
+        division: "different_division",
+        division_page_url: "http://example.com",
+        link_to_policies: "http://example.com/policies",
+        short_description: "Short description",
+        long_description: "Long description"
+      )
+    end
     it "is valid with non-duplicate admin group and division" do
       expect(subject).to be_valid
     end
