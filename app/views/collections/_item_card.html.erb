@@ -14,8 +14,9 @@
     </p>
     <div class="card-text">
       <p class="fw-bold">Preparations</p>
+      <ul class="list-unstyled">
         <% item.preparations.each do |preparation| %>
-          <div class="d-flex justify-content-between align-items-center">
+          <li class="d-flex justify-content-between align-items-center">
             <%= preparation.display_name %>
             <%= form_with url: checkout_add_path, 
               data: { controller: "autosubmit",
@@ -23,11 +24,11 @@
                 turbo_frame: "checkout"
                 } do |form| %>
               <%= form.hidden_field :id, value: preparation.id %>
-              <%= form.select :count, options_for_select(0..show_count(preparation, @max_number_of_preparations), nil), { }, { class: "form-control input-sm", "data-action": "change->autosubmit#submit" } %>
+              <%= form.select :count, options_for_select(0..show_count(preparation, @max_number_of_preparations), nil), { }, { class: "form-control input-sm w-auto", "data-action": "change->autosubmit#submit" } %>
             <% end %>
-          </div>
+          </li>
         <% end %>
-      
+      </ul>
     </div>
   </div>
   <div class="card-footer">
