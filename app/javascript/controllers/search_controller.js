@@ -2,6 +2,9 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["group", "row", "rows", "groupTemplate", "groupsContainer"]
+	connect() {
+    console.log("connect dynamic search")
+  }
 
   removeField(event) {
     const row = event.currentTarget.closest(".search-row")
@@ -60,9 +63,10 @@ export default class extends Controller {
   }
 
   submit(event) {
-    const form = this.element
-    form.querySelectorAll("input[name^='q[']").forEach(el => el.remove())
-
+    const form = this.element;
+		form
+    .querySelectorAll("input[name^='q[groupings]']")
+    .forEach(el => el.remove())
     this.groupTargets.forEach((group, groupIndex) => {
       const rows = group.querySelectorAll(".search-row")
       rows.forEach(row => {
@@ -78,5 +82,7 @@ export default class extends Controller {
         }
       })
     })
+		// Submit the form
+		form.submit();
   }
 }
