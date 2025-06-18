@@ -5,13 +5,7 @@
     <br><%= item.event_date_start %></p>
   </div>
   <div class="card-body">
-    <% if item.state_province.present? %>
-      <p class="fw-normal lh-sm"><%= item.state_province %></p>
-    <% end %>
-    <% if item.county.present? %>
-      <p class="fw-normal lh-sm">, <%= item.state_province %></p>
-    <% end %> 
-
+    <p class="fw-normal lh-sm"><%= show_state_province_county(item) %></p>
     <p>
       <%= item.coordinates %>
     </p>
