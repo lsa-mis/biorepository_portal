@@ -2,7 +2,9 @@
   <div class="d-flex justify-content-between">
     <h1>Checkout</h1>
     <% if @checkout.requestables.count > 0 %>
-      <%= link_to "Loan Request", loan_request_path, class: "btn btn-primary h-50 mt-auto mb-auto", data: { turbo_frame: "_top" }  %>
+      <%= link_to loan_request_path, class: "btn btn-primary h-50 mt-auto mb-auto", data: { turbo_frame: "_top" } do %>
+        <i class="bi bi-envelope"></i> Send Loan Request
+      <% end %>
     <% end %>
   </div>
   <% if @checkout.requestables.count > 0 %>
