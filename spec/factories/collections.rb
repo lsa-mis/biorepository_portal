@@ -15,8 +15,9 @@ FactoryBot.define do
   factory :collection do
     division { "MPABI" }
     admin_group { "admin_group" }
-    # description { "MyText" }
-    # division_page_url { "MyString" }
-    # link_to_policies { "MyString" }
+    short_description { "MyText" }
+    long_description { "MyText" }
+    division_page_url { "MyString" }
+    link_to_policies { "MyString" }
   end
 end
