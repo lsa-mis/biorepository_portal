@@ -33,7 +33,7 @@
                     } do |form| %>
                   <%= form.hidden_field :id, value: preparation.id %>
                   <div class="position-relative" style="display: inline-block;">
-                    <%= form.select :count, options_for_select(0..show_count(preparation, @max_number_of_preparations), nil), { }, { class: "form-control input-sm w-auto pe-4", "data-action": "change->autosubmit#submit", style: "appearance: none; -webkit-appearance: none; -moz-appearance: none;" } %>
+                    <%= form.select :count, options_for_select(0..show_count(preparation, @max_number_of_preparations), nil), { }, { class: "form-control input-sm w-auto pe-4 no-native-arrow", "data-action": "change->autosubmit#submit" } %>
                     <span class="position-absolute top-50 end-0 translate-middle-y pe-2" style="pointer-events: none;">
                       <i class="bi bi-caret-down-fill"></i>
                     </span>

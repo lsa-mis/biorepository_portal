@@ -377,3 +377,9 @@ svg.wh6 {
   box-shadow: 0 0 10px 4px rgba(46, 55, 110, 0.68);
 }
 
+/* Hide default select arrow for custom caret */
+.no-native-arrow {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
