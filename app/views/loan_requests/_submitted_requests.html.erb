@@ -1,0 +1,25 @@
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Submitted At</th>
+      <th>Send To</th>
+      <th>PDF</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% current_user.loan_requests.order(created_at: :desc).each do |request| %>
+      <tr>
+        <td><%= request.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><%= request.send_to %></td>
+        <td>
+          <% if request.pdf_file.attached? %>
+            <%= link_to 'View PDF', rails_blob_path(request.pdf_file, disposition: "inline"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+            <%= link_to 'Download PDF', rails_blob_path(request.pdf_file, disposition: "attachment"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+          <% else %>
+            <span class="text-muted">No PDF</span>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -54,6 +54,22 @@ class RequestsController < ApplicationController
   end
 
   def send_loan_request
+    @loan_request = LoanRequest.new
+    @loan_request.user = current_user
+    @loan_request.send_to = "test.@test.org" # This should be replaced with the actual email address
+    @loan_request.save!
+    @loan_answers = current_user.loan_answers
+                      .includes(:loan_question)
+                      .joins(:loan_question)
+                      .order("loan_questions.id ASC")
+    @checkout_items = get_checkout_items
+    pdf_file = PdfGenerator.new(@loan_answers, @checkout_items).generate_pdf_content
+    @loan_request.pdf_file.attach(
+      io: StringIO.new(pdf_file),
+      filename: "loan_request_#{@loan_request.id}.pdf",
+      content_type: "application/pdf"
+    )
+
     fail
   end
 
