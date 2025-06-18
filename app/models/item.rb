@@ -54,17 +54,16 @@
 class Item < ApplicationRecord
   belongs_to :collection
   has_many :identifications, dependent: :destroy
+  has_one :current_identification, -> { where(current: true) }, class_name: 'Identification', foreign_key: 'item_id'
   has_many :preparations, dependent: :destroy
 
   def display_name
     # Placeholder for displaying the item name
-    current_identification = Identification.find_by(item_id: self.id, current: true)
     "#{current_identification&.scientific_name} - #{current_identification&.vernacular_name} - #{self.country} - #{self.event_date_start}"
   end
 
   def name
     # Placeholder for displaying the item name
-    current_identification = Identification.find_by(item_id: self.id, current: true)
     "#{current_identification&.scientific_name} #{current_identification&.vernacular_name}"
   end
 

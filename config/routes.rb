@@ -23,6 +23,9 @@ Rails.application.routes.draw do
   get "requests/loan_request", to: "requests#loan_request", as: :loan_request
   post "requests/send_loan_request", to: "requests#send_loan_request", as: :send_loan_request
 
+  patch "update_loan_answer/:id", to: "loan_answers#update", as: :update_loan_answer
+  get "edit_loan_answer/:id", to: "loan_answers#edit", as: :edit_loan_answer
+
   get "loan_questions/preview", to: "loan_questions#preview", as: :preview_loan_questions
   resources :loan_questions
   get "checkout", to: "checkout#show"

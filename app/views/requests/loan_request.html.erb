@@ -5,25 +5,28 @@
 <%= render "profiles/user_collections_answers" %>
 <%= render "profiles/user_loan_items" %>
 
+<%= render "requests/remote_modal", id: "editLoanAnswerModal", title: "Edit Answer" %>
+
 <%= form_with(model: @loan_request, url: send_loan_request_path,
-        data: { controller: "checkbox-group-required",
+        data: {
+          controller: "checkbox-group-required",
           target: "form",
           action: "submit->checkbox-group-required#submitForm"
-        } ) do |form| %>
+        }) do |form| %>
+  
   <% if @loan_request.errors.any? %>
     <div class="text-danger">
-    <h2><%= pluralize(@loan_request.errors.count, "error") %></h2>
-    <ul>
-      <% @loan_request.errors.each do |error| %>
-        <li><%= error.full_message %></li>
-      <% end %>
-    </ul>
+      <h2><%= pluralize(@loan_request.errors.count, "error") %></h2>
+      <ul>
+        <% @loan_request.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
     </div>
   <% end %>
-  
+
   <div class="mt-1 gap-1 d-flex flex-row justify-content-start align-items-center">
     <%= form.submit 'Send Loan Request' %>
     <%= link_to "Cancel", checkout_path, class: "link_to" %>
-
   </div>
 <% end %>

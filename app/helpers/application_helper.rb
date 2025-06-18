@@ -87,4 +87,14 @@ module ApplicationHelper
     fetch_max_number_of_preparations(collection_id)
   end
   
+  def show_state_province_county(item)
+    string = ""
+    if item.state_province.present?
+      string = item.state_province
+    end
+    if item.county.present?
+      string += ", " + item.county
+    end
+    string
+  end
 end
