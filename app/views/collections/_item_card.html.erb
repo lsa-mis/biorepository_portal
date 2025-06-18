@@ -1,35 +1,50 @@
 <div class="card h-100 shadow-sm" id="<%= dom_id item %>">
   <div class="card-header">
-    <%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" }  %>
+    <%= link_to item.name, item_path(item), class: "link_to fw-bold", data: { turbo_frame: "_top" } %>
+    <p class="fw-normal lh-sm"><%= item.country %>
+    <br><%= item.event_date_start %></p>
   </div>
   <div class="card-body">
-    <p>
+    <p class="fw-normal lh-sm">
       <%= item.state_province %>
-    </p>
-    <p>
+    <br
       <%= item.county %>
     </p>
     <p>
       <%= item.coordinates %>
     </p>
-    <div class="card-text">
-      <p class="fw-bold">Preparations</p>
-      <ul class="list-unstyled">
+    <table class="table table-sm">
+      <thead class="">
+        <tr>
+          <th scope="col" class="text-start">Preparation Type</th>
+          <th scope="col" class="text-end">Add to Checkout</th>
+        </tr>
+      </thead>
+      <tbody class="">
         <% item.preparations.each do |preparation| %>
-          <li class="d-flex justify-content-between align-items-center">
-            <%= preparation.display_name %>
-            <%= form_with url: checkout_add_path, 
-              data: { controller: "autosubmit",
-                autosubmit_target: "form",
-                turbo_frame: "checkout"
-                } do |form| %>
-              <%= form.hidden_field :id, value: preparation.id %>
-              <%= form.select :count, options_for_select(0..show_count(preparation, @max_number_of_preparations), nil), { }, { class: "form-control input-sm w-auto", "data-action": "change->autosubmit#submit" } %>
-            <% end %>
-          </li>
+          <tr>
+            <td class="text-start"><%= preparation.display_name %></td>
+            <td class="text-end align-middle" style="width: 1%; white-space: nowrap;">
+              <div class="d-flex justify-content-end align-items-center position-relative">
+                <%= form_with url: checkout_add_path, 
+                  data: { controller: "autosubmit",
+                    autosubmit_target: "form",
+                    turbo_frame: "checkout"
+                    } do |form| %>
+                  <%= form.hidden_field :id, value: preparation.id %>
+                  <div class="position-relative" style="display: inline-block;">
+                    <%= form.select :count, options_for_select(0..show_count(preparation, @max_number_of_preparations), nil), { }, { class: "form-control input-sm w-auto pe-4", "data-action": "change->autosubmit#submit", style: "appearance: none; -webkit-appearance: none; -moz-appearance: none;" } %>
+                    <span class="position-absolute top-50 end-0 translate-middle-y pe-2" style="pointer-events: none;">
+                      <i class="bi bi-caret-down-fill"></i>
+                    </span>
+                  </div>
+                <% end %>
+              </div>
+            </td>
+          </tr>
         <% end %>
-      </ul>
-    </div>
+      </tbody>
+    </table>
   </div>
   <div class="card-footer">
     <%= link_to "Checkout", add_item_to_checkout_path(item), class: "btn btn-sm btn-primary", data: { turbo_frame: "remote_modal" } %>

@@ -61,6 +61,11 @@ class Item < ApplicationRecord
     "#{Identification.find_by(item_id: self.id, current: true)&.scientific_name} - #{Identification.find_by(item_id: self.id, current: true)&.vernacular_name} - #{self.country} - #{self.event_date_start}"
   end
 
+  def name
+    # Placeholder for displaying the item name
+    "#{Identification.find_by(item_id: self.id, current: true)&.scientific_name} #{Identification.find_by(item_id: self.id, current: true)&.vernacular_name}"
+  end
+
   def coordinates
     if self.decimal_latitude.present? && self.decimal_longitude.present?
       "#{self.decimal_latitude}, #{self.decimal_longitude}"
