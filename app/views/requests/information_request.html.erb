@@ -16,13 +16,15 @@
     </div>
   <% end %>
   <div>
-    <%= form.label :send_to, "Select Email Addresses you want to send the request to *" %>
-    <% @send_to.each do |email| %>
-      <div class="ms-3">
-        <%= check_box_tag 'information_request[send_to][]', email, @information_request.send_to&.include?(email), id: "send_to_#{email}", required: false, "data-checkbox-group-required-target": "checkboxes" %>
-        <%= label_tag "send_to_#{email}", email %>
-      </div>
-    <% end %>
+    <fieldset>
+      <legend>Select Email Addresses you want to send the request to *</legend>
+      <% @send_to.each do |collection, email| %>
+        <div class="ms-3">
+          <%= check_box_tag 'information_request[send_to][]', email, @information_request.send_to&.include?(email), id: "send_to_#{collection.parameterize.underscore}", required: false, "data-checkbox-group-required-target": "checkboxes" %>
+          <%= label_tag "send_to_#{collection.parameterize.underscore}", collection %>
+        </div>
+      <% end %>
+    </fieldset>
   </div>
   <div class="text-danger" id="checkbox_error"></div>
 

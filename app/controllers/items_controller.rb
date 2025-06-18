@@ -10,6 +10,7 @@ class ItemsController < ApplicationController
   # GET /items/1 or /items/1.json
   def show
     @identifications = @item.identifications.order(current: :desc)
+    @max_number_of_preparations = fetch_max_number_of_preparations(@item.collection.id)
     @preparations = @item.preparations
     @collections = Collection.all
   end
@@ -19,10 +20,10 @@ class ItemsController < ApplicationController
     @items = @q.result.page(params[:page]).per(15)
     @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
     @all_collections = Collection.all
-    @countries = Item.distinct.pluck(:country).compact.uniq.sort
-    @states = Item.distinct.pluck(:state_province).compact.uniq.sort
-    @sexs = Item.distinct.pluck(:sex).compact.uniq.sort
-    @continents = Item.distinct.pluck(:continent).compact.uniq.sort
+    @countries = Item.distinct.pluck(:country).compact.reject(&:blank?).map(&:titleize).uniq.sort
+    @states = Item.distinct.pluck(:state_province).compact.reject(&:blank?).map(&:titleize).uniq.sort
+    @sexs = Item.distinct.pluck(:sex).compact.reject(&:blank?).map(&:titleize).uniq.sort
+    @continents = Item.distinct.pluck(:continent).compact.reject(&:blank?).map(&:titleize).uniq.sort
     render :search_result
   end
 

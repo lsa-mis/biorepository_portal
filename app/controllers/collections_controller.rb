@@ -22,10 +22,12 @@ class CollectionsController < ApplicationController
 
   def items
     @items = @collection.items.page(params[:page]).per(params[:per]).max_paginates_per(500)
+    @max_number_of_preparations = fetch_max_number_of_preparations(@collection.id)
   end
 
   def add_item_to_checkout
     @item = Item.find(params[:item_id])
+    @max_number_of_preparations = fetch_max_number_of_preparations(@item.collection.id)
     # @item = Item.find(57405)
   end
 
@@ -116,6 +118,6 @@ class CollectionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def collection_params
-      params.expect(collection: [ :division, :admin_group, :description, :division_page_url, :link_to_policies, :image ])
+      params.expect(collection: [ :division, :admin_group, :short_description, :long_description, :division_page_url, :link_to_policies, :image ])
     end
 end

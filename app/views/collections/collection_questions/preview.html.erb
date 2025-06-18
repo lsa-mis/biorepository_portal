@@ -10,43 +10,52 @@
 
 <div class="card p-4 shadow-sm">
   <div class="card-body">
-    <% @collection_questions.each do |collection_question| %>
-      <div class="mb-4 border rounded p-3 bg-light">
-        <label class="form-label"><%= collection_question.question %></label>
-        
-        <% case collection_question.question_type %>
-        <% when "text" %>
-          <div class="ms-3">
-            <input type="text" class="form-control" placeholder="User input...">
-          </div>
-
-        <% when "checkbox" %>
-          <p>Pick one or more options below</p>
-          <div class="ms-3">
-            <% collection_question.collection_options.each do |option| %>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox">
-                <label class="form-check-label"><%= option.value %></label>
-              </div>
+    <%= form_with url: "#", local: true, html: { onsubmit: "return false;" } do |f| %>
+      <% @collection_questions.each do |collection_question| %>
+        <div class="mb-4 border rounded p-3 bg-light">
+          <label class="form-label"><%= collection_question.question %>
+            <% if collection_question.required? %>
+              <span class="text-danger">*</span>
             <% end %>
-          </div>
+          </label>
+          
+          <% case collection_question.question_type %>
+          <% when "text" %>
+            <div class="ms-3">
+              <input type="text" class="form-control" placeholder="User input...">
+            </div>
 
-        <% when "dropdown" %>
-          <div class="ms-3">
-            <select class="form-select">
-              <option value="" selected disabled>Select ...</option>
+          <% when "checkbox" %>
+            <p>Pick one or more options below</p>
+            <div class="ms-3">
               <% collection_question.collection_options.each do |option| %>
-                <option value="<%= option.value %>"><%= option.value %></option>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox">
+                  <label class="form-check-label"><%= option.value %></label>
+                </div>
               <% end %>
-            </select>
-          </div>
+            </div>
 
-        <% else %>
-          <div class="alert alert-warning mt-3">
-            <strong>Unsupported question type:</strong> <%= collection_question.question_type %>
-          </div>
-        <% end %>
-      </div>
+          <% when "dropdown" %>
+            <div class="ms-3">
+              <select class="form-select">
+                <option value="" selected disabled>Select ...</option>
+                <% collection_question.collection_options.each do |option| %>
+                  <option value="<%= option.value %>"><%= option.value %></option>
+                <% end %>
+              </select>
+            </div>
+          <% when "attachment" %>
+            <div class="ms-3">
+              <input type="file" class="form-control" />
+            </div>
+          <% else %>
+            <div class="alert alert-warning mt-3">
+              <strong>Unsupported question type:</strong> <%= collection_question.question_type %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   </div>
 </div>

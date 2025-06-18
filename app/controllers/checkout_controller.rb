@@ -19,23 +19,27 @@ class CheckoutController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream do
+        flash.now[:notice] = "Preparation added to checkout."
         render turbo_stream: [turbo_stream.replace('checkout',
                                                    partial: 'checkout/checkout',
                                                    locals: { checkout: @checkout }),
                               turbo_stream.replace(@preparation),
-                              turbo_stream.update('total', partial: 'checkout/total')]
+                              turbo_stream.update('total', partial: 'checkout/total'),
+                              turbo_stream.update('flash', partial: 'layouts/flash')]
       end
     end
   end
 
   def remove
     Requestable.find(params[:id])&.destroy
+    flash.now[:notice] = "Preparation removed from checkout."
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [turbo_stream.replace('checkout',
                                                   partial: 'checkout/checkout',
                                                   locals: { checkout: @checkout }),
-                              turbo_stream.update('total', partial: 'checkout/total')]
+                              turbo_stream.update('total', partial: 'checkout/total'),
+                              turbo_stream.update('flash', partial: 'layouts/flash')]
       end
     end
   end

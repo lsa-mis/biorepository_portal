@@ -23,4 +23,12 @@ class Preparation < ApplicationRecord
   belongs_to :item
   has_many :requestables
   has_many :checkouts, through: :requestables
+
+  def display_name
+    display_name = "#{self.prep_type}"
+    if self.description.present?
+      display_name += " - #{self.description}"
+    end
+    display_name
+  end
 end
