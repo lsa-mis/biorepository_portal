@@ -58,7 +58,14 @@ class Item < ApplicationRecord
 
   def display_name
     # Placeholder for displaying the item name
-    "#{Identification.find_by(item_id: self.id, current: true)&.scientific_name} - #{Identification.find_by(item_id: self.id, current: true)&.vernacular_name} - #{self.country} - #{self.event_date_start}"
+    current_identification = Identification.find_by(item_id: self.id, current: true)
+    "#{current_identification&.scientific_name} - #{current_identification&.vernacular_name} - #{self.country} - #{self.event_date_start}"
+  end
+
+  def name
+    # Placeholder for displaying the item name
+    current_identification = Identification.find_by(item_id: self.id, current: true)
+    "#{current_identification&.scientific_name} #{current_identification&.vernacular_name}"
   end
 
   def coordinates
