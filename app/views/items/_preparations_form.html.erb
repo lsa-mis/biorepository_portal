@@ -9,7 +9,7 @@
 
         <div class="mt-3">
           <label class="form-label">Select Quantity</label>
-          <%= form.hidden_field :preparation_id, value: prep.id %>
+          <%= form.hidden_field :id, value: prep.id %>
           <%= form.select :count, options_for_select(1..prep.count), class: "form-select w-auto" %>
         </div>
 
