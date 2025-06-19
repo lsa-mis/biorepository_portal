@@ -34,7 +34,7 @@ class PdfGenerator
       end
 
       # Add checkout items table if present
-      if defined?(@checkout_items) && @checkout_items.present?
+      if @checkout_items.present?
         pdf.start_new_page
         pdf.text "Checkout Items", size: 16, style: :bold
         # Parse @checkout_items string into rows
