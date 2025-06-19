@@ -1,4 +1,4 @@
-<% @item.preparations.each_with_index do |prep, index| %>
+<% @item.preparations.each do |prep| %>
   <%= form_with(url: checkout_add_path, method: :post, data: { turbo_frame: "_top" }) do |form| %>
     <div class="card p-4 shadow-sm mb-3">
       <div class="card-body">
