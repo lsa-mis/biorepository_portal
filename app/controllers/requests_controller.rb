@@ -57,24 +57,22 @@ class RequestsController < ApplicationController
         flash[:alert] = "No items in checkout."
         redirect_to root_path
     end
-    @user = current_user
     @collections_in_checkout = @checkout.requestables
       .map { |r| r.preparation&.item&.collection }
       .compact
       .uniq
-    @emails = @collections_in_checkout.map do |collection|
+    emails = @collections_in_checkout.map do |collection|
       AppPreference.find_by(
         collection_id: collection.id,
         name: "collection_email_to_send_requests"
       )&.value
     end.compact
-    csv_file_path = create_csv_file(@checkout, @user)
+    csv_file_path = create_csv_file(@checkout, current_user)
     RequestMailer.send_loan_request(
-      send_to: @send_to,
-      user: @user,
+      send_to: emails,
+      user: current_user,
       csv_file: csv_file_path
     ).deliver_now
-
 
     # Clean up if you want
     File.delete(csv_file_path) if File.exist?(csv_file_path)
@@ -106,29 +104,24 @@ class RequestsController < ApplicationController
         csv << [
           "User Name",
           "User Institution",
-          "User Email"
-        ]
-        csv << [
-            [user.first_name, user.last_name].compact.join(" "),
-            user.affiliation,
-            user.email
-          ]
-
-        csv << [
+          "User Email",
           "Division",
           "Catalog Number",
           "Prep Type",
           "Count",
-          "Barcode",
+          "Barcode"
         ]
 
         checkout.requestables.each do |requestable|
           csv << [
+            [user.first_name, user.last_name].compact.join(" "),
+            user.affiliation,
+            user.email,
             requestable.preparation.item.collection.division,
             requestable.preparation.item.catalog_number,
             requestable.preparation.prep_type,
             requestable.count,
-            requestable.preparation.barcode,
+            requestable.preparation.barcode
           ]
         end
       end
