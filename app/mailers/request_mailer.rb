@@ -11,8 +11,8 @@ class RequestMailer < ApplicationMailer
 
   def send_loan_request(send_to:, user:, csv_file: nil, pdf_file: nil)
     @user = user
-    attachments["loan_request.csv"] = File.read(csv_file)
-    attachments["loan_request.pdf"] = File.read(pdf_file)
+    attachments["loan_request.csv"] = File.read(csv_file) if csv_file.present?
+    attachments["loan_request.pdf"] = File.read(pdf_file) if pdf_file.present?
     subject = "BioRepository Loan Request from #{user.first_name} - #{Date.today}"
     mail(to: send_to, subject: subject)
   end
