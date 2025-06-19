@@ -8,7 +8,7 @@ export default class extends Controller {
   }
 
   submit() {
-    Turbo.navigator.submitForm(this.formTarget)
+    this.formTarget.requestSubmit();
   }
 
   toggle() {
