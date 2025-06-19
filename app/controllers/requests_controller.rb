@@ -1,3 +1,5 @@
+require "csv"
+
 class RequestsController < ApplicationController
 
   def information_request
@@ -46,27 +48,91 @@ class RequestsController < ApplicationController
     @checkout_items = get_checkout_items
     @user = current_user
     @loan_answers = @user.loan_answers
+
     @collections = @checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq
   end
 
   def send_loan_request
-    fail
+    if @checkout.nil? || @checkout.requestables.empty?
+        flash[:alert] = "No items in checkout."
+        redirect_to root_path
+    end
+    @user = current_user
+    @collections_in_checkout = @checkout.requestables
+      .map { |r| r.preparation&.item&.collection }
+      .compact
+      .uniq
+    @emails = @collections_in_checkout.map do |collection|
+      AppPreference.find_by(
+        collection_id: collection.id,
+        name: "collection_email_to_send_requests"
+      )&.value
+    end.compact
+    csv_file_path = create_csv_file(@checkout, @user)
+    RequestMailer.send_loan_request(
+      send_to: @send_to,
+      user: @user,
+      csv_file: csv_file_path
+    ).deliver_now
+
+
+    # Clean up if you want
+    File.delete(csv_file_path) if File.exist?(csv_file_path)
+    redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
   end
 
-  def get_checkout_items
-    checkout_items = ""
-    @checkout.requestables.each do |requestable|
-      preparation = requestable.preparation
-      item = preparation.item
-      checkout_items += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"
-      if preparation.barcode.present?
-        checkout_items += "barcode: #{preparation.barcode}"
+  private
+    def get_checkout_items
+      checkout_items = ""
+      @checkout.requestables.each do |requestable|
+        preparation = requestable.preparation
+        item = preparation.item
+        checkout_items += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"
+        if preparation.barcode.present?
+          checkout_items += "barcode: #{preparation.barcode}"
+        end
+        if preparation.description.present?
+          checkout_items += ", description: #{preparation.description}"
+        end
+        checkout_items += ", count: #{requestable.count}. "
       end
-      if preparation.description.present?
-        checkout_items += ", description: #{preparation.description}"
-      end
-      checkout_items += ", count: #{requestable.count}. "
+      checkout_items
     end
-    checkout_items
-  end
+
+    def create_csv_file(checkout, user)
+      filename = Rails.root.join("tmp", "loan_request_#{SecureRandom.uuid}.csv")
+
+      CSV.open(filename, "w") do |csv|
+        csv << [
+          "User Name",
+          "User Institution",
+          "User Email"
+        ]
+        csv << [
+            [user.first_name, user.last_name].compact.join(" "),
+            user.affiliation,
+            user.email
+          ]
+
+        csv << [
+          "Division",
+          "Catalog Number",
+          "Prep Type",
+          "Count",
+          "Barcode",
+        ]
+
+        checkout.requestables.each do |requestable|
+          csv << [
+            requestable.preparation.item.collection.division,
+            requestable.preparation.item.catalog_number,
+            requestable.preparation.prep_type,
+            requestable.count,
+            requestable.preparation.barcode,
+          ]
+        end
+      end
+
+      filename.to_s
+    end
 end

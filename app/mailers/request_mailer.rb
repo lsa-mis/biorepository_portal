@@ -9,4 +9,11 @@ class RequestMailer < ApplicationMailer
     mail(to: send_to, subject: subject)
   end
 
+  def send_loan_request(send_to:, user:, csv_file:)
+    @user = user
+    attachments["loan_request.csv"] = File.read(csv_file)
+    subject = "BioRepository Loan Request from #{user.first_name} - #{Date.today}"
+    mail(to: send_to, subject: subject)
+  end
+
 end
