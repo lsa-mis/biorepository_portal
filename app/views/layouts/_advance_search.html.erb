@@ -1,5 +1,5 @@
 <h3>Advanced Search</h3>
-<%= search_form_for @q, url: search_items_path, method: :post, data: { controller: "search", action: "submit->search#submit" } do |f| %>
+<%= search_form_for @q, url: search_items_path, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form", turbo_frame: "items_result_list" } do |f| %>
   <div class="m-2">
 
     <!-- Strings - use _i_cont (contains) or _eq (exact match) -->

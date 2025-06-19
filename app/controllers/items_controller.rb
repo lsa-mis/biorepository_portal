@@ -1,6 +1,6 @@
 class ItemsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [ :index, :show ]
-  before_action :set_item, only: %i[ show ]
+  skip_before_action :authenticate_user!, only: [ :show, :search ]
+  before_action :set_item, only: [ :show ]
 
   # GET /items or /items.json
   def index

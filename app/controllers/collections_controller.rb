@@ -10,7 +10,7 @@ class CollectionsController < ApplicationController
   # GET /collections/1 or /collections/1.json
   def show
     @q1 = @collection.items.ransack(params[:q1])
-    @items = @collection.items.page(params[:page]).per(params[:per]).max_paginates_per(500)
+    @items = @q1.result.page(params[:page]).per(params[:per]).max_paginates_per(500)
     @max_number_of_preparations = fetch_max_number_of_preparations(@collection.id)
     @collection_questions = @collection.collection_questions.includes(:collection_options)
     respond_to do |format|
@@ -21,7 +21,8 @@ class CollectionsController < ApplicationController
 
   def search
     @q1 = @collection.items.ransack(params[:q1])
-    @items = @q1.result.page(params[:page]).per(15)
+    @items = @q1.result.page(params[:page]).per(params[:per]).max_paginates_per(500)
+    @max_number_of_preparations = fetch_max_number_of_preparations(@collection.id)
     render :show
   end
 
