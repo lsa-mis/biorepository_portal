@@ -1,0 +1,26 @@
+<%= turbo_frame_tag "remote_modal" do %>
+  <div class="modal fade"
+      id="<%= local_assigns[:id] || 'remoteModal' %>"
+      tabindex="-1"
+      data-controller="remote-modal"
+      data-action="
+        turbo:before-render@window->remote-modal#hideBeforeRender 
+        turbo:render@window->remote-modal#showAfterRender 
+        turbo:submit-end->remote-modal#hide"
+      aria-modal="true"
+      role="dialog">
+
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content" id="modal_content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="modalTitle"><%= title %></h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body remote_modal_body" id="remote_modal_body">
+          <turbo-frame id="modal_content_frame" loading="lazy"></turbo-frame>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

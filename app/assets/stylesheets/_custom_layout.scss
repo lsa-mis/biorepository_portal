@@ -377,3 +377,12 @@ svg.wh6 {
   box-shadow: 0 0 10px 4px rgba(46, 55, 110, 0.68);
 }
 
+/* Custom select for checkout item card */
+.checkout-select {
+  font-size: 0.875rem; /* matches input-sm */
+  width: auto;
+  padding-right: 1.5rem; /* matches pe-4 */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}

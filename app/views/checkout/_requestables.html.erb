@@ -3,9 +3,9 @@
     <tr>
       <th scope="col" class="text-start">Collection</th>
       <th scope="col">Item</th>
-      <th scope="col">Preparation</th>
+      <th scope="col">Preparation Type</th>
       <th scope="col">Amount</th>
-      <th scope="col">Delete</th>
+      <th scope="col">Remove</th>
       <th scope="col">Save for Later</th>
     </tr>
     </thead>
@@ -31,8 +31,16 @@
           <td>
             <%= form_with(url: checkout_remove_path) do |form| %>
               <%= form.hidden_field :id, value: requestable.id %>
-              <%= form.submit "X" %>
+              <%= form.submit 'X', class: 'btn link_to text-primary p-0 mt-3', style: 'background: #fff; font-size: 1.25rem; line-height: 1;' %>
             <% end %>
+          </td>
+          <td>
+            <%#= form_with(url: "#") do |form| %>
+              <%#= form.hidden_field :id, value: requestable.id %>
+              <button type="submit" class="btn link_to text-primary p-0 mt-3" style="background: #fff; font-size: 1.25rem; line-height: 1;">
+                <i class="bi bi-bookmarks-fill"></i>
+              </button>
+            <%# end %>
           </td>
         </tr>
       <% end %>

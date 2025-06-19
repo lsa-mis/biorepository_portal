@@ -13,32 +13,32 @@
 
   <div>
     <%= form.label :division %>
-    <%= form.text_field :division %>
+    <%= form.text_field :division, required: true %>
   </div>
 
   <div>
     <%= form.label :admin_group %>
-    <%= form.text_field :admin_group %>
+    <%= form.text_field :admin_group, required: true %>
   </div>
 
   <div>
     <%= form.label :description %>
-    <%= form.textarea :short_description, class: "w-100 mt-2" %>
+    <%= form.textarea :short_description, class: "w-100 mt-2", required: true %>
   </div>
 
   <div>
     <%= form.label :long_description %>
-    <%= form.rich_text_area :long_description %>
+    <%= form.rich_text_area :long_description, required: true %>
   </div>
 
   <div>
     <%= form.label :division_page_url %>
-    <%= form.text_field :division_page_url %>
+    <%= form.text_field :division_page_url, required: true %>
   </div>
 
   <div>
     <%= form.label :link_to_policies %>
-    <%= form.text_field :link_to_policies %>
+    <%= form.text_field :link_to_policies, required: true %>
   </div>
 
   <div>
