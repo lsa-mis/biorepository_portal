@@ -1,3 +1,5 @@
+require "csv"
+
 class RequestsController < ApplicationController
 
   def information_request
@@ -54,6 +56,10 @@ class RequestsController < ApplicationController
   end
 
   def send_loan_request
+    if @checkout.nil? || @checkout.requestables.empty?
+      flash[:alert] = "No items in checkout."
+      redirect_to root_path
+    end
     @loan_request = LoanRequest.new
     @loan_request.user = current_user
     @loan_request.send_to = "test.@test.org" # This should be replaced with the actual email address
@@ -63,30 +69,93 @@ class RequestsController < ApplicationController
                       .joins(:loan_question)
                       .order("loan_questions.id ASC")
     @checkout_items = get_checkout_items
+
+    @collections_in_checkout = @checkout.requestables
+      .map { |r| r.preparation&.item&.collection }
+      .compact
+      .uniq
+    emails = @collections_in_checkout.map do |collection|
+      AppPreference.find_by(
+        collection_id: collection.id,
+        name: "collection_email_to_send_requests"
+      )&.value
+    end.compact
+
+    csv_file_path = create_csv_file(@checkout, current_user)
+
     pdf_file = PdfGenerator.new(@loan_answers, @checkout_items).generate_pdf_content
+    
     @loan_request.pdf_file.attach(
       io: StringIO.new(pdf_file),
       filename: "loan_request_#{@loan_request.id}.pdf",
       content_type: "application/pdf"
     )
 
-    fail
+    @loan_request.csv_file_path.attach(
+      io: StringIO.new(csv_file_path),
+      filename: "loan_request_#{@loan_request.id}.csv",
+      content_type: "application/pdf"
+    )
+
+    RequestMailer.send_loan_request(
+      send_to: emails,
+      user: current_user,
+      csv_file: csv_file_path,
+      pdf_file: pdf_file
+    ).deliver_now
+
+    # Clean up if you want
+    File.delete(csv_file_path) if File.exist?(csv_file_path)
+    redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
   end
 
-  def get_checkout_items
-    checkout_items = ""
-    @checkout.requestables.each do |requestable|
-      preparation = requestable.preparation
-      item = preparation.item
-      checkout_items += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"
-      if preparation.barcode.present?
-        checkout_items += "barcode: #{preparation.barcode}"
+  private
+    def get_checkout_items
+      checkout_items = ""
+      @checkout.requestables.each do |requestable|
+        preparation = requestable.preparation
+        item = preparation.item
+        checkout_items += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"
+        if preparation.barcode.present?
+          checkout_items += "barcode: #{preparation.barcode}"
+        end
+        if preparation.description.present?
+          checkout_items += ", description: #{preparation.description}"
+        end
+        checkout_items += ", count: #{requestable.count}. "
       end
-      if preparation.description.present?
-        checkout_items += ", description: #{preparation.description}"
-      end
-      checkout_items += ", count: #{requestable.count}. "
+      checkout_items
     end
-    checkout_items
-  end
+
+    def create_csv_file(checkout, user)
+      filename = Rails.root.join("tmp", "loan_request_#{SecureRandom.uuid}.csv")
+
+      CSV.open(filename, "w") do |csv|
+        csv << [
+          "User Name",
+          "User Institution",
+          "User Email",
+          "Division",
+          "Catalog Number",
+          "Prep Type",
+          "Count",
+          "Barcode"
+        ]
+
+        checkout.requestables.each do |requestable|
+          csv << [
+            [user.first_name, user.last_name].compact.join(" "),
+            user.affiliation,
+            user.email,
+            requestable.preparation.item.collection.division,
+            requestable.preparation.item.catalog_number,
+            requestable.preparation.prep_type,
+            requestable.count,
+            requestable.preparation.barcode
+          ]
+        end
+      end
+
+      filename.to_s
+    end
 end
