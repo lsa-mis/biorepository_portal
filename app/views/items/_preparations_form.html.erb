@@ -1,0 +1,22 @@
+<% @item.preparations.each_with_index do |prep, index| %>
+  <%= form_with(url: checkout_add_path, method: :post, data: { turbo_frame: "_top" }) do |form| %>
+    <div class="card p-4 shadow-sm mb-3">
+      <div class="card-body">
+        <p><strong>Preparation Type:</strong> <%= prep.prep_type.presence || "N/A" %></p >
+        <p><strong>Barcode:</strong> <%= prep.barcode.presence || "N/A" %></p >
+        <p><strong>Description:</strong> <%= prep.description.presence || "N/A" %></p >
+        <p><strong>Count:</strong> <%= prep.count.presence || "N/A" %></p >
+
+        <div class="mt-3">
+          <label class="form-label">Select Quantity</label>
+          <%= form.hidden_field :preparation_id, value: prep.id %>
+          <%= form.select :count, options_for_select(1..prep.count), class: "form-select w-auto" %>
+        </div>
+
+        <div class="mt-3">
+          <%= form.submit "Add to Checkout", class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

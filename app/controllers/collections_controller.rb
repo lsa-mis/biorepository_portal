@@ -27,8 +27,13 @@ class CollectionsController < ApplicationController
 
   def add_item_to_checkout
     @item = Item.find(params[:item_id])
-    @max_number_of_preparations = fetch_max_number_of_preparations(@item.collection.id)
-    # @item = Item.find(57405)
+    render turbo_stream: turbo_stream.update("modal_content_frame") {
+      render_to_string(
+        partial: "items/preparations_form",
+        formats: [:html],
+        locals: { item: @item }
+      )
+    }
   end
 
   # GET /collections/new
