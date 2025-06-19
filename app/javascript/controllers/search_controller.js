@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["group", "row", "rows", "groupTemplate", "groupsContainer"]
+  static targets = ["group", "row", "rows", "groupTemplate", "groupsContainer", "form"]
 	connect() {
     console.log("connect dynamic search")
   }

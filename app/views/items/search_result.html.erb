@@ -10,13 +10,14 @@
     <!-- Main Content: Search Results -->
     <div class="col-md-7 mt-3">
       <h1>Search Results for Items</h1>
-
-      <% if @items.empty? %>
-        <div class="alert alert-warning mt-3">
-          No items available in this collection.
-        </div>
-      <% else %>
-        <%= render partial: 'result_list' %>
+      <%= turbo_frame_tag "items_result_list" do %>
+        <% if @items.empty? %>
+          <div class="alert alert-warning mt-3">
+            No items available in this collection.
+          </div>
+        <% else %>
+          <%= render partial: 'result_list' %>
+        <% end %>
       <% end %>
     </div>
   </div>
