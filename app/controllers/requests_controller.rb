@@ -60,14 +60,7 @@ class RequestsController < ApplicationController
       flash[:alert] = "No items in checkout."
       redirect_to root_path
     end
-    @loan_request = LoanRequest.new
-    @loan_request.user = current_user
-    @loan_request.send_to = "test.@test.org" # This should be replaced with the actual email address
-    @loan_request.save!
-    @loan_answers = current_user.loan_answers
-                      .includes(:loan_question)
-                      .joins(:loan_question)
-                      .order("loan_questions.id ASC")
+    
     @checkout_items = get_checkout_items
 
     @collections_in_checkout = @checkout.requestables
@@ -81,27 +74,40 @@ class RequestsController < ApplicationController
       )&.value
     end.compact
 
+    @loan_request = LoanRequest.new
+    @loan_request.user = current_user
+    @loan_request.send_to = emails.join(', ')
+    @loan_request.save!
+    @loan_answers = current_user.loan_answers
+                      .includes(:loan_question)
+                      .joins(:loan_question)
+                      .order("loan_questions.id ASC")
+
     csv_file_path = create_csv_file(@checkout, current_user)
 
     pdf_file = PdfGenerator.new(@loan_answers, @checkout_items).generate_pdf_content
-    
+    pdf_file_path = Rails.root.join("tmp", "loan_request_#{SecureRandom.uuid}.pdf")
+    File.open(pdf_file_path, "wb") do |file|
+      file.write(pdf_file)
+    end
+
     @loan_request.pdf_file.attach(
       io: StringIO.new(pdf_file),
       filename: "loan_request_#{@loan_request.id}.pdf",
       content_type: "application/pdf"
     )
 
-    @loan_request.csv_file_path.attach(
-      io: StringIO.new(csv_file_path),
+    @loan_request.csv_file.attach(
+      io: File.open(csv_file_path), # csv_file_path is the path to your tmp file
       filename: "loan_request_#{@loan_request.id}.csv",
-      content_type: "application/pdf"
+      content_type: "text/csv"
     )
 
     RequestMailer.send_loan_request(
       send_to: emails,
       user: current_user,
       csv_file: csv_file_path,
-      pdf_file: pdf_file
+      pdf_file: pdf_file_path
     ).deliver_now
 
     # Clean up if you want

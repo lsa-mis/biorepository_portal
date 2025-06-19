@@ -4,6 +4,7 @@
       <th>Submitted At</th>
       <th>Send To</th>
       <th>PDF</th>
+      <th>CSV</th>
     </tr>
   </thead>
   <tbody>
@@ -17,6 +18,13 @@
             <%= link_to 'Download PDF', rails_blob_path(request.pdf_file, disposition: "attachment"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
           <% else %>
             <span class="text-muted">No PDF</span>
+          <% end %>
+        </td>
+        <td>
+          <% if request.csv_file.attached? %>
+            <%= link_to 'Download CSV', rails_blob_url(request.csv_file, disposition: "attachment"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+          <% else %>
+            <span class="text-muted">No CSV</span>
           <% end %>
         </td>
       </tr>
