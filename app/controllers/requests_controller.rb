@@ -57,9 +57,12 @@ class RequestsController < ApplicationController
 
   def send_loan_request
     if @checkout.nil? || @checkout.requestables.empty?
-        flash[:alert] = "No items in checkout."
-        redirect_to root_path
+      flash[:alert] = "No items in checkout."
+      redirect_to root_path
     end
+    
+    @checkout_items = get_checkout_items
+
     @collections_in_checkout = @checkout.requestables
       .map { |r| r.preparation&.item&.collection }
       .compact
@@ -70,15 +73,48 @@ class RequestsController < ApplicationController
         name: "collection_email_to_send_requests"
       )&.value
     end.compact
-    csv_file_path = create_csv_file(@checkout, current_user)
+
+    @loan_request = LoanRequest.new
+    @loan_request.user = current_user
+    @loan_request.send_to = emails.join(', ')
+    @loan_request.save!
+    @loan_answers = current_user.loan_answers
+                      .includes(:loan_question)
+                      .joins(:loan_question)
+                      .order("loan_questions.id ASC")
+
+    csv_tempfile = Tempfile.new(["loan_request", ".csv"])
+    csv_tempfile.write(create_csv_file(@checkout, current_user))
+    csv_tempfile.rewind
+
+    pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
+    File.open(pdf_tempfile, "wb") do |file|
+      file.write(PdfGenerator.new(@loan_answers, @checkout_items).generate_pdf_content)
+    end
+    pdf_tempfile.rewind
+
+    @loan_request.pdf_file.attach(
+      io: pdf_tempfile,
+      filename: "loan_request_#{@loan_request.id}.pdf",
+      content_type: "application/pdf"
+    )
+
+    @loan_request.csv_file.attach(
+      io: csv_tempfile,
+      filename: "loan_request_#{@loan_request.id}.csv",
+      content_type: "text/csv"
+    )
+
     RequestMailer.send_loan_request(
       send_to: emails,
       user: current_user,
-      csv_file: csv_file_path
+      csv_file: csv_tempfile,
+      pdf_file: pdf_tempfile
     ).deliver_now
 
     # Clean up if you want
-    File.delete(csv_file_path) if File.exist?(csv_file_path)
+    File.delete(csv_tempfile) if File.exist?(csv_tempfile)
+    File.delete(pdf_tempfile) if File.exist?(pdf_tempfile)
     redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
   end
 

@@ -1,0 +1,33 @@
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Submitted At</th>
+      <th>Send To</th>
+      <th>PDF</th>
+      <th>CSV</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @loan_requests.each do |request| %>
+      <tr>
+        <td><%= request.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><%= request.send_to %></td>
+        <td>
+          <% if request.pdf_file.attached? %>
+            <%= link_to 'View PDF', rails_blob_url(request.pdf_file, disposition: "inline"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+            <%= link_to 'Download PDF', rails_blob_url(request.pdf_file, disposition: "attachment"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+          <% else %>
+            <span class="text-muted">No PDF</span>
+          <% end %>
+        </td>
+        <td>
+          <% if request.csv_file.attached? %>
+            <%= link_to 'Download CSV', rails_blob_url(request.csv_file, disposition: "attachment"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+          <% else %>
+            <span class="text-muted">No CSV</span>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
