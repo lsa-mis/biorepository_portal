@@ -5,7 +5,7 @@
 <%= render "profiles/user_collections_answers" %>
 <%= render "profiles/user_loan_items" %>
 
-<%= render "requests/remote_modal", id: "editLoanAnswerModal", title: "Edit Answer" %>
+<%= render "layouts/remote_modal", id: "editLoanAnswerModal", title: "Edit Answer" %>
 
 <%= form_with(model: @loan_request, url: send_loan_request_path,
         data: {
