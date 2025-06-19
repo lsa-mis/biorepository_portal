@@ -1,3 +1,5 @@
+require "csv"
+
 class RequestsController < ApplicationController
 
   def information_request
@@ -54,23 +56,115 @@ class RequestsController < ApplicationController
   end
 
   def send_loan_request
-    fail
+    if @checkout.nil? || @checkout.requestables.empty?
+      flash[:alert] = "No items in checkout."
+      redirect_to root_path
+    end
+    
+    @checkout_items = get_checkout_items
+
+    @collections_in_checkout = @checkout.requestables
+      .map { |r| r.preparation&.item&.collection }
+      .compact
+      .uniq
+    emails = @collections_in_checkout.map do |collection|
+      AppPreference.find_by(
+        collection_id: collection.id,
+        name: "collection_email_to_send_requests"
+      )&.value
+    end.compact
+
+    @loan_request = LoanRequest.new
+    @loan_request.user = current_user
+    @loan_request.send_to = emails.join(', ')
+    @loan_request.save!
+    @loan_answers = current_user.loan_answers
+                      .includes(:loan_question)
+                      .joins(:loan_question)
+                      .order("loan_questions.id ASC")
+
+    csv_tempfile = Tempfile.new(["loan_request", ".csv"])
+    csv_tempfile.write(create_csv_file(@checkout, current_user))
+    csv_tempfile.rewind
+
+    pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
+    File.open(pdf_tempfile, "wb") do |file|
+      file.write(PdfGenerator.new(@loan_answers, @checkout_items).generate_pdf_content)
+    end
+    pdf_tempfile.rewind
+
+    @loan_request.pdf_file.attach(
+      io: pdf_tempfile,
+      filename: "loan_request_#{@loan_request.id}.pdf",
+      content_type: "application/pdf"
+    )
+
+    @loan_request.csv_file.attach(
+      io: csv_tempfile,
+      filename: "loan_request_#{@loan_request.id}.csv",
+      content_type: "text/csv"
+    )
+
+    RequestMailer.send_loan_request(
+      send_to: emails,
+      user: current_user,
+      csv_file: csv_tempfile,
+      pdf_file: pdf_tempfile
+    ).deliver_now
+
+    # Clean up if you want
+    File.delete(csv_tempfile) if File.exist?(csv_tempfile)
+    File.delete(pdf_tempfile) if File.exist?(pdf_tempfile)
+    redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
   end
 
-  def get_checkout_items
-    checkout_items = ""
-    @checkout.requestables.each do |requestable|
-      preparation = requestable.preparation
-      item = preparation.item
-      checkout_items += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"
-      if preparation.barcode.present?
-        checkout_items += "barcode: #{preparation.barcode}"
+  private
+    def get_checkout_items
+      checkout_items = ""
+      @checkout.requestables.each do |requestable|
+        preparation = requestable.preparation
+        item = preparation.item
+        checkout_items += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"
+        if preparation.barcode.present?
+          checkout_items += "barcode: #{preparation.barcode}"
+        end
+        if preparation.description.present?
+          checkout_items += ", description: #{preparation.description}"
+        end
+        checkout_items += ", count: #{requestable.count}. "
       end
-      if preparation.description.present?
-        checkout_items += ", description: #{preparation.description}"
-      end
-      checkout_items += ", count: #{requestable.count}. "
+      checkout_items
     end
-    checkout_items
-  end
+
+    def create_csv_file(checkout, user)
+      filename = Rails.root.join("tmp", "loan_request_#{SecureRandom.uuid}.csv")
+
+      CSV.open(filename, "w") do |csv|
+        csv << [
+          "User Name",
+          "User Institution",
+          "User Email",
+          "Division",
+          "Catalog Number",
+          "Prep Type",
+          "Count",
+          "Barcode"
+        ]
+
+        checkout.requestables.each do |requestable|
+          csv << [
+            [user.first_name, user.last_name].compact.join(" "),
+            user.affiliation,
+            user.email,
+            requestable.preparation.item.collection.division,
+            requestable.preparation.item.catalog_number,
+            requestable.preparation.prep_type,
+            requestable.count,
+            requestable.preparation.barcode
+          ]
+        end
+      end
+
+      filename.to_s
+    end
 end
