@@ -30,8 +30,7 @@ class CollectionsController < ApplicationController
     render turbo_stream: turbo_stream.update("modal_content_frame") {
       render_to_string(
         partial: "items/preparations_form",
-        formats: [:html],
-        locals: { item: @item }
+        formats: [:html]
       )
     }
   end
