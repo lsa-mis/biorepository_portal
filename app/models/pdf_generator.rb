@@ -1,6 +1,5 @@
 class PdfGenerator
   require 'prawn'
-  include ApplicationHelper
   include ActionView::Helpers::SanitizeHelper 
 
   def initialize(loan_answers, checkout_items)
