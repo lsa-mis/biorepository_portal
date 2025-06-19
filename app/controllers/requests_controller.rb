@@ -85,14 +85,14 @@ class RequestsController < ApplicationController
 
     csv_file_path = create_csv_file(@checkout, current_user)
 
-    pdf_file = PdfGenerator.new(@loan_answers, @checkout_items).generate_pdf_content
     pdf_file_path = Rails.root.join("tmp", "loan_request_#{SecureRandom.uuid}.pdf")
     File.open(pdf_file_path, "wb") do |file|
-      file.write(pdf_file)
+      file.write(PdfGenerator.new(@loan_answers, @checkout_items).generate_pdf_content)
     end
 
+
     @loan_request.pdf_file.attach(
-      io: StringIO.new(pdf_file),
+      io: File.open(pdf_file_path),
       filename: "loan_request_#{@loan_request.id}.pdf",
       content_type: "application/pdf"
     )
@@ -112,6 +112,7 @@ class RequestsController < ApplicationController
 
     # Clean up if you want
     File.delete(csv_file_path) if File.exist?(csv_file_path)
+    File.delete(pdf_file_path) if File.exist?(pdf_file_path)
     redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
   end
 
