@@ -31,7 +31,7 @@ class CollectionsController < ApplicationController
     @max_number_of_preparations = fetch_max_number_of_preparations(@item.collection.id)
     render turbo_stream: turbo_stream.update("modal_content_frame") {
       render_to_string(
-        partial: "items/preparations_form", locals: { max_number_of_preparations: @max_number_of_preparations },
+        partial: "items/preparations_form",
         formats: [:html]
       )
     }
