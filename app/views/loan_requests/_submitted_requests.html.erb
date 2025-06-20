@@ -15,7 +15,6 @@
         <td>
           <% if request.pdf_file.attached? %>
             <%= link_to 'View PDF', rails_blob_url(request.pdf_file, disposition: "inline"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
-            <%= link_to 'Download PDF', rails_blob_url(request.pdf_file, disposition: "attachment"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
           <% else %>
             <span class="text-muted">No PDF</span>
           <% end %>
