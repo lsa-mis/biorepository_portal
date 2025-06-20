@@ -2,7 +2,7 @@
   <div class="modal fade"
       id="<%= local_assigns[:id] || 'remoteModal' %>"
       tabindex="-1"
-      data-controller="remote-modal"
+      data-controller="remote-modal modal-reset"
       data-action="
         turbo:before-render@window->remote-modal#hideBeforeRender 
         turbo:render@window->remote-modal#showAfterRender 
