@@ -5,9 +5,13 @@
     <div class="card p-4 shadow-sm mb-3">
       <div class="card-body">
         <p><strong>Preparation Type:</strong> <%= prep.prep_type.presence || "N/A" %></p>
-        <p><strong>Barcode:</strong> <%= prep.barcode.presence || "N/A" %></p>
-        <p><strong>Description:</strong> <%= prep.description.presence || "N/A" %></p>
-        <p><strong>Available:</strong> <%= available || "N/A" %></p>
+        <% if prep.barcode.presence %>
+          <p><strong>Barcode:</strong> <%= prep.barcode %></p>
+        <% end %>
+        <% if prep.description.presence %>
+          <p><strong>Description:</strong> <%= prep.description %></p>
+        <% end %>
+        <p><strong>Available:</strong> <%= available %></p>
 
         <div class="mt-3">
           <label class="form-label">Select Quantity</label>
