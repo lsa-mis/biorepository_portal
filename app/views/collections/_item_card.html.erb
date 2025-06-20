@@ -19,12 +19,11 @@
       </thead>
       <tbody class="">
         <% item.preparations.each do |preparation| %>
-          <% preparations_in_checkout = @checkout.requestables.exists?(preparation_id: preparation.id) ? @checkout.requestables.find_by(preparation_id: preparation.id).count : 0 %>
-          <% available_preparations = show_count(preparation, @max_number_of_preparations) - preparations_in_checkout %>
+          <% in_checkout, available = preparation_checkout_counts(preparation, @checkout, @max_number_of_preparations) %>
           <tr>
             <td class="text-start"><%= preparation.display_name %></td>
-            <td class="text-center"><%= available_preparations %></td>
-              <td class="text-center"><%= preparations_in_checkout %></td>
+            <td class="text-center"><%= available %></td>
+              <td class="text-center"><%= in_checkout %></td>
           </tr>
         <% end %>
       </tbody>
