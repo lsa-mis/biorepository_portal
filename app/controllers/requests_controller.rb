@@ -84,8 +84,7 @@ class RequestsController < ApplicationController
                       .order("loan_questions.id ASC")
 
     csv_tempfile = Tempfile.new(["loan_request", ".csv"])
-    # csv_tempfile.write(create_csv_file(@checkout, current_user))
-    csv_file_path = create_csv_file(@checkout, current_user)
+    csv_file_path = create_csv_file(csv_tempfile, current_user)
     csv_tempfile.rewind
 
     pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
@@ -99,12 +98,6 @@ class RequestsController < ApplicationController
       filename: "loan_request_#{@loan_request.id}.pdf",
       content_type: "application/pdf"
     )
-
-    # @loan_request.csv_file.attach(
-    #   io: csv_tempfile,
-    #   filename: "loan_request_#{@loan_request.id}.csv",
-    #   content_type: "text/csv"
-    # )
 
     @loan_request.csv_file.attach(
       io: File.open(csv_file_path), # csv_file_path is the path to your tmp file
@@ -143,7 +136,7 @@ class RequestsController < ApplicationController
       checkout_items
     end
 
-    def create_csv_file(checkout, user)
+    def create_csv_file(filename, user)
       filename = Rails.root.join("tmp", "loan_request_#{SecureRandom.uuid}.csv")
 
       CSV.open(filename, "w") do |csv|
@@ -158,7 +151,7 @@ class RequestsController < ApplicationController
           "Barcode"
         ]
 
-        checkout.requestables.each do |requestable|
+        @checkout.requestables.each do |requestable|
           csv << [
             [user.first_name, user.last_name].compact.join(" "),
             user.affiliation,
