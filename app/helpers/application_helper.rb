@@ -97,4 +97,11 @@ module ApplicationHelper
     end
     string
   end
+
+  def preparation_checkout_counts(preparation, checkout, max_number_of_preparations = nil)
+    in_checkout = checkout.requestables.find_by(preparation_id: preparation.id)&.count.to_i
+    available = [show_count(preparation, max_number_of_preparations) - in_checkout, 0].max
+    [in_checkout, available]
+  end
+
 end
