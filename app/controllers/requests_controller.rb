@@ -84,7 +84,8 @@ class RequestsController < ApplicationController
                       .order("loan_questions.id ASC")
 
     csv_tempfile = Tempfile.new(["loan_request", ".csv"])
-    csv_tempfile.write(create_csv_file(@checkout, current_user))
+    # csv_tempfile.write(create_csv_file(@checkout, current_user))
+    csv_file_path = create_csv_file(@checkout, current_user)
     csv_tempfile.rewind
 
     pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
@@ -99,8 +100,14 @@ class RequestsController < ApplicationController
       content_type: "application/pdf"
     )
 
+    # @loan_request.csv_file.attach(
+    #   io: csv_tempfile,
+    #   filename: "loan_request_#{@loan_request.id}.csv",
+    #   content_type: "text/csv"
+    # )
+
     @loan_request.csv_file.attach(
-      io: csv_tempfile,
+      io: File.open(csv_file_path), # csv_file_path is the path to your tmp file
       filename: "loan_request_#{@loan_request.id}.csv",
       content_type: "text/csv"
     )
@@ -108,7 +115,7 @@ class RequestsController < ApplicationController
     RequestMailer.send_loan_request(
       send_to: emails,
       user: current_user,
-      csv_file: csv_tempfile,
+      csv_file: csv_file_path,
       pdf_file: pdf_tempfile
     ).deliver_now
 
