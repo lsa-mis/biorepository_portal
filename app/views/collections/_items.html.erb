@@ -5,8 +5,10 @@
               turbo_frame: "all_items"
               } do %>
       <label for="per">Items per page:</label>
-        <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "autosubmit#submit" %>
-      <%= page_entries_info @items %>
+      <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "autosubmit#submit" %>
+      <div class="my-2">
+        <%= page_entries_info @items %>
+      </div>
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
         <% @items.each do |item| %>
           <div class="col mb-5">
@@ -17,8 +19,10 @@
                         bs_toggle: "modal",
                         bs_target: "#addItemToCheckoutModal"
                       },
-                      class: "btn btn-sm btn-outline-primary" %>
-            <%= render partial: "item_card", locals: { item: item } %>
+                      class: "btn btn-sm btn-outline-primary mb-2" %>
+            <%= turbo_frame_tag "checkout_item_#{item.id}" do %>
+              <%= render partial: "item_card", locals: { item: item } %>
+            <% end %>
           </div>
         <% end %>
       </div>
