@@ -1,0 +1,29 @@
+<div id="collection_question_<%= question.id %>" class="border rounded p-3 mb-3">
+  <p>
+    <strong><%= question.question %></strong>
+    <% if question.required? %>
+      <span class="text-danger">*</span>
+    <% end %>
+  </p>
+  <p>
+    <% plain_answer = answer.answer.to_plain_text.strip.presence %>
+    <% if question.required? %>
+      <% if plain_answer %>
+        <%= plain_answer %>
+      <% else %>
+        <span class="text-danger">Warning: This question is required but not answered.</span>
+      <% end %>
+    <% else %>
+      <%= plain_answer || "No answer provided" %>
+    <% end %>
+  </p>
+
+  <%= link_to "Edit",
+              edit_collection_collection_answer_path(collection, question, format: :turbo_stream),
+              data: {
+                turbo_frame: "modal_content_frame",
+                bs_toggle: "modal",
+                bs_target: "#editCollectionAnswerModal"
+              },
+              class: "btn btn-sm btn-outline-primary" %>
+</div>

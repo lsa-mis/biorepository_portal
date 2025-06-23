@@ -49,10 +49,24 @@ class RequestsController < ApplicationController
     @checkout_items = get_checkout_items
     @user = current_user
     @loan_answers = @user.loan_answers
-                      .includes(:loan_question)
-                      .joins(:loan_question)
-                      .order("loan_questions.id ASC")
+                          .includes(:loan_question)
+                          .joins(:loan_question)
+                          .order("loan_questions.id ASC")
     @collections = @checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq
+
+    @collection_answers = {}
+    @collections.each do |collection_id|
+      collection = Collection.find(collection_id)
+      collection_questions = collection.collection_questions
+      next if collection_questions.empty?
+      # Build a hash: { question1 => answer1, question2 => answer2, ... }
+      question_answer_hash = {}
+      collection_questions.each do |question|
+        answer = question.collection_answers.find_by(user: @user)
+        question_answer_hash[question] = answer
+      end
+      @collection_answers[collection] = question_answer_hash
+    end
   end
 
   def send_loan_request

@@ -53,6 +53,8 @@ Rails.application.routes.draw do
         get :preview
       end
     end
+    resources :collection_answers, module: :collections, only: [:edit, :update]
+
   end
   get "collection/:id/items", to: "collections#items", as: :collection_items
   get 'add_item_to_checkout/:item_id', to: 'collections#add_item_to_checkout', as: :add_item_to_checkout
