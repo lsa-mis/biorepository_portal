@@ -53,7 +53,7 @@
           <%else%>
             <% @countries.each do |country| %>
               <div class="form-check">
-                <%= check_box_tag "q[country_in][]", country, params.dig(:q, :country_in)&.include?(country), id: "country_#{country}" %>
+                <%= check_box_tag "q[country_i_matches_any][]", country, params.dig(:q, :country_i_matches_any)&.include?(country), id: "country_#{country.parameterize}" %>
                 <%= label_tag "q_country_in_#{country.parameterize}", country %>
               </div>
             <% end %>
@@ -71,9 +71,10 @@
             <p>No states or provinces available to select from.</p>
           <%else%>
             <% @states.each do |state| %>
+              <% state_id = "state_#{state.parameterize}" %>
               <div class="form-check">
-                <%= check_box_tag "q[state_province_in][]", state, params.dig(:q, :state_province_in)&.include?(state), id: "state_#{state}" %>
-                <%= label_tag "q_state_province_in_#{state.parameterize}", state %>
+                <%= check_box_tag "q[state_province_i_matches_any][]", state, params.dig(:q, :state_province_i_matches_any)&.include?(state), id: state_id %>
+                <%= label_tag state_id, state %>
               </div>
             <% end %>
           <% end %>
@@ -90,9 +91,10 @@
             <p>No sex options available to select from.</p>
           <% else %>
             <% @sexs.each do |sex| %>
+              <% sex_id = "sex_#{sex.parameterize}" %>
               <div class="form-check">
-                <%= check_box_tag "q[sex_in][]", sex, params.dig(:q, :sex_in)&.include?(sex), id: "sex_#{sex.parameterize}" %>
-                <%= label_tag "q_sex_in_#{sex.parameterize}", sex %>
+                <%= check_box_tag "q[sex_i_matches_any][]", sex, params.dig(:q, :sex_i_matches_any)&.include?(sex), id: sex_id %>
+                <%= label_tag sex_id, sex %>
               </div>
             <% end %>
           <% end %>
@@ -107,9 +109,10 @@
         <div id="continent-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
           <%if @continents.present?%>
             <% @continents.each do |continent| %>
+              <% continent_id = "continent_#{continent.parameterize}" %>
               <div class="form-check">
-                <%= check_box_tag "q[continent_in][]", continent, params.dig(:q, :continent_in)&.include?(continent), id: "continent_#{continent.parameterize}" %>
-                <%= label_tag "continent_#{continent.parameterize}", continent %>
+                <%= check_box_tag "q[continent_i_matches_any][]", continent, params.dig(:q, :continent_i_matches_any)&.include?(continent), id: continent_id %>
+                <%= label_tag continent_id, continent %>
               </div>
             <% end %>
           <% else %>
