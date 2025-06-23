@@ -16,6 +16,15 @@ class ItemsController < ApplicationController
   end
 
   def search
+    if params[:q] && params[:q][:dynamic_fields]
+      params[:q][:dynamic_fields].each do |field_hash|
+        field = field_hash[:field]
+        value = field_hash[:value]
+        next if field.blank? || value.blank?
+
+        params[:q][field] = value
+      end
+    end
     @q = Item.ransack(params[:q])
     @items = @q.result.page(params[:page]).per(15)
     @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
