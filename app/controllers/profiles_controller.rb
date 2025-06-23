@@ -20,6 +20,52 @@ class ProfilesController < ApplicationController
     end
   end
 
+  def edit_field
+    @user = current_user
+    @field = params[:field]
+
+    render turbo_stream: turbo_stream.update("modal_content_frame") {
+      render_to_string partial: "profiles/edit_single_field_form",
+                      formats: [:html],
+                      locals: { user: @user, field: @field }
+    }
+  end
+
+  def update_field
+    @user = current_user
+    field = params[:field]
+
+    if @user.update(params.require(:user).permit(field))
+      respond_to do |format|
+        format.turbo_stream {
+          render turbo_stream: turbo_stream.replace(
+            "user_field_#{field}",
+            partial: "profiles/user_field",
+            locals: {
+              user: @user,
+              field_name: field,
+              label: field.titleize,
+              value: @user.send(field)
+            }
+          )
+        }
+        format.html { redirect_to loan_request_path, notice: "#{field.titleize} updated." }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_back fallback_location: loan_request_path, alert: "Failed to update field." }
+        format.turbo_stream {
+          render turbo_stream: turbo_stream.update("modal_content_frame") {
+            render_to_string partial: "users/edit_single_field_form",
+                            formats: [:html],
+                            locals: { user: @user, field: field }
+          }, status: :unprocessable_entity
+        }
+      end
+    end
+  end
+
+
   def loan_questions
     @loan_questions = LoanQuestion.all
     @loan_answers = current_user.loan_answers.includes(:loan_question)
