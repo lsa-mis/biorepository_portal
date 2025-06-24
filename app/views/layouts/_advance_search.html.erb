@@ -61,13 +61,13 @@
             <% if @countries.blank? %>
               <p>No countries available to select from.</p>
             <%else%>
-              <% @countries.each do |country| %>
-                <% country_id = "country_#{country.parameterize}" %>
+              <% @countries.each do |name, lower_name| %>
+                <% country_id = "country_#{lower_name}" %>
                 <div class="form-check">
-                  <%= check_box_tag "q[country_i_matches_any][]", country,
-                        params.dig(:q, :country_i_matches_any)&.include?(country),
+                  <%= check_box_tag "q[country_case_insensitive_in][]", lower_name,
+                        params.dig(:q, :country_case_insensitive_in)&.include?(lower_name),
                         id: country_id %>
-                  <%= label_tag country_id, country %>
+                  <%= label_tag country_id, name %>
                 </div>
               <% end %>
             <% end %>

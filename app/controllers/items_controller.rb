@@ -29,7 +29,12 @@ class ItemsController < ApplicationController
     @items = @q.result.page(params[:page]).per(15)
     @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
     @all_collections = Collection.all
-    @countries = Item.distinct.pluck(:country).compact.reject(&:blank?).map(&:titleize).uniq.sort
+    @countries = Item.distinct.pluck(:country)
+      .compact
+      .reject(&:blank?)
+      .map { |c| [c.titleize, c.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
     @states = Item.distinct.pluck(:state_province).compact.reject(&:blank?).map(&:titleize).uniq.sort
     @sexs = Item.distinct.pluck(:sex).compact.reject(&:blank?).map(&:titleize).uniq.sort
     @continents = Item.distinct.pluck(:continent).compact.reject(&:blank?).map(&:titleize).uniq.sort

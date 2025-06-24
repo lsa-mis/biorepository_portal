@@ -3,13 +3,13 @@
     <div class="search-wrapper bg-white p-4 rounded-3 shadow w-100" style="max-width: 1000px;">
       <%= search_form_for @q, url: search_items_path, method: :post, html: { class: "m-0" } do |f| %>
         <div class="mb-3">
-          <%= f.label :country_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont,
+          <%= f.label :country_case_insensitive_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont,
                       "What can we help you find?",
                       class: "form-label fs-4 fw-bold text-dark" %>
         </div>
 
         <div class="input-group input-group-lg">
-          <%= f.search_field :country_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont,
+          <%= f.search_field :country_case_insensitive_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont,
                 placeholder: "Country, State, Province, Scientific or Vernacular Name",
                 class: "form-control search-input" %>
 
