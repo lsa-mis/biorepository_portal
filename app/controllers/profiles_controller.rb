@@ -1,6 +1,8 @@
 class ProfilesController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
 
+  ALLOWED_FIELDS = %w[first_name last_name affiliation orcid].freeze
+
   def show
     @collections = Collection.joins(:collection_questions).distinct
     @loan_requests = current_user.loan_requests.with_attached_pdf_file.with_attached_csv_file.order(created_at: :desc)
@@ -19,6 +21,52 @@ class ProfilesController < ApplicationController
       render :edit, status: :unprocessable_entity
     end
   end
+
+  def edit_field
+    @user = current_user
+    @field = params[:field]
+
+    render turbo_stream: turbo_stream.update("modal_content_frame") {
+      render_to_string partial: "profiles/edit_single_field_form",
+                      formats: [:html],
+                      locals: { user: @user, field: @field }
+    }
+  end
+
+  def update_field
+    @user = current_user
+    field = params[:field]
+
+    if field.in?(ALLOWED_FIELDS) && @user.update(params.require(:user).permit(field))
+      respond_to do |format|
+        format.turbo_stream {
+          render turbo_stream: turbo_stream.replace(
+            "user_field_#{field}",
+            partial: "profiles/user_field",
+            locals: {
+              user: @user,
+              field_name: field,
+              label: field.titleize,
+              value: @user[field]
+            }
+          )
+        }
+        format.html { redirect_to loan_request_path, notice: "#{field.titleize} updated." }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_back fallback_location: loan_request_path, alert: "Failed to update field." }
+        format.turbo_stream {
+          render turbo_stream: turbo_stream.update("modal_content_frame") {
+            render_to_string partial: "profiles/edit_single_field_form",
+                            formats: [:html],
+                            locals: { user: @user, field: field }
+          }, status: :unprocessable_entity
+        }
+      end
+    end
+  end
+
 
   def loan_questions
     @loan_questions = LoanQuestion.all
