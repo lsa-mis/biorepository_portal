@@ -18,7 +18,7 @@
         </div>
 
         <div class="modal-body remote_modal_body" id="remote_modal_body">
-          <turbo-frame id="modal_content_frame" loading="lazy"></turbo-frame>
+          <turbo-frame id="<%= local_assigns[:turbo_frame_id] || 'modal_content_frame' %>" loading="lazy"></turbo-frame>
         </div>
       </div>
     </div>

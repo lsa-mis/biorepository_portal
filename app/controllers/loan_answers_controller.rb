@@ -5,7 +5,7 @@ class LoanAnswersController < ApplicationController
     @loan_question = LoanQuestion.find(params[:id])
     @answer = @loan_question.loan_answers.find_by(user: current_user)
 
-    render turbo_stream: turbo_stream.update("modal_content_frame") {
+    render turbo_stream: turbo_stream.update("edit_loan_answer_modal_content_frame") {
       render_to_string partial: "profiles/edit_single_loan_answer_form",
                       formats: [:html],
                       locals: { loan_question: @loan_question, existing_answer: @answer }
