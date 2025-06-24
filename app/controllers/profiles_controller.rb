@@ -1,6 +1,8 @@
 class ProfilesController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
 
+  ALLOWED_FIELDS = %w[first_name last_name affiliation orcid].freeze
+
   def show
     @collections = Collection.joins(:collection_questions).distinct
     @loan_requests = current_user.loan_requests.with_attached_pdf_file.with_attached_csv_file.order(created_at: :desc)
