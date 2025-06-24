@@ -56,7 +56,7 @@ class ProfilesController < ApplicationController
         format.html { redirect_back fallback_location: loan_request_path, alert: "Failed to update field." }
         format.turbo_stream {
           render turbo_stream: turbo_stream.update("modal_content_frame") {
-            render_to_string partial: "users/edit_single_field_form",
+            render_to_string partial: "profiles/edit_single_field_form",
                             formats: [:html],
                             locals: { user: @user, field: field }
           }, status: :unprocessable_entity
