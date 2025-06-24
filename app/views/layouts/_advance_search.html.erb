@@ -22,11 +22,13 @@
         <div data-search-target="group" class="search-group mb-3 p-3 rounded border border-primary">
           <div data-search-target="rows">
             <% if params.dig(:q, :dynamic_fields).present? %>
+              <% @field_index = 0 %>
               <% params[:q][:dynamic_fields].each do |row| %>
-                <%= render partial: "layouts/search_field", locals: { selected_field: row[:field], entered_value: row[:value] } %>
+                <% @field_index += 1 %>
+                <%= render partial: "layouts/search_field", locals: { selected_field: row[:field], entered_value: row[:value], field_index: @field_index } %>
               <% end %>
             <% else %>
-              <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil } %>
+              <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil, field_index: 1 } %>
             <% end %>
           </div>
 
@@ -37,7 +39,7 @@
       <template data-search-target="groupTemplate">
         <div data-search-target="group" class="search-group mb-3 p-3 rounded border border-primary">
           <div data-search-target="rows">
-            <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil } %>
+            <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil, field_index: 1 } %>
           </div>
 
           <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
