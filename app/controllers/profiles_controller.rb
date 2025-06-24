@@ -35,7 +35,7 @@ class ProfilesController < ApplicationController
     @user = current_user
     field = params[:field]
 
-    if @user.update(params.require(:user).permit(field))
+    if field.in?(ALLOWED_FIELDS) && @user.update(params.require(:user).permit(field))
       respond_to do |format|
         format.turbo_stream {
           render turbo_stream: turbo_stream.replace(
