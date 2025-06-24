@@ -45,7 +45,7 @@ class ProfilesController < ApplicationController
               user: @user,
               field_name: field,
               label: field.titleize,
-              value: @user.send(field)
+              value: @user[field]
             }
           )
         }
