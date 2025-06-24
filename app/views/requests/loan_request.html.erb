@@ -1,12 +1,20 @@
 <h1>Send Loan Request</h1>
 
-<%= render "profiles/user_info" %>
-<%= render "profiles/user_loan_answers" %>
-<%= render "profiles/user_collections_answers" %>
-<%= render "profiles/user_loan_items" %>
+<h2>User Info</h2>
 
+<%= render "profiles/user_field", label: "First Name", field_name: "first_name", value: @user.first_name %>
+<%= render "profiles/user_field", label: "Last Name", field_name: "last_name", value: @user.last_name %>
+<%= render "profiles/user_field", label: "Affiliation", field_name: "affiliation", value: @user.affiliation %>
+<%= render "profiles/user_field", label: "ORCID", field_name: "orcid", value: @user.orcid %>
+<%= render "layouts/remote_modal", id: "editUserFieldModal", title: "Edit Profile Field" %>
+
+<%= render "profiles/user_loan_answers" %>
 <%= render "layouts/remote_modal", id: "editLoanAnswerModal", title: "Edit Loan Answer" %>
 <%= render "layouts/remote_modal", id: "editCollectionAnswerModal", title: "Edit Collection Answer" %>
+
+<%= render "profiles/user_collections_answers" %>
+
+<%= render "profiles/user_loan_items" %>
 
 <%= form_with(model: @loan_request, url: send_loan_request_path) do |form| %>
 
