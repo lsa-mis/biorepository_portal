@@ -9,6 +9,10 @@ class ProfilesController < ApplicationController
     @information_requests = current_user.information_requests.order(created_at: :desc)
   end
 
+  def profile_info
+    @user = current_user
+  end
+
   def edit
     @user = current_user
   end

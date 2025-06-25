@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   resource :profile, only: [:show, :edit, :update] do
     get :loan_questions          # profile_loan_questions_path
     patch :update_loan_questions # profile_update_loan_questions_path
+    get "profile_info", to: "profiles#profile_info", as: :profile_info
   end
   get 'profile/collection_questions/:id', to: 'profiles#collection_questions', as: 'collection_questions_profile'
   patch 'profile/collection_questions/:id', to: 'profiles#update_collection_questions', as: 'update_collection_questions_profile'
