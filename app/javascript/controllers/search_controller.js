@@ -4,6 +4,7 @@ export default class extends Controller {
   static targets = ["group", "row", "rows", "groupTemplate", "groupsContainer", "form"]
 	connect() {
     console.log("connect dynamic search")
+    this.application = this.application || window.Stimulus
   }
 
   removeField(event) {
@@ -31,6 +32,28 @@ export default class extends Controller {
 
     const newRow = referenceRow.cloneNode(true)
     newRow.querySelectorAll("input, select").forEach(el => el.value = "")
+
+    // Get next index
+    const fieldIndex = rowsContainer.querySelectorAll(".search-row").length
+    const groupIndex = group.dataset.groupIndex || 0
+
+    const selectId = `search_field_${groupIndex}_${fieldIndex}`
+
+    // Update IDs
+    const label = newRow.querySelector("label[for^='search_field_']")
+    const select = newRow.querySelector("select[id^='search_field_']")
+    const input = newRow.querySelector("input")
+
+    if (label && select) {
+      label.setAttribute("for", selectId)
+      select.setAttribute("id", selectId)
+      select.setAttribute("name", `q[dynamic_fields][${groupIndex}_${fieldIndex}][field]`)
+    }
+
+    if (input) {
+      input.setAttribute("name", `q[dynamic_fields][${groupIndex}_${fieldIndex}][value]`)
+    }
+
     rowsContainer.appendChild(newRow)
 
     this.addOrSeparators()
@@ -41,7 +64,34 @@ export default class extends Controller {
     const container = this.groupsContainerTarget
 
     const clone = template.content.cloneNode(true)
-    container.appendChild(clone)
+    const wrapper = document.createElement("div")
+    wrapper.appendChild(clone)
+
+    const newGroup = wrapper.querySelector(".search-group")
+
+    // Compute group index
+    const groupIndex = container.querySelectorAll(".search-group").length
+    newGroup.dataset.groupIndex = groupIndex
+
+    const row = newGroup.querySelector(".search-row")
+    const label = row.querySelector("label")
+    const select = row.querySelector("select")
+    const input = row.querySelector("input")
+
+    const fieldIndex = 0
+    const newId = `search_field_${groupIndex}_${fieldIndex}`
+
+    if (label) label.setAttribute("for", newId)
+    if (select) {
+      select.setAttribute("id", newId)
+      select.setAttribute("name", `q[dynamic_fields][${groupIndex}_${fieldIndex}][field]`)
+    }
+    if (input) {
+      input.setAttribute("name", `q[dynamic_fields][${groupIndex}_${fieldIndex}][value]`)
+      input.value = ""
+    }
+
+    container.appendChild(newGroup)
 
     this.addOrSeparators()
   }
