@@ -25,12 +25,12 @@ class Collections::CollectionAnswersController < ApplicationController
 
     if @answer.save
       respond_to do |format|
-        format.html { redirect_to collection_request_path, notice: "Answer updated successfully." }
+        format.html { redirect_to loan_request_path, notice: "Answer updated successfully." }
         format.turbo_stream
       end
     else
       respond_to do |format|
-        format.html { redirect_back fallback_location: collection_request_path, alert: "Failed to update answer." }
+        format.html { redirect_back fallback_location: loan_request_path, alert: "Failed to update answer." }
         format.turbo_stream { 
           render turbo_stream: turbo_stream.replace("flash", partial: "layouts/flash", locals: { alert: "Failed to update answer." }),
                 status: :unprocessable_entity
