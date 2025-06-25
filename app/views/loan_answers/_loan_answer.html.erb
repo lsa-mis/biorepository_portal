@@ -21,9 +21,9 @@
   <%= link_to "Edit",
               edit_loan_answer_path(answer.loan_question, format: :turbo_stream),
               data: {
-                turbo_frame: "edit_loan_answer_modal_content_frame",
+                turbo_frame: "modal_content_frame",
                 bs_toggle: "modal",
-                bs_target: "#editLoanAnswerModal"
+                bs_target: "#sharedModal"
               },
               class: "btn btn-sm btn-outline-primary" %>
 </div>

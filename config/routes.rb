@@ -26,8 +26,8 @@ Rails.application.routes.draw do
   patch "update_loan_answer/:id", to: "loan_answers#update", as: :update_loan_answer
   get "edit_loan_answer/:id", to: "loan_answers#edit", as: :edit_loan_answer
 
-get "profile/edit_field/:field", to: "profiles#edit_field", as: :edit_user_field
-patch "profile/update_field/:field", to: "profiles#update_field", as: :update_user_field
+  get "profile/edit_field/:field", to: "profiles#edit_field", as: :edit_user_field
+  patch "profile/update_field/:field", to: "profiles#update_field", as: :update_user_field
 
   get "loan_questions/preview", to: "loan_questions#preview", as: :preview_loan_questions
   resources :loan_questions

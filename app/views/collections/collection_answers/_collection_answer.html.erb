@@ -21,9 +21,9 @@
   <%= link_to "Edit",
               edit_collection_collection_answer_path(collection, question, format: :turbo_stream),
               data: {
-                turbo_frame: "edit_collection_answer_modal_content_frame",
+                turbo_frame: "modal_content_frame",
                 bs_toggle: "modal",
-                bs_target: "#editCollectionAnswerModal"
+                bs_target: "#sharedModal"
               },
               class: "btn btn-sm btn-outline-primary" %>
 </div>

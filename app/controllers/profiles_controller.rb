@@ -27,7 +27,7 @@ class ProfilesController < ApplicationController
     @user = current_user
     @field = params[:field]
 
-    render turbo_stream: turbo_stream.update("edit_user_field_modal_content_frame") {
+    render turbo_stream: turbo_stream.update("modal_content_frame") {
       render_to_string partial: "profiles/edit_single_field_form",
                       formats: [:html],
                       locals: { user: @user, field: @field }
@@ -58,7 +58,7 @@ class ProfilesController < ApplicationController
       respond_to do |format|
         format.html { redirect_back fallback_location: loan_request_path, alert: "Failed to update field." }
         format.turbo_stream {
-          render turbo_stream: turbo_stream.update("edit_user_field_modal_content_frame") {
+          render turbo_stream: turbo_stream.update("modal_content_frame") {
             render_to_string partial: "profiles/edit_single_field_form",
                             formats: [:html],
                             locals: { user: @user, field: field }
