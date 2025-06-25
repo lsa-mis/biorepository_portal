@@ -5,7 +5,7 @@ class Collections::CollectionAnswersController < ApplicationController
   def edit
     @collection_question = CollectionQuestion.find(params[:id])
     @answer = @collection_question.collection_answers.find_by(user: current_user)
-    render turbo_stream: turbo_stream.update("edit_collection_answer_modal_content_frame") {
+    render turbo_stream: turbo_stream.update("modal_content_frame") {
       render_to_string partial: "profiles/edit_single_collection_answer_form",
                       formats: [:html],
                       locals: { collection: @collection, collection_question: @collection_question, existing_answer: @answer }
