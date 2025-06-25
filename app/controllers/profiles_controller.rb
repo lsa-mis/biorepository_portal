@@ -4,6 +4,7 @@ class ProfilesController < ApplicationController
   def show
     @collections = Collection.joins(:collection_questions).distinct
     @loan_requests = current_user.loan_requests.with_attached_pdf_file.with_attached_csv_file.order(created_at: :desc)
+    @information_requests = current_user.information_requests.order(created_at: :desc)
   end
 
   def edit

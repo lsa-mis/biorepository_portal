@@ -13,7 +13,25 @@
 
   <body>
     <%= render partial: "layouts/navbar" %>
-    <%= render partial: "layouts/search_bar" %>
+    <div class="bg-um-blue py-4">
+      <div class="container">
+        <div class="row g-4 align-items-stretch">
+          
+          <div class="col-12 col-md-8">
+            <div class="bg-white p-4 rounded-3 shadow h-100">
+              <%= render "layouts/search_bar" %>
+            </div>
+          </div>
+          
+          <div class="col-12 col-md-4">
+            <div class="bg-white p-4 rounded-3 shadow h-100">
+              <%= render "layouts/info_request_bar" %>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
     <main class="container">
       <div id="flash">
         <%= render "layouts/flash" %>
