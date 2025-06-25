@@ -52,17 +52,17 @@ class RequestsController < ApplicationController
                           .includes(:loan_question)
                           .joins(:loan_question)
                           .order("loan_questions.id ASC")
-    @collections = @checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq
-
+    @collections = Collection
+                    .where(id: @checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq)
+                    .includes(collection_questions: :collection_answers)
     @collection_answers = {}
-    @collections.each do |collection_id|
-      collection = Collection.find(collection_id)
+    @collections.each do |collection|
       collection_questions = collection.collection_questions
       next if collection_questions.empty?
       # Build a hash: { question1 => answer1, question2 => answer2, ... }
       question_answer_hash = {}
       collection_questions.each do |question|
-        answer = question.collection_answers.find_by(user: @user)
+        answer = question.collection_answers.find { |a| a.user_id == @user.id }
         question_answer_hash[question] = answer
       end
       @collection_answers[collection] = question_answer_hash
