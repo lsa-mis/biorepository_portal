@@ -6,14 +6,12 @@
 <%= render "profiles/user_field", label: "Last Name", field_name: "last_name", value: @user.last_name %>
 <%= render "profiles/user_field", label: "Affiliation", field_name: "affiliation", value: @user.affiliation %>
 <%= render "profiles/user_field", label: "ORCID", field_name: "orcid", value: @user.orcid %>
-<%= render "layouts/remote_modal", id: "editUserFieldModal", title: "Edit Profile Field", turbo_frame_id: "edit_user_field_modal_content_frame" %>
-
 
 <%= render "profiles/user_loan_answers" %>
-<%= render "layouts/remote_modal", id: "editLoanAnswerModal", title: "Edit Loan Answer", turbo_frame_id: "edit_loan_answer_modal_content_frame" %>
-<%= render "layouts/remote_modal", id: "editCollectionAnswerModal", title: "Edit Collection Answer", turbo_frame_id: "edit_collection_answer_modal_content_frame" %>
 
 <%= render "profiles/user_collections_answers" %>
+
+<%= render "layouts/remote_modal", id: "sharedModal", title: "" %>
 
 <%= render "profiles/user_loan_items" %>
 
