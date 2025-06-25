@@ -1,4 +1,4 @@
-<h1>Send Information Request</h1>
+<h1 class="mt-5">Create Information Request</h1>
 
 <%= form_with(model: @information_request, url: send_information_request_path,
         data: { controller: "checkbox-group-required",
@@ -17,27 +17,58 @@
   <% end %>
   <div>
     <fieldset>
-      <legend>Select Email Addresses you want to send the request to *</legend>
+      <legend class="fs-5">Select Email Addresses you want to send the request to *</legend>
+      
+      <!-- Popover Help Button -->
+      <span class="d-inline-block ms-2" tabindex="0" 
+            data-bs-toggle="popover" 
+            data-bs-trigger="hover focus" 
+            data-bs-html="true"
+            data-bs-title="Email Selection Help"
+            data-bs-content="Select at least one email address to send your request to">
+        <button class="btn btn-sm btn-outline-secondary" type="button">
+          <i class="bi bi-question-circle"></i> Help
+        </button>
+      </span>
+      
       <% @send_to.each do |collection, email| %>
-        <div class="ms-3">
-          <%= check_box_tag 'information_request[send_to][]', email, @information_request.send_to&.include?(email), id: "send_to_#{collection.parameterize.underscore}", required: false, "data-checkbox-group-required-target": "checkboxes" %>
-          <%= label_tag "send_to_#{collection.parameterize.underscore}", collection %>
+        <div class="ms-3 mt-2">
+          <%= check_box_tag 'information_request[send_to][]', email, @information_request.send_to&.include?(email), 
+                id: "send_to_#{collection.parameterize.underscore}", 
+                class: "form-check-input",
+                "data-checkbox-group-required-target": "checkboxes",
+                "data-action": "change->checkbox-group-required#validateCheckboxes" %>
+          <%= label_tag "send_to_#{collection.parameterize.underscore}", collection, class: "form-check-label ms-2" %>
         </div>
       <% end %>
     </fieldset>
   </div>
-  <div class="text-danger" id="checkbox_error"></div>
+  <div class="text-danger mb-3" id="checkbox_error" data-checkbox-group-required-target="error"></div>
 
   <div class="mt-3">
-    <%= check_box_tag :include_items_from_checkout, '1', id: 'include_items_from_checkout' %>
-    <%= label_tag 'include_items_from_checkout', 'Include Items from Checkout' %>
+    <%= check_box_tag :include_items_from_checkout, '1', false, id: 'include_items_from_checkout', class: "form-check-input" %>
+    <%= label_tag 'include_items_from_checkout', 'Include Items from Checkout', class: "form-check-label ms-2" %>
   </div>
-  <div class="mt-3">
-    <%= form.label :question, "Email Message *" %>
-    <%= form.rich_text_area :question, required: true %>
+  
+  <div class="mt-3 p-4 rounded-4 shadow"
+      style="background: rgba(181, 216, 240, 0.2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+    <%= form.label :question, "Email Message*", class: "form-label fw-semibold mb-2" %>
+    <%= form.rich_text_area :question, required: true, class: "form-control bg-transparent border-0 text-dark" %>
   </div>
-  <div class="mt-1 gap-1 d-flex flex-row justify-content-start align-items-center">
-    <%= form.submit %>
-    <%= link_to "Cancel", :back, class: "link_to" %>
+
+  <div class="mt-4 gap-2 d-flex flex-row justify-content-start align-items-center">
+    <%= form.submit 'Submit', class: "btn btn-primary", data: { action: "click->checkbox-group-required#validateBeforeSubmit" } %>
+    <%= link_to "Cancel", :back, class: "btn btn-outline-secondary" %>
   </div>
 <% end %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Initialize popovers
+  document.addEventListener("DOMContentLoaded", function() {
+    const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    popoverTriggerList.map(function(el) {
+      return new bootstrap.Popover(el);
+    });
+  });
+</script>
