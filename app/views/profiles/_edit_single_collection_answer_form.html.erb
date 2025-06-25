@@ -1,7 +1,6 @@
 <%= form_with url: collection_collection_answer_path(collection, collection_question), method: :patch do %>
   <div class="card p-3">
     <div class="card-body">
-    hell
       <label class="form-label"><%= collection_question.question %></label>
       <% if collection_question.required? %>
         <span class="text-danger">*</span>
