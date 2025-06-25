@@ -1,26 +1,26 @@
-class LoanAnswersController < ApplicationController
+class Collections::CollectionAnswersController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
+  before_action :set_collection
 
   def edit
-    @loan_question = LoanQuestion.find(params[:id])
-    @answer = @loan_question.loan_answers.find_by(user: current_user)
-
-    render turbo_stream: turbo_stream.update("edit_loan_answer_modal_content_frame") {
-      render_to_string partial: "profiles/edit_single_loan_answer_form",
+    @collection_question = CollectionQuestion.find(params[:id])
+    @answer = @collection_question.collection_answers.find_by(user: current_user)
+    render turbo_stream: turbo_stream.update("edit_collection_answer_modal_content_frame") {
+      render_to_string partial: "profiles/edit_single_collection_answer_form",
                       formats: [:html],
-                      locals: { loan_question: @loan_question, existing_answer: @answer }
+                      locals: { collection: @collection, collection_question: @collection_question, existing_answer: @answer }
     }
   end
 
   def update
-    @question = LoanQuestion.find(params[:id])
+    @question = CollectionQuestion.find(params[:id])
 
-    submitted_answers = params[:loan_answers] || {}
+    submitted_answers = params[:collection_answers] || {}
     raw_answer = submitted_answers[@question.id.to_s]
 
     answer_value = raw_answer.is_a?(Array) ? raw_answer.reject(&:blank?).join(", ") : strip_tags(raw_answer.to_s.strip)
 
-    @answer = @question.loan_answers.find_or_initialize_by(user: current_user)
+    @answer = @question.collection_answers.find_or_initialize_by(user: current_user)
     @answer.answer = answer_value
 
     if @answer.save
@@ -37,5 +37,11 @@ class LoanAnswersController < ApplicationController
         }
       end
     end
+  end
+
+  private
+
+  def set_collection
+    @collection = Collection.find(params[:collection_id])
   end
 end

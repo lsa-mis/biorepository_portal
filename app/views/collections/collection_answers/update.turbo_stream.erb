@@ -1,0 +1,5 @@
+<turbo-stream action="replace" target="collection_question_<%= @question.id %>">
+  <template>
+    <%= render partial: "collections/collection_answers/collection_answer", formats: [:html], locals: { collection: @collection, question: @question, answer: @answer } %>
+  </template>
+</turbo-stream>

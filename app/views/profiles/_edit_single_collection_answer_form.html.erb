@@ -1,0 +1,39 @@
+<%= form_with url: collection_collection_answer_path(collection, collection_question), method: :patch do %>
+  <div class="card p-3">
+    <div class="card-body">
+      <label class="form-label"><%= collection_question.question %></label>
+      <% if collection_question.required? %>
+        <span class="text-danger">*</span>
+      <% end %>
+
+      <% case collection_question.question_type %>
+      <% when "text" %>
+        <%= text_field_tag "collection_answers[#{collection_question.id}]", existing_answer&.answer&.to_plain_text&.strip, class: "form-control" %>
+
+      <% when "checkbox" %>
+        <p>Pick one or more options below</p>
+        <% collection_question.collection_options.each do |option| %>
+          <div class="form-check ms-3">
+            <%= check_box_tag "collection_answers[#{collection_question.id}][]",
+                              option.value,
+                              existing_answer&.answer&.to_plain_text&.include?(option.value) %>
+            <%= label_tag nil, option.value, class: "form-check-label" %>
+          </div>
+        <% end %>
+
+      <% when "dropdown" %>
+        <%= select_tag "collection_answers[#{collection_question.id}]",
+                       options_for_select(collection_question.collection_options.map(&:value),
+                                          existing_answer&.answer&.to_plain_text&.strip),
+                       class: "form-select", prompt: "Select..." %>
+
+      <% else %>
+        <div class="alert alert-warning mt-2">
+          Unsupported question type: <%= collection_question.question_type %>
+        </div>
+      <% end %>
+
+      <%= submit_tag "Save", class: "btn btn-primary mt-3" %>
+    </div>
+  </div>
+<% end %>

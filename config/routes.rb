@@ -56,6 +56,8 @@ patch "profile/update_field/:field", to: "profiles#update_field", as: :update_us
         get :preview
       end
     end
+    resources :collection_answers, module: :collections, only: [:edit, :update]
+
   end
   get "collection/:id/items", to: "collections#items", as: :collection_items
   get 'add_item_to_checkout/:item_id', to: 'collections#add_item_to_checkout', as: :add_item_to_checkout

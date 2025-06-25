@@ -1,3 +1,10 @@
 <h2>User Collections Answers</h2>
-<p>Collections' ids for checkout items:</p>
-<%= @collections %>
+
+<% if @collection_answers.present? %>
+  <% @collection_answers.each do |collection, qa_data| %>
+    <h3><%= collection.division %></h3>
+    <% qa_data.each do |question, answer| %>
+      <%= render "collections/collection_answers/collection_answer", collection: collection, question: question, answer: answer %>
+    <% end %>
+  <% end %>
+<% end %>
