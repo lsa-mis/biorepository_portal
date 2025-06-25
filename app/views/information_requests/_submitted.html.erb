@@ -1,0 +1,24 @@
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Submitted At</th>
+      <th>Send To</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @information_requests.any? %>
+      <% @information_requests.each do |request| %>
+        <tr>
+          <td><%= l(request.created_at, format: :short) %></td>
+          <td><%= request.send_to %></td>
+        </tr>
+      <% end %>
+    <% else %>
+      <tr>
+        <td colspan="2" class="text-center text-muted">
+          No information requests found.
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
