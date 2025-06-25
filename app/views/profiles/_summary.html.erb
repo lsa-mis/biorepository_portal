@@ -17,6 +17,11 @@
       </div>
       <!-- Update Loan Question Link -->
       <div class="align-self-start pt-2">
+        <%= link_to show_loan_questions_profile_path, class: 'text-white link-underline link-underline-opacity-0' do %>
+          <i class="bi bi-question-circle"></i> <span class="fw-light">Loan Questions</span>
+        <% end %>
+      </div>
+      <div>
         <%= link_to loan_questions_profile_path, class: 'text-white link-underline link-underline-opacity-0' do %>
           <i class="bi bi-ui-checks-grid"></i> <span class="fw-light">Edit Loan Info</span>
         <% end %>
