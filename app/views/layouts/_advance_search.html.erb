@@ -62,7 +62,7 @@
               <p>No countries available to select from.</p>
             <%else%>
               <% @countries.each do |name, lower_name| %>
-                <% country_id = "country_#{lower_name}" %>
+                <% country_id = "country_#{lower_name.parameterize}" %>
                 <div class="form-check">
                   <%= check_box_tag "q[country_case_insensitive_in][]", lower_name,
                         params.dig(:q, :country_case_insensitive_in)&.include?(lower_name),
