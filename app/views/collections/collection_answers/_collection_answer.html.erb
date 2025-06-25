@@ -1,4 +1,4 @@
-<div id="collection_answer_<%= answer.id %>" class="border rounded p-3 mb-3">
+<div id="collection_question_<%= question.id %>" class="border rounded p-3 mb-3">
   <p>
     <strong><%= question.question %></strong>
     <% if question.required? %>
@@ -6,7 +6,7 @@
     <% end %>
   </p>
   <p>
-    <% plain_answer = answer.answer.to_plain_text.strip.presence %>
+    <% plain_answer = answer.present? ? answer.answer.to_plain_text.strip.presence : nil %>
     <% if question.required? %>
       <% if plain_answer %>
         <%= plain_answer %>

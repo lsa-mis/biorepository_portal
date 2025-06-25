@@ -12,7 +12,7 @@
 
       <% when "checkbox" %>
         <p>Pick one or more options below</p>
-        <% collection_question.options.each do |option| %>
+        <% collection_question.collection_options.each do |option| %>
           <div class="form-check ms-3">
             <%= check_box_tag "collection_answers[#{collection_question.id}][]",
                               option.value,
@@ -23,7 +23,7 @@
 
       <% when "dropdown" %>
         <%= select_tag "collection_answers[#{collection_question.id}]",
-                       options_for_select(collection_question.options.map(&:value),
+                       options_for_select(collection_question.collection_options.map(&:value),
                                           existing_answer&.answer&.to_plain_text&.strip),
                        class: "form-select", prompt: "Select..." %>
 
