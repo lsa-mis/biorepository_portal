@@ -23,7 +23,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def update?
-    is_admin?
+    is_super_admin? || is_collection_admin?
   end
 
   def edit?

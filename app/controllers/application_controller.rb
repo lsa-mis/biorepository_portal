@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   before_action :make_q
 
   def pundit_user
-    { user: current_user, role: session[:role], collection_ids: session[:collection_ids] }
+    { user: current_user, role: session[:role], collection_ids: session[:collection_ids], params: params }
   end
   
   private

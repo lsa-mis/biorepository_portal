@@ -16,7 +16,7 @@ class Collections::CollectionQuestionsController < ApplicationController
 
   def create
     @collection_question = @collection.collection_questions.build(collection_question_params)
-    authorize @collection_question
+    authorize([@collection, @collection_question])
 
     respond_to do |format|
       if @collection_question.save
