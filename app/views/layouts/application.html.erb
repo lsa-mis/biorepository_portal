@@ -8,24 +8,28 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css", rel: "stylesheet" %>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
     <%= render partial: "layouts/navbar" %>
     <div class="bg-um-blue py-4">
-      <div class="container">
-        <div class="row g-4 align-items-stretch">
-          
-          <div class="col-12 col-md-4">
-            <div class="bg-white p-4 rounded-3 shadow-lg h-100 mb-5 mt-4" style="max-width: 600px;">
-              <%= render "layouts/search_bar" %>
-            </div>
+      <div class="container-fluid px-8 d-flex justify-content-end align-items-center">
+        <%= form_with url: search_items_path, method: :get, html: { class: "d-flex", role: "search" }, local: true do %>
+          <div class="input-group">
+            <input type="search" name="q[country_case_insensitive_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont]"
+                  class="form-control small-search-input"
+                  placeholder="Search by Country, State, Province, Scientific or Vernacular Name"
+                  aria-label="Search" />
+            <button class="search-icon-button" type="submit">
+              <i class="bi bi-search"></i>
+            </button>
           </div>
-          
-        </div>
+        <% end %>
       </div>
     </div>
+
     <main class="container">
       <div id="flash">
         <%= render "layouts/flash" %>

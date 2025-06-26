@@ -1,4 +1,4 @@
-<%= search_form_for @q, url: search_items_path, method: :post, html: { class: "m-0" } do |f| %>
+<%= search_form_for @q, url: search_items_path, method: :get, html: { class: "m-0" } do |f| %>
   <div class="text-center mb-3">
     <%= f.label :country_case_insensitive_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont,
                 "What can we help you find?",
