@@ -73,9 +73,11 @@ class ProfilesController < ApplicationController
   end
 
   def show_loan_questions
-    @loan_questions = LoanQuestion.all
-    @loan_answers = current_user.loan_answers.includes(:loan_question)
-    @collections = Collection.joins(:collection_questions).distinct
+    @loan_answers = current_user.loan_answers
+                          .includes(:loan_question)
+                          .joins(:loan_question)
+                          .order("loan_questions.id ASC")
+    
   end
 
   def loan_questions
