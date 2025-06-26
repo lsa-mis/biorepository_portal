@@ -17,7 +17,7 @@
   <%= search_form_for @q1, url: search_collection_path(@collection), turbo: true, data: { turbo_frame: "all_items" }, method: :post, as: :q1 do |f| %>
     <div class="mb-2">
       <%= f.label :country_case_insensitive_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont, "Search Items in Collection" %>
-      <%= f.search_field :country_case_insensitive_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont, placeholder: 'Country, State, Province, or Scientific Name or Vernacular Name', class: "form-control form-control-sm" %>
+      <%= f.search_field :country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont, placeholder: 'Country, State, Province, or Scientific Name or Vernacular Name', class: "form-control form-control-sm" %>
     </div>
     <div>
       <%# = f.label :catalog_number_eq, "Catalog Number" %>
