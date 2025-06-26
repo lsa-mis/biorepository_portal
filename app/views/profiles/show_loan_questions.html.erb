@@ -17,9 +17,6 @@
       <% end %>
     </p>
     <p>
-      <%= answer.answer %> 
+      <%= answer.present? ? answer.answer : "No answer provided" %>
     </p>
   <% end %>
-<% else %>
-  <p>No loan answers provided.</p>
-<% end %>

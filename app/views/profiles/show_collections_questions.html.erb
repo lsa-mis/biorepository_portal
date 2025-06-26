@@ -1,0 +1,25 @@
+<div class="d-flex justify-content-between align-items-center">
+  <h1>Collections Specific Questions and Answers</h1>
+  <%= link_to "Back to Profile", profile_path(current_user), class: "link_to" %>
+</div>
+<% if @collection_answers.present? %>
+  <% @collection_answers.each do |collection, qa_data| %>
+    <div class="d-flex align-items-center gap-3">
+      <h3><%= collection.division %></h3>
+      <%= link_to collection_questions_profile_path(collection), class: 'link_to mb-2' do %>
+          <i class="bi bi-pencil"></i> <span class="fw-light">Edit</span>
+        <% end %>
+    </div>
+    <% qa_data.each do |question, answer| %>
+      <p>
+        <strong><%= question.question %></strong>
+        <% if question.required? %>
+          <span class="text-danger">*</span>
+        <% end %>
+      </p>
+      <p>
+      <%= answer.present? ? answer.answer : "No answer provided" %>
+      </p>
+    <% end %>
+  <% end %>
+<% end %>

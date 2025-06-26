@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     patch :update_loan_questions # profile_update_loan_questions_path
     get "profile_info", to: "profiles#profile_info", as: :profile_info
   end
+  get 'profile/collections_questions/', to: 'profiles#show_collections_questions', as: 'show_collections_questions_profile'
   get 'profile/collection_questions/:id', to: 'profiles#collection_questions', as: 'collection_questions_profile'
   patch 'profile/collection_questions/:id', to: 'profiles#update_collection_questions', as: 'update_collection_questions_profile'
 
