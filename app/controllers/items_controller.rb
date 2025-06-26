@@ -35,9 +35,21 @@ class ItemsController < ApplicationController
       .map { |c| [c.titleize, c.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
-    @states = Item.distinct.pluck(:state_province).compact.reject(&:blank?).map(&:titleize).uniq.sort
-    @sexs = Item.distinct.pluck(:sex).compact.reject(&:blank?).map(&:titleize).uniq.sort
-    @continents = Item.distinct.pluck(:continent).compact.reject(&:blank?).map(&:titleize).uniq.sort
+    @states = Item.distinct.pluck(:state_province)
+      .compact.reject(&:blank?)
+      .map { |s| [s.titleize, s.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+    @sexs = Item.distinct.pluck(:sex)
+      .compact.reject(&:blank?)
+      .map { |s| [s.titleize, s.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+    @continents = Item.distinct.pluck(:continent)
+      .compact.reject(&:blank?)
+      .map { |c| [c.titleize, c.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
     render :search_result
   end
 
