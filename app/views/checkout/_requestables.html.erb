@@ -18,7 +18,7 @@
           <td class="text-start"><%= item.collection.division %></td>
           <td class="text-start"><%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" } %></td>
           <td class="text-start"><%= preparation.display_name %></td>
-          <td>
+          <td class="text-start">
             <%= form_with url: checkout_add_path, 
               data: { controller: "autosubmit",
                 autosubmit_target: "form",
@@ -28,13 +28,13 @@
               <%= form.select :count, options_for_select(0..show_count(requestable.preparation, collection_max_preparations(requestable.preparation.item.collection.id)), requestable.count), { }, { "data-action": "change->autosubmit#submit" } %>
             <% end %>
           </td>
-          <td>
+          <td class="text-start">
             <%= form_with(url: checkout_remove_path) do |form| %>
               <%= form.hidden_field :id, value: requestable.id %>
               <%= form.submit 'X', class: 'btn link_to text-primary p-0 mt-3', style: 'background: #fff; font-size: 1.25rem; line-height: 1;' %>
             <% end %>
           </td>
-          <td>
+          <td class="text-start">
             <%#= form_with(url: "#") do |form| %>
               <%#= form.hidden_field :id, value: requestable.id %>
               <button type="submit" class="btn link_to text-primary p-0 mt-3" style="background: #fff; font-size: 1.25rem; line-height: 1;">
