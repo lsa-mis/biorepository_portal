@@ -12,7 +12,7 @@
 
 <%= render "profiles/user_loan_items" %>
 
-<%= render "layouts/remote_modal", id: "sharedModal", title: "" %>
+<%= render "layouts/remote_modal", id: "sharedModal", title: "", show: false %>
 
 <%= form_with(model: @loan_request, url: send_loan_request_path) do |form| %>
 
