@@ -10,7 +10,7 @@ Rails.application.routes.draw do
     patch :update_loan_questions # profile_update_loan_questions_path
     get "profile_info", to: "profiles#profile_info", as: :profile_info
   end
-  get 'profile/collections_questions/', to: 'profiles#show_collections_questions', as: 'show_collections_questions_profile'
+  get 'profile/collections_questions', to: 'profiles#show_collections_questions', as: 'show_collections_questions_profile'
   get 'profile/collection_questions/:id', to: 'profiles#collection_questions', as: 'collection_questions_profile'
   patch 'profile/collection_questions/:id', to: 'profiles#update_collection_questions', as: 'update_collection_questions_profile'
 
@@ -18,7 +18,7 @@ Rails.application.routes.draw do
 
   get 'app_preference/:name', to: 'app_preferences#delete_preference', as: :delete_preference
   get 'app_preferences/app_prefs', to: 'app_preferences#app_prefs', as: :app_prefs
-  post 'app_preferences/app_prefs/', to: 'app_preferences#save_app_prefs'
+  post 'app_preferences/app_prefs', to: 'app_preferences#save_app_prefs'
   resources :app_preferences
   
   get "requests/information_request", to: "requests#information_request", as: :information_request
