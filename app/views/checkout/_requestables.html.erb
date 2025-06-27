@@ -2,39 +2,44 @@
     <thead class="table-group-divider">
     <tr>
       <th scope="col" class="text-start">Collection</th>
-      <th scope="col" class="text-start">Item</th>
-      <th scope="col" class="text-start">Preparation Type</th>
-      <th scope="col" class="text-start">Amount</th>
-      <th scope="col" class="text-start">Remove</th>
-      <th scope="col" class="text-start">Save for Later</th>
+      <th scope="col">Item</th>
+      <th scope="col">Preparation Type</th>
+      <th scope="col">Amount</th>
+      <th scope="col">Remove</th>
+      <th scope="col">Save for Later</th>
     </tr>
     </thead>
     <tbody class="table-group-divider" id="requestables">
     
-      <% @checkout.requestables.each do |requestable| %>
+      <% @checkout.requestables.order(:id).each do |requestable| %>
         <tr id="<%= dom_id(requestable) %>">
           <% item = requestable.preparation.item %>
           <% preparation = requestable.preparation %>
-          <td class="text-start"><%= item.collection.division %></td>
-          <td class="text-start"><%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" } %></td>
-          <td class="text-start"><%= preparation.display_name %></td>
-          <td class="text-start">
-            <%= form_with url: checkout_add_path, 
+          <td class="text-start align-middle"><%= item.collection.division %></td>
+          <td class="text-start align-middle"><%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" } %></td>
+          <td class="text-start align-middle"><%= preparation.display_name %></td>
+          <td>
+            <%= form_with url: checkout_change_path, 
               data: { controller: "autosubmit",
                 autosubmit_target: "form",
                 turbo_frame: "checkout"
                 } do |form| %>
               <%= form.hidden_field :id, value: preparation.id %>
-              <%= form.select :count, options_for_select(0..show_count(requestable.preparation, collection_max_preparations(requestable.preparation.item.collection.id)), requestable.count), { }, { "data-action": "change->autosubmit#submit" } %>
+              <div class="position-relative" style="display: inline-block;">
+                <%= form.select :count, options_for_select(0..show_count(requestable.preparation, collection_max_preparations(requestable.preparation.item.collection.id)), requestable.count), { }, { class: "form-control pe-4 checkout-select", "data-action": "change->autosubmit#submit" } %>
+                <span class="position-absolute top-50 end-0 translate-middle-y pe-2" style="pointer-events: none;">
+                  <i class="bi bi-caret-down-fill"></i>
+                </span>
+              </div>
             <% end %>
           </td>
-          <td class="text-start">
+          <td>
             <%= form_with(url: checkout_remove_path) do |form| %>
               <%= form.hidden_field :id, value: requestable.id %>
               <%= form.submit 'X', class: 'btn link_to text-primary p-0 mt-3', style: 'background: #fff; font-size: 1.25rem; line-height: 1;' %>
             <% end %>
           </td>
-          <td class="text-start">
+          <td>
             <%#= form_with(url: "#") do |form| %>
               <%#= form.hidden_field :id, value: requestable.id %>
               <button type="submit" class="btn link_to text-primary p-0 mt-3" style="background: #fff; font-size: 1.25rem; line-height: 1;">

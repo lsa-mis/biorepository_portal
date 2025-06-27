@@ -36,6 +36,35 @@ class CheckoutController < ApplicationController
     end
   end
 
+  def change
+    @preparation = Preparation.find(params[:id])
+    count = params[:count].to_i
+    current_requestable = @checkout.requestables.find_by(preparation_id: @preparation.id)
+    if current_requestable 
+      if count > 0
+        current_requestable.update(count: count)
+        notice = "Preparation edited checkout."
+      elsif count <= 0
+        current_requestable.destroy
+        notice = "Preparation removed from checkout."
+      end
+    else
+      notice = "No matching preparation found in checkout."
+    end
+    @max_number_of_preparations = fetch_max_number_of_preparations(@preparation.item.collection.id)
+    respond_to do |format|
+      format.turbo_stream do
+        flash.now[:notice] = notice
+        render turbo_stream: [turbo_stream.replace('checkout',
+                                                   partial: 'checkout/checkout',
+                                                   locals: { checkout: @checkout }),
+                                                   turbo_stream.update('total', partial: 'checkout/total'),
+                              turbo_stream.update('flash', partial: 'layouts/flash')]
+      end
+    end
+
+  end
+
   def remove
     Requestable.find(params[:id])&.destroy
     flash.now[:notice] = "Preparation removed from checkout."
