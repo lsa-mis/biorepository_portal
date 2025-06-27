@@ -1,13 +1,13 @@
-<div id="loan_answer_<%= answer.id %>" class="border rounded p-3 mb-3">
+<div id="loan_answer_<%= question.id %>" class="border rounded p-3 mb-3">
   <p>
-    <strong><%= answer.loan_question.question %></strong>
-    <% if answer.loan_question.required? %>
+    <strong><%= question.question %></strong>
+    <% if question.required? %>
       <span class="text-danger">*</span>
     <% end %>
   </p>
   <p>
-    <% plain_answer = answer.answer.to_plain_text.strip.presence %>
-    <% if answer.loan_question.required? %>
+    <% plain_answer = answer.present? ? answer.answer.to_plain_text.strip.presence : nil %>
+    <% if question.required? %>
       <% if plain_answer %>
         <%= plain_answer %>
       <% else %>
@@ -19,7 +19,7 @@
   </p>
 
   <%= link_to "Edit",
-              edit_loan_answer_path(answer.loan_question, format: :turbo_stream),
+              edit_loan_answer_path(question, format: :turbo_stream),
               data: {
                 turbo_frame: "edit_loan_answer_modal_content_frame",
                 bs_toggle: "modal",
