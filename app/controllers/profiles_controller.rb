@@ -109,9 +109,7 @@ class ProfilesController < ApplicationController
   end
 
   def show_collections_questions
-    @collections = Collection
-                    .where(id: @checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq)
-                    .includes(collection_questions: :collection_answers)
+    @collections = Collection.joins(:collection_questions).distinct
     @collection_answers = {}
     @collections.each do |collection|
       collection_questions = collection.collection_questions
