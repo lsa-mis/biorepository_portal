@@ -12,6 +12,7 @@ class Collections::CollectionQuestionsController < ApplicationController
   def new
     @collection_question = @collection.collection_questions.build
     2.times { @collection_question.collection_options.build }
+    authorize([@collection, @collection_question])
   end
 
   def create
@@ -38,7 +39,7 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def update
-    authorize @collection_question
+    authorize([@collection, @collection_question])
     success = true
     ActiveRecord::Base.transaction do
       begin
@@ -68,7 +69,7 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
   
   def destroy
-    authorize @collection_question
+    authorize([@collection, @collection_question])
     @collection_question.destroy
 
     respond_to do |format|
