@@ -40,12 +40,16 @@ class CheckoutController < ApplicationController
     @preparation = Preparation.find(params[:id])
     count = params[:count].to_i
     current_requestable = @checkout.requestables.find_by(preparation_id: @preparation.id)
-    if count > 0
-      current_requestable.update(count: count)
-      notice = "Preparation edited checkout."
-    elsif count <= 0
-      current_requestable.destroy
-      notice = "Preparation removed from checkout."
+    if current_requestable 
+      if count > 0
+        current_requestable.update(count: count)
+        notice = "Preparation edited checkout."
+      elsif count <= 0
+        current_requestable.destroy
+        notice = "Preparation removed from checkout."
+      end
+    else
+      notice = "No matching preparation found in checkout."
     end
     @max_number_of_preparations = fetch_max_number_of_preparations(@preparation.item.collection.id)
     respond_to do |format|
