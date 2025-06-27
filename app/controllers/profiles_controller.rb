@@ -117,7 +117,7 @@ class ProfilesController < ApplicationController
       # Build a hash: { question1 => answer1, question2 => answer2, ... }
       question_answer_hash = {}
       collection_questions.each do |question|
-        answer = question.collection_answers.find { |a| a.user_id ==current_user.id }
+        answer = question.collection_answers.find_by(user_id: current_user.id)
         question_answer_hash[question] = answer
       end
       @collection_answers[collection] = question_answer_hash
