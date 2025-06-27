@@ -1,4 +1,4 @@
-<%= form_with(model: collection,  data: { turbo: false }) do |form| %>
+<%= form_with(model: collection, data: { turbo: false }) do |form| %>
   <% if collection.errors.any? %>
     <div style="color: red">
       <h2><%= pluralize(collection.errors.count, "error") %> prohibited this collection from being saved:</h2>
