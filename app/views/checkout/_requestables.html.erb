@@ -11,15 +11,15 @@
     </thead>
     <tbody class="table-group-divider" id="requestables">
     
-      <% @checkout.requestables.each do |requestable| %>
+      <% @checkout.requestables.order(:id).each do |requestable| %>
         <tr id="<%= dom_id(requestable) %>">
           <% item = requestable.preparation.item %>
           <% preparation = requestable.preparation %>
-          <td class="text-start"><%= item.collection.division %></td>
-          <td class="text-start"><%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" } %></td>
-          <td class="text-start"><%= preparation.display_name %></td>
+          <td class="text-start align-middle"><%= item.collection.division %></td>
+          <td class="text-start align-middle"><%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" } %></td>
+          <td class="text-start align-middle"><%= preparation.display_name %></td>
           <td>
-            <%= form_with url: checkout_add_path, 
+            <%= form_with url: checkout_change_path, 
               data: { controller: "autosubmit",
                 autosubmit_target: "form",
                 turbo_frame: "checkout"
