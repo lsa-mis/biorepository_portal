@@ -18,7 +18,7 @@
         <% end %>
       </p>
       <p>
-      <%= answer.present? ? answer.answer : "No answer provided" %>
+      <%= answer&.present? ? answer.answer : "No answer provided" %>
       </p>
     <% end %>
   <% end %>

@@ -73,10 +73,12 @@ class ProfilesController < ApplicationController
   end
 
   def show_loan_questions
-    @loan_answers = current_user.loan_answers
-                          .includes(:loan_question)
-                          .joins(:loan_question)
-                          .order("loan_questions.id ASC")
+    loan_questions = LoanQuestion.all
+    @loan_answers = {}
+    loan_questions.each do |question|
+      answer = question.loan_answers.find_by(user_id: current_user.id)
+      @loan_answers[question] = answer
+    end
     
   end
 

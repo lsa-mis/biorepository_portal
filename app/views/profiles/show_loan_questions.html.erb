@@ -6,15 +6,15 @@
   </div>
 </div>
 <% if @loan_answers.present? %>
-  <% @loan_answers.each do |answer| %>
+  <% @loan_answers.each do |question, answer| %>
     <p>
-      <strong><%= answer.loan_question.question %></strong>
-        <% if answer.loan_question.required? %>
+      <strong><%= question.question %></strong>
+        <% if question.required? %>
         <span class="text-danger">*</span>
       <% end %>
     </p>
     <p>
-      <%= answer.present? ? answer.answer : "No answer provided" %>
+      <%= answer&.present? ? answer.answer : "No answer provided" %>
     </p>
   <% end %>
 <% end %>
