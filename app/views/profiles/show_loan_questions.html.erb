@@ -12,9 +12,6 @@
         <% if answer.loan_question.required? %>
         <span class="text-danger">*</span>
       <% end %>
-      <% if answer.loan_question.required? %>
-        <span class="text-danger">*</span>
-      <% end %>
     </p>
     <p>
       <%= answer.present? ? answer.answer : "No answer provided" %>
