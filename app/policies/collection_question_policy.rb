@@ -18,8 +18,6 @@ class CollectionQuestionPolicy < ApplicationPolicy
     return false unless is_admin?
     return false unless @collection_ids.present?
     return false unless @record.present?
-    # return false unless @record.collection.present?
-    # return false unless @record.admin_group.present?
     return false unless @collection_ids.include?(@collection.id)
     true
   end
