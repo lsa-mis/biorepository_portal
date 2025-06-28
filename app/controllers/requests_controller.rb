@@ -48,10 +48,12 @@ class RequestsController < ApplicationController
     @loan_request = LoanRequest.new
     @checkout_items = get_checkout_items
     @user = current_user
-    @loan_answers = @user.loan_answers
-                          .includes(:loan_question)
-                          .joins(:loan_question)
-                          .order("loan_questions.id ASC")
+
+    loan_questions = LoanQuestion.includes(:loan_answers).all
+	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
+	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
+    end
+
     @collections = Collection
                     .where(id: @checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq)
                     .includes(collection_questions: :collection_answers)
@@ -62,7 +64,7 @@ class RequestsController < ApplicationController
       # Build a hash: { question1 => answer1, question2 => answer2, ... }
       question_answer_hash = {}
       collection_questions.each do |question|
-        answer = question.collection_answers.find { |a| a.user_id == @user.id }
+        answer = question.collection_answers.find { |a| a.user_id == current_user.id }
         question_answer_hash[question] = answer
       end
       @collection_answers[collection] = question_answer_hash
