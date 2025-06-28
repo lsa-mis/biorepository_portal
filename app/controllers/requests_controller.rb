@@ -48,16 +48,10 @@ class RequestsController < ApplicationController
     @loan_request = LoanRequest.new
     @checkout_items = get_checkout_items
     @user = current_user
-    # @loan_answers = current_user.loan_answers
-    #                       .includes(:loan_question)
-    #                       .joins(:loan_question)
-    #                       .order("loan_questions.id ASC")
 
-    loan_questions = LoanQuestion.all
-    @loan_answers = {}
-    loan_questions.each do |question|
-      answer = question.loan_answers.find_by(user_id: current_user.id)
-      @loan_answers[question] = answer
+    loan_questions = LoanQuestion.includes(:loan_answers).all
+	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
+	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
     end
 
     @collections = Collection

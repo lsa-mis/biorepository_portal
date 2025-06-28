@@ -73,11 +73,9 @@ class ProfilesController < ApplicationController
   end
 
   def show_loan_questions
-    loan_questions = LoanQuestion.all
-    @loan_answers = {}
-    loan_questions.each do |question|
-      answer = question.loan_answers.find_by(user_id: current_user.id)
-      @loan_answers[question] = answer
+    loan_questions = LoanQuestion.includes(:loan_answers).all
+	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
+	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
     end
     
   end
