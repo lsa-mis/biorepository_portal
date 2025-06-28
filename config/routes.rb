@@ -38,8 +38,7 @@ Rails.application.routes.draw do
   post "checkout/add"
   post "checkout/change"
   post "checkout/remove"
-  resources :identifications
-  resources :preparations
+
   resources :items, only: [ :index, :show ] do
     collection do
       match 'search' => 'items#search', via: [:get, :post]
@@ -70,7 +69,6 @@ Rails.application.routes.draw do
     delete 'sign_out', :to => 'users/sessions#destroy', :as => :destroy_user_session
   end
   
-  get "home/index"
   get "home/about", to: "home#about", as: :about
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -79,7 +77,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Defines the root path route ("/")
-  root "home#index"
+  root "collections#index"
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development? || Rails.env.staging?
 
