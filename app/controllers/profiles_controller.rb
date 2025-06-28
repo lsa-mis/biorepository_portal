@@ -80,7 +80,7 @@ class ProfilesController < ApplicationController
     
   end
 
-  def loan_questions
+  def edit_loan_questions
     @loan_questions = LoanQuestion.all
     @loan_answers = current_user.loan_answers.includes(:loan_question)
     @collections = Collection.joins(:collection_questions).distinct
