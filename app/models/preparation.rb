@@ -17,7 +17,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (item_id => items.id)
+#  fk_rails_...  (item_id => items.id) ON DELETE => cascade
 #
 class Preparation < ApplicationRecord
   belongs_to :item

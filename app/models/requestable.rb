@@ -17,7 +17,7 @@
 # Foreign Keys
 #
 #  fk_rails_...  (checkout_id => checkouts.id)
-#  fk_rails_...  (preparation_id => preparations.id)
+#  fk_rails_...  (preparation_id => preparations.id) ON DELETE => cascade
 #
 class Requestable < ApplicationRecord
   belongs_to :preparation
