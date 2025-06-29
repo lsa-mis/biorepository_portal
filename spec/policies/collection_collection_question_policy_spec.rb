@@ -10,20 +10,20 @@ RSpec.describe Collection::CollectionQuestionPolicy, type: :policy do
       subject { described_class.new({ user: user, role: "developer", params: { "collection_id" => collection.id.to_s } }, [collection, collection_question]) }
 
       it { is_expected.to forbid_actions(%i[]) }
-      it { is_expected.to permit_actions(%i[index show create new update edit destroy]) }
+      it { is_expected.to permit_actions(%i[index show create new update edit destroy preview move_up move_down]) }
     end
 
     context 'super_admin' do
       subject { described_class.new({ user: user, role: "super_admin", params: { "collection_id" => collection.id.to_s } }, [collection, collection_question]) }
 
       it { is_expected.to forbid_actions(%i[]) }
-      it { is_expected.to permit_actions(%i[index show create new update edit destroy]) }
+      it { is_expected.to permit_actions(%i[index show create new update edit destroy preview move_up move_down]) }
     end
 
     context 'admin' do
       subject { described_class.new({ user: user, role: "admin", collection_ids: [collection.id], params: { "collection_id" => collection.id.to_s } }, [collection, collection_question]) }
 
-      it { is_expected.to permit_actions(%i[index show create new update edit destroy]) }
+      it { is_expected.to permit_actions(%i[index show create new update edit destroy preview move_up move_down]) }
       it { is_expected.to forbid_actions(%i[]) }
     end
 
