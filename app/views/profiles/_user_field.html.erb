@@ -10,7 +10,7 @@
     <% if value.present? %>
       <%= value %>
     <% else %>
-      <% if label.strip.downcase == "orcid" %>
+      <% if field_name == "orcid" %>
         <span class="text-muted">No answer provided.</span>
       <% else %>
         <span class="text-danger">Warning: This question is required but not answered.</span>
