@@ -49,7 +49,7 @@ class RequestsController < ApplicationController
     @checkout_items = get_checkout_items
     @user = current_user
 
-    loan_questions = LoanQuestion.includes(:loan_answers).all
+    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
 	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
 	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
     end
@@ -59,7 +59,7 @@ class RequestsController < ApplicationController
                     .includes(collection_questions: :collection_answers)
     @collection_answers = {}
     @collections.each do |collection|
-      collection_questions = collection.collection_questions
+      collection_questions = collection.collection_questions.includes(:collection_answers).order(:position)
       next if collection_questions.empty?
       # Build a hash: { question1 => answer1, question2 => answer2, ... }
       question_answer_hash = {}
