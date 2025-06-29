@@ -86,16 +86,19 @@ class LoanQuestionsController < ApplicationController
   # GET /loan_questions/preview
   def preview
     @loan_questions = LoanQuestion.all
+    authorize @loan_questions
   end
 
   def move_up
     @loan_question = LoanQuestion.find(params[:id])
+    authorize @loan_question
     @loan_question.move_higher
     redirect_to loan_questions_path, notice: "Question moved up."
   end
 
   def move_down
     @loan_question = LoanQuestion.find(params[:id])
+    authorize @loan_question
     @loan_question.move_lower
     redirect_to loan_questions_path, notice: "Question moved down."
   end

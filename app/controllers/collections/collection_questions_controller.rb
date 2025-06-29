@@ -68,16 +68,19 @@ class Collections::CollectionQuestionsController < ApplicationController
 
   def preview
     @collection_questions = @collection.collection_questions.includes(:collection_options)
+    authorize([@collection, @collection_questions])
   end
 
   def move_up
     @collection_question = CollectionQuestion.find(params[:id])
+    authorize([@collection, @collection_question])
     @collection_question.move_higher
     redirect_to collection_collection_questions_path, notice: "Question moved up."
   end
 
   def move_down
     @collection_question = CollectionQuestion.find(params[:id])
+    authorize([@collection, @collection_question])
     @collection_question.move_lower
     redirect_to collection_collection_questions_path, notice: "Question moved down."
   end
