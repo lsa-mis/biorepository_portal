@@ -95,8 +95,8 @@ class RequestsController < ApplicationController
 
     # Check required collection questions
     missing_collection_answers = @collection_answers.flat_map { |_, qa_hash| qa_hash.values }.select do |answer|
-      answer.collection_question.required? && answer.answer.to_plain_text.strip.blank?
-    end.map(&:collection_question)
+      answer&.collection_question&.required? && answer&.answer&.to_plain_text&.strip.blank?
+    end.map { |answer| answer&.collection_question }.compact
 
     # Check required user info fields
     user_missing_fields = []
