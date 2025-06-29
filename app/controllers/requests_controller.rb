@@ -100,18 +100,9 @@ class RequestsController < ApplicationController
     end
 
     # Check required collection questions
-    missing_collection_answers = []
-    @collections.each do |collection|
-      collection.collection_questions.each do |question|
-        next unless question.required?
-
-        answer = question.collection_answers.find { |a| a.user_id == current_user.id }
-        if answer.nil? || answer.answer.to_plain_text.strip.blank?
-          missing_collection_answers << question
-        end
-      end
-    end
-
+    missing_collection_answers = @collection_answers.select do |answer|
+      answer.collection_question.required? && answer.answer.to_plain_text.strip.blank?
+    end.map(&:collection_question)
     if missing_loan_answers.any? || missing_collection_answers.any?
       flash[:alert] = "Please answer all required questions before sending the loan request."
       redirect_to :loan_request and return
