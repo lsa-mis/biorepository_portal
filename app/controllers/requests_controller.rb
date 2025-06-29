@@ -99,13 +99,52 @@ class RequestsController < ApplicationController
                       .joins(:loan_question)
                       .order("loan_questions.id ASC")
 
+    @collections = Collection
+                    .where(id: @checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq)
+                    .includes(collection_questions: :collection_answers)
+    @collection_answers = {}
+    @collections.each do |collection|
+      collection_questions = collection.collection_questions
+      next if collection_questions.empty?
+      # Build a hash: { question1 => answer1, question2 => answer2, ... }
+      question_answer_hash = {}
+      collection_questions.each do |question|
+        answer = question.collection_answers.find { |a| a.user_id == current_user.id }
+        question_answer_hash[question] = answer
+      end
+      @collection_answers[collection] = question_answer_hash
+    end
+
+    # Check required loan questions
+    missing_loan_answers = @loan_answers.select do |a|
+      a.loan_question.required? && a.answer.to_plain_text.strip.blank?
+    end
+
+    # Check required collection questions
+    missing_collection_answers = []
+    @collections.each do |collection|
+      collection.collection_questions.each do |question|
+        next unless question.required?
+
+        answer = question.collection_answers.find { |a| a.user_id == current_user.id }
+        if answer.nil? || answer.answer.to_plain_text.strip.blank?
+          missing_collection_answers << question
+        end
+      end
+    end
+
+    if missing_loan_answers.any? || missing_collection_answers.any?
+      flash[:alert] = "Please answer all required questions before sending the loan request."
+      redirect_to :loan_request and return
+    end
+
     csv_tempfile = Tempfile.new(["loan_request", ".csv"])
     csv_file_path = create_csv_file(csv_tempfile, current_user)
     csv_tempfile.rewind
 
     pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
     File.open(pdf_tempfile, "wb") do |file|
-      file.write(PdfGenerator.new(@loan_answers, @checkout_items).generate_pdf_content)
+      file.write(PdfGenerator.new(@loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
     end
     pdf_tempfile.rewind
 

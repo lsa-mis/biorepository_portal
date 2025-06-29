@@ -2,9 +2,10 @@ class PdfGenerator
   require 'prawn'
   include ActionView::Helpers::SanitizeHelper 
 
-  def initialize(loan_answers, checkout_items)
+  def initialize(loan_answers, checkout_items, collection_answers = {})
     @loan_answers = loan_answers
     @checkout_items = checkout_items
+    @collection_answers = collection_answers
   end
 
   # def self.generate_pdf(content)
@@ -26,11 +27,26 @@ class PdfGenerator
       pdf.font('Montserrat') # Use the registered font
       pdf.text "#{@loan_answers.first.user.email} - #{Date.today}", size: 24, align: :center
       pdf.move_down 10
+
+      pdf.text "Generic Loan Questions", size: 14, style: :bold
+      pdf.move_down 5
       @loan_answers.each_with_index do |answer, index|
         pdf.text "#{answer.loan_question.question}", size: 12, style: :medium
         pdf.text "#{strip_tags(answer.answer.to_s)}", size: 12
 
         pdf.move_down 5
+      end
+
+      @collection_answers.each do |collection, qa_hash|
+        pdf.move_down 10
+        pdf.text "Collection: #{collection.division}", size: 14, style: :bold
+        pdf.move_down 5
+
+        qa_hash.each do |question, answer|
+          pdf.text "#{question.question}", size: 12, style: :medium
+          pdf.text "#{strip_tags(answer&.answer.to_s)}", size: 12
+          pdf.move_down 5
+        end
       end
 
       # Add checkout items table if present
