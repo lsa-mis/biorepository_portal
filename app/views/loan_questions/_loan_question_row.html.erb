@@ -1,4 +1,11 @@
 <tr id="<%= dom_id(loan_question) %>">
+  <td colspan="2">
+    <%= button_to "Up", move_up_loan_question_path(loan_question), method: :patch, class: "btn btn-sm btn-outline-secondary me-1" %>
+  </td>
+  <td>
+    <%= button_to "Down", move_down_loan_question_path(loan_question), method: :patch, class: "btn btn-sm btn-outline-secondary" %>
+  </td>
+  <td class="text-start"><%= loan_question.position %></td>
   <td class="text-start"><%= loan_question.question %></td>
   <td class="text-start"><%= loan_question.question_type %></td>
   <td class="text-start"><%= show_boolean(loan_question.required) %></td>
