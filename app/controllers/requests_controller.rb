@@ -57,18 +57,8 @@ class RequestsController < ApplicationController
     @collections = Collection
                     .where(id: @checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq)
                     .includes(collection_questions: :collection_answers)
-    @collection_answers = {}
-    @collections.each do |collection|
-      collection_questions = collection.collection_questions
-      next if collection_questions.empty?
-      # Build a hash: { question1 => answer1, question2 => answer2, ... }
-      question_answer_hash = {}
-      collection_questions.each do |question|
-        answer = question.collection_answers.find { |a| a.user_id == current_user.id }
-        question_answer_hash[question] = answer
-      end
-      @collection_answers[collection] = question_answer_hash
-    end
+    @collection_answers = build_collection_answers(@collections, current_user)
+    
   end
 
   def send_loan_request
@@ -102,18 +92,7 @@ class RequestsController < ApplicationController
     @collections = Collection
                     .where(id: @checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq)
                     .includes(collection_questions: :collection_answers)
-    @collection_answers = {}
-    @collections.each do |collection|
-      collection_questions = collection.collection_questions
-      next if collection_questions.empty?
-      # Build a hash: { question1 => answer1, question2 => answer2, ... }
-      question_answer_hash = {}
-      collection_questions.each do |question|
-        answer = question.collection_answers.find { |a| a.user_id == current_user.id }
-        question_answer_hash[question] = answer
-      end
-      @collection_answers[collection] = question_answer_hash
-    end
+    @collection_answers = build_collection_answers(@collections, current_user)
 
     # Check required loan questions
     missing_loan_answers = @loan_answers.select do |a|
@@ -222,4 +201,24 @@ class RequestsController < ApplicationController
 
       filename.to_s
     end
+
+    def build_collection_answers(collections, user)
+      collection_answers = {}
+
+      collections.each do |collection|
+        collection_questions = collection.collection_questions
+        next if collection_questions.empty?
+
+        question_answer_hash = {}
+        collection_questions.each do |question|
+          answer = question.collection_answers.find { |a| a.user_id == user.id }
+          question_answer_hash[question] = answer
+        end
+
+        collection_answers[collection] = question_answer_hash
+      end
+
+      collection_answers
+    end
+
 end
