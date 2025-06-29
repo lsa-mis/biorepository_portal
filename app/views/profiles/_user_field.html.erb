@@ -1,7 +1,7 @@
 <div id="user_field_<%= field_name %>" class="border rounded p-3 mb-3">
   <p>
     <strong><%= label %></strong>
-    <% unless label.strip.downcase == "orcid" %>
+    <% unless field_name == "orcid" %>
       <span class="text-danger">*</span>
     <% end %>
   </p>
