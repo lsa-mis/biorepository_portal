@@ -121,7 +121,6 @@ class Collections::CollectionQuestionsController < ApplicationController
       :question,
       :question_type,
       :required,
-      collection_options_attributes: [:id, :value, :_destroy]
-    )
+      :position)
   end
 end
