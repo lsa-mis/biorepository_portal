@@ -1,14 +1,20 @@
 <div id="user_field_<%= field_name %>" class="border rounded p-3 mb-3">
   <p>
     <strong><%= label %></strong>
-    <span class="text-danger">*</span>
+    <% unless label.strip.downcase == "orcid" %>
+      <span class="text-danger">*</span>
+    <% end %>
   </p>
 
   <p>
     <% if value.present? %>
       <%= value %>
     <% else %>
-      <span class="text-danger">Warning: This question is required but not answered.</span>
+      <% if label.strip.downcase == "orcid" %>
+        <span class="text-muted">No answer provided.</span>
+      <% else %>
+        <span class="text-danger">Warning: This question is required but not answered.</span>
+      <% end %>
     <% end %>
   </p>
 
