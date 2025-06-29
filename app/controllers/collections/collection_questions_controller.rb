@@ -4,6 +4,8 @@ class Collections::CollectionQuestionsController < ApplicationController
   before_action :set_question_types, only: %i[ new edit create update ]
 
   def index
+    @collection_questions = @collection.collection_questions.order(:position)
+    authorize([@collection, @collection_questions])
   end
 
   def show
@@ -66,6 +68,18 @@ class Collections::CollectionQuestionsController < ApplicationController
 
   def preview
     @collection_questions = @collection.collection_questions.includes(:collection_options)
+  end
+
+  def move_up
+    @collection_question = CollectionQuestion.find(params[:id])
+    @collection_question.move_higher
+    redirect_to collection_collection_questions_path, notice: "Question moved up."
+  end
+
+  def move_down
+    @collection_question = CollectionQuestion.find(params[:id])
+    @collection_question.move_lower
+    redirect_to collection_collection_questions_path, notice: "Question moved down."
   end
   
   def destroy

@@ -63,6 +63,10 @@ Rails.application.routes.draw do
       collection do
         get :preview
       end
+      member do
+        patch :move_up
+        patch :move_down
+      end
     end
     resources :collection_answers, module: :collections, only: [:edit, :update]
 

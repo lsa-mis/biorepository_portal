@@ -1,4 +1,9 @@
 <tr id="<%= dom_id(collection_question) %>">
+  <td class="d-flex gap-1 justify-content-start align-items-center">
+    <%= button_to "Up", move_up_collection_collection_question_path(@collection, collection_question), method: :patch, class: "btn btn-sm btn-outline-secondary me-1" %>
+    <%= button_to "Down", move_down_collection_collection_question_path(@collection, collection_question), method: :patch, class: "btn btn-sm btn-outline-secondary" %>
+  </td>
+  <td class="text-start"><%= collection_question.position %></td>
   <td class="text-start"><%= collection_question.question %></td>
   <td class="text-start"><%= collection_question.question_type %></td>
   <td class="text-start"><%= show_boolean(collection_question.required) %></td>
