@@ -85,7 +85,7 @@ class LoanQuestionsController < ApplicationController
 
   # GET /loan_questions/preview
   def preview
-    @loan_questions = LoanQuestion.all
+    @loan_questions = LoanQuestion.all.order(:position)
     authorize @loan_questions
   end
 

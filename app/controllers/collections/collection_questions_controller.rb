@@ -67,7 +67,7 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def preview
-    @collection_questions = @collection.collection_questions.includes(:collection_options)
+    @collection_questions = @collection.collection_questions.includes(:collection_options).order(:position)
     authorize([@collection, @collection_questions])
   end
 
