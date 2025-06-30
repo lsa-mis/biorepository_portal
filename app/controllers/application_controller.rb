@@ -21,6 +21,14 @@ class ApplicationController < ActionController::Base
     redirect_to(root_path)
   end
 
+  def after_sign_in_path_for(resource)
+    if $baseURL.present?
+      $baseURL
+    else
+      root_path
+    end
+  end
+
   def set_render_checkout
     @render_checkout = true
   end
