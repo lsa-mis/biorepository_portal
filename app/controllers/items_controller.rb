@@ -18,8 +18,9 @@ class ItemsController < ApplicationController
   def search
     if params[:q] && params[:q][:dynamic_fields]
       params[:q][:dynamic_fields].each do |field_hash|
-        field = field_hash[:field]
-        value = field_hash[:value]
+        next if field_hash.blank? || !field_hash.is_a?(Hash)
+        field = field_hash["field"]
+        value = field_hash["value"]
         next if field.blank? || value.blank?
 
         params[:q][field] = value

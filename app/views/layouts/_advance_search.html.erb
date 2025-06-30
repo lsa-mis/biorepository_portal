@@ -1,5 +1,9 @@
-<h3>Advanced Search</h3>
-<%= search_form_for @q, url: search_items_path, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form", turbo_frame: "items_result_list" } do |f| %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Advanced Search</h3>
+  <button type="button" class="btn btn-outline-secondary ms-2" onclick="document.getElementById('search-form').reset()">Clear Filters</button>
+</div>
+
+<%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form", turbo_frame: "items_result_list" } do |f| %>
   <div class="m-2">
 
     <!-- Strings - use _i_cont (contains) or _eq (exact match) -->
@@ -24,9 +28,9 @@
             <% if params.dig(:q, :dynamic_fields).present? %>
               <% @field_index = -1 %>
               <% @group_index = 0 %>
-              <% params[:q][:dynamic_fields].each do |row| %>
+              <% params[:q][:dynamic_fields].values.each do |row| %>
                 <% @field_index += 1 %>
-                <%= render partial: "layouts/search_field", locals: { selected_field: row[:field], entered_value: row[:value], field_index: @field_index, group_index: @group_index } %>
+                <%= render partial: "layouts/search_field", locals: { selected_field: row["field"], entered_value: row["value"], field_index: @field_index, group_index: @group_index } %>
               <% end %>
             <% else %>
               <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil, field_index: 0, group_index: 0 } %>
@@ -213,4 +217,5 @@
     });
   }
 </script>
+
 
