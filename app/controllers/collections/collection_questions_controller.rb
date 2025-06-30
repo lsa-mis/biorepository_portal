@@ -90,6 +90,7 @@ class Collections::CollectionQuestionsController < ApplicationController
     @collection_question.destroy
 
     respond_to do |format|
+      @collection_questions = @collection.collection_questions.order(:position)
       format.turbo_stream
       format.html { redirect_to collection_path(@collection), notice: "Collection question deleted." }
     end
