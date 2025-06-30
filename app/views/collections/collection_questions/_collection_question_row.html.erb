@@ -1,12 +1,14 @@
 <tr id="<%= dom_id(collection_question) %>">
-  <td class="d-flex gap-1 justify-content-start align-items-center">
-    <%= button_to "Up", move_up_collection_collection_question_path(@collection, collection_question), method: :patch, class: "btn btn-sm btn-outline-secondary me-1" %>
-    <%= button_to "Down", move_down_collection_collection_question_path(@collection, collection_question), method: :patch, class: "btn btn-sm btn-outline-secondary" %>
+  <td class="text-start align-middle">
+    <div class="d-flex gap-1 justify-content-start align-items-center">
+      <%= button_to "Up", move_up_collection_collection_question_path(@collection, collection_question), method: :patch, class: "btn btn-sm btn-outline-secondary me-1" %>
+      <%= button_to "Down", move_down_collection_collection_question_path(@collection, collection_question), method: :patch, class: "btn btn-sm btn-outline-secondary" %>
+    </div>
   </td>
-  <td class="text-start"><%= collection_question.position %></td>
-  <td class="text-start"><%= collection_question.question %></td>
-  <td class="text-start"><%= collection_question.question_type %></td>
-  <td class="text-start"><%= show_boolean(collection_question.required) %></td>
+  <td class="text-start align-middle"><%= collection_question.position %></td>
+  <td class="text-start align-middle"><%= collection_question.question %></td>
+  <td class="text-start align-middle"><%= collection_question.question_type %></td>
+  <td class="text-start align-middle"><%= show_boolean(collection_question.required) %></td>
   <td>
     <%= link_to collection_collection_question_path(@collection, collection_question), 'aria-label': "view_#{collection_question.id}", data: { turbo_frame: "_top" } do %>
       <i class="bi bi-eye-fill text-primary"></i>
