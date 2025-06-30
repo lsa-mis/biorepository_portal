@@ -1,0 +1,10 @@
+<% if @active_filters.present? %>
+  <div class="mb-3">
+    <h5 class="fw-bold">Active Filters:</h5>
+    <ul class="list-inline">
+      <% @active_filters.each do |filter| %>
+        <li class="list-inline-item badge bg-primary text-white p-2 m-1"><%= filter %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
