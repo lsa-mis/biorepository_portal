@@ -3,6 +3,7 @@
 # Table name: collection_questions
 #
 #  id            :bigint           not null, primary key
+#  position      :integer
 #  question      :string           not null
 #  question_type :integer
 #  required      :boolean          default(FALSE)
@@ -13,6 +14,7 @@
 # Indexes
 #
 #  index_collection_questions_on_collection_id  (collection_id)
+#  index_collection_questions_on_position       (position)
 #
 # Foreign Keys
 #

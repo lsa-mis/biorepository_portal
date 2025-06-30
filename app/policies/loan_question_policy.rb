@@ -30,6 +30,18 @@ class LoanQuestionPolicy < ApplicationPolicy
     is_super_admin?
   end
 
+  def preview?
+    is_admin?
+  end
+
+  def move_up?
+    is_super_admin?
+  end
+
+  def move_down?
+    is_super_admin?
+  end
+
   private
   
 end

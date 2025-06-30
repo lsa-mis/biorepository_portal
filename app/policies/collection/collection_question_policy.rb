@@ -36,6 +36,18 @@ class Collection::CollectionQuestionPolicy < ApplicationPolicy
     is_collection_admin? || is_super_admin?
   end
 
+  def preview?
+    is_collection_admin? || is_super_admin?
+  end
+
+  def move_up?
+    is_collection_admin? || is_super_admin?
+  end
+
+  def move_down?
+    is_collection_admin? || is_super_admin?
+  end
+
   private
 
   def is_collection_admin?

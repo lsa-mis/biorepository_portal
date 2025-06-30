@@ -4,7 +4,7 @@ class LoanQuestionsController < ApplicationController
 
   # GET /loan_questions or /loan_questions.json
   def index
-    @loan_questions = LoanQuestion.all
+    @loan_questions = LoanQuestion.order(:position)
     authorize @loan_questions
     @new_loan_question = LoanQuestion.new
   end
@@ -85,7 +85,22 @@ class LoanQuestionsController < ApplicationController
 
   # GET /loan_questions/preview
   def preview
-    @loan_questions = LoanQuestion.all
+    @loan_questions = LoanQuestion.all.order(:position)
+    authorize @loan_questions
+  end
+
+  def move_up
+    @loan_question = LoanQuestion.find(params[:id])
+    authorize @loan_question
+    @loan_question.move_higher
+    redirect_to loan_questions_path, notice: "Question moved up."
+  end
+
+  def move_down
+    @loan_question = LoanQuestion.find(params[:id])
+    authorize @loan_question
+    @loan_question.move_lower
+    redirect_to loan_questions_path, notice: "Question moved down."
   end
 
   private
@@ -111,7 +126,7 @@ class LoanQuestionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def loan_question_params
-      params.expect(loan_question: [ :question, :question_type, :required, options: [ :value ] ])
+      params.require(:loan_question).permit(:position, :question, :question_type, :required, :options_attributes => [:id, :value])
     end
 end
 

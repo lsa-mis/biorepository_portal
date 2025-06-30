@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_15_071643) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_29_155605) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -92,7 +92,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_15_071643) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "question_type"
+    t.integer "position"
     t.index ["collection_id"], name: "index_collection_questions_on_collection_id"
+    t.index ["position"], name: "index_collection_questions_on_position"
   end
 
   create_table "collections", force: :cascade do |t|
@@ -201,6 +203,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_15_071643) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "required", default: false, null: false
+    t.integer "position"
+    t.index ["position"], name: "index_loan_questions_on_position"
   end
 
   create_table "loan_requests", force: :cascade do |t|
@@ -226,7 +230,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_15_071643) do
     t.datetime "updated_at", null: false
     t.string "value"
     t.bigint "loan_question_id", null: false
-    t.integer "position"
     t.index ["loan_question_id"], name: "index_options_on_loan_question_id"
   end
 
@@ -284,14 +287,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_15_071643) do
   add_foreign_key "collection_answers", "users"
   add_foreign_key "collection_options", "collection_questions"
   add_foreign_key "collection_questions", "collections"
-  add_foreign_key "identifications", "items"
+  add_foreign_key "identifications", "items", on_delete: :cascade
   add_foreign_key "information_requests", "users"
   add_foreign_key "items", "collections"
   add_foreign_key "loan_answers", "loan_questions"
   add_foreign_key "loan_answers", "users"
   add_foreign_key "loan_requests", "users"
   add_foreign_key "options", "loan_questions"
-  add_foreign_key "preparations", "items"
+  add_foreign_key "preparations", "items", on_delete: :cascade
   add_foreign_key "requestables", "checkouts"
-  add_foreign_key "requestables", "preparations"
+  add_foreign_key "requestables", "preparations", on_delete: :cascade
 end

@@ -38,4 +38,10 @@ class LoanAnswersController < ApplicationController
       end
     end
   end
+
+  private
+
+  def loan_answer_params
+    params.require(:loan_answer).permit(:answer, :loan_question_id, :user_id)
+  end
 end

@@ -33,7 +33,12 @@ Rails.application.routes.draw do
   patch "profile/update_field/:field", to: "profiles#update_field", as: :update_user_field
 
   get "loan_questions/preview", to: "loan_questions#preview", as: :preview_loan_questions
-  resources :loan_questions
+  resources :loan_questions do
+    member do
+      patch :move_up
+      patch :move_down
+    end
+  end
   get "checkout", to: "checkout#show"
   post "checkout/add"
   post "checkout/change"
@@ -57,6 +62,10 @@ Rails.application.routes.draw do
     resources :collection_questions, module: :collections do
       collection do
         get :preview
+      end
+      member do
+        patch :move_up
+        patch :move_down
       end
     end
     resources :collection_answers, module: :collections, only: [:edit, :update]

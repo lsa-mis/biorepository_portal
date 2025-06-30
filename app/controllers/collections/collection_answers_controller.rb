@@ -44,4 +44,8 @@ class Collections::CollectionAnswersController < ApplicationController
   def set_collection
     @collection = Collection.find(params[:collection_id])
   end
+
+  def collection_answer_params
+    params.require(:collection_answer).permit(:answer, :collection_question_id, :user_id)
+  end
 end

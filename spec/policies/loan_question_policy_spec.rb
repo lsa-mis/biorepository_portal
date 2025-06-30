@@ -9,21 +9,21 @@ RSpec.describe LoanQuestionPolicy, type: :policy do
       subject { described_class.new({ user: user, role: "developer" }, loan_question) }
 
       it { is_expected.to forbid_actions(%i[]) }
-      it { is_expected.to permit_actions(%i[index show create new update edit destroy]) }
+      it { is_expected.to permit_actions(%i[index show create new update edit destroy preview move_up move_down]) }
     end
 
     context 'super_admin' do
       subject { described_class.new({ user: user, role: "super_admin" }, loan_question) }
 
       it { is_expected.to forbid_actions(%i[]) }
-      it { is_expected.to permit_actions(%i[index show create new update edit destroy]) }
+      it { is_expected.to permit_actions(%i[index show create new update edit destroy preview move_up move_down]) }
     end
 
     context 'admin' do
       subject { described_class.new({ user: user, role: "admin" }, loan_question) }
 
-      it { is_expected.to permit_actions(%i[index show]) }
-      it { is_expected.to forbid_actions(%i[create new update edit destroy]) }
+      it { is_expected.to permit_actions(%i[index show preview]) }
+      it { is_expected.to forbid_actions(%i[create new update edit destroy move_up move_down]) }
     end
 
     context 'user' do

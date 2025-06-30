@@ -4,6 +4,8 @@ class Collections::CollectionQuestionsController < ApplicationController
   before_action :set_question_types, only: %i[ new edit create update ]
 
   def index
+    @collection_questions = @collection.collection_questions.order(:position)
+    authorize([@collection, @collection_questions])
   end
 
   def show
@@ -65,7 +67,22 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def preview
-    @collection_questions = @collection.collection_questions.includes(:collection_options)
+    @collection_questions = @collection.collection_questions.includes(:collection_options).order(:position)
+    authorize([@collection, @collection_questions])
+  end
+
+  def move_up
+    @collection_question = CollectionQuestion.find(params[:id])
+    authorize([@collection, @collection_question])
+    @collection_question.move_higher
+    redirect_to collection_collection_questions_path, notice: "Question moved up."
+  end
+
+  def move_down
+    @collection_question = CollectionQuestion.find(params[:id])
+    authorize([@collection, @collection_question])
+    @collection_question.move_lower
+    redirect_to collection_collection_questions_path, notice: "Question moved down."
   end
   
   def destroy
@@ -100,11 +117,7 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def collection_question_params
-    params.require(:collection_question).permit(
-      :question,
-      :question_type,
-      :required,
-      collection_options_attributes: [:id, :value, :_destroy]
-    )
+    params.require(:collection_question).permit(:question, :question_type, :required, :position, :collection_id,
+      collection_options_attributes: [:id, :value])
   end
 end
