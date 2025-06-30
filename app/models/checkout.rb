@@ -7,7 +7,7 @@
 #  updated_at :datetime         not null
 #
 class Checkout < ApplicationRecord
-  has_many :requestables
+  has_many :requestables, dependent: :destroy
   has_many :preparations, through: :requestables
 
 end

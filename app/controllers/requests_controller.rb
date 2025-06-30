@@ -138,7 +138,17 @@ class RequestsController < ApplicationController
       pdf_file: pdf_tempfile
     ).deliver_now
 
-    # Clean up if you want
+    RequestMailer.user_confirmation_email(
+      current_user,
+      @loan_request,
+      csv_file: csv_file_path,
+      pdf_file: pdf_tempfile
+    ).deliver_now
+
+    # Clean up checkout items
+    @checkout.requestables.destroy_all
+
+    # Clean up temp files
     File.delete(csv_tempfile) if File.exist?(csv_tempfile)
     File.delete(pdf_tempfile) if File.exist?(pdf_tempfile)
     redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."

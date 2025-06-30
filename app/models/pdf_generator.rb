@@ -17,58 +17,75 @@ class PdfGenerator
 
   def generate_pdf_content
     Prawn::Document.new do |pdf|
-      # Register the external font
+      # Register custom font
       pdf.font_families.update('Montserrat' => {
         light: Rails.root.join('app/assets/stylesheets/Montserrat-Light.ttf'),
         normal: Rails.root.join('app/assets/stylesheets/Montserrat-Regular.ttf'),
         medium: Rails.root.join('app/assets/stylesheets/Montserrat-Medium.ttf'),
-        bold: Rails.root.join('app/assets/stylesheets/Montserrat-Black.ttf'),
+        bold: Rails.root.join('app/assets/stylesheets/Montserrat-Black.ttf')
       })
-      pdf.font('Montserrat') # Use the registered font
-      pdf.text "#{@loan_answers.first.user.email} - #{Date.today}", size: 24, align: :center
+      pdf.font('Montserrat')
+
+      # Title
+      pdf.text "#{@loan_answers.first&.user&.first_name} #{@loan_answers.first&.user&.last_name} - #{Date.today.strftime("%B %d, %Y")}",
+              size: 20, style: :bold, align: :center
+      pdf.move_down 20
+
+      # Section: Generic Loan Questions
+      pdf.text "Generic Loan Questions", size: 16, style: :bold
+      pdf.stroke_horizontal_rule
       pdf.move_down 10
 
-      pdf.text "Generic Loan Questions", size: 14, style: :bold
-      pdf.move_down 5
       @loan_answers.each_with_index do |answer, index|
-        pdf.text "#{answer.loan_question.question}", size: 12, style: :medium
-        pdf.text "#{strip_tags(answer.answer.to_s)}", size: 12
-
-        pdf.move_down 5
+        pdf.text "#{index + 1}. #{answer.loan_question.question}", size: 12, style: :medium
+        pdf.text "#{strip_tags(answer.answer.to_s.presence || '—')}", size: 11
+        pdf.move_down 8
       end
 
+      # Section: Collection-specific Questions
       @collection_answers.each do |collection, qa_hash|
+        pdf.start_new_page
+        pdf.text "Collection: #{collection.division}", size: 16, style: :bold
+        pdf.stroke_horizontal_rule
         pdf.move_down 10
-        pdf.text "Collection: #{collection.division}", size: 14, style: :bold
-        pdf.move_down 5
 
-        qa_hash.each do |question, answer|
-          pdf.text "#{question.question}", size: 12, style: :medium
-          pdf.text "#{strip_tags(answer&.answer.to_s)}", size: 12
-          pdf.move_down 5
+        qa_hash.each_with_index do |(question, answer), i|
+          pdf.text "#{i + 1}. #{question.question}", size: 12, style: :medium
+          pdf.text "#{strip_tags(answer&.answer.to_s.presence || '—')}", size: 11
+          pdf.move_down 8
         end
       end
 
-      # Add checkout items table if present
+      # Section: Checkout Items
       if @checkout_items.present?
         pdf.start_new_page
         pdf.text "Checkout Items", size: 16, style: :bold
-        # Parse @checkout_items string into rows
+        pdf.stroke_horizontal_rule
+        pdf.move_down 10
+
         items = @checkout_items.split(/\.(\s+|$)/).map(&:strip).reject(&:blank?)
         table_data = [["Collection", "Occurrence ID", "Preparation", "Barcode", "Description", "Count"]]
+
         items.each do |item_str|
-          # Example: "Division, occurrenceID: 123; preparation: X barcode: 456, description: foo, count: 2"
-          collection = item_str[/^([^,]+)/, 1]&.strip
-          occurrence_id = item_str[/occurrenceID:\s*([^;]+)/, 1]&.strip
-          preparation = item_str[/preparation:\s*([^,;]+)/, 1]&.strip
-          barcode = item_str[/barcode:\s*([^,;]+)/, 1]&.strip
-          description = item_str[/description:\s*([^,;]+)/, 1]&.strip
-          count = item_str[/count:\s*([^,;]+)/, 1]&.strip
+          collection   = item_str[/^([^,]+)/, 1]&.strip || "—"
+          occurrence_id = item_str[/occurrenceID:\s*([^;]+)/, 1]&.strip || "—"
+          preparation  = item_str[/preparation:\s*([^,;]+)/, 1]&.strip || "—"
+          barcode      = item_str[/barcode:\s*([^,;]+)/, 1]&.strip || "—"
+          description  = item_str[/description:\s*([^,;]+)/, 1]&.strip || "—"
+          count        = item_str[/count:\s*([^,;]+)/, 1]&.strip || "—"
+
           table_data << [collection, occurrence_id, preparation, barcode, description, count]
         end
-        pdf.table(table_data, header: true, width: pdf.bounds.width, cell_style: { size: 10 })
-      end
 
+        pdf.table(table_data,
+          header: true,
+          width: pdf.bounds.width,
+          cell_style: { size: 9, padding: 6 }) do
+            row(0).font_style = :bold
+            row(0).background_color = 'eeeeee'
+          end
+      end
     end.render
   end
+
 end

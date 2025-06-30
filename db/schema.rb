@@ -230,6 +230,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_29_155605) do
     t.datetime "updated_at", null: false
     t.string "value"
     t.bigint "loan_question_id", null: false
+    t.integer "position"
     t.index ["loan_question_id"], name: "index_options_on_loan_question_id"
   end
 
