@@ -3,46 +3,74 @@
 <%= form_with(model: @information_request, url: send_information_request_path,
         data: { controller: "checkbox-group-required",
           target: "form",
-          action: "submit->checkbox-group-required#submitForm"
+          action: "submit->checkbox-group-required#validateAndSubmit"
         } ) do |form| %>
   <% if @information_request.errors.any? %>
     <div class="text-danger">
-    <h2><%= pluralize(@information_request.errors.count, "error") %></h2>
-    <ul>
-      <% @information_request.errors.each do |error| %>
-        <li><%= error.full_message %></li>
-      <% end %>
-    </ul>
+      <h2><%= pluralize(@information_request.errors.count, "error") %></h2>
+      <ul>
+        <% @information_request.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
     </div>
   <% end %>
-  <div>
-    <fieldset>
-      <legend class="fs-5">Select Email Addresses you want to send the request to *</legend>
-      
-      <!-- Popover Help Button -->
-      <span class="d-inline-block ms-2" tabindex="0" 
-            data-bs-toggle="popover" 
-            data-bs-trigger="hover focus" 
-            data-bs-html="true"
-            data-bs-title="Email Selection Help"
-            data-bs-content="Select at least one email address to send your request to">
-        <button class="btn btn-sm btn-outline-secondary" type="button">
-          <i class="bi bi-question-circle"></i> Help
-        </button>
-      </span>
-      
-      <% @send_to.each do |collection, email| %>
-        <div class="ms-3 mt-2">
-          <%= check_box_tag 'information_request[send_to][]', email, @information_request.send_to&.include?(email), 
-                id: "send_to_#{collection.parameterize.underscore}", 
-                class: "form-check-input",
-                "data-checkbox-group-required-target": "checkboxes",
-                "data-action": "change->checkbox-group-required#validateCheckboxes" %>
-          <%= label_tag "send_to_#{collection.parameterize.underscore}", collection, class: "form-check-label ms-2" %>
-        </div>
+  
+  <div class="mb-4">
+    
+    <!-- Hidden form fields for selected emails -->
+    <div id="hidden-email-fields" data-checkbox-group-required-target="hiddenContainer">
+      <% if @information_request.send_to.present? %>
+        <% @information_request.send_to.each do |email| %>
+          <%= hidden_field_tag "information_request[send_to][]", email, 
+                class: "hidden-email-field",
+                "data-checkbox-group-required-target": "hiddenField" %>
+        <% end %>
       <% end %>
-    </fieldset>
+    </div>
+    
+    <!-- Popover Trigger Button -->
+    <button type="button" 
+            class="btn btn-outline-primary dropdown-toggle" 
+            id="emailPopoverTrigger"
+            data-bs-toggle="popover" 
+            data-bs-html="true"
+            data-bs-trigger="click"
+            data-bs-placement="right"
+            data-bs-title="Select Email Addresses"
+            data-bs-content='
+              <div class="d-flex flex-column gap-2 p-2" onclick="event.stopPropagation();">
+                <% @send_to.each do |collection, email| %>
+                  <div class="form-check form-switch">
+                    <input type="checkbox" 
+                           value="<%= email %>" 
+                           id="popover_send_to_<%= collection.parameterize.underscore %>" 
+                           class="form-check-input email-checkbox-popover"
+                           <%= "checked" if @information_request.send_to&.include?(email) %> />
+                    <label class="form-check-label" for="popover_send_to_<%= collection.parameterize.underscore %>">
+                      <%= collection %>
+                    </label>
+                  </div>
+                <% end %>
+                <button type="button" class="btn btn-sm btn-primary mt-2" onclick="hideEmailPopover()">
+                  Done
+                </button>
+              </div>'>
+      Select Collection Teams to Send Request
+    </button>
+    
+    <!-- Selected emails preview -->
+    <div class="mt-2" id="selected-emails-preview">
+      <% if @information_request.send_to.present? %>
+        <% @information_request.send_to.each do |email| %>
+          <span class="badge bg-primary me-1 mb-1"><%= email %></span>
+        <% end %>
+      <% else %>
+        <span class="text-muted">No emails selected</span>
+      <% end %>
+    </div>
   </div>
+  
   <div class="text-danger mb-3" id="checkbox_error" data-checkbox-group-required-target="error"></div>
 
   <div class="mt-3">
@@ -51,24 +79,156 @@
   </div>
   
   <div class="mt-3 p-4 rounded-4 shadow"
-      style="background: rgba(181, 216, 240, 0.2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+      style="background: rgba(0, 0, 0, 0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
     <%= form.label :question, "Email Message*", class: "form-label fw-semibold mb-2" %>
     <%= form.rich_text_area :question, required: true, class: "form-control bg-transparent border-0 text-dark" %>
   </div>
 
   <div class="mt-4 gap-2 d-flex flex-row justify-content-start align-items-center">
-    <%= form.submit 'Submit', class: "btn btn-primary", data: { action: "click->checkbox-group-required#validateBeforeSubmit" } %>
+    <%= form.submit 'Submit', class: "btn btn-primary" %>
     <%= link_to "Cancel", :back, class: "btn btn-outline-secondary" %>
   </div>
 <% end %>
 
+<style>
+  .popover {
+    max-width: 100%;
+  }
+  .popover-body {
+    padding: 1rem;
+  }
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Initialize popovers
-  document.addEventListener("DOMContentLoaded", function() {
-    const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-    popoverTriggerList.map(function(el) {
-      return new bootstrap.Popover(el);
+  // Create a function to initialize all popover-related functionality
+  function initializePopover() {
+    const popoverTrigger = document.getElementById('emailPopoverTrigger');
+    
+    // Only proceed if the trigger element exists
+    if (!popoverTrigger) return;
+
+    // Check if Bootstrap is available
+    if (typeof bootstrap === 'undefined') {
+      console.warn('Bootstrap not loaded yet, retrying...');
+      setTimeout(initializePopover, 100);
+      return;
+    }
+
+    // Destroy existing popover if it exists
+    const existingPopover = bootstrap.Popover.getInstance(popoverTrigger);
+    if (existingPopover) {
+      existingPopover.dispose();
+    }
+
+    // Initialize new popover
+    const popover = new bootstrap.Popover(popoverTrigger, {
+      sanitize: false,
+      html: true
     });
-  });
+
+    // Store reference for later use
+    popoverTrigger._popover = popover;
+
+    // Set up event delegation for checkbox changes (only once)
+    if (!document._popoverEventsInitialized) {
+      document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('email-checkbox-popover')) {
+          updateHiddenFields();
+          updateSelectedEmailsPreview();
+        }
+      });
+      
+      // Prevent popover from closing when clicking inside it
+      document.addEventListener('click', function(e) {
+        const popoverElement = document.querySelector('.popover');
+        if (popoverElement && popoverElement.contains(e.target)) {
+          e.stopPropagation();
+        }
+      });
+      
+      document._popoverEventsInitialized = true;
+    }
+
+    // Initial update of the email preview
+    updateSelectedEmailsPreview();
+    
+    // Sync checkboxes when popover is shown
+    popoverTrigger.addEventListener('shown.bs.popover', syncPopoverCheckboxes);
+  }
+
+  // Helper functions (keep these the same)
+  function updateSelectedEmailsPreview() {
+    const selected = Array.from(document.querySelectorAll('.hidden-email-field'))
+                        .map(field => field.value);
+    const preview = document.getElementById('selected-emails-preview');
+    
+    if (preview) {
+      preview.innerHTML = selected.length > 0 
+        ? selected.map(email => `<span class="badge bg-primary me-1 mb-1">${email}</span>`).join('')
+        : '<span class="text-muted">No emails selected</span>';
+    }
+  }
+
+  function updateHiddenFields() {
+    const selected = Array.from(document.querySelectorAll('.email-checkbox-popover:checked'))
+                        .map(checkbox => checkbox.value);
+    const hiddenContainer = document.getElementById('hidden-email-fields');
+    
+    if (hiddenContainer) {
+      hiddenContainer.innerHTML = '';
+      
+      selected.forEach(email => {
+        const hiddenField = document.createElement('input');
+        hiddenField.type = 'hidden';
+        hiddenField.name = 'information_request[send_to][]';
+        hiddenField.value = email;
+        hiddenField.className = 'hidden-email-field';
+        hiddenField.setAttribute('data-checkbox-group-required-target', 'hiddenField');
+        hiddenContainer.appendChild(hiddenField);
+      });
+    }
+  }
+
+  function syncPopoverCheckboxes() {
+    const selectedEmails = Array.from(document.querySelectorAll('.hidden-email-field'))
+                              .map(field => field.value);
+    
+    document.querySelectorAll('.email-checkbox-popover').forEach(checkbox => {
+      checkbox.checked = selectedEmails.includes(checkbox.value);
+    });
+  }
+
+  function hideEmailPopover() {
+    const trigger = document.getElementById('emailPopoverTrigger');
+    if (trigger) {
+      const popover = bootstrap.Popover.getInstance(trigger);
+      if (popover) {
+        popover.hide();
+      }
+    }
+  }
+
+  // Enhanced initialization with proper timing
+  function safeInitialize() {
+    // Wait for both DOM and Bootstrap to be ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', safeInitialize);
+      return;
+    }
+    
+    // Small delay to ensure Bootstrap is fully loaded
+    setTimeout(initializePopover, 50);
+  }
+
+  // Set up event listeners for different scenarios
+  document.addEventListener('turbo:load', safeInitialize);
+  document.addEventListener('turbo:render', safeInitialize);
+
+  // Fallback for non-Turbo environments
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', safeInitialize);
+  } else {
+    safeInitialize();
+  }
 </script>

@@ -2,6 +2,15 @@ require "csv"
 
 class RequestsController < ApplicationController
 
+  def show_information_request
+    @information_request = InformationRequest.find(params[:id])
+    render turbo_stream: turbo_stream.update("modal_content_frame"){
+      render_to_string partial: "information_requests/review", 
+        formats: [:html],
+        locals: { information_request: @information_request }
+    }
+  end
+
   def information_request
     @information_request = InformationRequest.new
     @send_to = {}    
