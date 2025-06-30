@@ -1,4 +1,4 @@
-<%= form_with(model: collection) do |form| %>
+<%= form_with(model: collection, data: { turbo: false }) do |form| %>
   <% if collection.errors.any? %>
     <div style="color: red">
       <h2><%= pluralize(collection.errors.count, "error") %> prohibited this collection from being saved:</h2>
@@ -12,32 +12,32 @@
   <% end %>
 
   <div>
-    <%= form.label :division %>
+    <%= form.label :division %><span class="text-danger"> *</span>
     <%= form.text_field :division, required: true %>
   </div>
 
   <div>
-    <%= form.label :admin_group %>
+    <%= form.label :admin_group %><span class="text-danger"> *</span>
     <%= form.text_field :admin_group, required: true %>
   </div>
 
   <div>
-    <%= form.label :description %>
+    <%= form.label :short_description %><span class="text-danger"> *</span>
     <%= form.textarea :short_description, class: "w-100 mt-2", required: true %>
   </div>
 
   <div>
-    <%= form.label :long_description %>
+    <%= form.label :long_description %><span class="text-danger"> *</span>
     <%= form.rich_text_area :long_description, required: true %>
   </div>
 
   <div>
-    <%= form.label :division_page_url %>
+    <%= form.label :division_page_url %><span class="text-danger"> *</span>
     <%= form.text_field :division_page_url, required: true %>
   </div>
 
   <div>
-    <%= form.label :link_to_policies %>
+    <%= form.label :link_to_policies %><span class="text-danger"> *</span>
     <%= form.text_field :link_to_policies, required: true %>
   </div>
 

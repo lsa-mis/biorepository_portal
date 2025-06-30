@@ -8,23 +8,40 @@
       </div>
       <!-- Edit Profile Link -->
       <div class="align-self-start pt-2">
+        <%= link_to profile_info_profile_path, class: 'text-white link-underline link-underline-opacity-0' do %>
+          <i class="bi bi-person-circle"></i> <span class="fw-light">Profile</span>
+        <% end %>
         <%= link_to edit_profile_path, class: 'text-white link-underline link-underline-opacity-0' do %>
           <i class="bi bi-pencil"></i> <span class="fw-light">Edit</span>
         <% end %>
       </div>
       <!-- Update Loan Question Link -->
       <div class="align-self-start pt-2">
-        <%= link_to loan_questions_profile_path, class: 'text-white link-underline link-underline-opacity-0' do %>
+        <%= link_to show_loan_questions_profile_path, class: 'text-white link-underline link-underline-opacity-0' do %>
+          <i class="bi bi-question-circle"></i> <span class="fw-light">Loan Questions</span>
+        <% end %>
+      </div>
+      <div>
+        <%= link_to edit_loan_questions_profile_path, class: 'text-white link-underline link-underline-opacity-0' do %>
           <i class="bi bi-ui-checks-grid"></i> <span class="fw-light">Edit Loan Info</span>
+        <% end %>
+      </div>
+      <!-- Show Collection Specific Questions -->
+      <div class="align-self-start pt-2">
+        <%= link_to show_collections_questions_profile_path, class: 'text-white link-underline link-underline-opacity-0' do %>
+          <i class="bi bi-question-circle"></i> <span class="fw-light">Collection Questions</span>
         <% end %>
       </div>
       <!-- Update Collection Specific Question Link -->
       <% @collections.each do |collection| %>
-        <div class="align-self-start pt-2">
-          <%= link_to collection_questions_profile_path(collection), class: 'text-white link-underline link-underline-opacity-0 text-start d-block' do %>
-            <i class="bi bi-folder2-open"></i>
-            <span class="fw-light">Edit <%= collection.division %></span>
-          <% end %>
+        <div class="d-flex gap-2">
+          <div></div>
+          <div>
+            <%= link_to collection_questions_profile_path(collection), class: 'text-white link-underline link-underline-opacity-0' do %>
+              <i class="bi bi-folder2-open"></i>
+              <span class="fw-light">Edit <%= collection.division %></span>
+            <% end %>
+          </div>
         </div>
       <% end %>
     </div>

@@ -57,25 +57,14 @@ class RequestsController < ApplicationController
     @loan_request = LoanRequest.new
     @checkout_items = get_checkout_items
     @user = current_user
-    @loan_answers = @user.loan_answers
-                          .includes(:loan_question)
-                          .joins(:loan_question)
-                          .order("loan_questions.id ASC")
-    @collections = Collection
-                    .where(id: @checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq)
-                    .includes(collection_questions: :collection_answers)
-    @collection_answers = {}
-    @collections.each do |collection|
-      collection_questions = collection.collection_questions
-      next if collection_questions.empty?
-      # Build a hash: { question1 => answer1, question2 => answer2, ... }
-      question_answer_hash = {}
-      collection_questions.each do |question|
-        answer = question.collection_answers.find { |a| a.user_id == @user.id }
-        question_answer_hash[question] = answer
-      end
-      @collection_answers[collection] = question_answer_hash
+
+    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
+	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
+	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
     end
+
+    @collection_answers = build_collection_answers(@checkout, current_user)
+
   end
 
   def send_loan_request
@@ -106,13 +95,36 @@ class RequestsController < ApplicationController
                       .joins(:loan_question)
                       .order("loan_questions.id ASC")
 
+    @collection_answers = build_collection_answers(@checkout, current_user)
+
+    # Check required loan questions
+    missing_loan_answers = @loan_answers.select do |a|
+      a.loan_question.required? && a.answer.to_plain_text.strip.blank?
+    end
+
+    # Check required collection questions
+    missing_collection_answers = @collection_answers.flat_map { |_, qa_hash| qa_hash.values }.select do |answer|
+      answer&.collection_question&.required? && answer&.answer&.to_plain_text&.strip.blank?
+    end.map { |answer| answer&.collection_question }.compact
+
+    # Check required user info fields
+    user_missing_fields = []
+    user_missing_fields << "First Name" if current_user.first_name.to_s.strip.blank?
+    user_missing_fields << "Last Name" if current_user.last_name.to_s.strip.blank?
+    user_missing_fields << "Affiliation" if current_user.affiliation.to_s.strip.blank?
+
+    if missing_loan_answers.any? || missing_collection_answers.any? || user_missing_fields.any?
+      flash[:alert] = "Please answer all required questions before sending the loan request."
+      redirect_to :loan_request and return
+    end
+
     csv_tempfile = Tempfile.new(["loan_request", ".csv"])
     csv_file_path = create_csv_file(csv_tempfile, current_user)
     csv_tempfile.rewind
 
     pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
     File.open(pdf_tempfile, "wb") do |file|
-      file.write(PdfGenerator.new(@loan_answers, @checkout_items).generate_pdf_content)
+      file.write(PdfGenerator.new(@loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
     end
     pdf_tempfile.rewind
 
@@ -190,4 +202,27 @@ class RequestsController < ApplicationController
 
       filename.to_s
     end
+
+    def build_collection_answers(checkout, user)
+      collections = Collection
+                .where(id: checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq)
+                .includes(collection_questions: :collection_answers)
+      collection_answers = {}
+
+      collections.each do |collection|
+        collection_questions = collection.collection_questions.order(:position)
+        next if collection_questions.empty?
+
+        question_answer_hash = {}
+        collection_questions.each do |question|
+          answer = question.collection_answers.find { |a| a.user_id == user.id }
+          question_answer_hash[question] = answer
+        end
+
+        collection_answers[collection] = question_answer_hash
+      end
+
+      collection_answers
+    end
+
 end

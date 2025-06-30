@@ -16,6 +16,9 @@
     <!-- this is regular navbar-->
     <div class="collapse navbar-collapse d-none d-md-block">
       <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+        <%= link_to "About", about_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2' %>
+      </div>
+      <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
         <%= link_to "Collections", collections_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2' %>
       </div>
       <% if user_signed_in? && is_admin? %>
@@ -45,6 +48,11 @@
       <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
         <%= link_to "FAQs", faqs_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2' %>
       </div>
+
+      <div class="bg-white p-2 rounded-3 shadow-sm ms-3" style="min-width: 100px; max-width: 160px;">
+        <%= render "layouts/info_request_bar" %>
+      </div>
+
     </div>
     <!-- this is the hamburger menu-->
     <div class="collapse navbar-collapse d-md-none" id="navbarBurgerMenu">
@@ -96,6 +104,10 @@
           </div>
         </ul>
       </div>
+      <% else %>
+        <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+          <%= button_to "Sign In", user_saml_omniauth_authorize_path, data: {turbo: "false"}, class: "btn btn-sign" %>
+        </div>
     <% end %>
   </div>
 </nav>

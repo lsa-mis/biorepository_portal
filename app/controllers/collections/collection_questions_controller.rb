@@ -4,6 +4,8 @@ class Collections::CollectionQuestionsController < ApplicationController
   before_action :set_question_types, only: %i[ new edit create update ]
 
   def index
+    @collection_questions = @collection.collection_questions.order(:position)
+    authorize([@collection, @collection_questions])
   end
 
   def show
@@ -12,11 +14,12 @@ class Collections::CollectionQuestionsController < ApplicationController
   def new
     @collection_question = @collection.collection_questions.build
     2.times { @collection_question.collection_options.build }
+    authorize([@collection, @collection_question])
   end
 
   def create
     @collection_question = @collection.collection_questions.build(collection_question_params)
-    authorize @collection_question
+    authorize([@collection, @collection_question])
 
     respond_to do |format|
       if @collection_question.save
@@ -38,7 +41,7 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def update
-    authorize @collection_question
+    authorize([@collection, @collection_question])
     success = true
     ActiveRecord::Base.transaction do
       begin
@@ -64,14 +67,30 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def preview
-    @collection_questions = @collection.collection_questions.includes(:collection_options)
+    @collection_questions = @collection.collection_questions.includes(:collection_options).order(:position)
+    authorize([@collection, @collection_questions])
+  end
+
+  def move_up
+    @collection_question = CollectionQuestion.find(params[:id])
+    authorize([@collection, @collection_question])
+    @collection_question.move_higher
+    redirect_to collection_collection_questions_path, notice: "Question moved up."
+  end
+
+  def move_down
+    @collection_question = CollectionQuestion.find(params[:id])
+    authorize([@collection, @collection_question])
+    @collection_question.move_lower
+    redirect_to collection_collection_questions_path, notice: "Question moved down."
   end
   
   def destroy
-    authorize @collection_question
+    authorize([@collection, @collection_question])
     @collection_question.destroy
 
     respond_to do |format|
+      @collection_questions = @collection.collection_questions.order(:position)
       format.turbo_stream
       format.html { redirect_to collection_path(@collection), notice: "Collection question deleted." }
     end
@@ -99,11 +118,7 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def collection_question_params
-    params.require(:collection_question).permit(
-      :question,
-      :question_type,
-      :required,
-      collection_options_attributes: [:id, :value, :_destroy]
-    )
+    params.require(:collection_question).permit(:question, :question_type, :required, :position, :collection_id,
+      collection_options_attributes: [:id, :value])
   end
 end

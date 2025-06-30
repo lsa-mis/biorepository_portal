@@ -2,6 +2,8 @@
   <table class="table text-center mt-4">
     <thead class="table-group-divider">
       <tr>
+        <th scope="col" class="text-start">Reorder</th>
+        <th scope="col" class="text-start">Position</th>
         <th scope="col" class="text-start">Question</th>
         <th scope="col" class="text-start">Question Type</th>
         <th scope="col" class="text-start">Required</th>
@@ -11,7 +13,7 @@
       </tr>
     </thead>
     <tbody class="table-group-divider" id="collection_questions">
-      <% @collection.collection_questions.each do |collection_question| %>
+      <% @collection_questions.each do |collection_question| %>
         <%= render 'collections/collection_questions/collection_question_row', collection_question: collection_question, collection: @collection %>
       <% end %>
     </tbody>

@@ -3,11 +3,16 @@
 # Table name: loan_questions
 #
 #  id            :bigint           not null, primary key
+#  position      :integer
 #  question      :string
 #  question_type :integer
 #  required      :boolean          default(FALSE), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#
+# Indexes
+#
+#  index_loan_questions_on_position  (position)
 #
 FactoryBot.define do
  factory :loan_question do

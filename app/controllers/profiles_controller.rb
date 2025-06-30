@@ -9,6 +9,10 @@ class ProfilesController < ApplicationController
     @information_requests = current_user.information_requests.order(created_at: :desc)
   end
 
+  def profile_info
+    @user = current_user
+  end
+
   def edit
     @user = current_user
   end
@@ -68,8 +72,15 @@ class ProfilesController < ApplicationController
     end
   end
 
+  def show_loan_questions
+    loan_questions = LoanQuestion.includes(:loan_answers).all
+	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
+	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
+    end
+    
+  end
 
-  def loan_questions
+  def edit_loan_questions
     @loan_questions = LoanQuestion.all
     @loan_answers = current_user.loan_answers.includes(:loan_question)
     @collections = Collection.joins(:collection_questions).distinct
@@ -95,6 +106,22 @@ class ProfilesController < ApplicationController
     end
 
     redirect_to profile_path, notice: "Loan questions updated successfully."
+  end
+
+  def show_collections_questions
+    @collections = Collection.joins(:collection_questions).distinct
+    @collection_answers = {}
+    @collections.each do |collection|
+      collection_questions = collection.collection_questions
+      next if collection_questions.empty?
+      # Build a hash: { question1 => answer1, question2 => answer2, ... }
+      question_answer_hash = {}
+      collection_questions.each do |question|
+        answer = question.collection_answers.find_by(user_id: current_user.id)
+        question_answer_hash[question] = answer
+      end
+      @collection_answers[collection] = question_answer_hash
+    end
   end
 
   def collection_questions

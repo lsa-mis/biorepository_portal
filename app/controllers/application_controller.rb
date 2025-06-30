@@ -10,7 +10,8 @@ class ApplicationController < ActionController::Base
   before_action :make_q
 
   def pundit_user
-    { user: current_user, role: session[:role], collection_ids: session[:collection_ids] }
+    whitelisted_params = params.permit(:id, :collection_id)
+    { user: current_user, role: session[:role], collection_ids: session[:collection_ids], params: whitelisted_params }
   end
   
   private

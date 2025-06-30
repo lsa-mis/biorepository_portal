@@ -8,6 +8,7 @@ import ShowOptionsController from "./show_options_controller"
 import CheckboxGroupRequiredController from "./checkbox_group_required_controller"
 import AutosubmitController from "./autosubmit_controller"
 import RemoteModalController from "./remote_modal_controller"
+import ModalResetController from "./modal_reset_controller"
 
 application.register("collection-dropdown", CollectionDropdownController)
 application.register("preparation", PreparationController)
@@ -16,4 +17,5 @@ application.register("show-options", ShowOptionsController)
 application.register("checkbox-group-required", CheckboxGroupRequiredController)
 application.register("autosubmit", AutosubmitController)
 application.register("remote-modal", RemoteModalController)
+application.register("modal-reset", ModalResetController)
 eagerLoadControllersFrom("controllers", application)

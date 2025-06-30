@@ -5,9 +5,12 @@ Rails.application.routes.draw do
   # get "profile/update"
 
   resource :profile, only: [:show, :edit, :update] do
-    get :loan_questions          # profile_loan_questions_path
+    get :show_loan_questions
+    get :edit_loan_questions          # profile_loan_questions_path
     patch :update_loan_questions # profile_update_loan_questions_path
+    get "profile_info", to: "profiles#profile_info", as: :profile_info
   end
+  get 'profile/collections_questions', to: 'profiles#show_collections_questions', as: 'show_collections_questions_profile'
   get 'profile/collection_questions/:id', to: 'profiles#collection_questions', as: 'collection_questions_profile'
   patch 'profile/collection_questions/:id', to: 'profiles#update_collection_questions', as: 'update_collection_questions_profile'
 
@@ -15,7 +18,7 @@ Rails.application.routes.draw do
 
   get 'app_preference/:name', to: 'app_preferences#delete_preference', as: :delete_preference
   get 'app_preferences/app_prefs', to: 'app_preferences#app_prefs', as: :app_prefs
-  post 'app_preferences/app_prefs/', to: 'app_preferences#save_app_prefs'
+  post 'app_preferences/app_prefs', to: 'app_preferences#save_app_prefs'
   resources :app_preferences
   
   get "requests/information_request", to: "requests#information_request", as: :information_request
@@ -31,12 +34,17 @@ Rails.application.routes.draw do
   patch "profile/update_field/:field", to: "profiles#update_field", as: :update_user_field
 
   get "loan_questions/preview", to: "loan_questions#preview", as: :preview_loan_questions
-  resources :loan_questions
+  resources :loan_questions do
+    member do
+      patch :move_up
+      patch :move_down
+    end
+  end
   get "checkout", to: "checkout#show"
   post "checkout/add"
+  post "checkout/change"
   post "checkout/remove"
-  resources :identifications
-  resources :preparations
+
   resources :items, only: [ :index, :show ] do
     collection do
       match 'search' => 'items#search', via: [:get, :post]
@@ -56,6 +64,10 @@ Rails.application.routes.draw do
       collection do
         get :preview
       end
+      member do
+        patch :move_up
+        patch :move_down
+      end
     end
     resources :collection_answers, module: :collections, only: [:edit, :update]
 
@@ -67,7 +79,6 @@ Rails.application.routes.draw do
     delete 'sign_out', :to => 'users/sessions#destroy', :as => :destroy_user_session
   end
   
-  get "home/index"
   get "home/about", to: "home#about", as: :about
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -76,7 +87,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Defines the root path route ("/")
-  root "home#index"
+  root "collections#index"
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development? || Rails.env.staging?
 
