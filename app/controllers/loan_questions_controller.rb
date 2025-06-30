@@ -126,7 +126,7 @@ class LoanQuestionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def loan_question_params
-      params.require(:loan_question).permit(:position, :question, :question_type, :required)
+      params.require(:loan_question).permit(:position, :question, :question_type, :required, :options_attributes => [:id, :value])
     end
 end
 

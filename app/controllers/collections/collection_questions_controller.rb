@@ -117,10 +117,7 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def collection_question_params
-    params.require(:collection_question).permit(
-      :question,
-      :question_type,
-      :required,
-      :position)
+    params.require(:collection_question).permit(:question, :question_type, :required, :position, :collection_id,
+      collection_options_attributes: [:id, :value])
   end
 end
