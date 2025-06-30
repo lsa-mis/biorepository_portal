@@ -38,4 +38,10 @@ class ApplicationController < ActionController::Base
     @q = Item.ransack(params[:q])
   end
 
+  def set_redirection_url
+    unless user_signed_in?
+      $baseURL = request.fullpath
+    end
+  end
+
 end

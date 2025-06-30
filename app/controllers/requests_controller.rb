@@ -1,6 +1,7 @@
 require "csv"
 
 class RequestsController < ApplicationController
+  before_action :set_redirection_url
 
   def show_information_request
     @information_request = InformationRequest.find(params[:id])
