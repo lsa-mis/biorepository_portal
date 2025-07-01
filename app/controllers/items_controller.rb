@@ -53,7 +53,10 @@ class ItemsController < ApplicationController
 
     
     @active_filters = format_active_filters(params)
-    render :search_result
+    respond_to do |format|
+      format.turbo_stream
+      format.html { render :search_result }
+    end
   end
 
   private

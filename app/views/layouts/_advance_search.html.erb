@@ -3,7 +3,7 @@
   <%= button_to "Clear Filters", search_items_path, method: :get, class: "btn btn-outline-secondary", form_class: "d-inline" %>
 </div>
 
-<%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form", turbo_frame: "items_result_list" } do |f| %>
+<%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form" } do |f| %>
   <div class="m-2">
 
     <!-- Strings - use _i_cont (contains) or _eq (exact match) -->
