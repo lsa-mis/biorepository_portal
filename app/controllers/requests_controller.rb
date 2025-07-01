@@ -135,14 +135,14 @@ class RequestsController < ApplicationController
         user: current_user,
         csv_file: csv_tempfile,
         pdf_file: pdf_tempfile
-      ).deliver_later
+      ).deliver_now
 
       RequestMailer.user_confirmation_email(
         current_user,
         @loan_request,
         csv_file: csv_tempfile,
         pdf_file: pdf_tempfile
-      ).deliver_later
+      ).deliver_now
 
       # Clean up checkout items
       @checkout.requestables.destroy_all
