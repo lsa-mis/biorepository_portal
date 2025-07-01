@@ -110,48 +110,52 @@ class RequestsController < ApplicationController
     end
 
     csv_tempfile = Tempfile.new(["loan_request", ".csv"])
-    csv_file_path = create_csv_file(csv_tempfile, current_user)
-    csv_tempfile.rewind
-
     pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
-    File.open(pdf_tempfile, "wb") do |file|
-      file.write(PdfGenerator.new(@loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
-    end
-    pdf_tempfile.rewind
 
-    @loan_request.pdf_file.attach(
-      io: pdf_tempfile,
-      filename: "loan_request_#{@loan_request.id}.pdf",
-      content_type: "application/pdf"
-    )
+    begin
+      csv_file_path = create_csv_file(csv_tempfile, current_user)
+      csv_tempfile.rewind
 
-    @loan_request.csv_file.attach(
-      io: File.open(csv_file_path), # csv_file_path is the path to your tmp file
-      filename: "loan_request_#{@loan_request.id}.csv",
-      content_type: "text/csv"
-    )
+      File.open(pdf_tempfile, "wb") do |file|
+        file.write(PdfGenerator.new(@loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
+      end
+      pdf_tempfile.rewind
 
-    RequestMailer.send_loan_request(
-      send_to: emails,
-      user: current_user,
-      csv_file: csv_file_path,
-      pdf_file: pdf_tempfile
-    ).deliver_now
+      @loan_request.pdf_file.attach(
+        io: pdf_tempfile,
+        filename: "loan_request_#{@loan_request.id}.pdf",
+        content_type: "application/pdf"
+      )
 
-    RequestMailer.user_confirmation_email(
-      current_user,
-      @loan_request,
-      csv_file: csv_file_path,
-      pdf_file: pdf_tempfile
-    ).deliver_now
+      @loan_request.csv_file.attach(
+        io: File.open(csv_file_path),
+        filename: "loan_request_#{@loan_request.id}.csv",
+        content_type: "text/csv"
+      )
 
-    # Clean up checkout items
-    @checkout.requestables.destroy_all
+      RequestMailer.send_loan_request(
+        send_to: emails,
+        user: current_user,
+        csv_file: csv_file_path,
+        pdf_file: pdf_tempfile
+      ).deliver_now
 
-    # Clean up temp files
-    File.delete(csv_tempfile) if File.exist?(csv_tempfile)
-    File.delete(pdf_tempfile) if File.exist?(pdf_tempfile)
-    redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
+      RequestMailer.user_confirmation_email(
+        current_user,
+        @loan_request,
+        csv_file: csv_file_path,
+        pdf_file: pdf_tempfile
+      ).deliver_now
+
+      # Clean up checkout items
+      @checkout.requestables.destroy_all
+
+      redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
+
+    ensure
+      File.delete(csv_file_path) if File.exist?(csv_file_path)
+      pdf_tempfile.close
+      pdf_tempfile.unlink
   end
 
   private
