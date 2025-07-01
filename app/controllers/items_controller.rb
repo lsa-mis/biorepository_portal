@@ -1,4 +1,5 @@
 class ItemsController < ApplicationController
+  include ActiveFiltersHelper
   skip_before_action :authenticate_user!, only: [ :show, :search ]
   before_action :set_item, only: [ :show ]
 
@@ -17,13 +18,11 @@ class ItemsController < ApplicationController
 
   def search
     if params[:q] && params[:q][:dynamic_fields]
-      params[:q][:dynamic_fields].each do |field_hash|
-        next if field_hash.blank? || !field_hash.is_a?(Hash)
-        field = field_hash["field"]
-        value = field_hash["value"]
-        next if field.blank? || value.blank?
-
-        params[:q][field] = value
+      params[:q][:dynamic_fields].each do |_, group|
+        group.each do |_, field_hash|
+          next if field_hash["field"].blank? || field_hash["value"].blank?
+          params[:q][field_hash["field"]] = field_hash["value"]
+        end
       end
     end
     @q = Item.ransack(params[:q])
@@ -52,44 +51,8 @@ class ItemsController < ApplicationController
       .uniq
       .sort_by { |pair| pair[0] }
 
-    # Build human-readable active filters list
-    @active_filters = []
-
-      # Map fields to labels (you can expand this map)
-    field_labels = {
-      "collection_id_in" => "Collection",
-      "country_case_insensitive_in" => "Country",
-      "state_province_case_insensitive_in" => "State / Province",
-      "sex_case_insensitive_in" => "Sex",
-      "continent_case_insensitive_in" => "Continent"
-    }
-
-    params[:q]&.each do |key, value|
-      next if value.blank? || key == "dynamic_fields"
-      if field_labels[key]
-        if value.is_a?(Array)
-          labels = value.map(&:titleize).join(', ')
-          @active_filters << "#{field_labels[key]}: #{labels}"
-        else
-          @active_filters << "#{field_labels[key]}: #{value.titleize}"
-        end
-      elsif key.match?(/_i_cont|_eq|_gteq|_lteq/)
-        label = key.humanize.gsub(/_i_cont|_eq|_gteq|_lteq/, '').titleize
-        @active_filters << "#{label}: #{value}"
-      end
-    end
-
-    # Dynamic fields
-    if params[:q].present? && params[:q][:dynamic_fields].is_a?(Array)
-      params[:q][:dynamic_fields].each do |field_hash|
-        field = field_hash["field"]
-        value = field_hash["value"]
-        next if field.blank? || value.blank?
-        label = field.humanize.gsub(/_i_cont|_eq|_gteq|_lteq/, '').titleize
-        @active_filters << "#{label}: #{value}"
-      end
-    end
-
+    
+    @active_filters = format_active_filters(params)
     render :search_result
   end
 

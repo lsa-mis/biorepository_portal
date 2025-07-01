@@ -26,11 +26,19 @@
         <div data-search-target="group" class="search-group mb-3 p-3 rounded border border-primary">
           <div data-search-target="rows">
             <% if params.dig(:q, :dynamic_fields).present? %>
-              <% @field_index = -1 %>
-              <% @group_index = 0 %>
-              <% params[:q][:dynamic_fields].values.each do |row| %>
-                <% @field_index += 1 %>
-                <%= render partial: "layouts/search_field", locals: { selected_field: row["field"], entered_value: row["value"], field_index: @field_index, group_index: @group_index } %>
+              <% @group_index = -1 %>
+              <% params[:q][:dynamic_fields].each do |group_key, fields| %>
+                <% @group_index += 1 %>
+                <% @field_index = -1 %>
+                <% fields.each do |field_key, field_hash| %>
+                  <% @field_index += 1 %>
+                  <%= render partial: "layouts/search_field", locals: {
+                        selected_field: field_hash["field"],
+                        entered_value: field_hash["value"],
+                        field_index: @field_index,
+                        group_index: @group_index
+                      } %>
+                <% end %>
               <% end %>
             <% else %>
               <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil, field_index: 0, group_index: 0 } %>
