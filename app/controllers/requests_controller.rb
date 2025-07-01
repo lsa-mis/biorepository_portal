@@ -109,13 +109,10 @@ class RequestsController < ApplicationController
       redirect_to :loan_request and return
     end
 
-    csv_tempfile = Tempfile.new(["loan_request", ".csv"])
     pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
+    csv_tempfile = create_csv_file(current_user)
 
     begin
-      csv_file_path = create_csv_file(csv_tempfile, current_user)
-      csv_tempfile.rewind
-
       File.open(pdf_tempfile, "wb") do |file|
         file.write(PdfGenerator.new(@loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
       end
@@ -128,7 +125,7 @@ class RequestsController < ApplicationController
       )
 
       @loan_request.csv_file.attach(
-        io: File.open(csv_file_path),
+        io: csv_tempfile,
         filename: "loan_request_#{@loan_request.id}.csv",
         content_type: "text/csv"
       )
@@ -136,14 +133,14 @@ class RequestsController < ApplicationController
       RequestMailer.send_loan_request(
         send_to: emails,
         user: current_user,
-        csv_file: csv_file_path,
+        csv_file: csv_tempfile,
         pdf_file: pdf_tempfile
       ).deliver_now
 
       RequestMailer.user_confirmation_email(
         current_user,
         @loan_request,
-        csv_file: csv_file_path,
+        csv_file: csv_tempfile,
         pdf_file: pdf_tempfile
       ).deliver_now
 
@@ -153,7 +150,8 @@ class RequestsController < ApplicationController
       redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
 
     ensure
-      File.delete(csv_file_path) if File.exist?(csv_file_path)
+      csv_tempfile.close
+      csv_tempfile.unlink
       pdf_tempfile.close
       pdf_tempfile.unlink
   end
@@ -176,10 +174,10 @@ class RequestsController < ApplicationController
       checkout_items
     end
 
-    def create_csv_file(filename, user)
-      filename = Rails.root.join("tmp", "loan_request_#{SecureRandom.uuid}.csv")
+    def create_csv_file(user)
+      tempfile = Tempfile.new(["loan_request", ".csv"])
 
-      CSV.open(filename, "w") do |csv|
+      CSV.open(tempfile.path, "w") do |csv|
         csv << [
           "User Name",
           "User Institution",
@@ -205,7 +203,8 @@ class RequestsController < ApplicationController
         end
       end
 
-      filename.to_s
+      tempfile.rewind
+      tempfile
     end
 
     def build_collection_answers(checkout, user)

@@ -2,6 +2,16 @@ class PdfGenerator
   require 'prawn'
   include ActionView::Helpers::SanitizeHelper 
 
+  NO_RESPONSE_PLACEHOLDER = '—'.freeze
+  FONT_FAMILY = {
+    'Montserrat' => {
+      light: Rails.root.join('app/assets/stylesheets/Montserrat-Light.ttf'),
+      normal: Rails.root.join('app/assets/stylesheets/Montserrat-Regular.ttf'),
+      medium: Rails.root.join('app/assets/stylesheets/Montserrat-Medium.ttf'),
+      bold: Rails.root.join('app/assets/stylesheets/Montserrat-Black.ttf')
+    }
+  }.freeze
+
   def initialize(loan_answers, checkout_items, collection_answers = {})
     @loan_answers = loan_answers
     @checkout_items = checkout_items
@@ -17,13 +27,7 @@ class PdfGenerator
 
   def generate_pdf_content
     Prawn::Document.new do |pdf|
-      # Register custom font
-      pdf.font_families.update('Montserrat' => {
-        light: Rails.root.join('app/assets/stylesheets/Montserrat-Light.ttf'),
-        normal: Rails.root.join('app/assets/stylesheets/Montserrat-Regular.ttf'),
-        medium: Rails.root.join('app/assets/stylesheets/Montserrat-Medium.ttf'),
-        bold: Rails.root.join('app/assets/stylesheets/Montserrat-Black.ttf')
-      })
+      register_fonts(pdf)
       pdf.font('Montserrat')
 
       # Title
@@ -38,7 +42,7 @@ class PdfGenerator
 
       @loan_answers.each_with_index do |answer, index|
         pdf.text "#{index + 1}. #{answer.loan_question.question}", size: 12, style: :medium
-        pdf.text "#{strip_tags(answer.answer.to_s.presence || '—')}", size: 11
+        pdf.text "#{strip_tags(answer.answer.to_s.presence || NO_RESPONSE_PLACEHOLDER)}", size: 11
         pdf.move_down 8
       end
 
@@ -51,7 +55,7 @@ class PdfGenerator
 
         qa_hash.each_with_index do |(question, answer), i|
           pdf.text "#{i + 1}. #{question.question}", size: 12, style: :medium
-          pdf.text "#{strip_tags(answer&.answer.to_s.presence || '—')}", size: 11
+          pdf.text "#{strip_tags(answer&.answer.to_s.presence || NO_RESPONSE_PLACEHOLDER)}", size: 11
           pdf.move_down 8
         end
       end
@@ -67,12 +71,12 @@ class PdfGenerator
         table_data = [["Collection", "Occurrence ID", "Preparation", "Barcode", "Description", "Count"]]
 
         items.each do |item_str|
-          collection   = item_str[/^([^,]+)/, 1]&.strip || "—"
-          occurrence_id = item_str[/occurrenceID:\s*([^;]+)/, 1]&.strip || "—"
-          preparation  = item_str[/preparation:\s*([^,;]+)/, 1]&.strip || "—"
-          barcode      = item_str[/barcode:\s*([^,;]+)/, 1]&.strip || "—"
-          description  = item_str[/description:\s*([^,;]+)/, 1]&.strip || "—"
-          count        = item_str[/count:\s*([^,;]+)/, 1]&.strip || "—"
+          collection   = item_str[/^([^,]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
+          occurrence_id = item_str[/occurrenceID:\s*([^;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
+          preparation  = item_str[/preparation:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
+          barcode      = item_str[/barcode:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
+          description  = item_str[/description:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
+          count        = item_str[/count:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
 
           table_data << [collection, occurrence_id, preparation, barcode, description, count]
         end
@@ -88,4 +92,9 @@ class PdfGenerator
     end.render
   end
 
+  private
+
+  def register_fonts(pdf)
+    pdf.font_families.update(FONT_FAMILY)
+  end
 end
