@@ -154,6 +154,7 @@ class RequestsController < ApplicationController
       csv_tempfile.unlink
       pdf_tempfile.close
       pdf_tempfile.unlink
+    end
   end
 
   private
