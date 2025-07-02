@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h3 class="mb-0">Advanced Search</h3>
-  <%= button_to "Clear Filters", search_items_path, method: :get, class: "btn btn-outline-secondary", form_class: "d-inline" %>
+  <%= link_to "Clear Filters", search_items_path, class: "btn btn-outline-secondary", form_class: "d-inline" %>
 </div>
 
 <%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form" } do |f| %>
