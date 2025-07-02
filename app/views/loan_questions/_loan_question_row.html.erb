@@ -20,7 +20,7 @@
     <% end %>
   </td>
   <td class="text-start align-middle">
-    <%= link_to loan_question_path(loan_question), 'aria-label': "delete_#{loan_question.id}", data: { turbo_confirm: "Are you sure you want to delete this common attribute?" , turbo_method: :delete } do %>
+    <%= link_to loan_question_path(loan_question), 'aria-label': "delete_#{loan_question.id}", data: { turbo_confirm: "Are you sure you want to delete loan question?" , turbo_method: :delete } do %>
       <i class="bi bi-trash-fill text-danger"></i>
     <% end %>
   </td>
