@@ -31,7 +31,7 @@ class PdfGenerator
       pdf.font('Montserrat')
 
       # Title
-      pdf.text "#{@loan_answers.first&.user&.first_name} #{@loan_answers.first&.user&.last_name} - #{Date.today.strftime("%B %d, %Y")}",
+      pdf.text "#{@loan_answers.first[1].user&.first_name} #{@loan_answers.first[1].user&.last_name} - #{Date.today.strftime("%B %d, %Y")}",
               size: 20, style: :bold, align: :center
       pdf.move_down 20
 
@@ -40,10 +40,9 @@ class PdfGenerator
       pdf.stroke_horizontal_rule
       pdf.move_down 10
 
-      @loan_answers.each_with_index do |answer, index|
-        pdf.text "#{index + 1}. #{answer.loan_question.question}", size: 12, style: :medium
-        pdf.text "#{strip_tags(answer.answer.to_s.presence || NO_RESPONSE_PLACEHOLDER)}", size: 11
-        pdf.move_down 8
+      @loan_answers.each do |question, answer|
+        pdf.text "#{question.position}. #{question.question}", size: 12, style: :medium
+        pdf.text "#{strip_tags(answer&.answer.to_s.presence || NO_RESPONSE_PLACEHOLDER)}", size: 11
       end
 
       # Section: Collection-specific Questions

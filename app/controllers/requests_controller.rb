@@ -80,11 +80,8 @@ class RequestsController < ApplicationController
     @loan_request = LoanRequest.new
     @loan_request.user = current_user
     @loan_request.send_to = emails.join(', ')
-    @loan_request.save!
-    # @loan_answers = current_user.loan_answers
-    #                   .includes(:loan_question)
-    #                   .joins(:loan_question)
-    #                   .order("loan_questions.id ASC")
+    # @loan_request.save!
+
     loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
     @loan_answers = loan_questions.each_with_object({}) do |question, hash|
 	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
@@ -92,15 +89,9 @@ class RequestsController < ApplicationController
 
     @collection_answers = build_collection_answers(@checkout, current_user)
 
-    # Check required loan questions
+    # Check required questions
     missing_loan_answers = check_missing_answers(@loan_answers)
-
-    # Check required collection questions
-    # missing_collection_answers = @collection_answers.flat_map { |_, qa_hash| qa_hash.values }.select do |answer|
-    #   answer&.collection_question&.required? && answer&.answer&.to_plain_text&.strip.blank?
-    # end.map { |answer| answer&.collection_question }.compact
-
-     missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data) }
+    missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data) }
 
     # Check required user info fields
     user_missing_fields = false
@@ -117,6 +108,8 @@ class RequestsController < ApplicationController
     csv_tempfile = create_csv_file(current_user)
 
     begin
+      @loan_request.save
+      
       File.open(pdf_tempfile, "wb") do |file|
         file.write(PdfGenerator.new(@loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
       end
