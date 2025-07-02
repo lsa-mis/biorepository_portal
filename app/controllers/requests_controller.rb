@@ -81,30 +81,34 @@ class RequestsController < ApplicationController
     @loan_request.user = current_user
     @loan_request.send_to = emails.join(', ')
     @loan_request.save!
-    @loan_answers = current_user.loan_answers
-                      .includes(:loan_question)
-                      .joins(:loan_question)
-                      .order("loan_questions.id ASC")
+    # @loan_answers = current_user.loan_answers
+    #                   .includes(:loan_question)
+    #                   .joins(:loan_question)
+    #                   .order("loan_questions.id ASC")
+    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
+    @loan_answers = loan_questions.each_with_object({}) do |question, hash|
+	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
+    end
 
     @collection_answers = build_collection_answers(@checkout, current_user)
 
     # Check required loan questions
-    missing_loan_answers = @loan_answers.select do |a|
-      a.loan_question.required? && a.answer.to_plain_text.strip.blank?
-    end
+    missing_loan_answers = check_missing_answers(@loan_answers)
 
     # Check required collection questions
-    missing_collection_answers = @collection_answers.flat_map { |_, qa_hash| qa_hash.values }.select do |answer|
-      answer&.collection_question&.required? && answer&.answer&.to_plain_text&.strip.blank?
-    end.map { |answer| answer&.collection_question }.compact
+    # missing_collection_answers = @collection_answers.flat_map { |_, qa_hash| qa_hash.values }.select do |answer|
+    #   answer&.collection_question&.required? && answer&.answer&.to_plain_text&.strip.blank?
+    # end.map { |answer| answer&.collection_question }.compact
+
+     missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data) }
 
     # Check required user info fields
-    user_missing_fields = []
-    user_missing_fields << "First Name" if current_user.first_name.to_s.strip.blank?
-    user_missing_fields << "Last Name" if current_user.last_name.to_s.strip.blank?
-    user_missing_fields << "Affiliation" if current_user.affiliation.to_s.strip.blank?
+    user_missing_fields = false
+    user_missing_fields = true unless current_user.first_name.present?
+    user_missing_fields = true unless current_user.last_name.present?
+    user_missing_fields = true unless current_user.affiliation.present?
 
-    if missing_loan_answers.any? || missing_collection_answers.any? || user_missing_fields.any?
+    if missing_loan_answers || missing_collection_answers|| user_missing_fields
       flash[:alert] = "Please answer all required questions before sending the loan request."
       redirect_to :loan_request and return
     end
@@ -228,6 +232,15 @@ class RequestsController < ApplicationController
       end
 
       collection_answers
+    end
+
+    def check_missing_answers(answers_hash)
+      answers_hash.each do |question, answer|
+        if question.required? && (answer.blank? || answer.answer.blank?) 
+          return true
+        end
+      end
+      return false
     end
 
 end
