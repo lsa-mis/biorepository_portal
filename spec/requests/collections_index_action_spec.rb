@@ -74,7 +74,6 @@ RSpec.describe Collection, type: :request do
       end
     end
 
-
     context 'with super_admin role' do
       let!(:super_admin_user) { FactoryBot.create(:user) }
       let!(:collection) { FactoryBot.create(:collection) }
