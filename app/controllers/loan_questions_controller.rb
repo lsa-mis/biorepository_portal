@@ -28,6 +28,7 @@ class LoanQuestionsController < ApplicationController
   # POST /loan_questions or /loan_questions.json
   def create
     @loan_question = LoanQuestion.new(loan_question_params)
+    authorize @loan_question
     if loan_question_params[:question_type] == "dropdown" || loan_question_params[:question_type] == "checkbox"
       options = params[:options_attributes].values
     end
