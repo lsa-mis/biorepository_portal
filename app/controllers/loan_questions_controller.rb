@@ -17,6 +17,7 @@ class LoanQuestionsController < ApplicationController
   # GET /loan_questions/new
   def new
     @loan_question = LoanQuestion.new
+    authorize @loan_question
   end
 
   # GET /loan_questions/1/edit
@@ -27,10 +28,10 @@ class LoanQuestionsController < ApplicationController
   # POST /loan_questions or /loan_questions.json
   def create
     @loan_question = LoanQuestion.new(loan_question_params)
+    authorize @loan_question
     if loan_question_params[:question_type] == "dropdown" || loan_question_params[:question_type] == "checkbox"
       options = params[:options_attributes].values
     end
-    authorize @loan_question
 
     respond_to do |format|
       if @loan_question.save
@@ -51,7 +52,6 @@ class LoanQuestionsController < ApplicationController
 
   # PATCH/PUT /loan_questions/1 or /loan_questions/1.json
   def update
-    authorize @loan_question
     success = true
     ActiveRecord::Base.transaction do
       begin
@@ -90,13 +90,11 @@ class LoanQuestionsController < ApplicationController
   end
 
   def move_up
-    authorize @loan_question
     @loan_question.move_higher
     redirect_to loan_questions_path, notice: "Question moved up."
   end
 
   def move_down
-    authorize @loan_question
     @loan_question.move_lower
     redirect_to loan_questions_path, notice: "Question moved down."
   end
@@ -116,6 +114,7 @@ class LoanQuestionsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_loan_question
       @loan_question = LoanQuestion.find(params[:id])
+      authorize @loan_question
     end
 
     def set_question_types
