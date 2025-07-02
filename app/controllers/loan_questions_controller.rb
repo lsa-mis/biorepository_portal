@@ -1,5 +1,5 @@
 class LoanQuestionsController < ApplicationController
-  before_action :set_loan_question, only: %i[ show edit update destroy ]
+  before_action :set_loan_question, only: %i[ show edit update destroy move_up move_down ]
   before_action :set_question_types, only: %i[ index new edit create update ]
 
   # GET /loan_questions or /loan_questions.json
@@ -90,14 +90,12 @@ class LoanQuestionsController < ApplicationController
   end
 
   def move_up
-    @loan_question = LoanQuestion.find(params[:id])
     authorize @loan_question
     @loan_question.move_higher
     redirect_to loan_questions_path, notice: "Question moved up."
   end
 
   def move_down
-    @loan_question = LoanQuestion.find(params[:id])
     authorize @loan_question
     @loan_question.move_lower
     redirect_to loan_questions_path, notice: "Question moved down."
