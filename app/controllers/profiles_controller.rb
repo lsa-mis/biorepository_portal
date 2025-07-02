@@ -73,7 +73,7 @@ class ProfilesController < ApplicationController
   end
 
   def show_loan_questions
-    loan_questions = LoanQuestion.includes(:loan_answers).all
+    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
 	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
 	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
     end
@@ -81,7 +81,7 @@ class ProfilesController < ApplicationController
   end
 
   def edit_loan_questions
-    @loan_questions = LoanQuestion.all
+    @loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
     @loan_answers = current_user.loan_answers.includes(:loan_question)
     @collections = Collection.joins(:collection_questions).distinct
   end
@@ -112,7 +112,7 @@ class ProfilesController < ApplicationController
     @collections = Collection.joins(:collection_questions).distinct
     @collection_answers = {}
     @collections.each do |collection|
-      collection_questions = collection.collection_questions
+      collection_questions = collection.collection_questions.includes(:collection_answers).order(:position)
       next if collection_questions.empty?
       # Build a hash: { question1 => answer1, question2 => answer2, ... }
       question_answer_hash = {}

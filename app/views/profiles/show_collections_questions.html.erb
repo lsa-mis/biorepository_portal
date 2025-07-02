@@ -12,7 +12,7 @@
     </div>
     <% qa_data.each do |question, answer| %>
       <p>
-        <strong><%= question.question %></strong>
+        <strong><%= question.position %>. <%= question.question %></strong>
         <% if question.required? %>
           <span class="text-danger">*</span>
         <% end %>
