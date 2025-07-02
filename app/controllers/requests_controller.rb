@@ -90,68 +90,78 @@ class RequestsController < ApplicationController
     @loan_request = LoanRequest.new
     @loan_request.user = current_user
     @loan_request.send_to = emails.join(', ')
-    @loan_request.save!
-    @loan_answers = current_user.loan_answers
-                      .includes(:loan_question)
-                      .joins(:loan_question)
-                      .order("loan_questions.id ASC")
+    # @loan_request.save!
+
+    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
+    @loan_answers = loan_questions.each_with_object({}) do |question, hash|
+	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
+    end
 
     @collection_answers = build_collection_answers(@checkout, current_user)
 
-    # Check required loan questions
-    missing_loan_answers = @loan_answers.select do |a|
-      a.loan_question.required? && a.answer.to_plain_text.strip.blank?
-    end
-
-    # Check required collection questions
-    missing_collection_answers = @collection_answers.flat_map { |_, qa_hash| qa_hash.values }.select do |answer|
-      answer&.collection_question&.required? && answer&.answer&.to_plain_text&.strip.blank?
-    end.map { |answer| answer&.collection_question }.compact
+    # Check required questions
+    missing_loan_answers = check_missing_answers(@loan_answers)
+    missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data) }
 
     # Check required user info fields
-    user_missing_fields = []
-    user_missing_fields << "First Name" if current_user.first_name.to_s.strip.blank?
-    user_missing_fields << "Last Name" if current_user.last_name.to_s.strip.blank?
-    user_missing_fields << "Affiliation" if current_user.affiliation.to_s.strip.blank?
+    user_missing_fields = false
+    user_missing_fields = true unless current_user.first_name.present?
+    user_missing_fields = true unless current_user.last_name.present?
+    user_missing_fields = true unless current_user.affiliation.present?
 
-    if missing_loan_answers.any? || missing_collection_answers.any? || user_missing_fields.any?
+    if missing_loan_answers || missing_collection_answers|| user_missing_fields
       flash[:alert] = "Please answer all required questions before sending the loan request."
       redirect_to :loan_request and return
     end
 
-    csv_tempfile = Tempfile.new(["loan_request", ".csv"])
-    csv_file_path = create_csv_file(csv_tempfile, current_user)
-    csv_tempfile.rewind
-
     pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
-    File.open(pdf_tempfile, "wb") do |file|
-      file.write(PdfGenerator.new(@loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
+    csv_tempfile = create_csv_file(current_user)
+
+    begin
+      @loan_request.save
+      
+      File.open(pdf_tempfile, "wb") do |file|
+        file.write(PdfGenerator.new(@loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
+      end
+      pdf_tempfile.rewind
+
+      @loan_request.pdf_file.attach(
+        io: pdf_tempfile,
+        filename: "loan_request_#{@loan_request.id}.pdf",
+        content_type: "application/pdf"
+      )
+
+      @loan_request.csv_file.attach(
+        io: csv_tempfile,
+        filename: "loan_request_#{@loan_request.id}.csv",
+        content_type: "text/csv"
+      )
+
+      RequestMailer.send_loan_request(
+        send_to: emails,
+        user: current_user,
+        csv_file: csv_tempfile,
+        pdf_file: pdf_tempfile
+      ).deliver_now
+
+      RequestMailer.user_confirmation_email(
+        current_user,
+        @loan_request,
+        csv_file: csv_tempfile,
+        pdf_file: pdf_tempfile
+      ).deliver_now
+
+      # Clean up checkout items
+      @checkout.requestables.destroy_all
+
+      redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
+
+    ensure
+      csv_tempfile.close
+      csv_tempfile.unlink
+      pdf_tempfile.close
+      pdf_tempfile.unlink
     end
-    pdf_tempfile.rewind
-
-    @loan_request.pdf_file.attach(
-      io: pdf_tempfile,
-      filename: "loan_request_#{@loan_request.id}.pdf",
-      content_type: "application/pdf"
-    )
-
-    @loan_request.csv_file.attach(
-      io: File.open(csv_file_path), # csv_file_path is the path to your tmp file
-      filename: "loan_request_#{@loan_request.id}.csv",
-      content_type: "text/csv"
-    )
-
-    RequestMailer.send_loan_request(
-      send_to: emails,
-      user: current_user,
-      csv_file: csv_file_path,
-      pdf_file: pdf_tempfile
-    ).deliver_now
-
-    # Clean up if you want
-    File.delete(csv_tempfile) if File.exist?(csv_tempfile)
-    File.delete(pdf_tempfile) if File.exist?(pdf_tempfile)
-    redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
   end
 
   private
@@ -172,10 +182,10 @@ class RequestsController < ApplicationController
       checkout_items
     end
 
-    def create_csv_file(filename, user)
-      filename = Rails.root.join("tmp", "loan_request_#{SecureRandom.uuid}.csv")
+    def create_csv_file(user)
+      tempfile = Tempfile.new(["loan_request", ".csv"])
 
-      CSV.open(filename, "w") do |csv|
+      CSV.open(tempfile.path, "w") do |csv|
         csv << [
           "User Name",
           "User Institution",
@@ -201,7 +211,8 @@ class RequestsController < ApplicationController
         end
       end
 
-      filename.to_s
+      tempfile.rewind
+      tempfile
     end
 
     def build_collection_answers(checkout, user)
@@ -224,6 +235,15 @@ class RequestsController < ApplicationController
       end
 
       collection_answers
+    end
+
+    def check_missing_answers(answers_hash)
+      answers_hash.each do |question, answer|
+        if question.required? && (answer.blank? || answer.answer.blank?) 
+          return true
+        end
+      end
+      return false
     end
 
 end

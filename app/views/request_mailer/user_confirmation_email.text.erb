@@ -1,0 +1,9 @@
+Dear <%= @user.first_name %>,
+
+We've received your loan request submitted on <%= @loan_request.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%B %d, %Y at %I:%M %p %Z") %>.
+
+Attached to this email, you'll find a copy of your request in both PDF and CSV formats.
+
+Thank you for using our system. We'll reach out to you if we need more information.
+
+The Collections Team

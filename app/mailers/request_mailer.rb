@@ -17,4 +17,14 @@ class RequestMailer < ApplicationMailer
     mail(to: send_to, subject: subject)
   end
 
+  def user_confirmation_email(user, loan_request, csv_file:, pdf_file:)
+    @user = user
+    @loan_request = loan_request
+    attachments["loan_request.csv"] = { content: File.read(csv_file), content_type: "text/csv" } if csv_file.present?
+    attachments["loan_request.pdf"] = { content: File.read(pdf_file), content_type: "application/pdf" } if pdf_file.present?
+    mail(
+      to: @user.email,
+      subject: "Confirmation: Your Loan Request Has Been Submitted"
+    )
+  end
 end
