@@ -137,3 +137,19 @@ input[type=submit]:hover {
   box-shadow: none !important;
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
+
+/* Remove the light-blue background when an accordion item is expanded */
+#faqAccordion .accordion-button:not(.collapsed) {
+  background-color: $michigan_summer_blue;
+  color: white;  
+}
+
+#faqAccordion .accordion-button {
+  background-color: $um_blue;
+  color: white;   
+}
+
+/* Kill the focus ring/box-shadow when you click */
+.accordion-button:focus {
+  box-shadow: none;
+}
