@@ -9,14 +9,19 @@
 
     <!-- Main Content: Search Results -->
     <div class="col-md-7 mt-3">
-      <h1>Search Results for Items</h1>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Search Results for Items</h2>
+        <%= turbo_frame_tag "active_filters" do %>
+          <%= render partial: 'layouts/current_filters', locals: { active_filters: @active_filters } %>
+        <% end %>
+      </div>
       <%= turbo_frame_tag "items_result_list" do %>
         <% if @items.empty? %>
           <div class="alert alert-warning mt-3">
             No items available in this collection.
           </div>
         <% else %>
-          <%= render partial: 'result_list' %>
+          <%= render partial: 'result_list', locals: { items: @items } %>
         <% end %>
       <% end %>
     </div>

@@ -1,0 +1,7 @@
+<%= turbo_stream.replace "items_result_list" do %>
+  <%= render partial: "result_list", locals: { items: @items } %>
+<% end %>
+
+<%= turbo_stream.replace "active_filters" do %>
+  <%= render partial: "layouts/current_filters", locals: { active_filters: @active_filters } %>
+<% end %>

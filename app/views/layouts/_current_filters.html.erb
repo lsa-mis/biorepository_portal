@@ -1,0 +1,21 @@
+<% if active_filters.present? %>
+  <div class="mb-3">
+    <!-- Toggle Button -->
+    <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#activeFiltersCollapse" aria-expanded="false" aria-controls="activeFiltersCollapse">
+      <%= active_filters.size %> Active Filters
+    </button>
+
+    <!-- Collapsible Content -->
+    <div class="collapse mt-2" id="activeFiltersCollapse">
+      <div class="card card-body" style="max-width: 100%; max-height: 100px; overflow-y: auto;">
+        <ul class="list-inline mb-0">
+          <% active_filters.each do |filter| %>
+            <li class="list-inline-item badge bg-primary text-white p-2 m-1">
+              <%= filter %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+<% end %>

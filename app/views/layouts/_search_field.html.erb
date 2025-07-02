@@ -1,8 +1,9 @@
 <div class="search-row d-flex align-items-center mb-2" data-search-target="row">
   <% select_id = "search_field_#{group_index}_#{field_index}" %>
+  <% base_name = "q[dynamic_fields][#{group_index}][#{field_index}]" %>
   <label for="<%= select_id %>" class="form-label me-2">Search Field</label>
 
-  <%= select_tag "q[dynamic_fields][][field]",
+  <%= select_tag "#{base_name}[field]",
     options_for_select([
       ["Associated Sequences", "associated_sequences_i_cont"],
       ["Catalog Number", "catalog_number_eq"],
@@ -32,7 +33,7 @@
     class: "form-select me-2 dynamic-search-field"
   %>
 
-  <%= text_field_tag "q[dynamic_fields][][value]",
+  <%= text_field_tag "#{base_name}[value]",
     entered_value,
     class: "form-control me-2 dynamic-search-value",
     aria: { label: "Search Value" } %>

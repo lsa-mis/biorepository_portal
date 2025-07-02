@@ -1,4 +1,5 @@
 class ItemsController < ApplicationController
+  include ActiveFiltersHelper
   skip_before_action :authenticate_user!, only: [ :show, :search ]
   before_action :set_item, only: [ :show ]
 
@@ -17,12 +18,11 @@ class ItemsController < ApplicationController
 
   def search
     if params[:q] && params[:q][:dynamic_fields]
-      params[:q][:dynamic_fields].each do |field_hash|
-        field = field_hash[:field]
-        value = field_hash[:value]
-        next if field.blank? || value.blank?
-
-        params[:q][field] = value
+      params[:q][:dynamic_fields].each do |_, group|
+        group.each do |_, field_hash|
+          next if field_hash["field"].blank? || field_hash["value"].blank?
+          params[:q][field_hash["field"]] = field_hash["value"]
+        end
       end
     end
     @q = Item.ransack(params[:q])
@@ -50,7 +50,13 @@ class ItemsController < ApplicationController
       .map { |c| [c.titleize, c.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
-    render :search_result
+
+    
+    @active_filters = format_active_filters(params)
+    respond_to do |format|
+      format.turbo_stream
+      format.html { render :search_result }
+    end
   end
 
   private
