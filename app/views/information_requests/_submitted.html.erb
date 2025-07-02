@@ -3,6 +3,7 @@
     <tr>
       <th>Submitted At</th>
       <th>Send To</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -11,6 +12,15 @@
         <tr>
           <td><%= l(request.created_at, format: :short) %></td>
           <td><%= request.send_to %></td>
+          <td>
+            <%= link_to "Show", show_information_request_path(request), 
+              data: {
+                turbo_frame: "modal_content_frame",
+                bs_toggle: "modal",
+                bs_target: "#infoRequestModal"
+              },
+              class: "btn btn-primary" %>
+          </td>
         </tr>
       <% end %>
     <% else %>
@@ -22,3 +32,6 @@
     <% end %>
   </tbody>
 </table>
+<%= render "layouts/remote_modal", 
+            id: "infoRequestModal", 
+            title: "Information Request Details" %>

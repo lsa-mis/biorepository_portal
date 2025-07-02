@@ -1,4 +1,5 @@
 class FaqsController < ApplicationController
+  before_action :set_redirection_url
   before_action :set_faq, only: %i[ show edit update destroy ]
   skip_before_action :authenticate_user!, only: %i[index]
 

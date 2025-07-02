@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   
   get "requests/information_request", to: "requests#information_request", as: :information_request
   post "requests/send_information_request", to: "requests#send_information_request", as: :send_information_request
+  get "requests/show_information_request/:id", to: "requests#show_information_request", as: :show_information_request
   get "requests/loan_request", to: "requests#loan_request", as: :loan_request
   post "requests/send_loan_request", to: "requests#send_loan_request", as: :send_loan_request
 
