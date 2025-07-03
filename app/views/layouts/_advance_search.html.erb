@@ -63,6 +63,29 @@
 
     <div class="row">
       <div class="col-md-6 mb-3">
+        <fieldset class="mb-3" id="continent-filter-group">
+          <legend class="h5">Continent</legend>
+          <small>Select one or more continents to narrow your results</small>
+          <label for="continent-filter" class="visually-hidden">Filter continent</label>
+          <input id="continent-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('continent-filters', this.value)">
+
+          <div id="continent-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
+            <%if @continents.present?%>
+              <% @continents.each do |name, lower_name| %>
+                <% continent_id = "continent_#{lower_name.parameterize}" %>
+                <div class="form-check">
+                  <%= check_box_tag "q[continent_case_insensitive_in][]", lower_name, params.dig(:q, :continent_case_insensitive_in)&.include?(lower_name), id: continent_id, "data-action": "search#submit" %>
+                  <%= label_tag continent_id, name %>
+                </div>
+              <% end %>
+            <% else %>
+              <p>No continent available to select from.</p>
+            <% end %>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="col-md-6 mb-3">
         <fieldset class="mb-3" id="country-filter-group">
           <legend class="h5">Country or Region</legend>
           <small>Select one or more countries or regions to narrow your results</small>
@@ -78,7 +101,7 @@
                 <div class="form-check">
                   <%= check_box_tag "q[country_case_insensitive_in][]", lower_name,
                         params.dig(:q, :country_case_insensitive_in)&.include?(lower_name),
-                        id: country_id %>
+                        id: country_id, "data-action": "search#submit" %>
                   <%= label_tag country_id, name %>
                 </div>
               <% end %>
@@ -103,7 +126,7 @@
                 <div class="form-check">
                   <%= check_box_tag "q[state_province_case_insensitive_in][]", lower_name ,
                         params.dig(:q, :state_province_case_insensitive_in)&.include?(lower_name),
-                        id: state_id %>
+                        id: state_id, "data-action": "search#submit"  %>
                   <%= label_tag state_id, name %>
                 </div>
               <% end %>
@@ -130,29 +153,6 @@
                   <%= label_tag sex_id, name %>
                 </div>
               <% end %>
-            <% end %>
-          </div>
-        </fieldset>
-      </div>
-
-      <div class="col-md-6 mb-3">
-        <fieldset class="mb-3" id="continent-filter-group">
-          <legend class="h5">Continent</legend>
-          <small>Select one or more continents to narrow your results</small>
-          <label for="continent-filter" class="visually-hidden">Filter continent</label>
-          <input id="continent-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('continent-filters', this.value)">
-
-          <div id="continent-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-            <%if @continents.present?%>
-              <% @continents.each do |name, lower_name| %>
-                <% continent_id = "continent_#{lower_name.parameterize}" %>
-                <div class="form-check">
-                  <%= check_box_tag "q[continent_case_insensitive_in][]", lower_name, params.dig(:q, :continent_case_insensitive_in)&.include?(lower_name), id: continent_id %>
-                  <%= label_tag continent_id, name %>
-                </div>
-              <% end %>
-            <% else %>
-              <p>No continent available to select from.</p>
             <% end %>
           </div>
         </fieldset>
