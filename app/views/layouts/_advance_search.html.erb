@@ -126,7 +126,7 @@
                 <div class="form-check">
                   <%= check_box_tag "q[state_province_case_insensitive_in][]", lower_name ,
                         params.dig(:q, :state_province_case_insensitive_in)&.include?(lower_name),
-                        id: state_id, "data-action": "search#submit"  %>
+                        id: state_id, "data-action": "search#submit" %>
                   <%= label_tag state_id, name %>
                 </div>
               <% end %>
@@ -149,7 +149,7 @@
               <% @sexs.each do |name, lower_name| %>
                 <% sex_id = "sex_#{lower_name.parameterize}" %>
                 <div class="form-check">
-                  <%= check_box_tag "q[sex_case_insensitive_in][]", lower_name, params.dig(:q, :sex_case_insensitive_in)&.include?(lower_name), id: sex_id %>
+                  <%= check_box_tag "q[sex_case_insensitive_in][]", lower_name, params.dig(:q, :sex_case_insensitive_in)&.include?(lower_name), id: sex_id, "data-action": "search#submit" %>
                   <%= label_tag sex_id, name %>
                 </div>
               <% end %>
