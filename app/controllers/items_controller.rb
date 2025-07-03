@@ -29,28 +29,49 @@ class ItemsController < ApplicationController
     @items = @q.result.page(params[:page]).per(15)
     @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
     @all_collections = Collection.all
-    @countries = Item.distinct.pluck(:country)
-      .compact
-      .reject(&:blank?)
-      .map { |c| [c.titleize, c.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
-    @states = Item.distinct.pluck(:state_province)
-      .compact.reject(&:blank?)
-      .map { |s| [s.titleize, s.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
-    @sexs = Item.distinct.pluck(:sex)
-      .compact.reject(&:blank?)
-      .map { |s| [s.titleize, s.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
     @continents = Item.distinct.pluck(:continent)
       .compact.reject(&:blank?)
       .map { |c| [c.titleize, c.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
+    if params[:q] && params[:q][:continent_case_insensitive_in].present?
+      selected_continents = params[:q][:continent_case_insensitive_in]
+      @countries = Item.where("lower(items.continent) IN (?)", selected_continents)
+        .distinct.pluck(:country)
+        .compact
+        .reject(&:blank?)
+        .map { |c| [c.titleize, c.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+    else
+      @countries = Item.distinct.pluck(:country)
+        .compact
+        .reject(&:blank?)
+        .map { |c| [c.titleize, c.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+    end
 
+    if params[:q] && params[:q][:country_case_insensitive_in].present?
+      selected_countries = params[:q][:country_case_insensitive_in]
+      @states = Item.where("lower(items.country) IN (?)", selected_countries)
+        .distinct.pluck(:state_province)
+        .compact.reject(&:blank?)
+        .map { |s| [s.titleize, s.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+    else
+      @states = Item.distinct.pluck(:state_province)
+        .compact.reject(&:blank?)
+        .map { |s| [s.titleize, s.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+    end
+    @sexs = Item.distinct.pluck(:sex)
+      .compact.reject(&:blank?)
+      .map { |s| [s.titleize, s.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
     
     @active_filters = format_active_filters(params)
     respond_to do |format|
@@ -67,7 +88,7 @@ class ItemsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def item_params
-      params.require(:item).permit(:occurrence_id, :catalog_number, :modified, :recorded_by, 
+      params.require(:item).permit(:q, :occurrence_id, :catalog_number, :modified, :recorded_by, 
         :individual_count, :sex, :life_stage, :reproductive_condition, :vitality, 
         :other_catalog_numbers, :occurrence_remarks, :organism_remarks, :associated_sequences, 
         :field_number, :event_date_start, :event_date_end, :verbatim_event_date, :sampling_protocol, 
