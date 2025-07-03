@@ -25,53 +25,62 @@ class ItemsController < ApplicationController
         end
       end
     end
-    @q = Item.ransack(params[:q])
-    @items = @q.result.page(params[:page]).per(15)
-    @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
-    @all_collections = Collection.all
+
     @continents = Item.distinct.pluck(:continent)
       .compact.reject(&:blank?)
       .map { |c| [c.titleize, c.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
-    if params[:q] && params[:q][:continent_case_insensitive_in].present?
-      selected_continents = params[:q][:continent_case_insensitive_in]
-      @countries = Item.where("lower(items.continent) IN (?)", selected_continents)
-        .distinct.pluck(:country)
-        .compact
-        .reject(&:blank?)
-        .map { |c| [c.titleize, c.downcase] }
+    @countries = Item.pluck(:country)
+      .compact
+      .reject(&:blank?)
+      .map { |c| [c.titleize, c.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+    @states = Item.pluck(:state_province)
+        .compact.reject(&:blank?)
+        .map { |s| [s.titleize, s.downcase] }
         .uniq
         .sort_by { |pair| pair[0] }
-    else
-      @countries = Item.distinct.pluck(:country)
-        .compact
-        .reject(&:blank?)
-        .map { |c| [c.titleize, c.downcase] }
-        .uniq
-        .sort_by { |pair| pair[0] }
-    end
+    
+    if params[:q]
+      params_q = params[:q]
+      selected_continents = params[:q][:continent_case_insensitive_in].present? ? params[:q][:continent_case_insensitive_in] : nil
+      selected_countries = params[:q][:country_case_insensitive_in].present? ? params[:q][:country_case_insensitive_in] : nil
 
-    if params[:q] && params[:q][:country_case_insensitive_in].present?
-      selected_countries = params[:q][:country_case_insensitive_in]
-      @states = Item.where("lower(items.country) IN (?)", selected_countries)
-        .distinct.pluck(:state_province)
-        .compact.reject(&:blank?)
-        .map { |s| [s.titleize, s.downcase] }
-        .uniq
-        .sort_by { |pair| pair[0] }
-    else
-      @states = Item.distinct.pluck(:state_province)
-        .compact.reject(&:blank?)
-        .map { |s| [s.titleize, s.downcase] }
-        .uniq
-        .sort_by { |pair| pair[0] }
+      if selected_continents.present?
+        @countries = Item.where("lower(items.continent) IN (?)", selected_continents)
+          .distinct.pluck(:country)
+          .compact
+          .reject(&:blank?)
+          .map { |c| [c.titleize, c.downcase] }
+          .uniq
+          .sort_by { |pair| pair[0] }
+      end
+
+      if selected_countries.present?
+        @states = Item.where("lower(items.country) IN (?)", selected_countries)
+          .pluck(:state_province)
+          .compact.reject(&:blank?)
+          .map { |s| [s.titleize, s.downcase] }
+          .uniq
+          .sort_by { |pair| pair[0] }
+      end
+      if params[:q][:country_case_insensitive_in].present? || params[:q][:state_province_case_insensitive_in].present?
+        params_q.delete(:continent_case_insensitive_in)
+      end
     end
+    
     @sexs = Item.distinct.pluck(:sex)
       .compact.reject(&:blank?)
       .map { |s| [s.titleize, s.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
+
+    @q = Item.ransack(params_q)
+    @items = @q.result.page(params[:page]).per(15)
+    @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
+    @all_collections = Collection.all
     
     @active_filters = format_active_filters(params)
     respond_to do |format|
