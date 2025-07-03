@@ -1,0 +1,36 @@
+<div class="card h-100 shadow-sm" id="<%= dom_id item %>">
+  <div class="card-header">
+    <%= link_to item.name, item_path(item), class: "link_to fw-bold", data: { turbo_frame: "_top" } %>
+    <p class="fw-normal lh-sm"><%= item.country %>
+    <br><%= item.event_date_start %></p>
+  </div>
+  <div class="card-body">
+    <p class="fw-normal lh-sm"><%= show_state_province_county(item) %></p>
+    <p>
+      <%= item.coordinates %>
+    </p>
+    <table class="table table-sm table-item-card">
+      <thead class="">
+        <tr>
+          <th scope="col" class="text-start">Preparation Type</th>
+          <th scope="col" class="text-start">Available Amount</th>
+          <th scope="col" class="text-end">In Checkout</th>
+        </tr>
+      </thead>
+      <tbody class="">
+        <% item.preparations.each do |preparation| %>
+          <% in_checkout, available = preparation_checkout_counts(preparation, @checkout, @max_number_of_preparations) %>
+          <tr>
+            <td class="text-start"><%= preparation.display_name %></td>
+            <td class="text-center"><%= available %></td>
+              <td class="text-center"><%= in_checkout %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer">
+    <%= link_to 'View Item Details', item_path(item), class: "link_to fw-bold", data: { turbo_frame: "_top" } %>
+  </div>
+</div>
+
