@@ -97,12 +97,19 @@ class ProfilesController < ApplicationController
       # Skip if nothing submitted for this question
       next if raw_answer.nil?
 
-      # For checkboxes: join multiple values into a single string
-      answer_value = raw_answer.is_a?(Array) ? raw_answer.join(", ") : strip_tags(raw_answer.strip)
-
-      answer = question.loan_answers.find_or_initialize_by(user: current_user)
-      answer.answer = answer_value
-      answer.save
+      if question.question_type == "attachment"
+        if raw_answer.present? && raw_answer.is_a?(ActionDispatch::Http::UploadedFile)
+          answer = question.loan_answers.find_or_initialize_by(user: current_user)
+          answer.attachment.attach(raw_answer) # Attach the uploaded file
+          answer.answer = raw_answer.original_filename # Optionally store filename or info
+          answer.save
+        end
+      else
+        answer_value = raw_answer.is_a?(Array) ? raw_answer.join(", ") : strip_tags(raw_answer.strip)
+        answer = question.loan_answers.find_or_initialize_by(user: current_user)
+        answer.answer = answer_value
+        answer.save
+      end
     end
 
     redirect_to profile_path, notice: "Loan questions updated successfully."
