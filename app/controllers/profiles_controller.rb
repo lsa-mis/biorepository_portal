@@ -147,8 +147,20 @@ class ProfilesController < ApplicationController
       params[:collection_answers].each do |question_id, raw_answer|
         question = CollectionQuestion.find(question_id)
         answer = current_user.collection_answers.find_or_initialize_by(collection_question: question)
-        cleaned_answer = raw_answer.is_a?(Array) ? raw_answer.join(", ") : strip_tags(raw_answer.to_s.strip)
-        answer.answer = cleaned_answer
+        # cleaned_answer = raw_answer.is_a?(Array) ? raw_answer.join(", ") : strip_tags(raw_answer.to_s.strip)
+
+        if question.question_type == "attachment"
+          if raw_answer.present? && raw_answer.is_a?(ActionDispatch::Http::UploadedFile)
+            # answer = question.loan_answers.find_or_initialize_by(user: current_user)
+            answer.attachment.attach(raw_answer) # Attach the uploaded file
+            answer.answer = raw_answer.original_filename # Optionally store filename or info
+            answer.save
+          end
+        else
+          answer_value = raw_answer.is_a?(Array) ? raw_answer.join(", ") : strip_tags(raw_answer.strip)
+          # answer = question.loan_answers.find_or_initialize_by(user: current_user)
+          answer.answer = answer_value
+        end
         answer.save!
       end
     end

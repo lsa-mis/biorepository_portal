@@ -14,6 +14,19 @@
         No attachment provided.
       <% end %>
     </p>
+  <% else %>
+    <p>
+      <% plain_answer = answer.present? ? answer.answer.to_plain_text.strip.presence : nil %>
+      <% if question.required? %>
+        <% if plain_answer %>
+          <%= plain_answer %>
+        <% else %>
+          <span class="text-danger">Warning: This question is required but not answered.</span>
+        <% end %>
+      <% else %>
+        <%= plain_answer || "No answer provided" %>
+      <% end %>
+    </p>
   <% end %>
 
   <%= link_to "Edit",
