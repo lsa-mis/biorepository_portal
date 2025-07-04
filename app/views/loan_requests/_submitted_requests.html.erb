@@ -29,7 +29,7 @@
         </td>
         <td>
           <% if request.attachment_files.attached? %>
-            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#attachmentsModal-<%= request.id %>">
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#attachmentsModal-<%= request.id %>" aria-label="Open attachments modal for request <%= request.id %>">
               Attached Files
             </button>
 
