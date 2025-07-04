@@ -32,7 +32,7 @@ class Collections::CollectionAnswersController < ApplicationController
 
     if @answer.save
       respond_to do |format|
-        # format.html { redirect_collection_request_path, notice: "Answer updated successfully." }
+        format.html { redirect_to collection_request_path, notice: "Answer updated successfully." }
         format.turbo_stream
       end
     else
