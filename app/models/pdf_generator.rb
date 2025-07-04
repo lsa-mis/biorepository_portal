@@ -40,19 +40,7 @@ class PdfGenerator
       pdf.stroke_horizontal_rule
       pdf.move_down 10
 
-      @loan_answers.each do |question, answer|
-        pdf.text "#{question.position}. #{question.question}", size: 12, style: :medium
-        if question.question_type == "attachment"
-          attachment_status = answer&.attachment&.attached? ? "File attached" : "No file attached"
-          pdf.text attachment_status, size: 11
-        else
-          raw_text = answer&.answer.to_s
-          stripped_text = strip_tags(raw_text).strip
-          response_text = stripped_text.presence || NO_RESPONSE_PLACEHOLDER
-          pdf.text response_text, size: 11
-        end
-        pdf.move_down 8
-      end
+      render_question_answers(pdf, @loan_answers)
 
       # Section: Collection-specific Questions
       @collection_answers.each do |collection, qa_hash|
@@ -61,19 +49,7 @@ class PdfGenerator
         pdf.stroke_horizontal_rule
         pdf.move_down 10
 
-        qa_hash.each_with_index do |(question, answer), i|
-          pdf.text "#{i + 1}. #{question.question}", size: 12, style: :medium
-          if question.question_type == "attachment"
-            attachment_status = answer&.attachment&.attached? ? "File attached" : "No file attached"
-            pdf.text attachment_status, size: 11
-          else
-            raw_text = answer&.answer.to_s
-            stripped_text = strip_tags(raw_text).strip
-            response_text = stripped_text.presence || NO_RESPONSE_PLACEHOLDER
-            pdf.text response_text, size: 11
-          end
-          pdf.move_down 8
-        end
+        render_question_answers(pdf, qa_hash)
       end
 
       # Section: Checkout Items
@@ -113,4 +89,24 @@ class PdfGenerator
   def register_fonts(pdf)
     pdf.font_families.update(FONT_FAMILY)
   end
+
+  def render_question_answers(pdf, question_answer_pairs)
+    question_answer_pairs.each do |question, answer|
+      number = question.position || "(unpositioned)"
+      pdf.text "#{number}. #{question.question}", size: 12, style: :medium
+
+      if question.question_type == "attachment"
+        attachment_status = answer&.attachment&.attached? ? "File attached" : "No file attached"
+        pdf.text attachment_status, size: 11
+      else
+        raw_text = answer&.answer.to_s
+        stripped_text = strip_tags(raw_text).strip
+        response_text = stripped_text.presence || NO_RESPONSE_PLACEHOLDER
+        pdf.text response_text, size: 11
+      end
+
+      pdf.move_down 8
+    end
+  end
+
 end
