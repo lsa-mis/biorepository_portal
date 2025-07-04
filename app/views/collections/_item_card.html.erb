@@ -30,7 +30,16 @@
     </table>
   </div>
   <div class="card-footer">
-    <%= link_to 'View Item Details', item_path(item), class: "link_to fw-bold", data: { turbo_frame: "_top" } %>
+    <div class="col d-flex justify-content-end">
+      <%= link_to "Add To Checkout",
+                add_item_to_checkout_path(item),
+                data: {
+                  turbo_frame: "modal_content_frame",
+                  bs_toggle: "modal",
+                  bs_target: "#addItemToCheckoutModal"
+                },
+                class: "btn btn-sm btn-outline-primary mb-2" %>
+    </div>
   </div>
 </div>
 

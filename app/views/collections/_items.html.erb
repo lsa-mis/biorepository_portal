@@ -11,19 +11,9 @@
       </div>
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
         <% @items.each do |item| %>
-          <div class="col mb-5">
-            <%= link_to "Add To Checkout",
-                      add_item_to_checkout_path(item),
-                      data: {
-                        turbo_frame: "modal_content_frame",
-                        bs_toggle: "modal",
-                        bs_target: "#addItemToCheckoutModal"
-                      },
-                      class: "btn btn-sm btn-outline-primary mb-2" %>
-            <%= turbo_frame_tag "checkout_item_#{item.id}" do %>
-              <%= render partial: "item_card", locals: { item: item } %>
-            <% end %>
-          </div>
+          <%= turbo_frame_tag "checkout_item_#{item.id}" do %>
+            <%= render partial: "item_card", locals: { item: item } %>
+          <% end %>
         <% end %>
       </div>
       <%= paginate @items %>
