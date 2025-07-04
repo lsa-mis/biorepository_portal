@@ -23,8 +23,7 @@
           <div class="nav-section">
             <br />
             <div class="card w-100 p-3 justify-content-center align-items-center ">
-              <span><strong>Name:</strong> <%= current_user.display_name %></span>
-              <span><strong>Email:</strong> <%= current_user.email %></span>
+              <span><strong> <%= current_user.display_name %></strong></span>
               <% if is_admin? %>
                 <span><strong>Role:</strong> <%= user_role %></span>
               <% end %>
@@ -116,11 +115,10 @@
           <a class="h-50 d-flex justify-content-center align-items-center focus-ring border-0 rounded-2 body-md-text mt-3 hide-on-mobile nav-user btn btn-warning fw-semibold rounded-2 px-3 py-3 ms-3" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             My BioRepository
           </a>
-          <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item" style="width: 100%; min-width: unset; max-width: 280px;">
+          <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item" style="min-width: 100%;">
             <li class="dropdown-item navbar_dropdown_item">
               <div class="card w-100 p-3 justify-content-center align-items-center ">
-                <span><strong>Name:</strong> <%= current_user.display_name %></span>
-                <span><strong>Email:</strong> <%= current_user.email %></span>
+                <span><strong><%= current_user.display_name %></strong></span>
                 <% if is_admin? %>
                   <span><strong>Role:</strong> <%= user_role %></span>
                 <% end %>
