@@ -16,7 +16,7 @@ class RequestMailer < ApplicationMailer
     loan_request.attachment_files.each do |file|
       attachments[file.filename.to_s] = {
         mime_type: file.content_type,
-        content: file.download
+        content: file.open { |f| f.read }
       }
     end
     subject = "BioRepository Loan Request from #{user.first_name} - #{Date.today}"
