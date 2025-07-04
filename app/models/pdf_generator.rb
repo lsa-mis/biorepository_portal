@@ -43,12 +43,15 @@ class PdfGenerator
       @loan_answers.each do |question, answer|
         pdf.text "#{question.position}. #{question.question}", size: 12, style: :medium
         if question.question_type == "attachment"
-          attachment_status = answer&.attachment&.attached? ? "File(s) attached" : "No file attached"
+          attachment_status = answer&.attachment&.attached? ? "File attached" : "No file attached"
           pdf.text attachment_status, size: 11
         else
-          response_text = strip_tags(answer&.answer.to_s.presence || NO_RESPONSE_PLACEHOLDER)
+          raw_text = answer&.answer.to_s
+          stripped_text = strip_tags(raw_text).strip
+          response_text = stripped_text.presence || NO_RESPONSE_PLACEHOLDER
           pdf.text response_text, size: 11
         end
+        pdf.move_down 8
       end
 
       # Section: Collection-specific Questions
@@ -61,10 +64,12 @@ class PdfGenerator
         qa_hash.each_with_index do |(question, answer), i|
           pdf.text "#{i + 1}. #{question.question}", size: 12, style: :medium
           if question.question_type == "attachment"
-            attachment_status = answer&.attachment&.attached? ? "File(s) attached" : "No file attached"
+            attachment_status = answer&.attachment&.attached? ? "File attached" : "No file attached"
             pdf.text attachment_status, size: 11
           else
-            response_text = strip_tags(answer&.answer.to_s.presence || NO_RESPONSE_PLACEHOLDER)
+            raw_text = answer&.answer.to_s
+            stripped_text = strip_tags(raw_text).strip
+            response_text = stripped_text.presence || NO_RESPONSE_PLACEHOLDER
             pdf.text response_text, size: 11
           end
           pdf.move_down 8

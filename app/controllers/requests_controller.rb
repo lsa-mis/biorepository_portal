@@ -98,13 +98,41 @@ class RequestsController < ApplicationController
 
     @collection_answers = build_collection_answers(@checkout, current_user)
 
+    # === Handle general (loan-level) attachment answers ===
+    @loan_answers.each do |question, answer|
+      next unless question.question_type == "attachment"
+      next unless answer&.attachment&.attached?
+
+      original_blob = answer.attachment.blob
+
+      prefix = "general"
+      index = question.position || "0"
+      ext = File.extname(original_blob.filename.to_s)
+      custom_filename = "#{prefix}-#{index}#{ext}"
+
+      @loan_request.attachment_files.attach(
+        io: StringIO.new(original_blob.download),
+        filename: custom_filename,
+        content_type: original_blob.content_type
+      )
+    end
+    
+    # === Handle collection-specific attachment answers ===
     @collection_answers.each_value do |qa_data|
       qa_data.each do |question, answer|
         next unless question.question_type == "attachment"
         next unless answer&.attachment&.attached?
 
         original_blob = answer.attachment.blob
-        custom_filename = "#{question.question.parameterize.truncate(30)}#{File.extname(original_blob.filename.to_s)}"
+
+        # Get prefix: "general" or collection name
+        collection_name = question.collection&.division&.parameterize || "general"
+        # Use position as index
+        index = question.position || "0"
+
+        # Build new filename: e.g. general-1.pdf or mammals-3.png
+        ext = File.extname(original_blob.filename.to_s)
+        custom_filename = "#{collection_name}-#{index}#{ext}"
 
         @loan_request.attachment_files.attach(
           io: StringIO.new(original_blob.download),

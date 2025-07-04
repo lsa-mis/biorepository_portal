@@ -5,6 +5,7 @@
       <th>Send To</th>
       <th>PDF</th>
       <th>CSV</th>
+      <th>Attachments</th>
     </tr>
   </thead>
   <tbody>
@@ -28,17 +29,32 @@
         </td>
         <td>
           <% if request.attachment_files.attached? %>
-            <div class="dropdown">
-              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Attached Files
-              </button>
-              <ul class="dropdown-menu">
-                <% request.attachment_files.each do |file| %>
-                  <li>
-                    <%= link_to file.filename.to_s, rails_blob_url(file, disposition: "attachment"), class: "dropdown-item", target: "_blank" %>
-                  </li>
-                <% end %>
-              </ul>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#attachmentsModal-<%= request.id %>">
+              Attached Files
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="attachmentsModal-<%= request.id %>" tabindex="-1" aria-labelledby="attachmentsModalLabel-<%= request.id %>" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="attachmentsModalLabel-<%= request.id %>">Attached Files</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <ul class="list-group">
+                      <% request.attachment_files.each do |file| %>
+                        <li class="list-group-item">
+                          <%= link_to file.filename.to_s, rails_blob_url(file, disposition: "attachment"), target: "_blank" %>
+                        </li>
+                      <% end %>
+                    </ul>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
             </div>
           <% else %>
             <span class="text-muted">No Attachments</span>
