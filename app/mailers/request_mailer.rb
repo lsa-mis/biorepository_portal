@@ -11,8 +11,8 @@ class RequestMailer < ApplicationMailer
 
   def send_loan_request(send_to:, user:, loan_request:, csv_file: nil, pdf_file: nil)
     @user = user
-    attachments["loan_request.csv"] = File.open(csv_file).read if csv_file.present?
-    attachments["loan_request.pdf"] = File.open(pdf_file).read if pdf_file.present?
+    attachments["loan_request.csv"] = File.binread(csv_file.path) if csv_file.present?
+    attachments["loan_request.pdf"] = File.binread(pdf_file.path) if pdf_file.present?
     loan_request.attachment_files.each do |file|
       attachments[file.filename.to_s] = {
         mime_type: file.content_type,
