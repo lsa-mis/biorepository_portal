@@ -16,6 +16,7 @@
     <%= render partial: "layouts/navbar" %>
     <div class="bg-um-blue py-2">
       <div class="container-fluid ps-8 pe-3 d-flex align-items-center justify-content-between">
+        <div class="d-flex flex-row align-items-center gap-2">
           <div class="rounded-3 shadow-sm" style="min-width: 400px; max-width: 415px;">
             <%= form_with url: search_items_path,
                           method: :get,
@@ -35,6 +36,10 @@
               </div>
             <% end %>
           </div>
+
+          <%= link_to "Advanced Search", search_items_path, class: "btn btn-sm px-3 py-1 small", style: "background-color: white; color: black; border: 1px solid #ced4da;" %>
+        </div>
+
 
           <div class="bg-white p-2 rounded-3 shadow-sm">
             <%= render "layouts/faq_bar" %>
