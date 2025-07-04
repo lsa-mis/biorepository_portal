@@ -18,10 +18,17 @@ class LoanAnswersController < ApplicationController
     submitted_answers = params[:loan_answers] || {}
     raw_answer = submitted_answers[@question.id.to_s]
 
-    answer_value = raw_answer.is_a?(Array) ? raw_answer.reject(&:blank?).join(", ") : strip_tags(raw_answer.to_s.strip)
-
-    @answer = @question.loan_answers.find_or_initialize_by(user: current_user)
-    @answer.answer = answer_value
+    if @question.question_type == "attachment"
+      if raw_answer.present? && raw_answer.is_a?(ActionDispatch::Http::UploadedFile)
+        @answer = @question.loan_answers.find_or_initialize_by(user: current_user)
+        @answer.attachment.attach(raw_answer) # Attach the uploaded file
+        @answer.answer = raw_answer.original_filename # Optionally store filename or info
+      end
+    else
+      answer_value = raw_answer.is_a?(Array) ? raw_answer.reject(&:blank?).join(", ") : strip_tags(raw_answer.to_s.strip)
+      @answer = @question.loan_answers.find_or_initialize_by(user: current_user)
+      @answer.answer = answer_value
+    end
 
     if @answer.save
       respond_to do |format|
@@ -42,6 +49,6 @@ class LoanAnswersController < ApplicationController
   private
 
   def loan_answer_params
-    params.require(:loan_answer).permit(:answer, :loan_question_id, :user_id)
+    params.require(:loan_answer).permit(:answer, :loan_question_id, :user_id, :attachment)
   end
 end

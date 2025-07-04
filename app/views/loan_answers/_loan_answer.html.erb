@@ -5,18 +5,29 @@
       <span class="text-danger">*</span>
     <% end %>
   </p>
-  <p>
-    <% plain_answer = answer.present? ? answer.answer.to_plain_text.strip.presence : nil %>
-    <% if question.required? %>
-      <% if plain_answer %>
-        <%= plain_answer %>
+  <% if question.question_type == "attachment" %>
+    <p>
+      <strong>Attachment:</strong>
+      <% if answer&.attachment&.attached? %>
+        <%= link_to answer.attachment.filename.to_s, rails_blob_path(answer.attachment, disposition: "attachment"), target: "_blank", rel: "noopener noreferrer" %>
       <% else %>
-        <span class="text-danger">Warning: This question is required but not answered.</span>
+        No attachment provided.
       <% end %>
-    <% else %>
-      <%= plain_answer || "No answer provided" %>
-    <% end %>
-  </p>
+    </p>
+  <% else %>
+    <p>
+      <% plain_answer = answer.present? ? answer.answer.to_plain_text.strip.presence : nil %>
+      <% if question.required? %>
+        <% if plain_answer %>
+          <%= plain_answer %>
+        <% else %>
+          <span class="text-danger">Warning: This question is required but not answered.</span>
+        <% end %>
+      <% else %>
+        <%= plain_answer || "No answer provided" %>
+      <% end %>
+    </p>
+  <% end %>
 
   <%= link_to "Edit",
               edit_loan_answer_path(question, format: :turbo_stream),
