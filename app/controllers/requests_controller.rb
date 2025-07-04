@@ -65,7 +65,6 @@ class RequestsController < ApplicationController
     end
 
     @collection_answers = build_collection_answers(@checkout, current_user)
-
   end
 
   def send_loan_request
@@ -98,7 +97,6 @@ class RequestsController < ApplicationController
     end
 
     @collection_answers = build_collection_answers(@checkout, current_user)
-
     # Check required questions
     missing_loan_answers = check_missing_answers(@loan_answers)
     missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data) }
