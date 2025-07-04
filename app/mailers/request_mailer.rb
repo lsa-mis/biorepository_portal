@@ -13,6 +13,12 @@ class RequestMailer < ApplicationMailer
     @user = user
     attachments["loan_request.csv"] = File.read(csv_file) if csv_file.present?
     attachments["loan_request.pdf"] = File.read(pdf_file) if pdf_file.present?
+    loan_request.attachment_files.each do |file|
+      attachments[file.filename.to_s] = {
+        mime_type: file.content_type,
+        content: file.download
+      }
+    end
     subject = "BioRepository Loan Request from #{user.first_name} - #{Date.today}"
     mail(to: send_to, subject: subject)
   end

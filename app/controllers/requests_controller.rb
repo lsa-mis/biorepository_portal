@@ -97,6 +97,23 @@ class RequestsController < ApplicationController
     end
 
     @collection_answers = build_collection_answers(@checkout, current_user)
+
+    @collection_answers.each_value do |qa_data|
+      qa_data.each do |question, answer|
+        next unless question.question_type == "attachment"
+        next unless answer&.attachment&.attached?
+
+        original_blob = answer.attachment.blob
+        custom_filename = "#{question.question.parameterize.truncate(30)}#{File.extname(original_blob.filename.to_s)}"
+
+        @loan_request.attachment_files.attach(
+          io: StringIO.new(original_blob.download),
+          filename: custom_filename,
+          content_type: original_blob.content_type
+        )
+      end
+    end
+
     # Check required questions
     missing_loan_answers = check_missing_answers(@loan_answers)
     missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data) }
@@ -138,6 +155,7 @@ class RequestsController < ApplicationController
       RequestMailer.send_loan_request(
         send_to: emails,
         user: current_user,
+        loan_request: @loan_request,
         csv_file: csv_tempfile,
         pdf_file: pdf_tempfile
       ).deliver_now
