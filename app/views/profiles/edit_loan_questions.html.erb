@@ -38,7 +38,7 @@
           <% when "attachment" %>
             <p>Currently Attached:
               <% if existing_answer&.attachment&.attached? %>
-                <%= link_to("View Attachment", existing_answer.attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %>
+                <%= link_to("#{existing_answer.attachment.filename.to_s}", existing_answer.attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %>
               <% else %>
                 None
               <% end %>
