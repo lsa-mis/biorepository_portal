@@ -44,7 +44,7 @@
               <% end %>
             </p>
             <div class="ms-3">
-              <%= file_field_tag "collection_answers[#{question.id}]", class: "form-control ms-3" %>
+              <%= file_field_tag "collection_answers[#{question.id}]", accept: ".pdf", class: "form-control ms-3" %>
             </div>
 
           <% else %>
