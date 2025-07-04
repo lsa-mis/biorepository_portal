@@ -269,7 +269,7 @@ class RequestsController < ApplicationController
         custom_filename = "#{prefix}-#{index}#{ext}"
 
         @loan_request.attachment_files.attach(
-          io: original_blob.open,
+          io: StringIO.new(original_blob.download),
           filename: custom_filename,
           content_type: original_blob.content_type
         )
