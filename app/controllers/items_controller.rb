@@ -25,7 +25,7 @@ class ItemsController < ApplicationController
         end
       end
     end
-    @q = Item.ransack(params[:q])
+    @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
     @items = @q.result.page(params[:page]).per(15)
     @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
     @all_collections = Collection.all

@@ -1,4 +1,4 @@
-<div class="container my-5">
+<div class="container mt-2">
     <%= form_with url: collection_path(@collection), method: :get, turbo: true,
       data: { controller: "autosubmit",
               autosubmit_target: "form",
@@ -26,4 +26,3 @@
             id: "addItemToCheckoutModal",
             title: "Add Preparation to Checkout",
             show: false %>
-            

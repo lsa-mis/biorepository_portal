@@ -99,6 +99,9 @@ module ApplicationHelper
   end
 
   def preparation_checkout_counts(preparation, checkout, max_number_of_preparations = nil)
+    if max_number_of_preparations.nil?
+      max_number_of_preparations = fetch_max_number_of_preparations(preparation.item.collection.id)
+    end
     in_checkout = checkout.requestables.find_by(preparation_id: preparation.id)&.count.to_i
     available = [show_count(preparation, max_number_of_preparations) - in_checkout, 0].max
     [in_checkout, available]
