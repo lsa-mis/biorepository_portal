@@ -21,6 +21,7 @@ class LoanRequest < ApplicationRecord
   belongs_to :user
   has_one_attached :pdf_file
   has_one_attached :csv_file
+  has_many_attached :attachment_files
 
   validates :send_to, presence: true
 end
