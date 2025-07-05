@@ -81,8 +81,8 @@ def create_user
   @user = User.create(
     email: auth.info.email,
     principal_name: auth.info.principal_name,
-    first_name: auth.info.name.split(" ")[0],
-    last_name: auth.info.name.split(" ")[1],
+    first_name: auth.info.name.split(" ", 2)[0],
+    last_name: auth.info.name.split(" ", 2)[1],
     affiliation: auth.info.person_affiliation,
     password: Devise.friendly_token[0, 20]
   )
