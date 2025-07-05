@@ -115,26 +115,26 @@
           <a class="h-50 d-flex justify-content-center align-items-center focus-ring border-0 rounded-2 body-md-text mt-3 hide-on-mobile nav-user btn btn-warning fw-semibold rounded-2 px-3 py-3 ms-3" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             My BioRepository
           </a>
-          <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item" style="min-width: 100%;">
-            <li class="dropdown-item navbar_dropdown_item">
-              <div class="card w-100 p-3 justify-content-center align-items-center ">
-                <span><strong><%= current_user.display_name %></strong></span>
-                <% if is_admin? %>
-                  <span><strong>Role:</strong> <%= user_role %></span>
-                <% end %>
-                <%= link_to "View Profile", profile_path(current_user), class: "btn btn-warning fw-semibold rounded-2 px-3 py-2 ms-3 mt-2" %>
-              </div>
-            </li>
-            <li class="dropdown-item navbar_dropdown_item">
+          
+            <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item" style="position: absolute; top:100; right:0; width:250px;">
+              <li class="dropdown-item navbar_dropdown_item">
+                <div class="card w-100 p-3 justify-content-center align-items-center ">
+                  <span><strong><%= current_user.display_name %></strong></span>
+                  <% if is_admin? %>
+                    <span><%= user_role %></span>
+                  <% end %>
+                  <%= link_to "View Profile", profile_path(current_user), class: "btn btn-warning fw-semibold rounded-2 px-3 py-2 ms-3 mt-2" %>
+                </div>
+              </li>
+              <li class="dropdown-item navbar_dropdown_item">
                 <div class="d-flex flex-row justify-content-center align-items-center mt-2">
                   <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign " do %>
                     Log Out
                   <% end %> 
                 </div>
-            </li>
-              </div>
-            </div>
-          </ul>
+              </li>
+            </ul>
+          
         </div>
       <% else %>
         <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
