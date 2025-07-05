@@ -9,10 +9,16 @@ class RequestMailer < ApplicationMailer
     mail(to: send_to, subject: subject)
   end
 
-  def send_loan_request(send_to:, user:, csv_file: nil, pdf_file: nil)
+  def send_loan_request(send_to:, user:, loan_request:, csv_file: nil, pdf_file: nil)
     @user = user
-    attachments["loan_request.csv"] = File.read(csv_file) if csv_file.present?
-    attachments["loan_request.pdf"] = File.read(pdf_file) if pdf_file.present?
+    attachments["loan_request.csv"] = csv_file.read if csv_file.present?
+    attachments["loan_request.pdf"] = pdf_file.read if pdf_file.present?
+    loan_request.attachment_files.each do |file|
+      attachments[file.filename.to_s] = {
+        mime_type: file.content_type,
+        content: file.open { |f| f.read }
+      }
+    end
     subject = "BioRepository Loan Request from #{user.first_name} - #{Date.today}"
     mail(to: send_to, subject: subject)
   end

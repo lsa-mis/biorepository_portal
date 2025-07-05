@@ -26,6 +26,7 @@ class CheckoutController < ApplicationController
                                                    locals: { checkout: @checkout }),
                               turbo_stream.replace(@preparation),
                               turbo_stream.update('total', partial: 'checkout/total'),
+                              turbo_stream.update('total1', partial: 'checkout/total'),
                               turbo_stream.update('flash', partial: 'layouts/flash'),
                               turbo_stream.update(
                                 "checkout_item_#{@preparation.item_id}",
@@ -59,6 +60,7 @@ class CheckoutController < ApplicationController
                                                    partial: 'checkout/checkout',
                                                    locals: { checkout: @checkout }),
                                                    turbo_stream.update('total', partial: 'checkout/total'),
+                                                   turbo_stream.update('total1', partial: 'checkout/total'),
                               turbo_stream.update('flash', partial: 'layouts/flash')]
       end
     end
@@ -74,6 +76,7 @@ class CheckoutController < ApplicationController
                                                   partial: 'checkout/checkout',
                                                   locals: { checkout: @checkout }),
                               turbo_stream.update('total', partial: 'checkout/total'),
+                              turbo_stream.update('total1', partial: 'checkout/total'),
                               turbo_stream.update('flash', partial: 'layouts/flash')]
       end
     end

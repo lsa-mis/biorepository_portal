@@ -5,12 +5,13 @@
       <th>Send To</th>
       <th>PDF</th>
       <th>CSV</th>
+      <th>Attachments</th>
     </tr>
   </thead>
   <tbody>
     <% @loan_requests.each do |request| %>
       <tr>
-        <td><%= request.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><%= request.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%Y-%m-%d %H:%M") %></td>
         <td><%= request.send_to %></td>
         <td>
           <% if request.pdf_file.attached? %>
@@ -24,6 +25,39 @@
             <%= link_to 'Download CSV', rails_blob_url(request.csv_file, disposition: "attachment"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
           <% else %>
             <span class="text-muted">No CSV</span>
+          <% end %>
+        </td>
+        <td>
+          <% if request.attachment_files.attached? %>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#attachmentsModal-<%= request.id %>" aria-label="Open attachments modal for request <%= request.id %>">
+              Attached Files
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="attachmentsModal-<%= request.id %>" tabindex="-1" aria-labelledby="attachmentsModalLabel-<%= request.id %>" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="attachmentsModalLabel-<%= request.id %>">Attached Files</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <ul class="list-group">
+                      <% request.attachment_files.each do |file| %>
+                        <li class="list-group-item">
+                          <%= link_to file.filename.to_s, rails_blob_url(file, disposition: "attachment"), target: "_blank", rel: "noopener noreferrer" %>
+                        </li>
+                      <% end %>
+                    </ul>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% else %>
+            <span class="text-muted">No Attachments</span>
           <% end %>
         </td>
       </tr>

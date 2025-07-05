@@ -65,7 +65,6 @@ class RequestsController < ApplicationController
     end
 
     @collection_answers = build_collection_answers(@checkout, current_user)
-
   end
 
   def send_loan_request
@@ -98,6 +97,16 @@ class RequestsController < ApplicationController
     end
 
     @collection_answers = build_collection_answers(@checkout, current_user)
+
+    # Handle general loan questions (prefix: "general")
+    attach_attachments_from_answers(@loan_answers, ->(question) { "general" })
+
+    # Handle collection-specific questions (prefix: collection name or fallback)
+    @collection_answers.each_value do |qa_data|
+      attach_attachments_from_answers(qa_data, ->(question) {
+        question.collection&.division&.parameterize || "NA"
+      })
+    end
 
     # Check required questions
     missing_loan_answers = check_missing_answers(@loan_answers)
@@ -140,6 +149,7 @@ class RequestsController < ApplicationController
       RequestMailer.send_loan_request(
         send_to: emails,
         user: current_user,
+        loan_request: @loan_request,
         csv_file: csv_tempfile,
         pdf_file: pdf_tempfile
       ).deliver_now
@@ -244,6 +254,26 @@ class RequestsController < ApplicationController
         end
       end
       return false
+    end
+
+    def attach_attachments_from_answers(answers, prefix_resolver)
+      answers.each do |question, answer|
+        next unless question.question_type == "attachment"
+        next unless answer&.attachment&.attached?
+
+        original_blob = answer.attachment.blob
+
+        prefix = prefix_resolver.call(question)
+        index = question.position || "0"
+        ext = File.extname(original_blob.filename.to_s)
+        custom_filename = "#{prefix}-#{index}#{ext}"
+
+        @loan_request.attachment_files.attach(
+          io: StringIO.new(original_blob.download),
+          filename: custom_filename,
+          content_type: original_blob.content_type
+        )
+      end
     end
 
 end

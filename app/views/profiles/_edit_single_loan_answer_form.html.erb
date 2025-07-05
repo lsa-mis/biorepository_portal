@@ -1,4 +1,4 @@
-<%= form_with url: update_loan_answer_path(loan_question), method: :patch do %>
+<%= form_with url: update_loan_answer_path(loan_question), method: :patch, multipart: true do %>
   <div class="card p-3">
     <div class="card-body">
       <label class="form-label"><%= loan_question.question %></label>
@@ -26,6 +26,9 @@
                        options_for_select(loan_question.options.map(&:value),
                                           existing_answer&.answer&.to_plain_text&.strip),
                        class: "form-select", prompt: "Select..." %>
+
+      <% when "attachment" %>
+        <%= file_field_tag "loan_answers[#{loan_question.id}]", accept: ".pdf", class: "form-control" %>
 
       <% else %>
         <div class="alert alert-warning mt-2">
