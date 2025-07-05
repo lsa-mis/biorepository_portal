@@ -14,39 +14,12 @@
 
   <body>
     <%= render partial: "layouts/navbar" %>
-    <div class="bg-um-blue py-2">
-      <div class="container-fluid ps-8 pe-3 d-flex align-items-center justify-content-between">
-          <div class="rounded-3 shadow-sm" style="min-width: 400px; max-width: 415px;">
-            <%= form_with url: search_items_path,
-                          method: :get,
-                          html: { class: "m-0", role: "search" },
-                          local: true do %>
-              <div class="input-group input-group-sm">
-                <input
-                  type="search"
-                  name="q[country_case_insensitive_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont]"
-                  class="form-control small-search-input"
-                  placeholder="Search by Country, State, Province, Scientific or Vernacular Name"
-                  aria-label="Search"
-                />
-                <button class="search-icon-button" type="submit">
-                  <i class="bi bi-search"></i>
-                </button>
-              </div>
-            <% end %>
-          </div>
-
-          <div class="bg-white p-2 rounded-3 shadow-sm">
-            <%= render "layouts/faq_bar" %>
-          </div>
-      </div>
-    </div>
-
+    <%= render partial: "layouts/additional_bar" %>
+    
     <main class="container">
       <div id="flash">
         <%= render "layouts/flash" %>
       </div>
-      <%#= render partial: "checkout/checkout" if @render_checkout %>
       <div>
         <%= yield %>
         <%= turbo_frame_tag "remote_modal", target: "_top" %>
