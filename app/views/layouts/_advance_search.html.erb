@@ -158,47 +158,47 @@
         </fieldset>
       </div>
     </div>
-    <div>
+    <div class="mb-2">
       <!-- Dates - use _gteq / _lteq -->
       <%= f.label :event_date_start_gteq, "Event Date Start (After)" %>
-      <%= f.date_field :event_date_start_gteq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
+      <%= f.date_field :event_date_start_gteq, class: "form-control form-control-sm"  %>
     </div>
-    <div>
+    <div class="mb-2">
       <%= f.label :event_date_end_lteq, "Event Date End (Before)" %>
-      <%= f.date_field :event_date_end_lteq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
+      <%= f.date_field :event_date_end_lteq, class: "form-control form-control-sm"  %>
     </div>
-    <div>
+    <div class="mb-2">
       <%= f.label :georeferenced_date_eq, "Georeferenced Date" %>
-      <%= f.date_field :georeferenced_date_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
+      <%= f.date_field :georeferenced_date_eq, class: "form-control form-control-sm"  %>
     </div>
-    <div>
+    <div class="mb-2">
       <%= f.label :modified_eq, "Date Modified" %>
-      <%= f.date_field :modified_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
+      <%= f.date_field :modified_eq, class: "form-control form-control-sm"  %>
     </div>
-    <div>
+    <div class="mb-2">
       <!-- Numbers - use _gteq / _lteq / _eq -->
       <%= f.label :coordinate_uncertainty_in_meters_lteq, "Max Coord. Uncertainty" %>
-      <%= f.search_field :coordinate_uncertainty_in_meters_lteq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
+      <%= f.search_field :coordinate_uncertainty_in_meters_lteq, placeholder: 'Cooordinate in Meters', class: "form-control form-control-sm"  %>
     </div>
-    <div>
+    <div class="mb-2">
       <%= f.label :individual_count_gteq, "Minimum Individual Count" %>
-      <%= f.search_field :individual_count_gteq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
+      <%= f.search_field :individual_count_gteq, placeholder: 'Minimum Individual Count', class: "form-control form-control-sm"  %>
     </div>
-    <div>
+    <div class="mb-2">
       <%= f.label :minimum_elevation_in_meters_gteq, "Min Elevation" %>
-      <%= f.search_field :minimum_elevation_in_meters_gteq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
+      <%= f.search_field :minimum_elevation_in_meters_gteq, placeholder: 'Min Elevation', class: "form-control form-control-sm"  %>
     </div>
-    <div>
+    <div class="mb-2">
       <%= f.label :maximum_elevation_in_meters_lteq, "Max Elevation" %>
-      <%= f.search_field :maximum_elevation_in_meters_lteq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
+      <%= f.search_field :maximum_elevation_in_meters_lteq, placeholder: 'Max Elevatione', class: "form-control form-control-sm"  %>
     </div>
-    <div>
+    <div class="mb-2">
       <%= f.label :decimal_latitude_eq, "Latitude" %>
-      <%= f.search_field :decimal_latitude_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
+      <%= f.search_field :decimal_latitude_eq, placeholder: 'Latitude', class: "form-control form-control-sm"  %>
     </div>
-    <div>
+    <div class="mb-2">
       <%= f.label :decimal_longitude_eq, "Longitude" %>
-      <%= f.search_field :decimal_longitude_eq, placeholder: 'Continent Name', class: "form-control form-control-sm"  %>
+      <%= f.search_field :decimal_longitude_eq, placeholder: 'Longitude', class: "form-control form-control-sm"  %>
     </div>
   </div>
 
