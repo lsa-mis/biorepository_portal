@@ -6,7 +6,6 @@
 #  affiliation            :string
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
-#  display_name           :string
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
 #  failed_attempts        :integer          default(0), not null
