@@ -6,7 +6,6 @@
 #  affiliation            :string
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
-#  display_name           :string
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
 #  failed_attempts        :integer          default(0), not null
@@ -42,4 +41,12 @@ class User < ApplicationRecord
   has_many :loan_answers, dependent: :destroy
   has_many :information_requests, dependent: :destroy
   has_many :loan_requests, dependent: :destroy
+
+  def display_name
+    if first_name.present? && last_name.present?
+      "#{first_name} #{last_name}"
+    else
+      email
+    end
+  end
 end

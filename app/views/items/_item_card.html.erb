@@ -32,14 +32,13 @@
   <div class="card-footer">
     <div class="d-flex justify-content-end">
       <%= link_to "Add To Checkout",
-                add_item_to_checkout_path(item),
-                data: {
-                  turbo_frame: "modal_content_frame",
-                  bs_toggle: "modal",
-                  bs_target: "#addItemToCheckoutModal"
-                },
-                class: "btn btn-sm btn-outline-primary mb-2" %>
+                  add_item_to_checkout_path(item),
+                  data: {
+                    turbo_frame: "modal_content_frame",
+                    bs_toggle: "modal",
+                    bs_target: "#addItemToCheckoutModal"
+                  },
+                  class: "btn btn-sm btn-outline-primary mb-2" %>
     </div>
   </div>
 </div>
-

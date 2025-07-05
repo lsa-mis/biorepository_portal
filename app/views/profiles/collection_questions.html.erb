@@ -38,13 +38,13 @@
           <% when "attachment" %>
             <p>Currently Attached:
               <% if existing_answer&.attachment&.attached? %>
-                <%= link_to("View Attachment", existing_answer.attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %>
+                <%= link_to("#{existing_answer.attachment.filename.to_s}", existing_answer.attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %>
               <% else %>
                 None
               <% end %>
             </p>
             <div class="ms-3">
-              <%= file_field_tag "collection_answers[#{question.id}]", class: "form-control ms-3" %>
+              <%= file_field_tag "collection_answers[#{question.id}]", accept: ".pdf", class: "form-control ms-3" %>
             </div>
 
           <% else %>

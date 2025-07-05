@@ -1,32 +1,98 @@
-<nav class="navbar navbar-expand-md navbar-dark bg-um-blue">
+<nav class="navbar navbar-expand-md navbar-dark bg-um-blue justify-content-between align-items-center">
   <div class="container-fluid" style="--bs-focus-ring-color:#E5E5E5;" >
     <%= link_to root_path, class: "a-nav focus-ring border-0 rounded-2" do %>
-    <div id="LSAlogo" class="d-flex align-items-center">
-      <div class="navbar-brand">
-        <%= image_tag 'LSA_Logo.svg', alt: 'LSA Logo', class: 'logo_image' %>
+      <div id="LSAlogo" class="d-flex align-items-center">
+        <div class="navbar-brand">
+          <%= image_tag 'LSA_Logo.svg', alt: 'LSA Logo', class: 'logo_image' %>
+        </div>
+        <div class="nav-title h-100">
+          BioRepository
+        </div>
       </div>
-      <div class="nav-title h-100">
-        BioRepository
-      </div>
-    </div>
     <% end %>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarBurgerMenu" aria-controls="navbarBurgerMenu" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+
+    <button class="navbar-toggler" type="button" style="position: absolute; right: 1rem; top: 1rem; z-index: 1000;"
+      data-bs-toggle="collapse" data-bs-target="#navbarBurgerMenu" aria-controls="navbarBurgerMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
     </button>
+
+    <!-- this is the hamburger menu-->
+    <div class="collapse navbar-collapse d-md-none" id="navbarBurgerMenu">
+      <ul class="navbar-nav me-auto mb-2 mb-md-0">
+        <% if user_signed_in? %>
+          <li class="nav-section mt-2">
+            <div class="card w-100 p-3 justify-content-center align-items-center">
+              <span><strong> <%= current_user.display_name %></strong></span>
+              <% if is_admin? %>
+                <span><%= user_role %></span>
+              <% end %>
+              <%= link_to "View Profile", profile_path(current_user), class: "btn btn-warning fw-semibold rounded-2 px-3 py-2 ms-3 mt-2" %>
+            </div>
+          </li>
+        <% end %>
+        
+        <li class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+          <%= link_to "Explore Collections", collections_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white' %>
+        </li>
+
+        <li class="d-flex align-items-center gap-2 nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+          <%= link_to "Checkout", checkout_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white' %>
+          <%= turbo_frame_tag "total1" do %>
+            <%= render 'checkout/total' %>
+          <% end %>
+        </li>
+
+        <li class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+          <%= link_to "About", about_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white' %>
+        </li>
+
+        <% if user_signed_in? && is_admin? %>
+          <li class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0">
+            <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Admin
+            </a>
+            <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item">
+              <li>
+                <%= link_to "Loan Questions", loan_questions_path, class: 'dropdown-item navbar_dropdown_item' if policy(LoanQuestion).index? %>
+              </li>
+              <li>
+                <%= link_to "Create Preferences", app_preferences_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).index? %>
+              </li>
+              <li>
+                <%= link_to "App Preferences", app_prefs_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).app_prefs? %>
+              </li>
+            </ul>
+          </li>
+        <% end %>
+        <li class="d-flex flex-row mt-2">
+          <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign" do %>
+            <span>Log Out</span>
+          <% end %> 
+        </li>
+      </ul>
+    </div>
+
     <!-- this is regular navbar-->
-    <div class="collapse navbar-collapse d-none d-md-block">
+    <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+      
+    <div class="collapse navbar-collapse d-none d-md-block px-2">
       <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
-        <%= link_to "About", about_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2' %>
+        <%= link_to "Explore Collections", collections_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white' %>
       </div>
-      <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
-        <%= link_to "Collections", collections_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2' %>
+
+      <div class="d-flex align-items-center nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+        <%= link_to "Checkout", checkout_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white' %>
+        <%= turbo_frame_tag "total" do %>
+          <%= render 'checkout/total' %>
+        <% end %>
       </div>
+
       <% if user_signed_in? && is_admin? %>
         <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0">
-          <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Admin
           </a>
-          <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item">
+          <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item text-white">
             <li>
               <%= link_to "Loan Questions", loan_questions_path, class: 'dropdown-item navbar_dropdown_item' if policy(LoanQuestion).index? %>
             </li>
@@ -39,68 +105,41 @@
           </ul>
         </div>
       <% end %>
-      <div class="d-flex align-items-center gap-2 nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
-        <%= link_to "Checkout", checkout_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2' %>
-        <%= turbo_frame_tag "total" do %>
-          <%= render 'checkout/total' %>
-        <% end %>
-      </div>
 
-    </div>
-    <!-- this is the hamburger menu-->
-    <div class="collapse navbar-collapse d-md-none" id="navbarBurgerMenu">
+      <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+        <%= link_to "About", about_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white' %>
+      </div>
       <% if user_signed_in? %>
-        <div class="nav-section">
-          <br />
-          <div class="container d-flex justify-content-center">
-            <div class="card p-4">
-              <div class="d-flex flex-row justify-content-center align-items-center">
-                <span class="idd1">
-                  <h2><%= current_user.display_name %></h2>
-                </span>
-              </div>
-              <div class="d-flex flex-row justify-content-center align-items-center">
-                <span>
-                  <%= current_user.principal_name %>
-                </span>
-              </div>
-              <div class="d-flex flex-row justify-content-center align-items-center mt-2">
-                <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign" do %>
-                  <span>Log Out</span>
-                <% end %> 
-              </div>
-            </div>
-          </div>
+        <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 mr-2 rounded-0 border-0 hide-on-mobile">
+          <a class="h-50 d-flex justify-content-center align-items-center focus-ring border-0 rounded-2 body-md-text mt-3 hide-on-mobile nav-user btn btn-warning fw-semibold rounded-2 px-3 py-3 ms-3" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            My BioRepository
+          </a>
+          
+            <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item" style="position: absolute; top:100; right:0; width:250px;">
+              <li class="dropdown-item navbar_dropdown_item">
+                <div class="card w-100 p-3 justify-content-center align-items-center ">
+                  <span><strong><%= current_user.display_name %></strong></span>
+                  <% if is_admin? %>
+                    <span><%= user_role %></span>
+                  <% end %>
+                  <%= link_to "View Profile", profile_path(current_user), class: "btn btn-warning fw-semibold rounded-2 px-3 py-2 ms-3 mt-2" %>
+                </div>
+              </li>
+              <li class="dropdown-item navbar_dropdown_item">
+                <div class="d-flex flex-row justify-content-center align-items-center mt-2">
+                  <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign " do %>
+                    Log Out
+                  <% end %> 
+                </div>
+              </li>
+            </ul>
+          
+        </div>
+      <% else %>
+        <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+          <%= button_to "Sign In", user_saml_omniauth_authorize_path, data: {turbo: "false"}, class: "btn btn-sign" %>
         </div>
       <% end %>
     </div>
-    <% if user_signed_in? %>
-      <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 mr-2 rounded-0 border-0 hide-on-mobile">
-        <a class="nav-link h-50 d-flex align-items-center focus-ring border-0 rounded-2 body-md-text mt-3 hide-on-mobile nav-user" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <%= current_user.display_name %><%= user_role %>
-        </a>
-        <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item">
-          <div class="container d-flex justify-content-center" style="position: absolute; top:0; right:0; width:400px;">
-            <div class="card p-4">
-              <div class="d-flex flex-row justify-content-center align-items-center">
-                <span class="idd1">
-                  <h2><%= link_to current_user.display_name, profile_path(current_user) %></h2>
-                </span>
-              </div>
-              <div class="d-flex flex-row justify-content-center align-items-center"><span><%= current_user.principal_name %></span> </div>
-              <div class="d-flex flex-row justify-content-center align-items-center mt-2">
-                <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign " do %>
-                  Log Out
-                <% end %> 
-              </div>
-            </div>
-          </div>
-        </ul>
-      </div>
-    <% else %>
-      <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
-        <%= button_to "Sign In", user_saml_omniauth_authorize_path, data: {turbo: "false"}, class: "btn btn-sign" %>
-      </div>
-    <% end %>
   </div>
 </nav>
