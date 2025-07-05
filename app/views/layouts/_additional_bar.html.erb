@@ -1,0 +1,31 @@
+<div class="bg-um-blue py-2">
+  <div class="container-fluid ps-8 pe-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+    <div class="d-flex flex-column mb-2 flex-md-row align-items-stretch align-items-md-center gap-2">
+      <div class="rounded-3 shadow-sm search-bar-container">
+        <%= form_with url: search_items_path,
+                      method: :get,
+                      html: { class: "m-0", role: "search" },
+                      local: true do %>
+          <div class="input-group input-group-sm">
+            <input
+              type="search"
+              name="q[country_case_insensitive_or_state_province_or_identifications_scientific_name_or_identifications_vernacular_name_cont]"
+              class="form-control small-search-input"
+              placeholder="Search by Country, State, Province, Scientific or Vernacular Name"
+              aria-label="Search"
+            />
+            <button class="search-icon-button" type="submit">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        <% end %>
+      </div>
+
+      <%= link_to "Advanced Search", search_items_path, class: "btn btn-sm px-3 py-1 small", style: "background-color: white; color: black; border: 1px solid #ced4da;" %>
+    </div>
+
+    <div class="bg-white p-2 rounded-3 shadow-sm">
+      <%= render "layouts/faq_bar" %>
+    </div>
+  </div>
+</div>
