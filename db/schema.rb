@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_29_155605) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_05_010816) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -230,7 +230,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_29_155605) do
     t.datetime "updated_at", null: false
     t.string "value"
     t.bigint "loan_question_id", null: false
-    t.integer "position"
     t.index ["loan_question_id"], name: "index_options_on_loan_question_id"
   end
 
@@ -272,7 +271,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_29_155605) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "principal_name"
-    t.string "display_name"
     t.string "affiliation"
     t.string "first_name"
     t.string "last_name"
