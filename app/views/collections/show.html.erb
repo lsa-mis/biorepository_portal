@@ -27,12 +27,13 @@
       <%= f.submit "Search" %>
     </div>
   <% end %>
-
-  <%= turbo_frame_tag "all_items" do %>
-    <% if @items.empty? %>
-      No items available in this collection.
-    <% else %>
-      <%= render partial: "items" %>
+  <div class="mb-4">
+    <%= turbo_frame_tag "all_items" do %>
+      <% if @items.empty? %>
+        No items available in this collection.
+      <% else %>
+        <%= render partial: "items" %>
+      <% end %>
     <% end %>
-  <% end %>
+  </div>
 </div>

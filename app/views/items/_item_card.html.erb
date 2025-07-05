@@ -1,7 +1,7 @@
 <div class="card h-100 shadow-sm" id="<%= dom_id item %>">
   <div class="card-header">
     <%= link_to item.name, item_path(item), class: "link_to fw-bold", data: { turbo_frame: "_top" } %>
-    <p class="fw-normal lh-sm"><%= item.country %>
+    <p class="fw-normal lh-sm"><%= item.country&.titleize %>
     <br><%= item.event_date_start %></p>
   </div>
   <div class="card-body">
@@ -30,7 +30,15 @@
     </table>
   </div>
   <div class="card-footer">
-    <%= link_to 'View Item Details', item_path(item), class: "link_to fw-bold", data: { turbo_frame: "_top" } %>
+    <div class="d-flex justify-content-end">
+      <%= link_to "Add To Checkout",
+                  add_item_to_checkout_path(item),
+                  data: {
+                    turbo_frame: "modal_content_frame",
+                    bs_toggle: "modal",
+                    bs_target: "#addItemToCheckoutModal"
+                  },
+                  class: "btn btn-sm btn-outline-primary mb-2" %>
+    </div>
   </div>
 </div>
-
