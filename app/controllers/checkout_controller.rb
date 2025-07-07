@@ -81,4 +81,46 @@ class CheckoutController < ApplicationController
       end
     end
   end
+
+  def save_for_later
+    @preparation = Preparation.find(params[:id])
+    current_requestable = @checkout.requestables.find_by(preparation_id: @preparation.id)
+    if current_requestable
+      current_requestable.update(saved_for_later: true)
+      flash.now[:notice] = "Preparation saved for later."
+    else
+      flash.now[:alert] = "Preparation not found in checkout."
+    end
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [turbo_stream.replace('checkout',
+                                                   partial: 'checkout/checkout',
+                                                   locals: { checkout: @checkout }),
+                              turbo_stream.update('total', partial: 'checkout/total'),
+                              turbo_stream.update('total1', partial: 'checkout/total'),
+                              turbo_stream.update('flash', partial: 'layouts/flash')]
+      end
+    end
+  end
+
+  def move_back
+    @preparation = Preparation.find(params[:id])
+    current_requestable = @checkout.requestables.find_by(preparation_id: @preparation.id)
+    if current_requestable
+      current_requestable.update(saved_for_later: false)
+      flash.now[:notice] = "Preparation moved back to checkout."
+    else
+      flash.now[:alert] = "Preparation not found in saved for later."
+    end
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [turbo_stream.replace('checkout',
+                                                   partial: 'checkout/checkout',
+                                                   locals: { checkout: @checkout }),
+                              turbo_stream.update('total', partial: 'checkout/total'),
+                              turbo_stream.update('total1', partial: 'checkout/total'),
+                              turbo_stream.update('flash', partial: 'layouts/flash')]
+      end
+    end
+  end
 end

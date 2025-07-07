@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "checkout" do %>
   <div class="d-flex justify-content-between">
-    <h1>Checkout</h1>
+    <h1 class="py-5">Checkout</h1>
     <% if @checkout.requestables.count > 0 %>
       <%= link_to loan_request_path, class: "btn btn-primary h-50 mt-auto mb-auto", data: { turbo_frame: "_top" } do %>
         <i class="bi bi-envelope"></i> Send Loan Request
@@ -11,5 +11,12 @@
     <%= render "checkout/requestables" %>
   <% else %>
     <p>Your checkout is empty</p>
+  <% end %>
+
+  <h1 class="py-5">Saved for Later</h1>
+  <% if @checkout.requestables.where(saved_for_later: true).exists? %>
+      <%= render "checkout/saved_list" %>
+  <% else %>
+    <p>You don't have any preparations saved for later.</p> 
   <% end %>
 <% end %>
