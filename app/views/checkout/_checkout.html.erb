@@ -17,6 +17,6 @@
   <% if @checkout.requestables.where(saved_for_later: true).exists? %>
       <%= render "checkout/saved_list" %>
   <% else %>
-    <p>Your don't have any preparations saved for later.</p> 
+    <p>You don't have any preparations saved for later.</p> 
   <% end %>
 <% end %>
