@@ -1,3 +1,3 @@
 <% if @checkout.requestables.count.positive? %>
-    (<%= @checkout.requestables.count %>)
+    (<%= @checkout.requestables.where(saved_for_later: false).count %>)
 <% end %>

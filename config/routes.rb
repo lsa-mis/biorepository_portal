@@ -44,6 +44,8 @@ Rails.application.routes.draw do
   post "checkout/add"
   post "checkout/change"
   post "checkout/remove"
+  post "checkout/save_for_later"
+  post "checkout/move_back"
 
   resources :items, only: [ :index, :show ] do
     collection do
