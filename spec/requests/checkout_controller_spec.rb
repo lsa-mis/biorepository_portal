@@ -1,11 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe CheckoutController, type: :request do
-  let!(:super_admin_user) { FactoryBot.create(:user) }
   let!(:collection) { FactoryBot.create(:collection) }
   let!(:item) { FactoryBot.create(:item, collection: collection) }
   let!(:preparation) { FactoryBot.create(:preparation, item: item) }
-
 
   context 'Checkout Functionality' do
 
@@ -105,8 +103,6 @@ RSpec.describe CheckoutController, type: :request do
       get checkout_path
       expect(response.body).to include("<option selected=\"selected\" value=\"3\">3</option>")
     end
-
-
   end
 
 end
