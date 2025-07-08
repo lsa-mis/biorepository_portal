@@ -162,7 +162,7 @@ class RequestsController < ApplicationController
       ).deliver_now
 
       # Clean up checkout items
-      @checkout.requestables.where(saved_for_later: false).destroy_all
+      @checkout.requestables.where(saved_for_later: false).delete_all
 
       redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
 
