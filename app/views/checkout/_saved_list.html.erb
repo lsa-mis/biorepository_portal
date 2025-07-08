@@ -1,0 +1,36 @@
+<% @checkout
+  .requestables
+  .where(saved_for_later: true)
+  .order(:id)
+  .each do |requestable| %>
+  <% item = requestable.preparation.item %>
+  <% preparation = requestable.preparation %>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title
+        text-center"><%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" } %></h5>
+      <div class="row">
+        <div class="col-md-4 text-start align-middle">
+          <strong>Collection:</strong> <%= item.collection.division %>
+        </div>
+        <div class="col-md-4 text-start align-middle">
+          <strong>Preparation Type:</strong> <%= preparation.display_name %>
+        </div>
+        <div class="col-md-4 text-start align-middle">
+          <%= form_with url: checkout_remove_path do |form| %>
+            <%= form.hidden_field :id, value: requestable.id %>
+            <%= form.submit 'Remove', class: 'btn btn-primary' %>
+          <% end %>
+        </div>
+        <div class="col-md-4 text-start align-middle">
+          <%= form_with url: checkout_move_back_path, data: { turbo_frame: "checkout" } do |form| %>
+            <%= form.hidden_field :id, value: preparation.id %>
+            <button type="submit" class="btn btn-primary">
+              Move to Checkout
+            </button>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

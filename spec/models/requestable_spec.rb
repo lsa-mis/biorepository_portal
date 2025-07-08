@@ -2,12 +2,13 @@
 #
 # Table name: requestables
 #
-#  id             :bigint           not null, primary key
-#  count          :integer
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  checkout_id    :bigint           not null
-#  preparation_id :bigint           not null
+#  id              :bigint           not null, primary key
+#  count           :integer
+#  saved_for_later :boolean          default(FALSE), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  checkout_id     :bigint           not null
+#  preparation_id  :bigint           not null
 #
 # Indexes
 #

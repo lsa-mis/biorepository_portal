@@ -1,25 +1,24 @@
-<table class="table text-center mt-4">
-    <thead class="table-group-divider">
-    <tr>
-      <th scope="col" class="text-start">Collection</th>
-      <th scope="col" class="text-start">Item</th>
-      <th scope="col" class="text-start">Preparation Type</th>
-      <th scope="col" class="text-start">Amount</th>
-      <th scope="col" class="text-start">Remove</th>
-      <th scope="col" class="text-start">Save for Later</th>
-    </tr>
-    </thead>
-    <tbody class="table-group-divider" id="requestables">
-    
-      <% @checkout.requestables.order(:id).each do |requestable| %>
-        <tr id="<%= dom_id(requestable) %>">
-          <% item = requestable.preparation.item %>
-          <% preparation = requestable.preparation %>
-          <td class="text-start align-middle"><%= item.collection.division %></td>
-          <td class="text-start align-middle"><%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" } %></td>
-          <td class="text-start align-middle"><%= preparation.display_name %></td>
-          <td>
-            <%= form_with url: checkout_change_path, 
+
+<% @checkout
+  .requestables
+  .where(saved_for_later: false)
+  .order(:id)
+  .each do |requestable| %>
+  <% item = requestable.preparation.item %>
+  <% preparation = requestable.preparation %>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title text-center">
+        <%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" } %></h5>
+      <div class="row">
+        <div class="col-md-4 text-start align-middle">
+          <strong>Collection:</strong> <%= item.collection.division %>
+        </div>
+        <div class="col-md-4 text-start align-middle">
+          <strong>Preparation Type:</strong> <%= preparation.display_name %>
+        </div>
+        <div class="col-md-4 text-start align-middle">
+          <%= form_with url: checkout_change_path, 
               data: { controller: "autosubmit",
                 autosubmit_target: "form",
                 turbo_frame: "checkout"
@@ -32,22 +31,22 @@
                 </span>
               </div>
             <% end %>
-          </td>
-          <td class="text-start">
-            <%= form_with(url: checkout_remove_path) do |form| %>
-              <%= form.hidden_field :id, value: requestable.id %>
-              <%= form.submit 'X', class: 'btn link_to text-primary p-0 mt-3', style: 'background: #fff; font-size: 1.25rem; line-height: 1;' %>
-            <% end %>
-          </td>
-          <td class="text-start">
-            <%#= form_with(url: "#") do |form| %>
-              <%#= form.hidden_field :id, value: requestable.id %>
-              <button type="submit" class="btn link_to text-primary p-0 mt-3" style="background: #fff; font-size: 1.25rem; line-height: 1;">
-                <i class="bi bi-bookmarks-fill"></i>
-              </button>
-            <%# end %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+        </div>
+        <div class="col-md-4 text-start align-middle">
+          <%= form_with url: checkout_remove_path do |form| %>
+            <%= form.hidden_field :id, value: requestable.id %>
+            <%= form.submit 'Remove', class: 'btn btn-primary' %>
+          <% end %>
+        </div>
+        <div class="col-md-4 text-start align-middle">
+          <%= form_with url: checkout_save_for_later_path, data: { turbo_frame: "checkout" } do |form| %>
+            <%= form.hidden_field :id, value: preparation.id %>
+            <button type="submit" class="btn btn-primary">
+              Save for Later
+            </button>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
