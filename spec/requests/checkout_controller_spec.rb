@@ -8,12 +8,6 @@ RSpec.describe CheckoutController, type: :request do
 
 
   context 'Checkout Functionality' do
-    # before do
-    #   uniqname = get_uniqname(super_admin_user.email)
-    #   allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
-    #   allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(true)
-    #   mock_login(super_admin_user)
-    # end
 
     it 'returns 200' do
       get checkout_path
@@ -32,6 +26,19 @@ RSpec.describe CheckoutController, type: :request do
       expect(response).to have_http_status(200)
       get checkout_path
       expect(response.body).to include("MPABI")
+    end
+
+    it 'should not display Send Loan Request Button when there are no preparations in the cart' do
+      get checkout_path
+      expect(response).to have_http_status(200)
+      expect(response.body).not_to include("Send Loan Request")
+    end
+
+    it 'should display Send Loan Request Button when there are preparations in the cart' do
+      post checkout_add_path, params: { id: preparation.id, count: 1 }, headers: {'Accept' => 'text/vnd.turbo-stream.html'}
+      expect(response).to have_http_status(200)
+      get checkout_path
+      expect(response.body).to include("Send Loan Request")
     end
 
     it 'should be saved for later' do
@@ -92,9 +99,14 @@ RSpec.describe CheckoutController, type: :request do
       expect(response).to have_http_status(200)
       get checkout_path
       expect(response.body).to include("MPABI")
-
+      post checkout_change_path, params: { id: preparation.id, count: 3 }, headers: {'Accept' => 'text/vnd.turbo-stream.html'}
+      expect(response.body).to include("<option selected=\"selected\" value=\"3\">3</option>")
+      expect(response).to have_http_status(200)
+      get checkout_path
+      expect(response.body).to include("<option selected=\"selected\" value=\"3\">3</option>")
     end
+
+
   end
 
-    # Additional contexts for admin and other roles can be added here.
 end
