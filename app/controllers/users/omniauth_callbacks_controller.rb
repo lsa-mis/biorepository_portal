@@ -78,11 +78,12 @@ def determine_user_role(uniqname, user_membership)
 end
 
 def create_user
-  if auth.info.name&.include?("@")
+  raw_name = auth.info.name.to_s
+  if raw_name.include?("@")
     first_name = ""
     last_name = ""
   else
-    parts = auth.info.name.to_s.split(' ', 2)
+    parts = raw_name.split(' ', 2)
     first_name = parts[0]
     last_name = parts[1] || ''
   end
