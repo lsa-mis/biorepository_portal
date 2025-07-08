@@ -78,11 +78,20 @@ def determine_user_role(uniqname, user_membership)
 end
 
 def create_user
+  raw_name = auth.info.name.to_s
+  if raw_name.include?("@")
+    first_name = ""
+    last_name = ""
+  else
+    parts = raw_name.split(' ', 2)
+    first_name = parts[0]
+    last_name = parts[1] || ''
+  end
   @user = User.create(
     email: auth.info.email,
     principal_name: auth.info.principal_name,
-    first_name: auth.info.name.split(" ", 2)[0],
-    last_name: auth.info.name.split(" ", 2)[1],
+    first_name: first_name,
+    last_name: last_name,
     affiliation: auth.info.person_affiliation,
     password: Devise.friendly_token[0, 20]
   )
