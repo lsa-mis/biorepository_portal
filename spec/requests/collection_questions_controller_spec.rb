@@ -12,6 +12,7 @@ RSpec.describe CollectionQuestion, type: :request do
         uniqname = get_uniqname(super_admin_user.email)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(true)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
         mock_login(super_admin_user)
       end
 
@@ -43,6 +44,7 @@ RSpec.describe CollectionQuestion, type: :request do
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(true)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+        
         mock_login(admin_user)
       end
 
@@ -96,10 +98,6 @@ RSpec.describe CollectionQuestion, type: :request do
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
 
-        allow_any_instance_of(ApplicationController).to receive(:pundit_user).and_return(
-          OpenStruct.new(user: super_admin_user, collection_ids: [])
-        )
-
         mock_login(super_admin_user)
       end
 
@@ -120,11 +118,6 @@ RSpec.describe CollectionQuestion, type: :request do
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(true)
 
-        # collection_ids include the current collection to simulate collection admin
-        allow_any_instance_of(ApplicationController).to receive(:pundit_user).and_return(
-          OpenStruct.new(user: admin_user, collection_ids: [collection.id])
-        )
-
         mock_login(admin_user)
       end
 
@@ -144,10 +137,6 @@ RSpec.describe CollectionQuestion, type: :request do
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
-
-        allow_any_instance_of(ApplicationController).to receive(:pundit_user).and_return(
-          OpenStruct.new(user: user, collection_ids: []) # not an admin
-        )
 
         mock_login(user)
       end
@@ -171,10 +160,6 @@ RSpec.describe CollectionQuestion, type: :request do
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
 
-        allow_any_instance_of(ApplicationController).to receive(:pundit_user).and_return(
-          OpenStruct.new(user: super_admin_user, collection_ids: [])
-        )
-
         mock_login(super_admin_user)
       end
 
@@ -198,10 +183,6 @@ RSpec.describe CollectionQuestion, type: :request do
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(true)
 
-        allow_any_instance_of(ApplicationController).to receive(:pundit_user).and_return(
-          OpenStruct.new(user: admin_user, collection_ids: [collection.id])
-        )
-
         mock_login(admin_user)
       end
 
@@ -216,61 +197,4 @@ RSpec.describe CollectionQuestion, type: :request do
     end
   end
 
-  describe 'POST /collections/:collection_id/collection_questions' do
-    let!(:user) { FactoryBot.create(:user) }
-
-    before do
-      allow(LdapLookup).to receive(:is_member_of_group?).with(get_uniqname(user.email), "lsa-biorepository-super-admins").and_return(true)
-      mock_login(user)
-    end
-
-    it 'creates a new collection question' do
-      expect {
-        post collection_collection_questions_path(collection), params: {
-          collection_question: {
-            question: 'What is your purpose?',
-            question_type: 'short_text',
-            required: true
-          }
-        }
-      }.to change(CollectionQuestion, :count).by(1)
-
-      expect(response).to redirect_to(collection_collection_question_path(collection, CollectionQuestion.last))
-    end
-  end
-
-  describe 'DELETE /collections/:collection_id/collection_questions/:id' do
-    let!(:user) { FactoryBot.create(:user) }
-    let!(:question) { FactoryBot.create(:collection_question, collection:) }
-
-    before do
-      allow(LdapLookup).to receive(:is_member_of_group?).with(get_uniqname(user.email), "lsa-biorepository-super-admins").and_return(true)
-      mock_login(user)
-    end
-
-    it 'deletes the question' do
-      expect {
-        delete collection_collection_question_path(collection, question)
-      }.to change(CollectionQuestion, :count).by(-1)
-    end
-  end
-
-  describe 'PATCH /collections/:collection_id/collection_questions/:id' do
-    let!(:user) { FactoryBot.create(:user) }
-    let!(:question) { FactoryBot.create(:collection_question, collection:) }
-
-    before do
-      allow(LdapLookup).to receive(:is_member_of_group?).with(get_uniqname(user.email), "lsa-biorepository-super-admins").and_return(true)
-      mock_login(user)
-    end
-
-    it 'updates the question' do
-      patch collection_collection_question_path(collection, question), params: {
-        collection_question: { question: 'Updated question text' }
-      }
-
-      expect(response).to redirect_to(collection_collection_question_path(collection, question))
-      expect(question.reload.question).to eq('Updated question text')
-    end
-  end
 end

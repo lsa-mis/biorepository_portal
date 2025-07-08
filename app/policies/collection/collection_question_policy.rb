@@ -4,8 +4,7 @@ class Collection::CollectionQuestionPolicy < ApplicationPolicy
     @user = context[:user]
     @role = context[:role]
     @collection_ids = context[:collection_ids]
-    @collection = Collection.find(context[:params]["collection_id"].to_i)
-    @record = record
+    @collection, @question = record
   end
 
   def index?

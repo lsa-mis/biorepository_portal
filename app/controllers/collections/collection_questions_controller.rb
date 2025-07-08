@@ -37,6 +37,7 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def edit
+    authorize([@collection, @collection_question])
     2.times { @collection_question.collection_options.build } if @collection_question.collection_options.empty?
   end
 
@@ -119,4 +120,25 @@ class Collections::CollectionQuestionsController < ApplicationController
     params.require(:collection_question).permit(:question, :question_type, :required, :position, :collection_id,
       collection_options_attributes: [:id, :value])
   end
+    
+  # def authorize_collection_question!(action)
+  #   record = [@collection, defined?(@collection_question) ? @collection_question : nil]
+
+  #   policy = Collection::CollectionQuestionPolicy.new(
+  #     {
+  #       user: current_user,
+  #       collection_ids: determine_collection_ids_for(current_user)
+  #     },
+  #     [@collection, @collection_question]
+  #   )
+
+  #   unless policy.public_send("#{action}?")
+  #     raise Pundit::NotAuthorizedError
+  #   end
+  # end
+
+  # def determine_collection_ids_for(user)
+  #   uniqname = get_uniqname(user.email)
+  #   Collection.all.select { |col| LdapLookup.is_member_of_group?(uniqname, col.admin_group) }.map(&:id)
+  # end
 end
