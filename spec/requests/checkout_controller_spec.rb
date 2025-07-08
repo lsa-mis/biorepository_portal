@@ -4,6 +4,7 @@ RSpec.describe CheckoutController, type: :request do
   let!(:collection) { FactoryBot.create(:collection) }
   let!(:item) { FactoryBot.create(:item, collection: collection) }
   let!(:preparation) { FactoryBot.create(:preparation, item: item) }
+  let!(:identification) { FactoryBot.create(:identification, item: item) }
 
   context 'Checkout Functionality' do
 
@@ -23,7 +24,7 @@ RSpec.describe CheckoutController, type: :request do
       post checkout_add_path, params: { id: preparation.id, count: 1 }, headers: {'Accept' => 'text/vnd.turbo-stream.html'}
       expect(response).to have_http_status(200)
       get checkout_path
-      expect(response.body).to include(preparation.item.name)
+      expect(response.body).to include(preparation.item.display_name)
     end
 
     it 'should not display Send Loan Request Button when there are no preparations in the cart' do
