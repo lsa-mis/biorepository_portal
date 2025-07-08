@@ -38,7 +38,7 @@ FactoryBot.define do
     identified_by { "MyString" }
     date_identified { "MyString" }
     identification_remarks { "MyText" }
-    scientific_name { "MyString" }
+    scientific_name { "Scientific Name" }
     scientific_name_authorship { "MyString" }
     kingdom { "MyString" }
     phylum { "MyString" }
@@ -49,7 +49,8 @@ FactoryBot.define do
     specific_epithet { "MyString" }
     infraspecific_epithet { "MyString" }
     taxon_rank { 1 }
-    vernacular_name { "MyString" }
+    vernacular_name { "Vernacular Name" }
     item { nil }
+    current { true }
   end
 end
