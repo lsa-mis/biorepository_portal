@@ -82,8 +82,9 @@ def create_user
     first_name = ""
     last_name = ""
   else
-    first_name = auth.info.name.split(" ", 2)[0]
-    last_name = auth.info.name.split(" ", 2)[1]
+    parts = auth.info.name.to_s.split(' ', 2)
+    first_name = parts[0]
+    last_name = parts[1] || ''
   end
   @user = User.create(
     email: auth.info.email,
