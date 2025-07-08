@@ -25,7 +25,7 @@ RSpec.describe CheckoutController, type: :request do
       post checkout_add_path, params: { id: preparation.id, count: 1 }, headers: {'Accept' => 'text/vnd.turbo-stream.html'}
       expect(response).to have_http_status(200)
       get checkout_path
-      expect(response.body).to include("MPABI")
+      expect(response.body).to include(preparation.item.name)
     end
 
     it 'should not display Send Loan Request Button when there are no preparations in the cart' do
