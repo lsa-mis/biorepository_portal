@@ -78,7 +78,7 @@ def determine_user_role(uniqname, user_membership)
 end
 
 def create_user
-  if auth.info.name.include?("@") || auth.info.name.blank?
+  if auth.info.name&.include?("@")
     first_name = ""
     last_name = ""
   else
