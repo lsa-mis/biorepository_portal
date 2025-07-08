@@ -40,6 +40,7 @@ module ActiveFiltersHelper
     return [] unless params[:q].present?
 
     q = params[:q]
+    dynamic_fields = params[:dynamic_fields] || {}
     filters = []
 
     if q[:collection_id_in].present?
@@ -49,9 +50,9 @@ module ActiveFiltersHelper
     end
 
     used_dynamic_keys = []
-    if q[:dynamic_fields].present?
+    if dynamic_fields.present?
 
-      params[:q][:dynamic_fields].each do |_, group|
+      dynamic_fields.each do |_, group|
         group.each do |_, field_hash|
           next if field_hash["field"].blank? || field_hash["value"].blank?
           filters << "#{DYNAMIC_FIELD_LABELS[field_hash['field']]}: #{field_hash['value'].humanize}"
