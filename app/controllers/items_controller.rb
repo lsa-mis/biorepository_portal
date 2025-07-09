@@ -17,14 +17,14 @@ class ItemsController < ApplicationController
   end
 
   def search
-    if params[:q] && params[:dynamic_fields]
-      params[:dynamic_fields].each do |_, group|
-        group.each do |_, field_hash|
-          next if field_hash["field"].blank? || field_hash["value"].blank?
-          params[field_hash["field"]] = field_hash["value"]
-        end
-      end
-    end
+    # if params[:q] && params[:dynamic_fields]
+    #   params[:dynamic_fields].each do |_, group|
+    #     group.each do |_, field_hash|
+    #       next if field_hash["field"].blank? || field_hash["value"].blank?
+    #       params[field_hash["field"]] = field_hash["value"]
+    #     end
+    #   end
+    # end
     
     @continents = Item.distinct.pluck(:continent)
       .compact.reject(&:blank?)
@@ -42,35 +42,7 @@ class ItemsController < ApplicationController
         .map { |s| [s.titleize, s.downcase] }
         .uniq
         .sort_by { |pair| pair[0] }
-    
-    # if params[:q]
-    #   params_q = params[:q]
-    #   selected_continents = params[:q][:continent_case_insensitive_in].present? ? params[:q][:continent_case_insensitive_in] : nil
-    #   selected_countries = params[:q][:country_case_insensitive_in].present? ? params[:q][:country_case_insensitive_in] : nil
 
-    #   if selected_continents.present?
-    #     @countries = Item.where("lower(items.continent) IN (?)", selected_continents)
-    #       .distinct.pluck(:country)
-    #       .compact
-    #       .reject(&:blank?)
-    #       .map { |c| [c.titleize, c.downcase] }
-    #       .uniq
-    #       .sort_by { |pair| pair[0] }
-    #   end
-
-    #   if selected_countries.present?
-    #     @states = Item.where("lower(items.country) IN (?)", selected_countries)
-    #       .pluck(:state_province)
-    #       .compact.reject(&:blank?)
-    #       .map { |s| [s.titleize, s.downcase] }
-    #       .uniq
-    #       .sort_by { |pair| pair[0] }
-    #   end
-    #   if params[:q][:country_case_insensitive_in].present? || params[:q][:state_province_case_insensitive_in].present?
-    #     params_q.delete(:continent_case_insensitive_in)
-    #   end
-    # end
-    
     @sexs = Item.distinct.pluck(:sex)
       .compact.reject(&:blank?)
       .map { |s| [s.titleize, s.downcase] }
