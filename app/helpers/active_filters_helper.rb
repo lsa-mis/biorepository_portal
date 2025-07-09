@@ -2,7 +2,7 @@ module ActiveFiltersHelper
   DYNAMIC_FIELD_LABELS = {
   "associated_sequences_i_cont"      => "Associated Sequences",
   "catalog_number_eq"                => "Catalog Number",
-  "county_i_cont"                    => "County",
+  "county_i_cont_any"                => "County",
   "event_remarks_i_cont"            => "Event Remarks",
   "field_number_i_cont"             => "Field Number",
   "geodetic_datum_i_cont"           => "Geodetic Datum",
