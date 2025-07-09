@@ -121,31 +121,42 @@ export default class extends Controller {
     .querySelectorAll("input[name^='q[groupings]']")
     .forEach(el => el.remove())
     this.groupTargets.forEach((group, groupIndex) => {
-      console.log("Processing group", groupIndex)
-      const rows = group.querySelectorAll(".search-row")
-      var fieldIndex = groupIndex
-      rows.forEach(row => {
-        const input = document.createElement("input")
-        input.type = "hidden"
-        input.name = `q[groupings][${groupIndex}][${m}]`
-        input.value = "or"
-        form.appendChild(input)
-        const field = row.querySelector(".dynamic-search-field")
-        console.log("Processing field", field.value)
-        const value = row.querySelector(".dynamic-search-value")
-        console.log("Processing value", value.value)
-
-        if (field.value && value.value) {
-          const input = document.createElement("input")
-          // input.name = `q[groupings][${groupIndex}][${fieldIndex}][${field.value}]`
-          input.name = `q[groupings][${groupIndex}][${field.value}]`
-          input.value = value.value
-          console.log("Adding input to form", input.name, input.value)
-          form.appendChild(input)
-          fieldIndex += 1; // Increment field index for next field
+      const rows = group.querySelectorAll(".search-row");
+      // Add group-level m=or for OR logic within the group
+      const mInput = document.createElement("input");
+      mInput.type = "hidden";
+      mInput.name = `q[groupings][${groupIndex}][m]`;
+      mInput.value = "or";
+      form.appendChild(mInput);
+      // Collect all field/value pairs for this group
+      const fieldMap = {};
+      rows.forEach((row) => {
+        const field = row.querySelector(".dynamic-search-field");
+        const value = row.querySelector(".dynamic-search-value");
+        if (field && value && field.value && value.value) {
+          if (!fieldMap[field.value]) fieldMap[field.value] = [];
+          fieldMap[field.value].push(value.value);
         }
-      })
-    })
+      });
+      // Add hidden inputs for each field/value (as array if multiple)
+      Object.entries(fieldMap).forEach(([fieldName, values]) => {
+        if (values.length === 1) {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = `q[groupings][${groupIndex}][${fieldName}]`;
+          input.value = values[0];
+          form.appendChild(input);
+        } else {
+          values.forEach(val => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = `q[groupings][${groupIndex}][${fieldName}][]`;
+            input.value = val;
+            form.appendChild(input);
+          });
+        }
+      });
+    });
 		// Submit the form
     this.formTarget.requestSubmit();
   }
