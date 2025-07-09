@@ -114,9 +114,6 @@ export default class extends Controller {
 
   submit(event) {
     const form = this.element;
-    const m = "m"
-    const a = "a"
-    const v = "v"
 		form
     .querySelectorAll("input[name^='q[groupings]']")
     .forEach(el => el.remove())
@@ -141,14 +138,12 @@ export default class extends Controller {
       // Add hidden inputs for each field/value (as array if multiple)
       Object.entries(fieldMap).forEach(([fieldName, values]) => {
         if (values.length === 1) {
-          console.log("Adding single value for field");
           const input = document.createElement("input");
           input.type = "hidden";
           input.name = `q[groupings][${groupIndex}][${fieldName}]`;
           input.value = values[0];
           form.appendChild(input);
         } else {
-          console.log("Adding array");
           values.forEach(val => {
             const input = document.createElement("input");
             input.type = "hidden";
