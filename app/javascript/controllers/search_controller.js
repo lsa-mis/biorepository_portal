@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = ["group", "row", "rows", "groupTemplate", "groupsContainer", "form"]
 	connect() {
     console.log("connect dynamic search")
-    this.application = this.application || window.Stimulus
+    // this.application = this.application || window.Stimulus
   }
 
   removeField(event) {
@@ -47,11 +47,11 @@ export default class extends Controller {
     if (label && select) {
       label.setAttribute("for", selectId)
       select.setAttribute("id", selectId)
-      select.setAttribute("name", `q[dynamic_fields][${groupIndex}_${fieldIndex}][field]`)
+      select.setAttribute("name", `dynamic_fields[${groupIndex}_${fieldIndex}][field]`)
     }
 
     if (input) {
-      input.setAttribute("name", `q[dynamic_fields][${groupIndex}_${fieldIndex}][value]`)
+      input.setAttribute("name", `dynamic_fields[${groupIndex}_${fieldIndex}][value]`)
     }
 
     rowsContainer.appendChild(newRow)
@@ -84,10 +84,10 @@ export default class extends Controller {
     if (label) label.setAttribute("for", newId)
     if (select) {
       select.setAttribute("id", newId)
-      select.setAttribute("name", `q[dynamic_fields][${groupIndex}_${fieldIndex}][field]`)
+      select.setAttribute("name", `dynamic_fields[${groupIndex}_${fieldIndex}][field]`)
     }
     if (input) {
-      input.setAttribute("name", `q[dynamic_fields][${groupIndex}_${fieldIndex}][value]`)
+      input.setAttribute("name", `dynamic_fields[${groupIndex}_${fieldIndex}][value]`)
       input.value = ""
     }
 
@@ -114,21 +114,35 @@ export default class extends Controller {
 
   submit(event) {
     const form = this.element;
+    const m = "m"
+    const a = "a"
+    const v = "v"
 		form
     .querySelectorAll("input[name^='q[groupings]']")
     .forEach(el => el.remove())
     this.groupTargets.forEach((group, groupIndex) => {
+      console.log("Processing group", groupIndex)
       const rows = group.querySelectorAll(".search-row")
+      var fieldIndex = groupIndex
       rows.forEach(row => {
+        const input = document.createElement("input")
+        input.type = "hidden"
+        input.name = `q[groupings][${groupIndex}][${m}]`
+        input.value = "or"
+        form.appendChild(input)
         const field = row.querySelector(".dynamic-search-field")
+        console.log("Processing field", field.value)
         const value = row.querySelector(".dynamic-search-value")
+        console.log("Processing value", value.value)
 
         if (field.value && value.value) {
           const input = document.createElement("input")
-          input.type = "hidden"
+          // input.name = `q[groupings][${groupIndex}][${fieldIndex}][${field.value}]`
           input.name = `q[groupings][${groupIndex}][${field.value}]`
           input.value = value.value
+          console.log("Adding input to form", input.name, input.value)
           form.appendChild(input)
+          fieldIndex += 1; // Increment field index for next field
         }
       })
     })
