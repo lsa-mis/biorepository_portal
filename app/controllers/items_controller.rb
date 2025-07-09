@@ -69,7 +69,7 @@ class ItemsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def item_params
-      params.require(:item).permit(:q, :occurrence_id, :catalog_number, :modified, :recorded_by, 
+      params.require(:item).permit(:occurrence_id, :catalog_number, :modified, :recorded_by, 
         :individual_count, :sex, :life_stage, :reproductive_condition, :vitality, 
         :other_catalog_numbers, :occurrence_remarks, :organism_remarks, :associated_sequences, 
         :field_number, :event_date_start, :event_date_end, :verbatim_event_date, :sampling_protocol, 
