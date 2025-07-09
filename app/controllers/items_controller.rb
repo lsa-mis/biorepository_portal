@@ -17,40 +17,42 @@ class ItemsController < ApplicationController
   end
 
   def search
-    if params[:q] && params[:q][:dynamic_fields]
-      params[:q][:dynamic_fields].each do |_, group|
-        group.each do |_, field_hash|
-          next if field_hash["field"].blank? || field_hash["value"].blank?
-          params[:q][field_hash["field"]] = field_hash["value"]
-        end
-      end
-    end
-    @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
-    @items = @q.result.page(params[:page]).per(15)
-    @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
-    @all_collections = Collection.all
-    @countries = Item.distinct.pluck(:country)
-      .compact
-      .reject(&:blank?)
-      .map { |c| [c.titleize, c.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
-    @states = Item.distinct.pluck(:state_province)
-      .compact.reject(&:blank?)
-      .map { |s| [s.titleize, s.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
-    @sexs = Item.distinct.pluck(:sex)
-      .compact.reject(&:blank?)
-      .map { |s| [s.titleize, s.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
+    # if params[:q] && params[:dynamic_fields]
+    #   params[:dynamic_fields].each do |_, group|
+    #     group.each do |_, field_hash|
+    #       next if field_hash["field"].blank? || field_hash["value"].blank?
+    #       params[field_hash["field"]] = field_hash["value"]
+    #     end
+    #   end
+    # end
+    
     @continents = Item.distinct.pluck(:continent)
       .compact.reject(&:blank?)
       .map { |c| [c.titleize, c.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
+    @countries = Item.pluck(:country)
+      .compact
+      .reject(&:blank?)
+      .map { |c| [c.titleize, c.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+    @states = Item.pluck(:state_province)
+        .compact.reject(&:blank?)
+        .map { |s| [s.titleize, s.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
 
+    @sexs = Item.distinct.pluck(:sex)
+      .compact.reject(&:blank?)
+      .map { |s| [s.titleize, s.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+
+    @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
+    @items = @q.result.page(params[:page]).per(15)
+    @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
+    @all_collections = Collection.all
     
     @active_filters = format_active_filters(params)
     respond_to do |format|

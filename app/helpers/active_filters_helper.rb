@@ -1,26 +1,26 @@
 module ActiveFiltersHelper
   DYNAMIC_FIELD_LABELS = {
-  "associated_sequences_i_cont"      => "Associated Sequences",
-  "catalog_number_eq"                => "Catalog Number",
-  "county_i_cont"                    => "County",
-  "event_remarks_i_cont"            => "Event Remarks",
-  "field_number_i_cont"             => "Field Number",
-  "geodetic_datum_i_cont"           => "Geodetic Datum",
-  "georeference_protocol_i_cont"    => "Georeference Protocol",
-  "georeferenced_by_i_cont"         => "Georeferenced By",
-  "life_stage_i_cont"               => "Life Stage",
-  "locality_i_cont"                 => "Locality",
-  "occurrence_remarks_i_cont"       => "Occurrence Remarks",
-  "organism_remarks_i_cont"         => "Organism Remarks",
-  "other_catalog_numbers_i_cont"    => "Other Catalog Numbers",
-  "recorded_by_i_cont"              => "Recorded By",
-  "reproductive_condition_i_cont"   => "Reproductive Condition",
-  "sampling_protocol_i_cont"        => "Sampling Protocol",
-  "verbatim_coordinates_i_cont"     => "Verbatim Coordinates",
-  "verbatim_elevation_i_cont"       => "Verbatim Elevation",
-  "verbatim_event_date_i_cont"      => "Verbatim Event Date",
-  "verbatim_locality_i_cont"        => "Verbatim Locality",
-  "vitality_i_cont"                 => "Vitality"
+  "associated_sequences_i_cont_any"      => "Associated Sequences",
+  "catalog_number_eq_any"                => "Catalog Number",
+  "county_i_cont_any"                => "County",
+  "event_remarks_i_cont_any"            => "Event Remarks",
+  "field_number_i_cont_any"             => "Field Number",
+  "geodetic_datum_i_cont_any"           => "Geodetic Datum",
+  "georeference_protocol_i_cont_any"    => "Georeference Protocol",
+  "georeferenced_by_i_cont_any"         => "Georeferenced By",
+  "life_stage_i_cont_any"               => "Life Stage",
+  "locality_i_cont_any"                 => "Locality",
+  "occurrence_remarks_i_cont_any"       => "Occurrence Remarks",
+  "organism_remarks_i_cont_any"         => "Organism Remarks",
+  "other_catalog_numbers_i_cont_any"    => "Other Catalog Numbers",
+  "recorded_by_i_cont_any"              => "Recorded By",
+  "reproductive_condition_i_cont_any"   => "Reproductive Condition",
+  "sampling_protocol_i_cont_any"        => "Sampling Protocol",
+  "verbatim_coordinates_i_cont_any"     => "Verbatim Coordinates",
+  "verbatim_elevation_i_cont_any"       => "Verbatim Elevation",
+  "verbatim_event_date_i_cont_any"      => "Verbatim Event Date",
+  "verbatim_locality_i_cont_any"        => "Verbatim Locality",
+  "vitality_i_cont_any"                 => "Vitality"
   }.freeze
 
   STANDARD_FILTER_LABELS = {
@@ -40,6 +40,7 @@ module ActiveFiltersHelper
     return [] unless params[:q].present?
 
     q = params[:q]
+    dynamic_fields = params[:dynamic_fields] || {}
     filters = []
 
     if q[:collection_id_in].present?
@@ -49,9 +50,9 @@ module ActiveFiltersHelper
     end
 
     used_dynamic_keys = []
-    if q[:dynamic_fields].present?
+    if dynamic_fields.present?
 
-      params[:q][:dynamic_fields].each do |_, group|
+      dynamic_fields.each do |_, group|
         group.each do |_, field_hash|
           next if field_hash["field"].blank? || field_hash["value"].blank?
           filters << "#{DYNAMIC_FIELD_LABELS[field_hash['field']]}: #{field_hash['value'].humanize}"
