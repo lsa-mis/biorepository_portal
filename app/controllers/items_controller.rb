@@ -17,7 +17,7 @@ class ItemsController < ApplicationController
   end
 
   def search
-    @continents = Item.distinct.pluck(:continent)
+    @continents = Item.pluck(:continent)
       .compact.reject(&:blank?)
       .map { |c| [c.titleize, c.downcase] }
       .uniq
@@ -34,53 +34,65 @@ class ItemsController < ApplicationController
         .uniq
         .sort_by { |pair| pair[0] }
 
-    @sexs = Item.distinct.pluck(:sex)
+    @sexs = Item.pluck(:sex)
       .compact.reject(&:blank?)
       .map { |s| [s.titleize, s.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
 
-    @kingdoms = Item.joins(:current_identification)
-      .pluck('identifications.kingdom')
-      .compact.reject(&:blank?)
-      .map { |k| [k.titleize, k.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
+    @kingdoms = Rails.cache.fetch('kingdoms', expires_in: 12.hours) do
+      Item.joins(:current_identification)
+        .pluck('identifications.kingdom')
+        .compact.reject(&:blank?)
+        .map { |k| [k.titleize, k.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+    end
 
-    @phylums = Item.joins(:current_identification)
-      .pluck('identifications.phylum')
-      .compact.reject(&:blank?)
-      .map { |p| [p.titleize, p.downcase] }
+    @phylums = Rails.cache.fetch('phylums', expires_in: 12.hours) do
+      Item.joins(:current_identification)
+        .pluck('identifications.phylum')
+        .compact.reject(&:blank?)
+        .map { |p| [p.titleize, p.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
+    end
 
-    @classes = Item.joins(:current_identification)
-      .pluck('identifications.class_name')
-      .compact.reject(&:blank?)
-      .map { |c| [c.titleize, c.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
+    @classes = Rails.cache.fetch('classes', expires_in: 12.hours) do
+      Item.joins(:current_identification)
+        .pluck('identifications.class_name')
+        .compact.reject(&:blank?)
+        .map { |c| [c.titleize, c.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+    end
 
-    @orders = Item.joins(:current_identification)
-      .pluck('identifications.order_name')
-      .compact.reject(&:blank?)
-      .map { |o| [o.titleize, o.downcase] }
+    @orders = Rails.cache.fetch('orders', expires_in: 12.hours) do
+      Item.joins(:current_identification)
+        .pluck('identifications.order_name')
+        .compact.reject(&:blank?)
+        .map { |o| [o.titleize, o.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
+    end
 
-    @families = Item.joins(:current_identification)
-      .pluck('identifications.family')
-      .compact.reject(&:blank?)
-      .map { |f| [f.titleize, f.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
+    @families = Rails.cache.fetch('families', expires_in: 12.hours) do
+      Item.joins(:current_identification)
+        .pluck('identifications.family')
+        .compact.reject(&:blank?)
+        .map { |f| [f.titleize, f.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+    end
 
-    @genuses = Item.joins(:current_identification)
-      .pluck('identifications.genus')
-      .compact.reject(&:blank?)
-      .map { |g| [g.titleize, g.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
+    @genuses = Rails.cache.fetch('genuses', expires_in: 12.hours) do
+      Item.joins(:current_identification)
+        .pluck('identifications.genus')
+        .compact.reject(&:blank?)
+        .map { |g| [g.titleize, g.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+    end
 
     @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
     @items = @q.result.page(params[:page]).per(15)
