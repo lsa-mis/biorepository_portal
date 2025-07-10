@@ -20,7 +20,6 @@ class FaqsController < ApplicationController
 
   # GET /faqs/1/edit
   def edit
-    authorize @faq
   end
 
   # POST /faqs or /faqs.json
@@ -41,7 +40,6 @@ class FaqsController < ApplicationController
 
   # PATCH/PUT /faqs/1 or /faqs/1.json
   def update
-    authorize @faq
     respond_to do |format|
       if @faq.update(faq_params)
         format.html { redirect_to faqs_path, notice: "FAQ was successfully updated." }
@@ -53,7 +51,6 @@ class FaqsController < ApplicationController
 
   # DELETE /faqs/1 or /faqs/1.json
   def destroy
-    authorize @faq
     @faq.destroy!
 
     respond_to do |format|
@@ -69,20 +66,19 @@ class FaqsController < ApplicationController
 
   def move_up
     @faq.move_higher
-    authorize @faq
     redirect_to reorder_faq_path, notice: "Question moved up."
   end
 
   def move_down
     @faq.move_lower
-    authorize @faq
     redirect_to reorder_faq_path, notice: "Question moved down."
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_faq
-      @faq = Faq.find(params.expect(:id))
+      @faq = Faq.find(params[:id])
+      authorize @faq
     end
 
     # Only allow a list of trusted parameters through.
