@@ -1,8 +1,10 @@
 module ActiveFiltersHelper
   DYNAMIC_FIELD_LABELS = {
+  "identifications_scientific_name_i_cont_any" => "Scientific Name",
+  "identifications_vernacular_name_i_cont_any" => "Vernacular Name",
   "associated_sequences_i_cont_any"      => "Associated Sequences",
   "catalog_number_eq_any"                => "Catalog Number",
-  "county_i_cont_any"                => "County",
+  "county_i_cont_any"                    => "County",
   "event_remarks_i_cont_any"            => "Event Remarks",
   "field_number_i_cont_any"             => "Field Number",
   "geodetic_datum_i_cont_any"           => "Geodetic Datum",
