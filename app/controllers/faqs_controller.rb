@@ -69,11 +69,13 @@ class FaqsController < ApplicationController
 
   def move_up
     @faq.move_higher
+    authorize @faq
     redirect_to reorder_faq_path, notice: "Question moved up."
   end
 
   def move_down
     @faq.move_lower
+    authorize @faq
     redirect_to reorder_faq_path, notice: "Question moved down."
   end
 

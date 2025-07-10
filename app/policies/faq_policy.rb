@@ -30,4 +30,12 @@ class FaqPolicy < ApplicationPolicy
   def reorder?
     is_admin?
   end
+
+  def move_up?
+    is_admin?
+  end
+
+  def move_down?
+    is_admin?
+  end
 end
