@@ -68,6 +68,6 @@ class ItemsController < ApplicationController
         :event_remarks, :continent, :country, :state_province, :county, :locality, :verbatim_locality, 
         :verbatim_elevation, :minimum_elevation_in_meters, :maximum_elevation_in_meters, :decimal_latitude, 
         :decimal_longitude, :coordinate_uncertainty_in_meters, :verbatim_coordinates, :georeferenced_by, 
-        :georeferenced_date, :geodetic_datum, :georeference_protocol, :archived, :collection_id).permit(:q, :dynamic_fields)
+        :georeferenced_date, :geodetic_datum, :georeference_protocol, :archived, :collection_id)
     end
 end
