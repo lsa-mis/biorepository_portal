@@ -17,7 +17,6 @@ class ItemsController < ApplicationController
   end
 
   def search
-    
     @continents = Item.distinct.pluck(:continent)
       .compact.reject(&:blank?)
       .map { |c| [c.titleize, c.downcase] }
@@ -56,7 +55,7 @@ class ItemsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_item
-      @item = Item.find(params.expect(:id))
+      @item = Item.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
@@ -69,5 +68,9 @@ class ItemsController < ApplicationController
         :verbatim_elevation, :minimum_elevation_in_meters, :maximum_elevation_in_meters, :decimal_latitude, 
         :decimal_longitude, :coordinate_uncertainty_in_meters, :verbatim_coordinates, :georeferenced_by, 
         :georeferenced_date, :geodetic_datum, :georeference_protocol, :archived, :collection_id)
+    end
+
+    def search_params
+      params.permit(:q)
     end
 end
