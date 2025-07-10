@@ -54,6 +54,20 @@ class ItemsController < ApplicationController
       .uniq
       .sort_by { |pair| pair[0] }
 
+    @classes = Item.joins(:current_identification)
+      .pluck('identifications.class_name')
+      .compact.reject(&:blank?)
+      .map { |c| [c.titleize, c.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+
+    @orders = Item.joins(:current_identification)
+      .pluck('identifications.order_name')
+      .compact.reject(&:blank?)
+      .map { |o| [o.titleize, o.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+
     @families = Item.joins(:current_identification)
       .pluck('identifications.family')
       .compact.reject(&:blank?)
