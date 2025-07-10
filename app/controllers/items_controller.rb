@@ -75,6 +75,13 @@ class ItemsController < ApplicationController
       .uniq
       .sort_by { |pair| pair[0] }
 
+    @genuses = Item.joins(:current_identification)
+      .pluck('identifications.genus')
+      .compact.reject(&:blank?)
+      .map { |g| [g.titleize, g.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+
     @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
     @items = @q.result.page(params[:page]).per(15)
     @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')

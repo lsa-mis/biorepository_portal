@@ -55,9 +55,13 @@ class Identification < ApplicationRecord
     Arel.sql('lower(identifications.family)')
   end
 
+  ransacker :genus_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.genus)')
+  end
+
   def self.ransackable_attributes(auth_object = nil)
     [
-      "class_name_case_insensitive", "date_identified", "family_case_insensitive", "genus", "identification_remarks",
+      "class_name_case_insensitive", "date_identified", "family_case_insensitive", "genus_case_insensitive", "identification_remarks",
       "identified_by", "infraspecific_epithet", "kingdom_case_insensitive", "order_name_case_insensitive",
       "phylum_case_insensitive", "scientific_name", "scientific_name_authorship",
       "specific_epithet", "taxon_rank", "type_status", "vernacular_name"

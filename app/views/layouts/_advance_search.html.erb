@@ -277,6 +277,29 @@
         </fieldset>
       </div>
 
+      <div class="col-md-6 mb-3">
+        <fieldset class="mb-3" id="genus-filter-group">
+          <legend class="h5">Genus</legend>
+          <small>Select genus to narrow your results</small>
+          <label for="genus-filter" class="visually-hidden">Filter Genus</label>
+          <input id="genus-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('genus-filters', this.value)">
+
+          <div id="genus-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
+            <% if @genuses.blank? %>
+              <p>No genus options available to select from.</p>
+            <% else %>
+              <% @genuses.each do |name, lower_name| %>
+                <% genus_id = "genus_#{lower_name.parameterize}" %>
+                <div class="form-check">
+                  <%= check_box_tag "q[identifications_genus_case_insensitive_in][]", lower_name, params.dig(:q, :identifications_genus_case_insensitive_in)&.include?(lower_name), id: genus_id, "data-action": "search#submit" %>
+                  <%= label_tag genus_id, name %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </fieldset>
+      </div>
+
     </div>
     <div class="mb-2">
       <!-- Dates - use _gteq / _lteq -->
