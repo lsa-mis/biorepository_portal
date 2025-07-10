@@ -47,6 +47,13 @@ class ItemsController < ApplicationController
       .uniq
       .sort_by { |pair| pair[0] }
 
+    @phylums = Item.joins(:current_identification)
+      .pluck('identifications.phylum')
+      .compact.reject(&:blank?)
+      .map { |p| [p.titleize, p.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+
     @families = Item.joins(:current_identification)
       .pluck('identifications.family')
       .compact.reject(&:blank?)

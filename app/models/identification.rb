@@ -39,6 +39,10 @@ class Identification < ApplicationRecord
     Arel.sql('lower(identifications.kingdom)')
   end
 
+  ransacker :phylum_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.phylum)')
+  end
+
   ransacker :family_case_insensitive, type: :string do
     Arel.sql('lower(identifications.family)')
   end
@@ -47,7 +51,7 @@ class Identification < ApplicationRecord
     [
       "class_name", "date_identified", "family_case_insensitive", "genus", "identification_remarks",
       "identified_by", "infraspecific_epithet", "kingdom_case_insensitive", "order_name",
-      "phylum", "scientific_name", "scientific_name_authorship",
+      "phylum_case_insensitive", "scientific_name", "scientific_name_authorship",
       "specific_epithet", "taxon_rank", "type_status", "vernacular_name"
     ]
   end
