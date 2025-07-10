@@ -42,6 +42,7 @@ module ActiveFiltersHelper
     q = params[:q]
     dynamic_fields = params[:dynamic_fields] || {}
     filters = []
+    keys_to_skip = %w[collection_id_in groupings]
 
     if q[:collection_id_in].present?
       collection_ids = Array.wrap(q[:collection_id_in])
@@ -49,31 +50,36 @@ module ActiveFiltersHelper
       filters += collection_names.map { |name| "#{name}" }
     end
 
-    used_dynamic_keys = []
-    if dynamic_fields.present?
-
-      dynamic_fields.each do |_, group|
-        group.each do |_, field_hash|
-          next if field_hash["field"].blank? || field_hash["value"].blank?
-          filters << "#{DYNAMIC_FIELD_LABELS[field_hash['field']]}: #{field_hash['value'].humanize}"
-          used_dynamic_keys << field_hash["field"]
-        end
-      end
-    end
-
-    keys_to_skip = %w[collection_id_in dynamic_fields groupings] + used_dynamic_keys
+    # Get all values for key 'value' recursively
+    filters += extract_values_for_key(dynamic_fields, "value") if dynamic_fields.present?
 
     q.each do |key, value|
       next if keys_to_skip.include?(key) || value.blank? || value.is_a?(Hash)
-
       if value.is_a?(Array)
         filters += value.map(&:capitalize)
       else
         filters << "#{STANDARD_FILTER_LABELS[key]}: #{value}"
       end
     end
-
-    filters.uniq
-    
+    filters.compact.uniq
   end
+
+  def extract_values_for_key(obj, target_key)
+    obj = obj.to_unsafe_h if obj.is_a?(ActionController::Parameters)
+    results = []
+    case obj
+    when Hash
+      obj.each do |k, v|
+        if k.to_s == target_key.to_s
+          results << v if v.present?
+        else
+          results.concat(extract_values_for_key(v, target_key))
+        end
+      end
+    when Array
+      obj.each { |v| results.concat(extract_values_for_key(v, target_key)) }
+    end
+    results
+  end
+  
 end
