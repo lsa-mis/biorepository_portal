@@ -17,31 +17,38 @@ class ItemsController < ApplicationController
   end
 
   def search
-    @continents = Item.pluck(:continent)
+
+    if params[:q]&.dig(:collection_id_in).present?
+      collection_ids = Collection.where(id: params[:q][:collection_id_in]).pluck(:id)
+    else
+      collection_ids = Collection.all.pluck(:id)
+    end
+
+    @continents = Item.where(collection: collection_ids).pluck(:continent)
       .compact.reject(&:blank?)
       .map { |c| [c.titleize, c.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
-    @countries = Item.pluck(:country)
+    @countries = Item.where(collection: collection_ids).pluck(:country)
       .compact
       .reject(&:blank?)
       .map { |c| [c.titleize, c.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
-    @states = Item.pluck(:state_province)
+    @states = Item.where(collection: collection_ids).pluck(:state_province)
         .compact.reject(&:blank?)
         .map { |s| [s.titleize, s.downcase] }
         .uniq
         .sort_by { |pair| pair[0] }
 
-    @sexs = Item.pluck(:sex)
+    @sexs = Item.where(collection: collection_ids).pluck(:sex)
       .compact.reject(&:blank?)
       .map { |s| [s.titleize, s.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
 
     @kingdoms = Rails.cache.fetch('kingdoms', expires_in: 12.hours) do
-      Item.joins(:current_identification)
+      Item.where(collection: collection_ids).joins(:current_identification)
         .pluck('identifications.kingdom')
         .compact.reject(&:blank?)
         .map { |k| [k.titleize, k.downcase] }
@@ -50,7 +57,7 @@ class ItemsController < ApplicationController
     end
 
     @phylums = Rails.cache.fetch('phylums', expires_in: 12.hours) do
-      Item.joins(:current_identification)
+      Item.where(collection: collection_ids).joins(:current_identification)
         .pluck('identifications.phylum')
         .compact.reject(&:blank?)
         .map { |p| [p.titleize, p.downcase] }
@@ -59,7 +66,7 @@ class ItemsController < ApplicationController
     end
 
     @classes = Rails.cache.fetch('classes', expires_in: 12.hours) do
-      Item.joins(:current_identification)
+      Item.where(collection: collection_ids).joins(:current_identification)
         .pluck('identifications.class_name')
         .compact.reject(&:blank?)
         .map { |c| [c.titleize, c.downcase] }
@@ -68,7 +75,7 @@ class ItemsController < ApplicationController
     end
 
     @orders = Rails.cache.fetch('orders', expires_in: 12.hours) do
-      Item.joins(:current_identification)
+      Item.where(collection: collection_ids).joins(:current_identification)
         .pluck('identifications.order_name')
         .compact.reject(&:blank?)
         .map { |o| [o.titleize, o.downcase] }
@@ -77,7 +84,7 @@ class ItemsController < ApplicationController
     end
 
     @families = Rails.cache.fetch('families', expires_in: 12.hours) do
-      Item.joins(:current_identification)
+      Item.where(collection: collection_ids).joins(:current_identification)
         .pluck('identifications.family')
         .compact.reject(&:blank?)
         .map { |f| [f.titleize, f.downcase] }
@@ -86,7 +93,7 @@ class ItemsController < ApplicationController
     end
 
     @genuses = Rails.cache.fetch('genuses', expires_in: 12.hours) do
-      Item.joins(:current_identification)
+      Item.where(collection: collection_ids).joins(:current_identification)
         .pluck('identifications.genus')
         .compact.reject(&:blank?)
         .map { |g| [g.titleize, g.downcase] }
