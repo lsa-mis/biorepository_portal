@@ -26,4 +26,8 @@ class FaqPolicy < ApplicationPolicy
   def destroy?
     is_admin?
   end
+
+  def reorder?
+    is_admin?
+  end
 end

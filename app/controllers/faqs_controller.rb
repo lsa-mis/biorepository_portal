@@ -1,6 +1,6 @@
 class FaqsController < ApplicationController
   before_action :set_redirection_url
-  before_action :set_faq, only: %i[ show edit update destroy ]
+  before_action :set_faq, only: %i[ show edit update destroy move_up move_down]
   skip_before_action :authenticate_user!, only: %i[index]
 
   # GET /faqs or /faqs.json
@@ -62,6 +62,21 @@ class FaqsController < ApplicationController
     end
   end
 
+  def reorder
+    @faqs = Faq.order(:position)
+    authorize @faqs
+  end
+
+  def move_up
+    @faq.move_higher
+    redirect_to reorder_faq_path, notice: "Question moved up."
+  end
+
+  def move_down
+    @faq.move_lower
+    redirect_to reorder_faq_path, notice: "Question moved down."
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_faq
@@ -70,6 +85,6 @@ class FaqsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def faq_params
-      params.require(:faq).permit(:question, :answer)
+      params.require(:faq).permit(:question, :answer, :position)
     end
 end
