@@ -121,24 +121,4 @@ class Collections::CollectionQuestionsController < ApplicationController
       collection_options_attributes: [:id, :value])
   end
     
-  # def authorize_collection_question!(action)
-  #   record = [@collection, defined?(@collection_question) ? @collection_question : nil]
-
-  #   policy = Collection::CollectionQuestionPolicy.new(
-  #     {
-  #       user: current_user,
-  #       collection_ids: determine_collection_ids_for(current_user)
-  #     },
-  #     [@collection, @collection_question]
-  #   )
-
-  #   unless policy.public_send("#{action}?")
-  #     raise Pundit::NotAuthorizedError
-  #   end
-  # end
-
-  # def determine_collection_ids_for(user)
-  #   uniqname = get_uniqname(user.email)
-  #   Collection.all.select { |col| LdapLookup.is_member_of_group?(uniqname, col.admin_group) }.map(&:id)
-  # end
 end

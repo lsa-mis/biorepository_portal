@@ -197,4 +197,138 @@ RSpec.describe CollectionQuestion, type: :request do
     end
   end
 
+  describe 'GET /collections/:collection_id/collection_questions/preview' do
+    let!(:question1) { FactoryBot.create(:collection_question, collection:, question: "Q1", position: 1) }
+    let!(:question2) { FactoryBot.create(:collection_question, collection:, question: "Q2", position: 2) }
+
+    context 'as super_admin' do
+      let!(:super_admin_user) { FactoryBot.create(:user) }
+
+      before do
+        uniqname = get_uniqname(super_admin_user.email)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(true)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
+        mock_login(super_admin_user)
+      end
+
+      it 'returns 200 and displays questions' do
+        get preview_collection_collection_questions_path(collection)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Q1")
+        expect(response.body).to include("Q2")
+      end
+    end
+
+    context 'as collection admin' do
+      let!(:admin_user) { FactoryBot.create(:user) }
+
+      before do
+        uniqname = get_uniqname(admin_user.email)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(true)
+        mock_login(admin_user)
+      end
+
+      it 'returns 200 and displays questions' do
+        get preview_collection_collection_questions_path(collection)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Q1")
+        expect(response.body).to include("Q2")
+      end
+    end
+
+    context 'as regular user' do
+      let!(:user) { FactoryBot.create(:user) }
+
+      before do
+        uniqname = get_uniqname(user.email)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
+        mock_login(user)
+      end
+
+      it 'redirects and shows unauthorized flash' do
+        get preview_collection_collection_questions_path(collection)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+      end
+    end
+  end
+
+  describe 'PATCH #move_up / #move_down' do
+    let!(:question1) { FactoryBot.create(:collection_question, collection:, question: "First", position: 1) }
+    let!(:question2) { FactoryBot.create(:collection_question, collection:, question: "Second", position: 2) }
+
+    shared_examples 'reorders questions' do
+      it 'moves the second question up' do
+        patch move_up_collection_collection_question_path(collection, question2)
+        expect(response).to redirect_to(collection_collection_questions_path)
+        expect(flash[:notice]).to eq("Question moved up.")
+        expect(collection.collection_questions.order(:position).first).to eq(question2.reload)
+      end
+
+      it 'moves the first question down' do
+        patch move_down_collection_collection_question_path(collection, question1)
+        expect(response).to redirect_to(collection_collection_questions_path)
+        expect(flash[:notice]).to eq("Question moved down.")
+        expect(collection.collection_questions.order(:position).last).to eq(question1.reload)
+      end
+    end
+
+    context 'as super_admin' do
+      let!(:super_admin_user) { FactoryBot.create(:user) }
+
+      before do
+        uniqname = get_uniqname(super_admin_user.email)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(true)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
+        mock_login(super_admin_user)
+      end
+
+      include_examples 'reorders questions'
+    end
+
+    context 'as collection admin' do
+      let!(:admin_user) { FactoryBot.create(:user) }
+
+      before do
+        uniqname = get_uniqname(admin_user.email)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(true)
+        mock_login(admin_user)
+      end
+
+      include_examples 'reorders questions'
+    end
+
+    context 'as regular user' do
+      let!(:user) { FactoryBot.create(:user) }
+
+      before do
+        uniqname = get_uniqname(user.email)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
+        mock_login(user)
+      end
+
+      it 'cannot move up' do
+        patch move_up_collection_collection_question_path(collection, question2)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+      end
+
+      it 'cannot move down' do
+        patch move_down_collection_collection_question_path(collection, question1)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+      end
+    end
+  end
+
 end
