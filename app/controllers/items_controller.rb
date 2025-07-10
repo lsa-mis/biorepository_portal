@@ -40,6 +40,13 @@ class ItemsController < ApplicationController
       .uniq
       .sort_by { |pair| pair[0] }
 
+    @kingdoms = Item.joins(:current_identification)
+      .pluck('identifications.kingdom')
+      .compact.reject(&:blank?)
+      .map { |k| [k.titleize, k.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+
     @families = Item.joins(:current_identification)
       .pluck('identifications.family')
       .compact.reject(&:blank?)
