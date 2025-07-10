@@ -162,7 +162,7 @@ class RequestsController < ApplicationController
       ).deliver_now
 
       # Clean up checkout items
-      @checkout.requestables.destroy_all
+      @checkout.requestables.where(saved_for_later: false).delete_all
 
       redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
 
@@ -177,7 +177,7 @@ class RequestsController < ApplicationController
   private
     def get_checkout_items
       checkout_items = ""
-      @checkout.requestables.each do |requestable|
+      @checkout.requestables.where(saved_for_later: false).each do |requestable|
         preparation = requestable.preparation
         item = preparation.item
         checkout_items += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"

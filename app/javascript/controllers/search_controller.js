@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["group", "row", "rows", "groupTemplate", "groupsContainer", "form"]
 	connect() {
     console.log("connect dynamic search")
-    this.application = this.application || window.Stimulus
   }
 
   removeField(event) {
@@ -47,11 +46,11 @@ export default class extends Controller {
     if (label && select) {
       label.setAttribute("for", selectId)
       select.setAttribute("id", selectId)
-      select.setAttribute("name", `q[dynamic_fields][${groupIndex}_${fieldIndex}][field]`)
+      select.setAttribute("name", `dynamic_fields[${groupIndex}_${fieldIndex}][field]`)
     }
 
     if (input) {
-      input.setAttribute("name", `q[dynamic_fields][${groupIndex}_${fieldIndex}][value]`)
+      input.setAttribute("name", `dynamic_fields[${groupIndex}_${fieldIndex}][value]`)
     }
 
     rowsContainer.appendChild(newRow)
@@ -84,10 +83,10 @@ export default class extends Controller {
     if (label) label.setAttribute("for", newId)
     if (select) {
       select.setAttribute("id", newId)
-      select.setAttribute("name", `q[dynamic_fields][${groupIndex}_${fieldIndex}][field]`)
+      select.setAttribute("name", `dynamic_fields[${groupIndex}_${fieldIndex}][field]`)
     }
     if (input) {
-      input.setAttribute("name", `q[dynamic_fields][${groupIndex}_${fieldIndex}][value]`)
+      input.setAttribute("name", `dynamic_fields[${groupIndex}_${fieldIndex}][value]`)
       input.value = ""
     }
 
@@ -118,20 +117,42 @@ export default class extends Controller {
     .querySelectorAll("input[name^='q[groupings]']")
     .forEach(el => el.remove())
     this.groupTargets.forEach((group, groupIndex) => {
-      const rows = group.querySelectorAll(".search-row")
-      rows.forEach(row => {
-        const field = row.querySelector(".dynamic-search-field")
-        const value = row.querySelector(".dynamic-search-value")
-
-        if (field.value && value.value) {
-          const input = document.createElement("input")
-          input.type = "hidden"
-          input.name = `q[groupings][${groupIndex}][${field.value}]`
-          input.value = value.value
-          form.appendChild(input)
+      const rows = group.querySelectorAll(".search-row");
+      // Add group-level m=or for OR logic within the group
+      const mInput = document.createElement("input");
+      mInput.type = "hidden";
+      mInput.name = `q[groupings][${groupIndex}][m]`;
+      mInput.value = "or";
+      form.appendChild(mInput);
+      // Collect all field/value pairs for this group
+      const fieldMap = {};
+      rows.forEach((row) => {
+        const field = row.querySelector(".dynamic-search-field");
+        const value = row.querySelector(".dynamic-search-value");
+        if (field && value && field.value && value.value) {
+          if (!fieldMap[field.value]) fieldMap[field.value] = [];
+          fieldMap[field.value].push(value.value);
         }
-      })
-    })
+      });
+      // Add hidden inputs for each field/value (as array if multiple)
+      Object.entries(fieldMap).forEach(([fieldName, values]) => {
+        if (values.length === 1) {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = `q[groupings][${groupIndex}][${fieldName}]`;
+          input.value = values[0];
+          form.appendChild(input);
+        } else {
+          values.forEach(val => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = `q[groupings][${groupIndex}][${fieldName}][]`;
+            input.value = val;
+            form.appendChild(input);
+          });
+        }
+      });
+    });
 		// Submit the form
     this.formTarget.requestSubmit();
   }

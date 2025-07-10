@@ -1,5 +1,12 @@
 Rails.application.routes.draw do
-  resources :faqs
+
+  get 'faqs/reorder', to: 'faqs#reorder', as: :reorder_faq
+  resources :faqs do
+    member do
+      patch :move_up
+      patch :move_down
+    end
+  end
   # get "profile/show"
   # get "profile/edit"
   # get "profile/update"

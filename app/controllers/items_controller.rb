@@ -17,40 +17,87 @@ class ItemsController < ApplicationController
   end
 
   def search
-    if params[:q] && params[:q][:dynamic_fields]
-      params[:q][:dynamic_fields].each do |_, group|
-        group.each do |_, field_hash|
-          next if field_hash["field"].blank? || field_hash["value"].blank?
-          params[:q][field_hash["field"]] = field_hash["value"]
-        end
-      end
-    end
-    @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
-    @items = @q.result.page(params[:page]).per(15)
-    @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
-    @all_collections = Collection.all
-    @countries = Item.distinct.pluck(:country)
+    @continents = Item.pluck(:continent)
+      .compact.reject(&:blank?)
+      .map { |c| [c.titleize, c.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+    @countries = Item.pluck(:country)
       .compact
       .reject(&:blank?)
       .map { |c| [c.titleize, c.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
-    @states = Item.distinct.pluck(:state_province)
+    @states = Item.pluck(:state_province)
+        .compact.reject(&:blank?)
+        .map { |s| [s.titleize, s.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+
+    @sexs = Item.pluck(:sex)
       .compact.reject(&:blank?)
       .map { |s| [s.titleize, s.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
-    @sexs = Item.distinct.pluck(:sex)
-      .compact.reject(&:blank?)
-      .map { |s| [s.titleize, s.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
-    @continents = Item.distinct.pluck(:continent)
-      .compact.reject(&:blank?)
-      .map { |c| [c.titleize, c.downcase] }
       .uniq
       .sort_by { |pair| pair[0] }
 
+    @kingdoms = Rails.cache.fetch('kingdoms', expires_in: 12.hours) do
+      Item.joins(:current_identification)
+        .pluck('identifications.kingdom')
+        .compact.reject(&:blank?)
+        .map { |k| [k.titleize, k.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+    end
+
+    @phylums = Rails.cache.fetch('phylums', expires_in: 12.hours) do
+      Item.joins(:current_identification)
+        .pluck('identifications.phylum')
+        .compact.reject(&:blank?)
+        .map { |p| [p.titleize, p.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+    end
+
+    @classes = Rails.cache.fetch('classes', expires_in: 12.hours) do
+      Item.joins(:current_identification)
+        .pluck('identifications.class_name')
+        .compact.reject(&:blank?)
+        .map { |c| [c.titleize, c.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+    end
+
+    @orders = Rails.cache.fetch('orders', expires_in: 12.hours) do
+      Item.joins(:current_identification)
+        .pluck('identifications.order_name')
+        .compact.reject(&:blank?)
+        .map { |o| [o.titleize, o.downcase] }
+      .uniq
+      .sort_by { |pair| pair[0] }
+    end
+
+    @families = Rails.cache.fetch('families', expires_in: 12.hours) do
+      Item.joins(:current_identification)
+        .pluck('identifications.family')
+        .compact.reject(&:blank?)
+        .map { |f| [f.titleize, f.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+    end
+
+    @genuses = Rails.cache.fetch('genuses', expires_in: 12.hours) do
+      Item.joins(:current_identification)
+        .pluck('identifications.genus')
+        .compact.reject(&:blank?)
+        .map { |g| [g.titleize, g.downcase] }
+        .uniq
+        .sort_by { |pair| pair[0] }
+    end
+
+    @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
+    @items = @q.result.page(params[:page]).per(15)
+    @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
+    @all_collections = Collection.all
     
     @active_filters = format_active_filters(params)
     respond_to do |format|
@@ -62,7 +109,7 @@ class ItemsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_item
-      @item = Item.find(params.expect(:id))
+      @item = Item.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
@@ -75,5 +122,9 @@ class ItemsController < ApplicationController
         :verbatim_elevation, :minimum_elevation_in_meters, :maximum_elevation_in_meters, :decimal_latitude, 
         :decimal_longitude, :coordinate_uncertainty_in_meters, :verbatim_coordinates, :georeferenced_by, 
         :georeferenced_date, :geodetic_datum, :georeference_protocol, :archived, :collection_id)
+    end
+
+    def search_params
+      params.permit(:q)
     end
 end

@@ -31,4 +31,12 @@ class Preparation < ApplicationRecord
     end
     display_name
   end
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[description prep_type]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    [ :item ]
+  end
 end

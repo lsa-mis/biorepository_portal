@@ -22,8 +22,9 @@
 #
 FactoryBot.define do
   factory :requestable do
-    preparation { nil }
-    checkout { nil }
+    preparation_id { nil }
+    checkout_id { nil }
     count { 1 }
+    saved_for_later { false }
   end
 end

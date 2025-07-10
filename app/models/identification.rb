@@ -35,11 +35,35 @@
 class Identification < ApplicationRecord
   belongs_to :item
 
+  ransacker :kingdom_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.kingdom)')
+  end
+
+  ransacker :phylum_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.phylum)')
+  end
+
+  ransacker :class_name_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.class_name)')
+  end
+
+  ransacker :order_name_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.order_name)')
+  end
+
+  ransacker :family_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.family)')
+  end
+
+  ransacker :genus_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.genus)')
+  end
+
   def self.ransackable_attributes(auth_object = nil)
     [
-      "class_name", "date_identified", "family", "genus", "identification_remarks",
-      "identified_by", "infraspecific_epithet", "kingdom", "order_name",
-      "phylum", "scientific_name", "scientific_name_authorship",
+      "class_name_case_insensitive", "date_identified", "family_case_insensitive", "genus_case_insensitive", "identification_remarks",
+      "identified_by", "infraspecific_epithet", "kingdom_case_insensitive", "order_name_case_insensitive",
+      "phylum_case_insensitive", "scientific_name", "scientific_name_authorship",
       "specific_epithet", "taxon_rank", "type_status", "vernacular_name"
     ]
   end

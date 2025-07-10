@@ -22,7 +22,7 @@
 FactoryBot.define do
   factory :preparation do
     prep_type { "MyString" }
-    count { 1 }
+    count { 4 }
     barcode { "MyString" }
     description { "MyString" }
     item { nil }

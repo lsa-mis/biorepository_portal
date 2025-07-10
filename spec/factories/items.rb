@@ -89,7 +89,6 @@ FactoryBot.define do
     georeferenced_date { "2025-05-13" }
     geodetic_datum { "MyString" }
     georeference_protocol { "MyString" }
-    archived { false }
     collection { nil }
   end
 end
