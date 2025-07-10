@@ -17,14 +17,6 @@ class ItemsController < ApplicationController
   end
 
   def search
-    # if params[:q] && params[:dynamic_fields]
-    #   params[:dynamic_fields].each do |_, group|
-    #     group.each do |_, field_hash|
-    #       next if field_hash["field"].blank? || field_hash["value"].blank?
-    #       params[field_hash["field"]] = field_hash["value"]
-    #     end
-    #   end
-    # end
     
     @continents = Item.distinct.pluck(:continent)
       .compact.reject(&:blank?)
