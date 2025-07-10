@@ -161,6 +161,30 @@
           </div>
         </fieldset>
       </div>
+
+      <div class="col-md-6 mb-3">
+        <fieldset class="mb-3" id="family-filter-group">
+          <legend class="h5">Family</legend>
+          <small>Select family to narrow your results</small>
+          <label for="family-filter" class="visually-hidden">Filter Family</label>
+          <input id="family-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('family-filters', this.value)">
+
+          <div id="family-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
+            <% if @families.blank? %>
+              <p>No family options available to select from.</p>
+            <% else %>
+              <% @families.each do |name, lower_name| %>
+                <% family_id = "family_#{lower_name.parameterize}" %>
+                <div class="form-check">
+                  <%= check_box_tag "q[identifications_family_case_insensitive_in][]", lower_name, params.dig(:q, :identifications_family_case_insensitive_in)&.include?(lower_name), id: family_id, "data-action": "search#submit" %>
+                  <%= label_tag family_id, name %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </fieldset>
+      </div>
+
     </div>
     <div class="mb-2">
       <!-- Dates - use _gteq / _lteq -->
