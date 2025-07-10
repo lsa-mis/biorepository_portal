@@ -22,8 +22,8 @@ RSpec.describe CollectionPolicy, type: :policy do
     context 'admin' do
       subject { described_class.new({ user: user, role: "admin", collection_ids: [collection.id] }, collection) }
 
-      it { is_expected.to forbid_actions(%i[create new destroy]) }
-      it { is_expected.to permit_only_actions(%i[index show search update edit import items]) }
+      it { is_expected.to forbid_actions(%i[create new destroy import]) }
+      it { is_expected.to permit_only_actions(%i[index show search update edit items]) }
     end
 
     context 'user' do

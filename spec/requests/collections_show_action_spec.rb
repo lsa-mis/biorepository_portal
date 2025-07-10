@@ -47,9 +47,9 @@ RSpec.describe Collection, type: :request do
         expect(response.body).to include("Edit Collection")
       end
 
-      it 'should display import button on the show page' do
+      it 'should not display import button on the show page' do
         get collection_path(collection)
-        expect(response.body).to include("Import")
+        expect(response.body).not_to include("Import")
       end
   end
 
