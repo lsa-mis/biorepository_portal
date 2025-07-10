@@ -110,7 +110,7 @@ class CollectionsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
-      @collection = Collection.find(params.expect(:id))
+      @collection = Collection.find(params[:id])
       authorize @collection
     end
 
@@ -125,5 +125,9 @@ class CollectionsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def collection_params
       params.require(:collection).permit(:division, :admin_group, :short_description, :long_description, :division_page_url, :link_to_policies, :image) 
+    end
+
+    def search_params
+      params.permit(:q1, :commit)
     end
 end
