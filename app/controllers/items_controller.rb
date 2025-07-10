@@ -19,7 +19,7 @@ class ItemsController < ApplicationController
   def search
 
     if params[:q]&.dig(:collection_id_in).present?
-      collection_ids = Collection.where(id: params[:q][:collection_id_in]).pluck(:id)
+      collection_ids = params[:q][:collection_id_in]
     else
       collection_ids = Collection.all.pluck(:id)
     end
