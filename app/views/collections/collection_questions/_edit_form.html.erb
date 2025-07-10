@@ -59,7 +59,10 @@
     </div>
   <% end %>
 
-  <%= form.submit "Update Collection Question", class: "btn btn-primary mt-3" %>
+  <div>
+    <%= form.submit "Update Collection Question", class: "btn btn-primary" %>
+    <%= link_to "Cancel", collection_collection_questions_path(@collection), class: "link_to" %>
+  </div>
 
   <template data-edit-options-target="template">
     <div class="option-list-item mb-2">
