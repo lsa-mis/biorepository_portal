@@ -4,6 +4,7 @@
 
 <% if is_admin? %>
   <div class="mt-2 text-end">
+    <%= link_to "Reorder FAQ", reorder_faq_path, class: "btn btn-primary mb-3" %>
     <%= link_to "New FAQ", new_faq_path, class: "btn btn-primary mb-3" %>
   </div>
 <% end %>
