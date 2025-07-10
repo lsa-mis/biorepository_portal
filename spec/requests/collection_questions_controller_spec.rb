@@ -41,9 +41,9 @@ RSpec.describe CollectionQuestion, type: :request do
 
       before do
         uniqname = get_uniqname(admin_user.email)
-        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(true)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(true)
         
         mock_login(admin_user)
       end
