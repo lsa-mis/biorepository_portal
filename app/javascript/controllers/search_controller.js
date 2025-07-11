@@ -156,4 +156,5 @@ export default class extends Controller {
 		// Submit the form
     this.formTarget.requestSubmit();
   }
+
 }

@@ -18,6 +18,14 @@ class ItemsController < ApplicationController
 
   def search
 
+    if params[:switch_view] == 'rows'
+      @view = 'rows'
+    elsif params[:switch_view] == 'cards'
+      @view = 'cards'
+    else
+      @view = @view.present? ? @view : 'rows'
+    end
+
     if params[:q]&.dig(:collection_id_in).present?
       collection_ids = params[:q][:collection_id_in]
     else
@@ -102,10 +110,11 @@ class ItemsController < ApplicationController
     end
 
     @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
-    @items = @q.result.page(params[:page]).per(15)
-    @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
+    @items = @q.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
+    @collections = Item.joins(:collection).where(id: @q.result.select(:id))
+                        .distinct.pluck('collections.division').join(', ')
     @all_collections = Collection.all
-    
+
     @active_filters = format_active_filters(params)
     respond_to do |format|
       format.turbo_stream

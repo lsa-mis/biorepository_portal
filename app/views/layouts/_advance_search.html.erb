@@ -1,16 +1,15 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h3 class="mb-0">Advanced Search</h3>
+  <h1 class="mb-0">Advanced Search</h1>
 
-  <%= link_to "Clear Filters", search_items_path, class: "btn btn-outline-secondary" %>
+  <%= link_to "Clear Filters", search_items_path(switch_view: @view), class: "btn btn-outline-secondary" %>
 </div>
 
-<%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form" } do |f| %>
   <div class="m-2">
 
     <!-- Strings - use _i_cont (contains) or _eq (exact match) -->
     <div class="mb-3">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4>Select Collections:</h4>
+        <h2>Select Collections:</h2>
         <%= f.submit "Search", class: "btn btn-primary" %>
       </div>
       <div class="btn-group btn-group-toggle flex-wrap" data-toggle="buttons">
@@ -23,8 +22,6 @@
       </div>
     </div>
 
-
-    <%# dynamic search %>
     <div>
       <div id="groups-container" data-search-target="groupsContainer">
         <div data-search-target="group" class="search-group mb-3 p-3 rounded border border-primary">
@@ -66,109 +63,6 @@
     </div>
 
     <div class="row">
-      <% if @continents.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="continent-filter-group">
-            <legend class="h5">Continent</legend>
-            <small>Select one or more continents to narrow your results</small>
-            <label for="continent-filter" class="visually-hidden">Filter continent</label>
-            <input id="continent-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('continent-filters', this.value)">
-
-            <div id="continent-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <%if @continents.present?%>
-                <% @continents.each do |name, lower_name| %>
-                  <% continent_id = "continent_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[continent_case_insensitive_in][]", lower_name, params.dig(:q, :continent_case_insensitive_in)&.include?(lower_name), id: continent_id, "data-action": "search#submit" %>
-                    <%= label_tag continent_id, name %>
-                  </div>
-                <% end %>
-              <% else %>
-                <p>No continent available to select from.</p>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-      
-      <% if @countries.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="country-filter-group">
-            <legend class="h5">Country or Region</legend>
-            <small>Select one or more countries or regions to narrow your results</small>
-            <label for="country-filter" class="visually-hidden">Filter Countries</label>
-            <input id="country-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('country-filters', this.value)">
-
-            <div id="country-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <% if @countries.blank? %>
-                <p>No countries available to select from.</p>
-              <%else%>
-                <% @countries.each do |name, lower_name| %>
-                  <% country_id = "country_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[country_case_insensitive_in][]", lower_name,
-                          params.dig(:q, :country_case_insensitive_in)&.include?(lower_name),
-                          id: country_id, "data-action": "search#submit" %>
-                    <%= label_tag country_id, name %>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-
-      <% if @states.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="state-province-filter-group">
-            <legend class="h5">State / Province</legend>
-            <small>Select one or more states or provinces to narrow your results</small>
-            <label for="state-province-filter" class="visually-hidden">Filter State / Province</label>
-            <input id="state-province-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('state-filters', this.value)">
-
-            <div id="state-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <% if @states.blank? %>
-                <p>No states or provinces available to select from.</p>
-              <%else%>
-                <% @states.each do |name, lower_name| %>
-                  <% state_id = "state_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[state_province_case_insensitive_in][]", lower_name ,
-                          params.dig(:q, :state_province_case_insensitive_in)&.include?(lower_name),
-                          id: state_id, "data-action": "search#submit" %>
-                    <%= label_tag state_id, name %>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-
-      <% if @sexs.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="sex-filter-group">
-            <legend class="h5">Sex</legend>
-            <small>Select sex to narrow your results</small>
-            <label for="sex-filter" class="visually-hidden">Filter Sex</label>
-            <input id="sex-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('sex-filters', this.value)">
-
-            <div id="sex-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <% if @sexs.blank? %>
-                <p>No sex options available to select from.</p>
-              <% else %>
-                <% @sexs.each do |name, lower_name| %>
-                  <% sex_id = "sex_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[sex_case_insensitive_in][]", lower_name, params.dig(:q, :sex_case_insensitive_in)&.include?(lower_name), id: sex_id, "data-action": "search#submit" %>
-                    <%= label_tag sex_id, name %>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
 
       <% if @kingdoms.count > 1 %>
         <div class="col-md-6 mb-3">
@@ -320,6 +214,110 @@
         </div>
       <% end %>
 
+      <% if @sexs.count > 1 %>
+        <div class="col-md-6 mb-3">
+          <fieldset class="mb-3" id="sex-filter-group">
+            <legend class="h5">Sex</legend>
+            <small>Select sex to narrow your results</small>
+            <label for="sex-filter" class="visually-hidden">Filter Sex</label>
+            <input id="sex-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('sex-filters', this.value)">
+
+            <div id="sex-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
+              <% if @sexs.blank? %>
+                <p>No sex options available to select from.</p>
+              <% else %>
+                <% @sexs.each do |name, lower_name| %>
+                  <% sex_id = "sex_#{lower_name.parameterize}" %>
+                  <div class="form-check">
+                    <%= check_box_tag "q[sex_case_insensitive_in][]", lower_name, params.dig(:q, :sex_case_insensitive_in)&.include?(lower_name), id: sex_id, "data-action": "search#submit" %>
+                    <%= label_tag sex_id, name %>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          </fieldset>
+        </div>
+      <% end %>
+
+      <% if @continents.count > 1 %>
+        <div class="col-md-6 mb-3">
+          <fieldset class="mb-3" id="continent-filter-group">
+            <legend class="h5">Continent</legend>
+            <small>Select one or more continents to narrow your results</small>
+            <label for="continent-filter" class="visually-hidden">Filter continent</label>
+            <input id="continent-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('continent-filters', this.value)">
+
+            <div id="continent-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
+              <%if @continents.present?%>
+                <% @continents.each do |name, lower_name| %>
+                  <% continent_id = "continent_#{lower_name.parameterize}" %>
+                  <div class="form-check">
+                    <%= check_box_tag "q[continent_case_insensitive_in][]", lower_name, params.dig(:q, :continent_case_insensitive_in)&.include?(lower_name), id: continent_id, "data-action": "search#submit" %>
+                    <%= label_tag continent_id, name %>
+                  </div>
+                <% end %>
+              <% else %>
+                <p>No continent available to select from.</p>
+              <% end %>
+            </div>
+          </fieldset>
+        </div>
+      <% end %>
+      
+      <% if @countries.count > 1 %>
+        <div class="col-md-6 mb-3">
+          <fieldset class="mb-3" id="country-filter-group">
+            <legend class="h5">Country or Region</legend>
+            <small>Select one or more countries or regions to narrow your results</small>
+            <label for="country-filter" class="visually-hidden">Filter Countries</label>
+            <input id="country-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('country-filters', this.value)">
+
+            <div id="country-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
+              <% if @countries.blank? %>
+                <p>No countries available to select from.</p>
+              <%else%>
+                <% @countries.each do |name, lower_name| %>
+                  <% country_id = "country_#{lower_name.parameterize}" %>
+                  <div class="form-check">
+                    <%= check_box_tag "q[country_case_insensitive_in][]", lower_name,
+                          params.dig(:q, :country_case_insensitive_in)&.include?(lower_name),
+                          id: country_id, "data-action": "search#submit" %>
+                    <%= label_tag country_id, name %>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          </fieldset>
+        </div>
+      <% end %>
+
+      <% if @states.count > 1 %>
+        <div class="col-md-6 mb-3">
+          <fieldset class="mb-3" id="state-province-filter-group">
+            <legend class="h5">State / Province</legend>
+            <small>Select one or more states or provinces to narrow your results</small>
+            <label for="state-province-filter" class="visually-hidden">Filter State / Province</label>
+            <input id="state-province-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('state-filters', this.value)">
+
+            <div id="state-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
+              <% if @states.blank? %>
+                <p>No states or provinces available to select from.</p>
+              <%else%>
+                <% @states.each do |name, lower_name| %>
+                  <% state_id = "state_#{lower_name.parameterize}" %>
+                  <div class="form-check">
+                    <%= check_box_tag "q[state_province_case_insensitive_in][]", lower_name ,
+                          params.dig(:q, :state_province_case_insensitive_in)&.include?(lower_name),
+                          id: state_id, "data-action": "search#submit" %>
+                    <%= label_tag state_id, name %>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          </fieldset>
+        </div>
+      <% end %>
+
     </div>
     <div class="mb-2">
       <!-- Dates - use _gteq / _lteq -->
@@ -368,7 +366,6 @@
   <div>
     <%= f.submit "Search", class: "btn btn-primary" %>
   </div>
-<% end %>
 
 <%# JavaScript part %>
 <script>
