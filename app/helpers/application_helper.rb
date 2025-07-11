@@ -107,7 +107,7 @@ module ApplicationHelper
     [in_checkout, available]
   end
 
-   def item_views
+  def item_views
     [
       [ 'rows', 'rows' ],
       [ 'cards', 'cards' ]
