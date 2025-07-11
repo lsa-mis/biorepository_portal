@@ -17,6 +17,7 @@ class ItemsController < ApplicationController
   end
 
   def search
+
     if params[:switch_view] == 'rows'
       @view = 'rows'
     elsif params[:switch_view] == 'cards'
@@ -109,7 +110,7 @@ class ItemsController < ApplicationController
     end
 
     @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
-    @items = @q.result.page(params[:page]).per(15)
+    @items = @q.result.page(params[:page]).per(params[:per]).max_paginates_per(500)
     @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
     @all_collections = Collection.all
     

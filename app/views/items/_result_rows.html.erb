@@ -14,12 +14,13 @@
               <legend style="display: none;">Tabs to display item information</legend>
 
               <div>
-                <%= link_to item_path(item), class: "btn btn-primary my-2", data: { turbo_frame: "_top" } do %>
+                <%= link_to item_path(item, return_to: request.fullpath), class: "btn btn-primary my-2", data: { turbo_frame: "_top" } do %>
                   Item Details Page 
                 <% end %>
                 <table class="table text-center">
                   <tbody class="table-group-divider">
                     <% display_fields = {
+                      "Preparation Type" => item.preparations.pluck(:prep_type).join(", "),
                       "Item Catalog Number" => item.catalog_number,
                       "Date Modified" => item.modified,
                       "Recorded By" => item.recorded_by,
@@ -28,22 +29,17 @@
                       "Life Stage" => item.life_stage,
                       "Reproductive Condition" => item.reproductive_condition,
                       "Vitality" => item.vitality,
-                      "Other Catalog Numbers" => item.other_catalog_numbers,
                       "Occurrence Remarks" => item.occurrence_remarks,
                       "Organism Remarks" => item.organism_remarks,
-                      "Associated Sequences" => item.associated_sequences,
-                      "Field Number" => item.field_number,
-                      "Event Date Start" => item.event_date_start,
+                      "Event Date" => item.event_date_start,
                       "Event Date End" => item.event_date_end,
                       "Verbatim Event Date" => item.verbatim_event_date,
-                      "Sampling Protocol" => item.sampling_protocol,
                       "Event Remarks" => item.event_remarks,
                       "Continent" => item.continent,
                       "Country or Region" => item.country,
                       "State / Province" => item.state_province,
                       "County" => item.county,
                       "Locality" => item.locality,
-                      "Verbatim Locality" => item.verbatim_locality,
                       "Verbatim Elevation" => item.verbatim_elevation,
                       "Minimum Elevation in Meters" => item.minimum_elevation_in_meters,
                       "Maximum Elevation in Meters" => item.maximum_elevation_in_meters,
@@ -52,8 +48,6 @@
                       "Coordinate Uncertainty in Meters" => item.coordinate_uncertainty_in_meters,
                       "Verbatim Coordinates" => item.verbatim_coordinates,
                       "Georeferenced By" => item.georeferenced_by,
-                      "Georeferenced Date" => item.georeferenced_date,
-                      "Geodetic Datum" => item.geodetic_datum,
                       "Georeference Protocol" => item.georeference_protocol
                     } %>
 
