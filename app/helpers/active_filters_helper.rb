@@ -60,7 +60,7 @@ module ActiveFiltersHelper
     q.each do |key, value|
       next if keys_to_skip.include?(key) || value.blank? || value.is_a?(Hash)
       if value.is_a?(Array)
-        filters += value.map(&:capitalize)
+        filters += value.map(&:titleize)
       else
         filters << "#{STANDARD_FILTER_LABELS[key]}: #{value}"
       end
