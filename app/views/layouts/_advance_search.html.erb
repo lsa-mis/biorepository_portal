@@ -7,10 +7,16 @@
 <%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form" } do |f| %>
   <div class="m-2">
 
-    <div>
-      <label for="switch_view">View</label>
-      <%= select_tag "switch_view", options_for_select(item_views, selected: @view), class: "",
-          :"data-action" => "search#submit" %>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <div>
+        <label for="switch_view">Switch View</label>
+        <%= select_tag "switch_view", options_for_select(item_views, selected: @view), class: "",
+            :"data-action" => "search#submit" %>
+      </div>
+      <div>
+        <label for="per">Items per page:</label>
+        <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "search#submit" %>
+      </div>
     </div>
 
     <!-- Strings - use _i_cont (contains) or _eq (exact match) -->
