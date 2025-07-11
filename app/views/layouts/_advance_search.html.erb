@@ -10,8 +10,7 @@
     <div class="d-flex justify-content-between align-items-center mb-2">
       <div>
         <label for="switch_view">Switch View</label>
-        <%= select_tag "switch_view", options_for_select(item_views, selected: @view), class: "",
-            :"data-action" => "search#submit" %>
+        <%= select_tag "switch_view", options_for_select(item_views, selected: @view), :"data-action" => "search#submit" %>
       </div>
       <div>
         <label for="per">Items per page:</label>
