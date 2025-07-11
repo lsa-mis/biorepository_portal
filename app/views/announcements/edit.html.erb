@@ -1,0 +1,15 @@
+<h1>Edit Announcement for <%= @announcement.location.humanize %></h1>
+
+<%= form_with model: @announcement do |form| %>
+  <%= form.rich_text_area :content %>
+
+  <div class="form-check mt-3">
+    <%= form.check_box :displayed, class: "form-check-input" %>
+    <%= form.label :displayed, "Visible to users", class: "form-check-label" %>
+  </div>
+
+  <div class="mt-3">
+    <%= form.submit "Update" %>
+    <%= link_to "Back", announcements_path %>
+  </div>
+<% end %>

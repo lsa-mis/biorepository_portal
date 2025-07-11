@@ -3,6 +3,12 @@
     <div class="col-md-8 col-lg-6 w-100">
       <!-- Heading -->
       <h1 class="text-start mt-6">About LSA Biorepository Application</h1>
+      <% if (announcement = Announcement.find_by(location: "about")) && announcement.displayed? %>
+        <div class="announcement my-3 p-2 bg-light border rounded">
+          <%= announcement.content.to_s.html_safe %>
+        </div>
+      <% end %>
+
       <p class="text-start mt-6">The Biorepository Web Portal project supports the University of Michigan Museum of Zoology (UMMZ) in developing a new public-facing platform that provides access to several of its specialized biological collections. These collections, including wildlife tissues and specimen records from the Pathogen Biorepository, Mammal Tissues, and Herpetology Tissues units, are vital resources for researchers and public health professionals. The portal will serve as an access point for users to search specimen data, explore collection records, and submit loan requests for physical materials used in scientific research.
       </p>
   </div>
