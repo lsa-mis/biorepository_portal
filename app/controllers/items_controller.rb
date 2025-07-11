@@ -98,12 +98,27 @@ class ItemsController < ApplicationController
     @items = @q.result.page(params[:page]).per(15)
     @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
     @all_collections = Collection.all
+
+    @dynamic_fields = []
+    # Reprocessing params to ensure dynamic fields are included
+    if params.dig(:q, :groupings).present?
+      params.dig(:q, :groupings).each do |group_num, values|
+        group_pairs = []
+        values.each do |field_num, input_hash|
+          next if input_hash["field"] == "m"
+          next if input_hash["value"].blank?
+          group_pairs << { field: input_hash[:field], value: input_hash[:value] }
+        end
+        @dynamic_fields << group_pairs unless group_pairs.empty?
+      end
+    end
     
     @active_filters = format_active_filters(params)
     respond_to do |format|
       format.turbo_stream
       format.html { render :search_result }
     end
+
   end
 
   private

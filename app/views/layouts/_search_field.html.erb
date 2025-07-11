@@ -1,6 +1,6 @@
 <div class="search-row d-flex align-items-center mb-2" data-search-target="row">
   <% select_id = "search_field_#{group_index}_#{field_index}" %>
-  <% base_name = "dynamic_fields[#{group_index}][#{field_index}]" %>
+  <% base_name = "q[groupings][#{group_index}][#{field_index}]" %>
   <label for="<%= select_id %>" class="form-label me-2">Search Field</label>
 
   <%= select_tag "#{base_name}[field]",

@@ -27,21 +27,14 @@
     <%# dynamic search %>
     <div>
       <div id="groups-container" data-search-target="groupsContainer">
-        <div data-search-target="group" class="search-group mb-3 p-3 rounded border border-primary">
+        <div data-search-target="group" data-group-index="0" class="search-group mb-3 p-3 rounded border border-primary">
           <div data-search-target="rows">
-            <% if params.dig(:dynamic_fields).present? %>
-              <% group_index = -1 %>
-              <% params[:dynamic_fields].each do |group_key, fields| %>
-                <% group_index += 1 %>
-                <% field_index = -1 %>
-                <% fields.each do |field_key, field_hash| %>
-                  <% field_index += 1 %>
-                  <%= render partial: "layouts/search_field", locals: {
-                        selected_field: field_hash["field"],
-                        entered_value: field_hash["value"],
-                        field_index: field_index,
-                        group_index: group_index
-                      } %>
+            <% if @dynamic_fields.present? %>
+              <% @dynamic_fields.each_with_index do |group, group_index| %>
+                <pre><%= group.inspect %></pre>
+                <% group.each_with_index do |field_hash, field_index| %>
+                  <pre><%= field_hash.inspect %></pre>
+                  <%= render partial: "layouts/search_field", locals: { selected_field: field_hash[:field], entered_value: field_hash[:value], field_index: field_index, group_index: group_index } %>
                 <% end %>
               <% end %>
             <% else %>

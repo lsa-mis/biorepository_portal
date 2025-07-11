@@ -44,7 +44,7 @@ module ActiveFiltersHelper
     return [] unless params[:q].present?
 
     q = params[:q]
-    dynamic_fields = params[:dynamic_fields] || {}
+    dynamic_fields_filters = params[:dynamic_fields] || {}
     filters = []
     keys_to_skip = %w[collection_id_in groupings]
 
@@ -55,7 +55,7 @@ module ActiveFiltersHelper
     end
 
     # Get all values for key 'value' recursively
-    filters += extract_values_for_key(dynamic_fields, "value") if dynamic_fields.present?
+    filters += extract_values_for_key(dynamic_fields_filters, "value") if dynamic_fields_filters.present?
 
     q.each do |key, value|
       next if keys_to_skip.include?(key) || value.blank? || value.is_a?(Hash)
