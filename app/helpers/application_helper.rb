@@ -109,8 +109,8 @@ module ApplicationHelper
 
   def item_views
     [
-      [ 'rows', 'rows' ],
-      [ 'cards', 'cards' ]
+      [ 'Rows', 'rows' ],
+      [ 'Cards', 'cards' ]
     ]
   end
 
