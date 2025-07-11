@@ -110,7 +110,7 @@ class ItemsController < ApplicationController
     end
 
     @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
-    @items = @q.result.page(params[:page]).per(params[:per]).max_paginates_per(500)
+    @items = @q.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @collections = Item.joins(:collection).where(id: @q.result.select(:id))
                         .distinct.pluck('collections.division').join(', ')
     @all_collections = Collection.all
