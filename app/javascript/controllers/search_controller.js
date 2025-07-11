@@ -156,4 +156,16 @@ export default class extends Controller {
 		// Submit the form
     this.formTarget.requestSubmit();
   }
+
+  switchView(event) {
+    console.log("Switching view")
+    const form = this.element;
+    this.formTarget.requestSubmit();
+  }
+
+  clearFilters(event) {
+    console.log("Clearing filters")
+    var url = window.location.pathname
+    Turbo.visit(url)
+  }
 }

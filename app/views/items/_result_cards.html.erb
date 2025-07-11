@@ -2,7 +2,7 @@
 <div class="my-2">
   <%= page_entries_info @items %> from <%= @collections %>
 </div>
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
     <% @items.each do |item| %>
       <div class="col mb-5">
         <%= turbo_frame_tag "checkout_item_#{item.id}" do %>

@@ -17,6 +17,13 @@ class ItemsController < ApplicationController
   end
 
   def search
+    if params[:switch_view] == 'rows'
+      @view = 'rows'
+    elsif params[:switch_view] == 'cards'
+      @view = 'cards'
+    else
+      @view = @view.present? ? @view : 'rows'
+    end
 
     if params[:q]&.dig(:collection_id_in).present?
       collection_ids = params[:q][:collection_id_in]
