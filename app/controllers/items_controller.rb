@@ -111,9 +111,10 @@ class ItemsController < ApplicationController
 
     @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
     @items = @q.result.page(params[:page]).per(params[:per]).max_paginates_per(500)
-    @collections = @q.result.distinct.includes(:collection).map { |i| i.collection.division }.uniq.join(', ')
+    @collections = Item.joins(:collection).where(id: @q.result.select(:id))
+                        .distinct.pluck('collections.division').join(', ')
     @all_collections = Collection.all
-    
+
     @active_filters = format_active_filters(params)
     respond_to do |format|
       format.turbo_stream
