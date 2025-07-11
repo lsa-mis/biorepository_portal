@@ -5,7 +5,7 @@
 <div class="accordion" id="accordionPanelsStayOpenExample">
   <% @items.each_with_index do |item, index| %>
     <div class="accordion-item mb-2">
-      <button class="accordion-button collapsed bg-accordion" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse<%= (index + 1) %>" aria-expanded="false" aria-controls="panelsStayOpen-collapseOne">
+      <button class="accordion-button collapsed bg-accordion" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse<%= (index + 1) %>" aria-expanded="false" aria-controls="panelsStayOpen-collapse<%= (index + 1) %>">
         <%= item.collection.division %>: <%= item.display_name %>
       </button>
       <div id="panelsStayOpen-collapse<%= (index + 1) %>" class="accordion-collapse collapse">
