@@ -31,8 +31,8 @@
           <% @dynamic_fields.each_with_index do |group, group_index| %>
             <div data-search-target="group" data-group-index="<%= group_index %>" class="search-group mb-3 p-3 rounded border border-primary">
               <div data-search-target="rows">
+                <% curr_row_index = 0 %>
                 <% group.each do |field_hash| %>
-                  <% curr_row_index = 0 %>
                   <% field_hash[:value].each do |value| %>
                     <%= render partial: "layouts/search_field", locals: { selected_field: field_hash[:field], entered_value: value, field_index: curr_row_index, group_index: group_index } %>
                     <% curr_row_index += 1 %>
@@ -61,7 +61,7 @@
         </div>
       </template>
 
-      <button type="button" class="btn btn-outline-primary mb-3" data-action="click->search#addGroup">+ Add OR Group</button>
+      <button type="button" class="btn btn-outline-primary mb-3" data-action="click->search#addGroup">+ Add AND Group</button>
     </div>
 
     <div class="row">

@@ -146,7 +146,7 @@ class ItemsController < ApplicationController
     
     
     
-    @active_filters = format_active_filters(params)
+    @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
     respond_to do |format|
       format.turbo_stream
       format.html { render :search_result }

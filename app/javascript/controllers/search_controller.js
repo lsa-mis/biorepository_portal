@@ -18,6 +18,7 @@ export default class extends Controller {
     }
 
     this.addOrSeparators()
+    this.addAndSeparators()
   }
 
   addRow(event) {
@@ -70,6 +71,7 @@ export default class extends Controller {
 
     container.appendChild(newGroup)
     this.addOrSeparators()
+    this.addAndSeparators()
   }
 
   addOrSeparators() {
@@ -87,6 +89,29 @@ export default class extends Controller {
       })
     })
   }
+
+  addAndSeparators() {
+    const container = this.groupsContainerTarget
+    const groups = this.groupTargets
+
+    // First, remove existing AND labels
+    container.querySelectorAll(".and-label").forEach(el => el.remove())
+
+    groups.forEach((group, index) => {
+      if (index > 0) {
+        const andLabel = document.createElement("span")
+        andLabel.textContent = "AND"
+        andLabel.classList.add("and-label", "badge", "bg-info", "my-2", "text-center")
+
+        // Add spacing
+        andLabel.style.display = "block"
+
+        // Insert before this group
+        group.parentNode.insertBefore(andLabel, group)
+      }
+    })
+  }
+
 
   getGroupIndex(groupElement) {
     return Array.from(this.groupTargets).indexOf(groupElement)
