@@ -28,6 +28,16 @@ module ActiveFiltersHelper
   }.freeze
 
   STANDARD_FILTER_LABELS = {
+    "continent_case_insensitive_in" => "Continent",
+    "country_case_insensitive_in" => "Country",
+    "state_province_case_insensitive_in" => "State/Province",
+    "sex_case_insensitive_in" => "Sex",
+    "identifications_kingdom_case_insensitive_in" => "Kingdom",
+    "identifications_phylum_case_insensitive_in" => "Phylum",
+    "identifications_class_name_case_insensitive_in" => "Class",
+    "identifications_order_name_case_insensitive_in" => "Order",
+    "identifications_family_case_insensitive_in" => "Family",
+    "identifications_genus_case_insensitive_in" => "Genus",
     "event_date_start_gteq" => "Event Date Start (After)",
     "event_date_end_lteq" => "Event Date End (Before)",
     "georeferenced_date_eq" => "Georeferenced Date",
@@ -55,6 +65,17 @@ module ActiveFiltersHelper
       end
       
     end
+
+    # Handle standard filters
+    if params[:q].present?
+      params[:q].each do |key, value|
+        next if value.blank? || key == "groupings" # Skip empty values and the "groupings" key
+
+        label = STANDARD_FILTER_LABELS[key] || key.titleize
+        filters << "#{label}: [#{Array.wrap(value).join(", ").titleize}]"
+      end
+    end
+    
 
     filters.compact.uniq
   end
