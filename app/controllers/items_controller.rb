@@ -17,8 +17,9 @@ class ItemsController < ApplicationController
   end
 
   def search
-    
-    if params[:q] && params[:q][:groupings]
+
+    if params[:q] && params[:q][:groupings] && !params[:page].present?
+
       transformed_groupings = {}
 
       params[:q][:groupings].each do |group_index, group_data|
@@ -43,6 +44,7 @@ class ItemsController < ApplicationController
       end
 
       params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
+      
     end
     
 

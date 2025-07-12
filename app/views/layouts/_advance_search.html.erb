@@ -32,8 +32,7 @@
             <div data-search-target="group" data-group-index="<%= group_index %>" class="search-group mb-3 p-3 rounded border border-primary">
               <div data-search-target="rows">
                 <% group.each do |field_hash| %>
-                  <%= curr_row_index = 0 %>
-                  <pre><%= field_hash.inspect %></pre>
+                  <% curr_row_index = 0 %>
                   <% field_hash[:value].each do |value| %>
                     <%= render partial: "layouts/search_field", locals: { selected_field: field_hash[:field], entered_value: value, field_index: curr_row_index, group_index: group_index } %>
                     <% curr_row_index += 1 %>
