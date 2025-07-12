@@ -117,39 +117,9 @@ export default class extends Controller {
     return Array.from(this.groupTargets).indexOf(groupElement)
   }
 
-  // submit(event) {
-  //   const form = this.element
+  submit(event) {
+    const form = this.element
 
-  //   // Clear old hidden fields
-  //   form.querySelectorAll("input[name^='q[groupings]']").forEach(el => el.remove())
-
-  //   this.groupTargets.forEach((group, groupIndex) => {
-  //     const rows = group.querySelectorAll(".search-row")
-  //     let addedAny = false
-
-  //     rows.forEach((row) => {
-  //       const field = row.querySelector(".dynamic-search-field")
-  //       const value = row.querySelector(".dynamic-search-value")
-
-  //       if (field && value && field.value && value.value) {
-  //         const input = document.createElement("input")
-  //         input.type = "hidden"
-  //         input.name = `q[groupings][${groupIndex}][${field.value}][]`
-  //         input.value = value.value
-  //         form.appendChild(input)
-  //         addedAny = true
-  //       }
-  //     })
-
-  //     if (addedAny) {
-  //       const mInput = document.createElement("input")
-  //       mInput.type = "hidden"
-  //       mInput.name = `q[groupings][${groupIndex}][m]`
-  //       mInput.value = "or"
-  //       form.appendChild(mInput)
-  //     }
-  //   })
-
-  //   this.formTarget.requestSubmit()
-  // }
+    this.formTarget.requestSubmit()
+  }
 }
