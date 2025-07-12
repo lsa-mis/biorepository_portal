@@ -17,6 +17,34 @@ class ItemsController < ApplicationController
   end
 
   def search
+    if params[:q] && params[:q][:groupings]
+      transformed_groupings = {}
+
+      params[:q][:groupings].each do |group_index, group_data|
+        group = {}
+
+        group_data.each do |field_index, field_data|
+          next if field_index == "m"
+          next unless field_data["field"].present? && field_data["value"].present?
+
+          field = field_data["field"]
+          value = field_data["value"]
+
+          group[field] ||= []
+          group[field] << value
+        end
+
+        # Wrap group in an indexed key
+        transformed_groupings[group_index] = group
+
+        # Add matcher if present
+        transformed_groupings[group_index]["m"] = group_data["m"].presence || "or"
+      end
+
+      params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
+    end
+
+
     @continents = Item.pluck(:continent)
       .compact.reject(&:blank?)
       .map { |c| [c.titleize, c.downcase] }
@@ -98,27 +126,29 @@ class ItemsController < ApplicationController
     @items = @q.result.page(params[:page]).per(15)
     @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
     @all_collections = Collection.all
-
+    
     @dynamic_fields = []
     # Reprocessing params to ensure dynamic fields are included
     if params.dig(:q, :groupings).present?
       params.dig(:q, :groupings).each do |group_num, values|
         group_pairs = []
-        values.each do |field_num, input_hash|
-          next if input_hash["field"] == "m"
-          next if input_hash["value"].blank?
-          group_pairs << { field: input_hash[:field], value: input_hash[:value] }
+        values.each do |field, val|
+          next if field == "m" || val.blank?
+          group_pairs << { field: field, value: val }
         end
         @dynamic_fields << group_pairs unless group_pairs.empty?
+        
       end
     end
+    
+    
     
     @active_filters = format_active_filters(params)
     respond_to do |format|
       format.turbo_stream
       format.html { render :search_result }
     end
-
+    
   end
 
   private
