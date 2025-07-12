@@ -17,6 +17,7 @@ class ItemsController < ApplicationController
   end
 
   def search
+    
     if params[:q] && params[:q][:groupings]
       transformed_groupings = {}
 
@@ -43,7 +44,7 @@ class ItemsController < ApplicationController
 
       params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
     end
-
+    
 
     @continents = Item.pluck(:continent)
       .compact.reject(&:blank?)
