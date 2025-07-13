@@ -54,6 +54,7 @@ export default class extends Controller {
 
     rowsContainer.appendChild(newRow)
     this.addOrSeparators()
+    this.addAndSeparators()
   }
 
   addGroup() {
