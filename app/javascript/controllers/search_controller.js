@@ -5,6 +5,8 @@ export default class extends Controller {
 
   connect() {
     console.log("connect dynamic search")
+    this.addOrSeparators()
+    this.addAndSeparators()
   }
 
   removeField(event) {

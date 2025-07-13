@@ -71,8 +71,9 @@ module ActiveFiltersHelper
       params[:q].each do |key, value|
         next if value.blank? || key == "groupings" # Skip empty values and the "groupings" key
 
-        label = STANDARD_FILTER_LABELS[key] || key.titleize
-        filters << "#{label}: [#{Array.wrap(value).join(", ").titleize}]"
+        # label = STANDARD_FILTER_LABELS[key] || key.titleize
+        # filters << "#{label}: [#{Array.wrap(value).join(", ").titleize}]"
+        filters << "[#{Array.wrap(value).join(", ").titleize}]"
       end
     end
     
