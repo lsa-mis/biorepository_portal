@@ -1,3 +1,10 @@
+<% is_preview = params[:preview].present? %>
+<% if is_preview %>
+  <div class="d-flex justify-content-end mt-3">
+    <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %> 
+
 <%= turbo_frame_tag "checkout" do %>
   <% if (announcement = Announcement.find_by(location: "checkout")) && announcement.displayed? %>
     <div class="text-start mt-5 mb-5">

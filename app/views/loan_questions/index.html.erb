@@ -1,9 +1,14 @@
+<% is_preview = params[:preview].present? %>
+<% if is_preview %>
+  <div class="d-flex justify-content-end mt-3">
+    <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %> 
 <% if (announcement = Announcement.find_by(location: "loan_questions")) && announcement.displayed? %>
   <div class="text-start mt-5 mb-5">
     <%= announcement.content.to_s.html_safe %>
   </div>
 <% end %>
-
 <div class="container-fluid">
   <h1 class="mb-3 text-center">Loan Questions</h1>
 

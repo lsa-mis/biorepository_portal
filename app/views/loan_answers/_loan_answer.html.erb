@@ -28,7 +28,9 @@
       <% end %>
     </p>
   <% end %>
-  <% unless local_assigns[:disabled] %>
+  <% if local_assigns[:disabled] %>
+    <button class="btn btn-sm btn-outline-secondary" disabled >Edit</button>
+  <% else %>
     <%= link_to "Edit",
                 edit_loan_answer_path(question, format: :turbo_stream),
                 data: {

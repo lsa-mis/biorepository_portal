@@ -18,19 +18,19 @@
         <td>
           <% case announcement.location %>
           <% when "about" %>
-            <%= link_to "Preview", about_path, target: "_blank" %>
+            <%= link_to "Preview", about_path(preview: true) %>
           <% when "app_preferences" %>
-            <%= link_to "Preview", app_prefs_path, target: "_blank" %>
+            <%= link_to "Preview", app_prefs_path(preview: true) %>
           <% when "checkout" %>
-            <%= link_to "Preview", checkout_path, target: "_blank" %>
+            <%= link_to "Preview", checkout_path(preview: true) %>
           <% when "collections_index" %>
-            <%= link_to "Preview", collections_path, target: "_blank" %>
+            <%= link_to "Preview", collections_path(preview: true) %>
           <% when "faq" %>
-            <%= link_to "Preview", faqs_path, target: "_blank" %>
+            <%= link_to "Preview", faqs_path(preview: true) %>
           <% when "loan_questions" %>
-            <%= link_to "Preview", loan_questions_path, target: "_blank" %>
+            <%= link_to "Preview", loan_questions_path(preview: true) %>
           <% when "loan_request" %>
-            <%= link_to "Preview", loan_request_path, target: "_blank" %>
+            <%= link_to "Preview", loan_request_path(preview: true) %>
           <% when "collection_questions" %>
             <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#collectionQuestionModal">
               Preview

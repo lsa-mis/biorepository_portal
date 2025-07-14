@@ -4,7 +4,13 @@
       <%= announcement.content.to_s.html_safe %>
     </div>
   <% end %>
-
+  <% is_preview = params[:preview].present? %>
+  <% if is_preview %>
+    <div class="d-flex justify-content-end mt-3">
+      <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary" %>
+    </div>
+  <% end %> 
+  
   <h1 class="fw-bold mb-4">Explore Collection Catalog</h1>
 
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">

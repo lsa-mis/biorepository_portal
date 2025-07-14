@@ -10,6 +10,12 @@
   </div>
 <% end %>
 
+<% if is_preview %>
+  <div class="d-flex justify-content-end mt-3">
+    <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>
+
 <h1>Send Loan Request</h1>
 
 <h2>User Info</h2>
