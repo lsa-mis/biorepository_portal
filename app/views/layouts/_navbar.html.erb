@@ -61,6 +61,9 @@
               <li>
                 <%= link_to "App Preferences", app_prefs_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).app_prefs? %>
               </li>
+              <li>
+                <%= link_to "Announcement", announcements_path, class: 'dropdown-item navbar_dropdown_item' if policy(Announcement).index? %>
+              </li>
             </ul>
           </li>
         <% end %>
@@ -101,6 +104,9 @@
             </li>
             <li>
               <%= link_to "App Preferences", app_prefs_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).app_prefs? %>
+            </li>
+            <li>
+              <%= link_to "Announcement", announcements_path, class: 'dropdown-item navbar_dropdown_item' if policy(Announcement).index? %>
             </li>
           </ul>
         </div>

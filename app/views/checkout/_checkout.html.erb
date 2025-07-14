@@ -1,4 +1,9 @@
 <%= turbo_frame_tag "checkout" do %>
+  <% if (announcement = Announcement.find_by(location: "checkout")) && announcement.displayed? %>
+    <div class="text-start mt-5 mb-5">
+      <%= announcement.content.to_s.html_safe %>
+    </div>
+  <% end %>
   <div class="d-flex justify-content-between">
     <h1 class="py-5">Checkout</h1>
     <% if @checkout.requestables.where(saved_for_later: false).exists? %>

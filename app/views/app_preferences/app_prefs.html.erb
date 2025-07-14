@@ -1,4 +1,9 @@
 <div class="mx-auto w-full">
   <h1>Application Preferences</h1>
+    <% if (announcement = Announcement.find_by(location: "app_preferences")) && announcement.displayed? %>
+      <div class="text-start mt-5 mb-5">
+        <%= announcement.content.to_s.html_safe %>
+      </div>
+    <% end %>
   <%= render "app_preferences/all_preferences" %>
 </div>

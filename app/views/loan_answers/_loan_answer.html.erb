@@ -28,13 +28,14 @@
       <% end %>
     </p>
   <% end %>
-
-  <%= link_to "Edit",
-              edit_loan_answer_path(question, format: :turbo_stream),
-              data: {
-                turbo_frame: "modal_content_frame",
-                bs_toggle: "modal",
-                bs_target: "#sharedModal"
-              },
-              class: "btn btn-sm btn-outline-primary" %>
+  <% unless local_assigns[:disabled] %>
+    <%= link_to "Edit",
+                edit_loan_answer_path(question, format: :turbo_stream),
+                data: {
+                  turbo_frame: "modal_content_frame",
+                  bs_toggle: "modal",
+                  bs_target: "#sharedModal"
+                },
+                class: "btn btn-sm btn-outline-primary" %>
+  <% end %>
 </div>

@@ -1,4 +1,9 @@
 <div class="container-fluid">
+  <% if (announcement = Announcement.find_by(location: "collection_questions")) && announcement.displayed? %>
+    <div class="text-start mt-5 mb-5">
+      <%= announcement.content.to_s.html_safe %>
+    </div>
+  <% end %>
   <h1 class="mb-3 text-center"><%= @collection.division %> Collection Questions</h1>
 
   <% if policy(@collection).update? %>

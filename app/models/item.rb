@@ -64,7 +64,7 @@ class Item < ApplicationRecord
 
   def name
     # Placeholder for displaying the item name
-    name = "#{current_identification&.scientific_name.humanize}"
+    name = current_identification&.scientific_name&.humanize.to_s
     if current_identification&.vernacular_name.present?
       name += " [#{current_identification&.vernacular_name.humanize}]"
     end

@@ -2,17 +2,25 @@
   <%= tag.meta name: "turbo-cache-control", content: "no-cache" %>
 <% end %>
 
+<% is_preview = params[:preview].present? %>
+
+<% if (announcement = Announcement.find_by(location: "loan_request")) && announcement.displayed? %>
+  <div class="text-start mt-5 mb-5">
+    <%= announcement.content.to_s.html_safe %>
+  </div>
+<% end %>
+
 <h1>Send Loan Request</h1>
 
 <h2>User Info</h2>
-<%= render "profiles/user_field", label: "First Name", field_name: "first_name", value: @user.first_name %>
-<%= render "profiles/user_field", label: "Last Name", field_name: "last_name", value: @user.last_name %>
-<%= render "profiles/user_field", label: "Affiliation", field_name: "affiliation", value: @user.affiliation %>
-<%= render "profiles/user_field", label: "Orcid", field_name: "orcid", value: @user.orcid %>
+<%= render "profiles/user_field", label: "First Name", field_name: "first_name", value: @user.first_name, disabled: is_preview %>
+<%= render "profiles/user_field", label: "Last Name", field_name: "last_name", value: @user.last_name, disabled: is_preview %>
+<%= render "profiles/user_field", label: "Affiliation", field_name: "affiliation", value: @user.affiliation, disabled: is_preview %>
+<%= render "profiles/user_field", label: "Orcid", field_name: "orcid", value: @user.orcid, disabled: is_preview %>
 
-<%= render "profiles/user_loan_answers" %>
+<%= render "profiles/user_loan_answers", disabled: is_preview %>
 
-<%= render "profiles/user_collections_answers" %>
+<%= render "profiles/user_collections_answers", disabled: is_preview %>
 
 <%= render "profiles/user_loan_items" %>
 
@@ -20,8 +28,9 @@
 
 <%= form_with(model: @loan_request, url: send_loan_request_path) do |form| %>
 
+  <% is_preview = params[:preview].present? %>
   <div class="mt-1 gap-1 d-flex flex-row justify-content-start align-items-center">
-    <%= form.submit 'Send Loan Request' %>
+    <%= form.submit 'Send Loan Request', disabled: is_preview %>
     <%= link_to "Cancel", checkout_path, class: "link_to" %>
   </div>
   
