@@ -71,8 +71,11 @@ module ActiveFiltersHelper
       params[:q].each do |key, value|
         next if value.blank? || key == "groupings" # Skip empty values and the "groupings" key
 
-        # label = STANDARD_FILTER_LABELS[key] || key.titleize
-        # filters << "#{label}: [#{Array.wrap(value).join(", ").titleize}]"
+        if key == "collection_id_in"
+          collection_names = Collection.where(id: value).pluck(:division)
+          filters << "[#{collection_names.join(", ").titleize}]"
+          next
+        end
         filters << "[#{Array.wrap(value).join(", ").titleize}]"
       end
     end
