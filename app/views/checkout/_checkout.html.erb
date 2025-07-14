@@ -8,7 +8,7 @@
 <%= turbo_frame_tag "checkout" do %>
   <% if (announcement = Announcement.find_by(location: "checkout")) && announcement.displayed? %>
     <div class="text-start mt-5 mb-5">
-      <%= announcement.content.to_s.html_safe %>
+      <%= sanitize(announcement.content.to_s) %>
     </div>
   <% end %>
   <div class="d-flex justify-content-between">
