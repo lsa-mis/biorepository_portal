@@ -4,12 +4,17 @@
     <div class="d-flex justify-content-end mt-3">
       <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary" %>
     </div>
-  <% end %> 
-
-  <% if (announcement = Announcement.find_by(location: "collections_index")) && announcement.displayed? %>
-    <div class="text-start mt-5 mb-5">
-      <%= sanitize(announcement.content.to_s) %>
-    </div>
+    <% if (announcement = Announcement.find_by(location: "collections_index")) %>
+      <div class="text-start mt-5 mb-5">
+        <%= sanitize(announcement.content.to_s) %>
+      </div>
+    <% end %>
+  <% else %> 
+    <% if (announcement = Announcement.find_by(location: "collections_index")) && announcement.displayed? %>
+      <div class="text-start mt-5 mb-5">
+        <%= sanitize(announcement.content.to_s) %>
+      </div>
+    <% end %>
   <% end %>
 
   <h1 class="fw-bold mb-4">Explore Collection Catalog</h1>

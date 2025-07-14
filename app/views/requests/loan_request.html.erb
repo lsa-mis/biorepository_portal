@@ -8,12 +8,17 @@
   <div class="d-flex justify-content-end mt-3">
     <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary" %>
   </div>
-<% end %>
-
-<% if (announcement = Announcement.find_by(location: "loan_request")) && announcement.displayed? %>
-  <div class="text-start mt-5 mb-5">
-    <%= sanitize(announcement.content.to_s) %>
-  </div>
+  <% if (announcement = Announcement.find_by(location: "loan_request")) %>
+    <div class="text-start mt-5 mb-5">
+      <%= sanitize(announcement.content.to_s) %>
+    </div>
+  <% end %>
+<% else %>
+  <% if (announcement = Announcement.find_by(location: "loan_request")) && announcement.displayed? %>
+    <div class="text-start mt-5 mb-5">
+      <%= sanitize(announcement.content.to_s) %>
+    </div>
+  <% end %>
 <% end %>
 
 <h1>Send Loan Request</h1>
