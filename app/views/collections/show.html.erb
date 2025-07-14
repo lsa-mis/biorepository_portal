@@ -4,7 +4,7 @@
 
 <% if (announcement = Announcement.find_by(location: "collection_show")) && announcement.displayed? %>
   <div class="text-start mt-5 mb-5">
-    <%= announcement.content.to_s %>
+    <%= sanitize(announcement.content.to_s) %>
   </div>
 <% end %>
 
