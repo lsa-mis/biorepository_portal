@@ -6,13 +6,13 @@
     </div>
     <% if (announcement = Announcement.find_by(location: "app_preferences")) %>
       <div class="text-start mt-5 mb-5">
-        <%= announcement.content.to_s %>
+        <%= sanitize(announcement.content.to_s) %>
       </div>
     <% end %>
   <% else %>
     <% if (announcement = Announcement.find_by(location: "app_preferences")) && announcement.displayed? %>
       <div class="text-start mt-5 mb-5">
-        <%= announcement.content.to_s %>
+        <%= sanitize(announcement.content.to_s) %>
       </div>
     <% end %>
   <% end %>
