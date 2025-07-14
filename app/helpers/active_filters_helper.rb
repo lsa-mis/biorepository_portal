@@ -77,7 +77,6 @@ module ActiveFiltersHelper
       end
     end
     
-
     filters.compact.uniq
   end
   

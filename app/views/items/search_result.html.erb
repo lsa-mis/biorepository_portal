@@ -1,29 +1,50 @@
 <div class="container-fluid">
-  <div class="row">
-    <!-- Sidebar: Advanced Search -->
-    <div class="col-md-5 mt-3">
-      <div class="p-3 bg-light border rounded h-100">
-        <%= render partial: 'layouts/advance_search' %>
+  <%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form" } do |f| %>
+    <div class="row">
+      <!-- Sidebar: Advanced Search -->
+      <div class="col-md-5 mt-3">
+        <div class="p-3 bg-light border rounded h-100">
+          <%= render partial: 'layouts/advance_search', locals: { f: f } %>
+        </div>
       </div>
-    </div>
 
-    <!-- Main Content: Search Results -->
-    <div class="col-md-7 mt-3">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Search Results for Items</h2>
-        <%= turbo_frame_tag "active_filters" do %>
-          <%= render partial: 'layouts/current_filters', locals: { active_filters: @active_filters } %>
+      <!-- Main Content: Search Results -->
+      <div class="col-md-7 mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2>Search Results</h2>
+          
+          <%= turbo_frame_tag "active_filters" do %>
+            <%= render partial: 'layouts/current_filters', locals: { active_filters: @active_filters } %>
+          <% end %>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <label for="switch_view" class="h5">Switch View</label>
+            <%= select_tag "switch_view", options_for_select(item_views, selected: @view), :"data-action" => "search#submit" %>
+          </div>
+          <div>
+            <label for="per" class="h5">Items per page:</label>
+            <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "search#submit" %>
+          </div>
+        </div>
+  <% end %>
+        <%= turbo_frame_tag "items_result_list" do %>
+          <div class="my-2 ml-4">
+            <%= page_entries_info @items %> from <%= @collections %>
+          </div>
+          <% if @items.empty? %>
+            <div class="alert alert-warning mt-3">
+              No items available for this search.
+            </div>
+          <% else %>
+            <% if @view == 'rows' %>
+              <%= render partial: 'result_rows', locals: { items: @items } %>
+            <% else %>
+              <%= render partial: 'result_cards', locals: { items: @items } %>
+            <% end %>
+          <% end %>
         <% end %>
       </div>
-      <%= turbo_frame_tag "items_result_list" do %>
-        <% if @items.empty? %>
-          <div class="alert alert-warning mt-3">
-            No items available in this collection.
-          </div>
-        <% else %>
-          <%= render partial: 'result_list', locals: { items: @items } %>
-        <% end %>
-      <% end %>
     </div>
-  </div>
 </div>

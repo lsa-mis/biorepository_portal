@@ -41,7 +41,6 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def update
-    authorize([@collection, @collection_question])
     success = true
     ActiveRecord::Base.transaction do
       begin
@@ -72,19 +71,16 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def move_up
-    authorize([@collection, @collection_question])
     @collection_question.move_higher
     redirect_to collection_collection_questions_path, notice: "Question moved up."
   end
 
   def move_down
-    authorize([@collection, @collection_question])
     @collection_question.move_lower
     redirect_to collection_collection_questions_path, notice: "Question moved down."
   end
   
   def destroy
-    authorize([@collection, @collection_question])
     @collection_question.destroy
 
     respond_to do |format|
@@ -109,6 +105,7 @@ class Collections::CollectionQuestionsController < ApplicationController
 
   def set_collection_question
     @collection_question = @collection.collection_questions.find(params[:id])
+    authorize([@collection, @collection_question])
   end
 
   def set_question_types
@@ -119,4 +116,5 @@ class Collections::CollectionQuestionsController < ApplicationController
     params.require(:collection_question).permit(:question, :question_type, :required, :position, :collection_id,
       collection_options_attributes: [:id, :value])
   end
+    
 end
