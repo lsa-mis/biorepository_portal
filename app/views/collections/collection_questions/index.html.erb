@@ -4,7 +4,7 @@
   <% if policy(@collection).update? %>
     <div class="mt-4 text-end">
       <%= link_to preview_collection_collection_questions_path(@collection), class: "btn btn-outline-success me-2 shadow-sm" do %>
-        <i class="bi bi-eye me-2"></i> Preview Loan Questions
+        <i class="bi bi-eye me-2"></i> Preview Collection Questions
       <% end %>
       <%= link_to "New Collection Question", new_collection_collection_question_path(@collection), class: "btn btn-success" %>
     </div>

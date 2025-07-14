@@ -1,6 +1,6 @@
 <div class="card h-100 shadow-sm" id="<%= dom_id item %>">
   <div class="card-header">
-    <%= link_to item.name, item_path(item), class: "link_to fw-bold", data: { turbo_frame: "_top" } %>
+    <%= link_to item.name, item_path(item, return_to: request.fullpath), class: "link_to fw-bold", data: { turbo_frame: "_top" } %>
     <p class="fw-normal lh-sm"><%= item.country&.titleize %>
     <br><%= item.event_date_start %></p>
   </div>
@@ -9,12 +9,13 @@
     <p>
       <%= item.coordinates %>
     </p>
+    <p class="fw-normal lh-sm">Preparations</p>
     <table class="table table-sm table-item-card">
       <thead class="">
         <tr>
-          <th scope="col" class="text-start">Preparation Type</th>
-          <th scope="col" class="text-start">Available Amount</th>
-          <th scope="col" class="text-end">In Checkout</th>
+          <th scope="col" class="text-start">Type</th>
+          <th scope="col" class="text-start">Available</th>
+          <th scope="col" class="text-end">Checkout</th>
         </tr>
       </thead>
       <tbody class="">

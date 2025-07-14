@@ -10,7 +10,7 @@ class CollectionsController < ApplicationController
   # GET /collections/1 or /collections/1.json
   def show
     @q1 = @collection.items.includes(preparations: :requestables).ransack(params[:q1])
-    @items = @q1.result.page(params[:page]).per(params[:per]).max_paginates_per(500)
+    @items = @q1.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @max_number_of_preparations = fetch_max_number_of_preparations(@collection.id)
     @collection_questions = @collection.collection_questions.includes(:collection_options)
     respond_to do |format|
@@ -110,7 +110,7 @@ class CollectionsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
-      @collection = Collection.find(params.expect(:id))
+      @collection = Collection.find(params[:id])
       authorize @collection
     end
 
@@ -125,5 +125,9 @@ class CollectionsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def collection_params
       params.require(:collection).permit(:division, :admin_group, :short_description, :long_description, :division_page_url, :link_to_policies, :image) 
+    end
+
+    def search_params
+      params.permit(:q1, :commit)
     end
 end

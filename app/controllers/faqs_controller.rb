@@ -1,6 +1,6 @@
 class FaqsController < ApplicationController
   before_action :set_redirection_url
-  before_action :set_faq, only: %i[ show edit update destroy ]
+  before_action :set_faq, only: %i[ show edit update destroy move_up move_down]
   skip_before_action :authenticate_user!, only: %i[index]
 
   # GET /faqs or /faqs.json
@@ -20,7 +20,6 @@ class FaqsController < ApplicationController
 
   # GET /faqs/1/edit
   def edit
-    authorize @faq
   end
 
   # POST /faqs or /faqs.json
@@ -41,7 +40,6 @@ class FaqsController < ApplicationController
 
   # PATCH/PUT /faqs/1 or /faqs/1.json
   def update
-    authorize @faq
     respond_to do |format|
       if @faq.update(faq_params)
         format.html { redirect_to faqs_path, notice: "FAQ was successfully updated." }
@@ -53,7 +51,6 @@ class FaqsController < ApplicationController
 
   # DELETE /faqs/1 or /faqs/1.json
   def destroy
-    authorize @faq
     @faq.destroy!
 
     respond_to do |format|
@@ -62,14 +59,30 @@ class FaqsController < ApplicationController
     end
   end
 
+  def reorder
+    @faqs = Faq.order(:position)
+    authorize @faqs
+  end
+
+  def move_up
+    @faq.move_higher
+    redirect_to reorder_faq_path, notice: "Question moved up."
+  end
+
+  def move_down
+    @faq.move_lower
+    redirect_to reorder_faq_path, notice: "Question moved down."
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_faq
-      @faq = Faq.find(params.expect(:id))
+      @faq = Faq.find(params[:id])
+      authorize @faq
     end
 
     # Only allow a list of trusted parameters through.
     def faq_params
-      params.require(:faq).permit(:question, :answer)
+      params.require(:faq).permit(:question, :answer, :position)
     end
 end

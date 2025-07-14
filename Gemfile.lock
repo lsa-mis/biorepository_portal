@@ -383,6 +383,8 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    skylight (6.0.4)
+      activesupport (>= 5.2.0)
     sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
       logger
@@ -466,6 +468,7 @@ DEPENDENCIES
   ransack
   redis (>= 4.0.1)
   rspec-rails (~> 8.0.0)
+  skylight
   sprockets-rails
   stimulus-rails
   turbo-rails
