@@ -8,7 +8,7 @@
 
 <% if (announcement = Announcement.find_by(location: "faq")) && announcement.displayed? %>
   <div class="text-start mt-5 mb-5">
-    <%= announcement.content.to_s.html_safe %>
+    <%= sanitize(announcement.content.to_s) %>
   </div>
 <% end %>
 
