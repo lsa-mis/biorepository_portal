@@ -6,7 +6,7 @@
 
 <% if (announcement = Announcement.find_by(location: "loan_request")) && announcement.displayed? %>
   <div class="text-start mt-5 mb-5">
-    <%= announcement.content.to_s.html_safe %>
+    <%= sanitize(announcement.content.to_s) %>
   </div>
 <% end %>
 
