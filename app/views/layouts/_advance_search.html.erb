@@ -24,42 +24,41 @@
 
     <div>
       <div id="groups-container" data-search-target="groupsContainer">
-        <div data-search-target="group" class="search-group mb-3 p-3 rounded border border-primary">
-          <div data-search-target="rows">
-            <% if params.dig(:dynamic_fields).present? %>
-              <% group_index = -1 %>
-              <% params[:dynamic_fields].each do |group_key, fields| %>
-                <% group_index += 1 %>
-                <% field_index = -1 %>
-                <% fields.each do |field_key, field_hash| %>
-                  <% field_index += 1 %>
-                  <%= render partial: "layouts/search_field", locals: {
-                        selected_field: field_hash["field"],
-                        entered_value: field_hash["value"],
-                        field_index: field_index,
-                        group_index: group_index
-                      } %>
+        <% if @dynamic_fields.present? %>
+          <% @dynamic_fields.each_with_index do |group, group_index| %>
+            <div data-search-target="group" data-group-index="<%= group_index %>" class="search-group mb-3 p-3 rounded border border-primary">
+              <div data-search-target="rows">
+                <% curr_row_index = 0 %>
+                <% group.each do |field_hash| %>
+                  <% field_hash[:value].each do |value| %>
+                    <%= render partial: "layouts/search_field", locals: { selected_field: field_hash[:field], entered_value: value, field_index: curr_row_index, group_index: group_index } %>
+                    <% curr_row_index += 1 %>
+                  <% end %>
                 <% end %>
-              <% end %>
-            <% else %>
+              </div>
+              <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
+            </div>
+          <% end %>
+        <% else %>
+          <div data-search-target="group" data-group-index="0" class="search-group mb-3 p-3 rounded border border-primary">
+            <div data-search-target="rows">
               <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil, field_index: 0, group_index: 0 } %>
-            <% end %>
+            </div>
+            <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
           </div>
-
-          <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
-        </div>
+        <% end %>
       </div>
 
       <template data-search-target="groupTemplate">
         <div data-search-target="group" class="search-group mb-3 p-3 rounded border border-primary">
           <div data-search-target="rows">
-            <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil, field_index: 0, group_index: 0 } %>
+            <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil, field_index: 0, group_index: "__GROUP_INDEX__" } %>
           </div>
           <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
         </div>
       </template>
 
-      <button type="button" class="btn btn-outline-primary mb-3" data-action="click->search#addGroup">+ Add OR Group</button>
+      <button type="button" class="btn btn-outline-primary mb-3" data-action="click->search#addGroup">+ Add AND Group</button>
     </div>
 
     <div class="row">
