@@ -1,16 +1,17 @@
 <div class="container my-5">
-  <% if (announcement = Announcement.find_by(location: "collections_index")) && announcement.displayed? %>
-    <div class="text-start mt-5 mb-5">
-      <%= sanitize(announcement.content.to_s) %>
-    </div>
-  <% end %>
   <% is_preview = params[:preview].present? %>
   <% if is_preview %>
     <div class="d-flex justify-content-end mt-3">
       <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary" %>
     </div>
   <% end %> 
-  
+
+  <% if (announcement = Announcement.find_by(location: "collections_index")) && announcement.displayed? %>
+    <div class="text-start mt-5 mb-5">
+      <%= sanitize(announcement.content.to_s) %>
+    </div>
+  <% end %>
+
   <h1 class="fw-bold mb-4">Explore Collection Catalog</h1>
 
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
