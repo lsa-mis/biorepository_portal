@@ -1,7 +1,7 @@
 <div class="container my-5">
   <% if (announcement = Announcement.find_by(location: "collections_index")) && announcement.displayed? %>
     <div class="text-start mt-5 mb-5">
-      <%= announcement.content.to_s.html_safe %>
+      <%= sanitize(announcement.content.to_s) %>
     </div>
   <% end %>
   <% is_preview = params[:preview].present? %>
