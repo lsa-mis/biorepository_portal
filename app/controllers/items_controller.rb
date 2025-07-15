@@ -221,27 +221,25 @@ class ItemsController < ApplicationController
       params.permit(:q)
     end
 
-    def data_to_csv(items = all)
-      item_fields = %w{associated_sequences catalog_number collection_id continent_case_insensitive coordinate_uncertainty_in_meters
-      country_case_insensitive county created_at decimal_latitude decimal_longitude event_date_end event_date_start event_remarks
-      field_number geodetic_datum georeference_protocol georeferenced_by georeferenced_date id individual_count
-      life_stage locality maximum_elevation_in_meters minimum_elevation_in_meters modified occurrence_id
-      occurrence_remarks organism_remarks other_catalog_numbers recorded_by reproductive_condition sampling_protocol
-      sex_case_insensitive state_province_case_insensitive updated_at verbatim_coordinates verbatim_elevation verbatim_event_date verbatim_locality vitality}
-      preparations_fields = %w{prep_type description}
-      identifications_fields = %w{scientific_name vernacular_name order_name family genus}
-      headers = %w{associated_sequences catalog_number collection_id continent_case_insensitive coordinate_uncertainty_in_meters
+    ITEM_FIELDS = %w[
+      associated_sequences catalog_number collection_id continent_case_insensitive coordinate_uncertainty_in_meters
       country_case_insensitive county created_at decimal_latitude decimal_longitude event_date_end event_date_start event_remarks
       field_number geodetic_datum georeference_protocol georeferenced_by georeferenced_date id individual_count
       life_stage locality maximum_elevation_in_meters minimum_elevation_in_meters modified occurrence_id
       occurrence_remarks organism_remarks other_catalog_numbers recorded_by reproductive_condition sampling_protocol
       sex_case_insensitive state_province_case_insensitive updated_at verbatim_coordinates verbatim_elevation verbatim_event_date verbatim_locality vitality
-      prep_type description scientific_name vernacular_name order_name family genus}
+    ]
+
+    PREPARATIONS_FIELDS = %w[prep_type description]
+    IDENTIFICATIONS_FIELDS = %w[scientific_name vernacular_name order_name family genus]
+    HEADERS = ITEM_FIELDS + PREPARATIONS_FIELDS + IDENTIFICATIONS_FIELDS
+
+    def data_to_csv(items = Item.all)
       CSV.generate(headers: true) do |csv|
-        csv << headers
+        csv << HEADERS
         items.each do |item|
           row = []
-          item_fields.each do |key|
+          ITEM_FIELDS.each do |key|
             if key == "collection_id"
               row << item.collection.division
             else
@@ -249,13 +247,13 @@ class ItemsController < ApplicationController
             end
           end
           item.preparations.each do |prep|
-            preparations_fields.each do |prep_key|
+            PREPARATIONS_FIELDS.each do |prep_key|
               row << prep.attributes.values_at(prep_key)[0]
             end
           end
           item.identifications.each do |identification|
             if identification.current
-              identifications_fields.each do |id_key|
+              IDENTIFICATIONS_FIELDS.each do |id_key|
                 row << identification.attributes.values_at(id_key)[0]
               end
             end
