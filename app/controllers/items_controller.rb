@@ -1,3 +1,4 @@
+require 'csv'
 class ItemsController < ApplicationController
   include ActiveFiltersHelper
   skip_before_action :authenticate_user!, only: [ :show, :search ]
