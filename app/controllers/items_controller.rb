@@ -26,28 +26,7 @@ class ItemsController < ApplicationController
       @view = @view.present? ? @view : 'rows'
     end
 
-    if params[:q] && params[:q][:groupings] && !params[:page].present?
-      transformed_groupings = {}
-      params[:q][:groupings].each do |group_index, group_data|
-        group = {}
-        group_data.each do |field_index, field_data|
-          next if field_index == "m"
-          next unless field_data["field"].present? && field_data["value"].present?
-
-          field = field_data["field"]
-          value = field_data["value"]
-
-          group[field] ||= []
-          group[field] << value
-        end
-
-        # Wrap group in an indexed key
-        transformed_groupings[group_index] = group
-        # Add matcher if present
-        transformed_groupings[group_index]["m"] = group_data["m"].presence || "or"
-      end
-      params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
-    end
+    transform_search_groupings
 
     if params[:q]&.dig(:collection_id_in).present?
       collection_ids = params[:q][:collection_id_in]
@@ -161,28 +140,7 @@ class ItemsController < ApplicationController
   end
 
   def export_to_csv
-    if params[:q] && params[:q][:groupings] && !params[:page].present?
-      transformed_groupings = {}
-      params[:q][:groupings].each do |group_index, group_data|
-        group = {}
-        group_data.each do |field_index, field_data|
-          next if field_index == "m"
-          next unless field_data["field"].present? && field_data["value"].present?
-
-          field = field_data["field"]
-          value = field_data["value"]
-
-          group[field] ||= []
-          group[field] << value
-        end
-
-        # Wrap group in an indexed key
-        transformed_groupings[group_index] = group
-        # Add matcher if present
-        transformed_groupings[group_index]["m"] = group_data["m"].presence || "or"
-      end
-      params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
-    end
+    transform_search_groupings
     if params[:format] == 'csv'
       if params[:q].present? 
         @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
@@ -219,6 +177,31 @@ class ItemsController < ApplicationController
 
     def search_params
       params.permit(:q)
+    end
+
+    def transform_search_groupings
+      if params[:q] && params[:q][:groupings] && !params[:page].present?
+        transformed_groupings = {}
+        params[:q][:groupings].each do |group_index, group_data|
+          group = {}
+          group_data.each do |field_index, field_data|
+            next if field_index == "m"
+            next unless field_data["field"].present? && field_data["value"].present?
+
+            field = field_data["field"]
+            value = field_data["value"]
+
+            group[field] ||= []
+            group[field] << value
+          end
+
+          # Wrap group in an indexed key
+          transformed_groupings[group_index] = group
+          # Add matcher if present
+          transformed_groupings[group_index]["m"] = group_data["m"].presence || "or"
+        end
+        params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
+      end
     end
 
     ITEM_FIELDS = %w[
