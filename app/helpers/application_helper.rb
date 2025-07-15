@@ -128,4 +128,8 @@ module ApplicationHelper
     end
   }
 
+  def sanitize_csv_value(value)
+    value.to_s.start_with?('=', '+', '-', '@') ? "'#{value}'" : value.to_s
+  end
+
 end

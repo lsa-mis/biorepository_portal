@@ -212,15 +212,15 @@ class ItemsController < ApplicationController
           row = []
           ITEM_FIELDS.each do |key|
             if key == "collection_id"
-              row << item.collection.division
+              row << sanitize_csv_value(item.collection.division)
             else
-              row << item.attributes[key]
+              row << sanitize_csv_value(item.attributes[key])
             end
           end
           item.identifications.each do |identification|
             if identification.current
               IDENTIFICATIONS_FIELDS.each do |id_key|
-                row << identification.attributes[id_key]
+                row << sanitize_csv_value(identification.attributes[id_key])
               end
               break
             end
@@ -236,7 +236,7 @@ class ItemsController < ApplicationController
     def generate_row_with_preparation(row, prep)
       row_with_prep = row.dup
       PREPARATIONS_FIELDS.each do |prep_key|
-        row_with_prep << prep.attributes[prep_key]
+        row_with_prep << sanitize_csv_value(prep.attributes[prep_key])
       end
       row_with_prep
     end
