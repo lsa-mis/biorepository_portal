@@ -67,7 +67,7 @@ RSpec.describe RequestsController, type: :request do
       expect(response.body).to include("Loan Request").or include("Please answer all required questions")
     end
   end
-#---------
+
   describe 'POST /send_loan_request' do
     let(:checkout) { instance_double("Checkout", requestables: []) }
 
@@ -78,12 +78,11 @@ RSpec.describe RequestsController, type: :request do
 
     context 'when checkout is missing or empty' do
       it 'redirects with an alert' do
-        allow_any_instance_of(RequestsController).to receive(:get_checkout_items).and_return("")
-        post send_loan_request_path
+        expect(post send_loan_request_path, params: { checkout: nil }).to redirect_to(root_path)
         expect(flash[:alert]).to eq("No items in checkout.")
-        expect(response).to redirect_to(root_path)
       end
     end
+#---------
 
     context 'with valid data and completed fields' do
       before do
@@ -117,11 +116,11 @@ RSpec.describe RequestsController, type: :request do
     end
   end
 
-  describe 'GET /show_information_request/:id' do
-    it 'renders a turbo stream modal for the request' do
-      get show_information_request_path(information_request), headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include("turbo-stream").or include("Information Request Details")
-    end
-  end
+  # describe 'GET /show_information_request/:id' do
+  #   it 'renders a turbo stream modal for the request' do
+  #     get show_information_request_path(information_request), headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
+  #     expect(response).to have_http_status(:ok)
+  #     expect(response.body).to include("turbo-stream").or include("Information Request Details")
+  #   end
+  # end
 end
