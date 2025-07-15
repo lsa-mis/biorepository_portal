@@ -234,6 +234,7 @@ class ItemsController < ApplicationController
               IDENTIFICATIONS_FIELDS.each do |id_key|
                 row << identification.attributes.values_at(id_key)[0]
               end
+              break
             end
           end
           item.preparations.each do |prep|
