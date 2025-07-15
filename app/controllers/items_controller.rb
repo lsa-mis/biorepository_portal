@@ -224,7 +224,7 @@ class ItemsController < ApplicationController
       end
     }
 
-    def data_to_csv(items = Item.all)
+    def data_to_csv(items)
       CSV.generate(headers: true) do |csv|
         csv << TITLEIZED_HEADERS
         items.each do |item|
