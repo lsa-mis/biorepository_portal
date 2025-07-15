@@ -204,17 +204,11 @@ class ItemsController < ApplicationController
       end
     end
 
-    ITEM_FIELDS = %w[
-      occurrence_id associated_sequences catalog_number collection_id continent_case_insensitive coordinate_uncertainty_in_meters
-      country_case_insensitive county created_at decimal_latitude decimal_longitude event_date_end event_date_start event_remarks
-      field_number geodetic_datum georeference_protocol georeferenced_by georeferenced_date id individual_count
-      life_stage locality maximum_elevation_in_meters minimum_elevation_in_meters modified
-      occurrence_remarks organism_remarks other_catalog_numbers recorded_by reproductive_condition sampling_protocol
-      sex_case_insensitive state_province_case_insensitive updated_at verbatim_coordinates verbatim_elevation verbatim_event_date verbatim_locality vitality
-    ]
+    ITEM_FIELDS = Item.column_names.select { |name| !%w[id created_at updated_at collection_id].include?(name) }
 
-    PREPARATIONS_FIELDS = %w[prep_type description]
-    IDENTIFICATIONS_FIELDS = %w[scientific_name vernacular_name class_name order_name family genus]
+    PREPARATIONS_FIELDS = Preparation.column_names.select { |name| !%w[id item_id created_at updated_at barcode count].include?(name) }
+    IDENTIFICATIONS_FIELDS = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
+    # Combine all fields into a single array for CSV headers
     HEADERS = ITEM_FIELDS + IDENTIFICATIONS_FIELDS + PREPARATIONS_FIELDS
     TITLEIZED_HEADERS = HEADERS.map { |h|
       case h
