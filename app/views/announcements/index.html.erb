@@ -1,0 +1,86 @@
+<h1>Manage Announcements</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Location</th>
+      <th>Displayed?</th>
+      <th>Actions</th>
+      <th>Preview</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @announcements.each do |announcement| %>
+      <tr>
+        <td><%= announcement.location.humanize %></td>
+        <td><%= announcement.displayed? ? "Yes" : "No" %></td>
+        <td><%= link_to "Edit", edit_announcement_path(announcement) %></td>
+        <td>
+          <% case announcement.location %>
+          <% when "about" %>
+            <%= link_to "Preview", about_path(preview: true) %>
+          <% when "app_preferences" %>
+            <%= link_to "Preview", app_prefs_path(preview: true) %>
+          <% when "checkout" %>
+            <%= link_to "Preview", checkout_path(preview: true) %>
+          <% when "collections_index" %>
+            <%= link_to "Preview", collections_path(preview: true) %>
+          <% when "faq" %>
+            <%= link_to "Preview", faqs_path(preview: true) %>
+          <% when "loan_questions" %>
+            <%= link_to "Preview", loan_questions_path(preview: true) %>
+          <% when "loan_request" %>
+            <%= link_to "Preview", loan_request_path(preview: true) %>
+          <% when "collection_questions" %>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#collectionQuestionModal">
+              Preview
+            </button>
+          <% when "collection_show" %>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#collectionShowModal">
+              Preview
+            </button>
+          <% else %>
+            N/A
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<!-- Modals -->
+<!-- Collection Question Modal -->
+<div class="modal fade" id="collectionQuestionModal" tabindex="-1" aria-labelledby="collectionQuestionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="collectionQuestionModalLabel">Collection Question Preview</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Go to <strong>"Explore Collection"</strong>, click on any collection, and then click the green button <strong>"Collection-Specific Loan Question"</strong> to view the collection question announcement.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Collection Show Modal -->
+<div class="modal fade" id="collectionShowModal" tabindex="-1" aria-labelledby="collectionShowModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="collectionShowModalLabel">Collection Show Preview</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Go to <strong>"Explore Collection"</strong> and click on any collection to view the collection show announcement.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 <h2>User Loan Answers</h2>
 <% if @loan_answers.present? %>
   <% @loan_answers.each do |question, answer| %>
-    <%= render "loan_answers/loan_answer", question: question, answer: answer %>
+    <%= render "loan_answers/loan_answer", question: question, answer: answer, disabled: local_assigns[:disabled] %>
   <% end %>
 <% else %>
   <p>No loan answers provided.</p>

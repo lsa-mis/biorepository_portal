@@ -4,7 +4,7 @@
   <% @collection_answers.each do |collection, qa_data| %>
     <h3><%= collection.division %></h3>
     <% qa_data.each do |question, answer| %>
-      <%= render "collections/collection_answers/collection_answer", collection: collection, question: question, answer: answer %>
+      <%= render "collections/collection_answers/collection_answer", collection: collection, question: question, answer: answer, disabled: local_assigns[:disabled] %>
     <% end %>
   <% end %>
 <% end %>

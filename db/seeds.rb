@@ -77,6 +77,24 @@ fields = MapField.create!([
 {table: "collections", specify_field: "mpabi", rails_field: "MPABI", caption: ""},
 ])
 
+locations = [
+  "about",
+  "collections_index",
+  "collection_show",
+  "app_preferences",
+  "checkout",
+  "loan_request",
+  "faq",
+  "loan_questions",
+  "collection_questions"
+]
+
+locations.each do |loc|
+  Announcement.find_or_create_by!(location: loc) do |a|
+    a.content = "Default announcement for #{loc.humanize}"
+  end
+end
+
 # collections = Collection.create!([
 #   { division: "MPABI" },
 #   { division: "Mammals Tissue" },

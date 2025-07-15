@@ -1,3 +1,6 @@
+<% is_preview = params[:preview].present? %>
+<%= render "layouts/announcement", is_preview: is_preview, location: "loan_questions" %>
+
 <div class="container-fluid">
   <h1 class="mb-3 text-center">Loan Questions</h1>
 

@@ -1,4 +1,6 @@
 <% content_for :title, "FAQs" %>
+<% is_preview = params[:preview].present? %>
+<%= render "layouts/announcement", is_preview: is_preview, location: "faq" %>
 
 <h1 class="p-5 text-center">Frequently Asked Questions</h1>
 

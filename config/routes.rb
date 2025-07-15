@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :announcements, only: [:index, :edit, :update]
+
   get 'faqs/reorder', to: 'faqs#reorder', as: :reorder_faq
   resources :faqs do
     member do

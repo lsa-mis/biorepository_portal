@@ -1,4 +1,7 @@
 <div class="container my-5">
+  <% is_preview = params[:preview].present? %>
+  <%= render "layouts/announcement", is_preview: is_preview, location: "collections_index" %>
+
   <h1 class="fw-bold mb-4">Explore Collection Catalog</h1>
 
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
