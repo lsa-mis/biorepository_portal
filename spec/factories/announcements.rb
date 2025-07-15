@@ -3,7 +3,7 @@
 # Table name: announcements
 #
 #  id         :bigint           not null, primary key
-#  displayed  :boolean
+#  displayed  :boolean          default(FALSE), not null
 #  location   :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
