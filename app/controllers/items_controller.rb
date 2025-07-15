@@ -244,14 +244,19 @@ class ItemsController < ApplicationController
               break
             end
           end
+          # Generate a row for each preparation associated with the item.
           item.preparations.each do |prep|
-            row_with_prep = row.dup
-            PREPARATIONS_FIELDS.each do |prep_key|
-              row_with_prep << prep.attributes[prep_key]
-            end
-            csv << row_with_prep 
+            csv << generate_row_with_preparation(row, prep)
           end
         end
       end
+    end
+
+    def generate_row_with_preparation(row, prep)
+      row_with_prep = row.dup
+      PREPARATIONS_FIELDS.each do |prep_key|
+        row_with_prep << prep.attributes[prep_key]
+      end
+      row_with_prep
     end
 end
