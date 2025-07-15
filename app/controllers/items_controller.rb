@@ -214,25 +214,32 @@ class ItemsController < ApplicationController
     ]
 
     PREPARATIONS_FIELDS = %w[prep_type description]
-    IDENTIFICATIONS_FIELDS = %w[scientific_name vernacular_name order_name family genus]
+    IDENTIFICATIONS_FIELDS = %w[scientific_name vernacular_name class_name order_name family genus]
     HEADERS = ITEM_FIELDS + IDENTIFICATIONS_FIELDS + PREPARATIONS_FIELDS
+    TITLEIZED_HEADERS = HEADERS.map { |h|
+      case h
+      when 'class_name' then 'Class'
+      when 'order_name' then 'Order'
+      else h.to_s.titleize
+      end
+    }
 
     def data_to_csv(items = Item.all)
       CSV.generate(headers: true) do |csv|
-        csv << HEADERS
+        csv << TITLEIZED_HEADERS
         items.each do |item|
           row = []
           ITEM_FIELDS.each do |key|
             if key == "collection_id"
               row << item.collection.division
             else
-              row << item.attributes.values_at(key)[0]
+              row << item.attributes[key]
             end
           end
           item.identifications.each do |identification|
             if identification.current
               IDENTIFICATIONS_FIELDS.each do |id_key|
-                row << identification.attributes.values_at(id_key)[0]
+                row << identification.attributes[id_key]
               end
               break
             end
@@ -240,7 +247,7 @@ class ItemsController < ApplicationController
           item.preparations.each do |prep|
             row_with_prep = row.dup
             PREPARATIONS_FIELDS.each do |prep_key|
-              row_with_prep << prep.attributes.values_at(prep_key)[0]
+              row_with_prep << prep.attributes[prep_key]
             end
             csv << row_with_prep 
           end
