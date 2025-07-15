@@ -107,4 +107,11 @@ module ApplicationHelper
     [in_checkout, available]
   end
 
+  def item_views
+    [
+      [ 'Rows', 'rows' ],
+      [ 'Cards', 'cards' ]
+    ]
+  end
+
 end

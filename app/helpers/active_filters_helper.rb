@@ -28,6 +28,16 @@ module ActiveFiltersHelper
   }.freeze
 
   STANDARD_FILTER_LABELS = {
+    "continent_case_insensitive_in" => "Continent",
+    "country_case_insensitive_in" => "Country",
+    "state_province_case_insensitive_in" => "State/Province",
+    "sex_case_insensitive_in" => "Sex",
+    "identifications_kingdom_case_insensitive_in" => "Kingdom",
+    "identifications_phylum_case_insensitive_in" => "Phylum",
+    "identifications_class_name_case_insensitive_in" => "Class",
+    "identifications_order_name_case_insensitive_in" => "Order",
+    "identifications_family_case_insensitive_in" => "Family",
+    "identifications_genus_case_insensitive_in" => "Genus",
     "event_date_start_gteq" => "Event Date Start (After)",
     "event_date_end_lteq" => "Event Date End (Before)",
     "georeferenced_date_eq" => "Georeferenced Date",
@@ -40,50 +50,37 @@ module ActiveFiltersHelper
     "decimal_longitude_eq" => "Longitude"
   }.freeze
 
-  def format_active_filters(params)
-    return [] unless params[:q].present?
+  def format_active_filters(dynamic_fields: nil)
 
-    q = params[:q]
-    dynamic_fields = params[:dynamic_fields] || {}
     filters = []
-    keys_to_skip = %w[collection_id_in groupings]
-
-    if q[:collection_id_in].present?
-      collection_ids = Array.wrap(q[:collection_id_in])
-      collection_names = Collection.where(id: collection_ids).pluck(:division)
-      filters += collection_names.map { |name| "#{name}" }
-    end
-
-    # Get all values for key 'value' recursively
-    filters += extract_values_for_key(dynamic_fields, "value") if dynamic_fields.present?
-
-    q.each do |key, value|
-      next if keys_to_skip.include?(key) || value.blank? || value.is_a?(Hash)
-      if value.is_a?(Array)
-        filters += value.map(&:capitalize)
-      else
-        filters << "#{STANDARD_FILTER_LABELS[key]}: #{value}"
-      end
-    end
-    filters.compact.uniq
-  end
-
-  def extract_values_for_key(obj, target_key)
-    obj = obj.to_unsafe_h if obj.is_a?(ActionController::Parameters)
-    results = []
-    case obj
-    when Hash
-      obj.each do |k, v|
-        if k.to_s == target_key.to_s
-          results << v if v.present?
-        else
-          results.concat(extract_values_for_key(v, target_key))
+    # Handle dynamic fields
+    if dynamic_fields.present?
+      dynamic_fields.each do |group|
+        str = []
+        group.each do |field_hash|
+          label = DYNAMIC_FIELD_LABELS[field_hash[:field]] || field_hash[:field].titleize
+          str << Array.wrap(field_hash[:value])
         end
+        filters << "[" + str.join(", ") + "]"
       end
-    when Array
-      obj.each { |v| results.concat(extract_values_for_key(v, target_key)) }
+      
     end
-    results
+
+    # Handle standard filters
+    if params[:q].present?
+      params[:q].each do |key, value|
+        next if value.blank? || key == "groupings" # Skip empty values and the "groupings" key
+
+        if key == "collection_id_in"
+          collection_names = Collection.where(id: value).pluck(:division)
+          filters << "[#{collection_names.join(", ").titleize}]"
+          next
+        end
+        filters << "[#{Array.wrap(value).join(", ").titleize}]"
+      end
+    end
+    
+    filters.compact.uniq
   end
   
 end

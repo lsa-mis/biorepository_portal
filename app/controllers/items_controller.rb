@@ -18,6 +18,43 @@ class ItemsController < ApplicationController
 
   def search
 
+    if params[:switch_view] == 'rows'
+      @view = 'rows'
+    elsif params[:switch_view] == 'cards'
+      @view = 'cards'
+    else
+      @view = @view.present? ? @view : 'rows'
+    end
+
+    if params[:q] && params[:q][:groupings] && !params[:page].present?
+
+      transformed_groupings = {}
+
+      params[:q][:groupings].each do |group_index, group_data|
+        group = {}
+
+        group_data.each do |field_index, field_data|
+          next if field_index == "m"
+          next unless field_data["field"].present? && field_data["value"].present?
+
+          field = field_data["field"]
+          value = field_data["value"]
+
+          group[field] ||= []
+          group[field] << value
+        end
+
+        # Wrap group in an indexed key
+        transformed_groupings[group_index] = group
+
+        # Add matcher if present
+        transformed_groupings[group_index]["m"] = group_data["m"].presence || "or"
+      end
+
+      params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
+      
+    end
+
     if params[:q]&.dig(:collection_id_in).present?
       collection_ids = params[:q][:collection_id_in]
     else
@@ -102,15 +139,31 @@ class ItemsController < ApplicationController
     end
 
     @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
-    @items = @q.result.page(params[:page]).per(15)
-    @collections =  @items.map { |i| i.collection.division}.uniq.join(', ')
+    @items = @q.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
+    @collections = Item.joins(:collection).where(id: @q.result.select(:id))
+                        .distinct.pluck('collections.division').join(', ')
     @all_collections = Collection.all
     
-    @active_filters = format_active_filters(params)
+    @dynamic_fields = []
+    # Reprocessing params to ensure dynamic fields are included
+    if params.dig(:q, :groupings).present?
+      params.dig(:q, :groupings).each do |group_num, values|
+        group_pairs = []
+        values.each do |field, val|
+          next if field == "m" || val.blank?
+          group_pairs << { field: field, value: val }
+        end
+        @dynamic_fields << group_pairs unless group_pairs.empty?
+        
+      end
+    end
+    
+    @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
     respond_to do |format|
       format.turbo_stream
       format.html { render :search_result }
     end
+    
   end
 
   private
