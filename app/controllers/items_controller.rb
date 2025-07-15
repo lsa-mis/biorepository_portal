@@ -111,7 +111,7 @@ class ItemsController < ApplicationController
         .sort_by { |pair| pair[0] }
     end
 
-    @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
+    @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
     @items = @q.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @collections = Item.joins(:collection).where(id: @q.result.select(:id))
                         .distinct.pluck('collections.division').join(', ')
