@@ -27,6 +27,11 @@
             <label for="per" class="h5">Items per page:</label>
             <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "search#submit" %>
           </div>
+          <div class="mt-4">
+            <%= link_to export_to_csv_path(request.parameters.slice(:q).merge(format: 'csv')), class: "link_to" do %>
+              Export to CSV
+            <% end %>
+          </div>
         </div>
   <% end %>
         <%= turbo_frame_tag "items_result_list" do %>

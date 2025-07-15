@@ -95,7 +95,7 @@ class Item < ApplicationRecord
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    ["archived", "associated_sequences", "catalog_number", "collection_id", "continent_case_insensitive", "coordinate_uncertainty_in_meters",
+    ["associated_sequences", "catalog_number", "collection_id", "continent_case_insensitive", "coordinate_uncertainty_in_meters",
     "country_case_insensitive", "county", "created_at", "decimal_latitude", "decimal_longitude", "event_date_end", "event_date_start", "event_remarks",
     "field_number", "geodetic_datum", "georeference_protocol", "georeferenced_by", "georeferenced_date", "id", "individual_count",
     "life_stage", "locality", "maximum_elevation_in_meters", "minimum_elevation_in_meters", "modified", "occurrence_id",

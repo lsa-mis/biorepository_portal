@@ -56,6 +56,7 @@ Rails.application.routes.draw do
   post "checkout/save_for_later"
   post "checkout/move_back"
 
+  get 'export_to_csv', to: 'items#export_to_csv', as: :export_to_csv
   resources :items, only: [ :index, :show ] do
     collection do
       match 'search' => 'items#search', via: [:get, :post]
