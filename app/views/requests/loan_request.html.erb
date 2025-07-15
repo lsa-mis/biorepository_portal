@@ -4,22 +4,7 @@
 
 <% is_preview = params[:preview].present? %>
 
-<% if is_preview %>
-  <div class="d-flex justify-content-end mt-3">
-    <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary" %>
-  </div>
-  <% if (announcement = Announcement.find_by(location: "loan_request")) %>
-    <div class="text-start mt-5 mb-5">
-      <%= sanitize(announcement.content.to_s) %>
-    </div>
-  <% end %>
-<% else %>
-  <% if (announcement = Announcement.find_by(location: "loan_request")) && announcement.displayed? %>
-    <div class="text-start mt-5 mb-5">
-      <%= sanitize(announcement.content.to_s) %>
-    </div>
-  <% end %>
-<% end %>
+<%= render "layouts/announcement", is_preview: is_preview, location: "loan_request" %>
 
 <h1>Send Loan Request</h1>
 
@@ -39,7 +24,6 @@
 
 <%= form_with(model: @loan_request, url: send_loan_request_path) do |form| %>
 
-  <% is_preview = params[:preview].present? %>
   <div class="mt-1 gap-1 d-flex flex-row justify-content-start align-items-center">
     <%= form.submit 'Send Loan Request', disabled: is_preview %>
     <%= link_to "Cancel", checkout_path, class: "link_to" %>

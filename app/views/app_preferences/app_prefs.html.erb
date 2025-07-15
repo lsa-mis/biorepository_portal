@@ -1,21 +1,7 @@
 <div class="mx-auto w-full">
   <% is_preview = params[:preview].present? %>
-  <% if is_preview %>
-    <div class="d-flex justify-content-end mt-3">
-      <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary" %>
-    </div>
-    <% if (announcement = Announcement.find_by(location: "app_preferences")) %>
-      <div class="text-start mt-5 mb-5">
-        <%= sanitize(announcement.content.to_s) %>
-      </div>
-    <% end %>
-  <% else %>
-    <% if (announcement = Announcement.find_by(location: "app_preferences")) && announcement.displayed? %>
-      <div class="text-start mt-5 mb-5">
-        <%= sanitize(announcement.content.to_s) %>
-      </div>
-    <% end %>
-  <% end %>
+  <%= render "layouts/announcement", is_preview: is_preview, location: "app_preferences" %>
+
   <h1>Application Preferences</h1>
   <%= render "app_preferences/all_preferences" %>
 </div>

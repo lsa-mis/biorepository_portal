@@ -1,0 +1,16 @@
+<% if is_preview %>
+  <div class="d-flex justify-content-end mt-3">
+    <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary", data: { turbo_frame: "_top" } %>
+  </div>
+  <% if (announcement = Announcement.find_by(location: location)) %>
+    <div class="text-start mt-5 mb-5">
+      <%= sanitize(announcement.content.to_s) %>
+    </div>
+  <% end %>
+<% else %>
+  <% if (announcement = Announcement.find_by(location: location)) && announcement.displayed? %>
+    <div class="text-start mt-5 mb-5">
+      <%= sanitize(announcement.content.to_s) %>
+    </div>
+  <% end %>
+<% end %>

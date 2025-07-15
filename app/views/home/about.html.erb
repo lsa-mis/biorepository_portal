@@ -3,39 +3,21 @@
     <div class="col-md-8 col-lg-6 w-100">
       <!-- Heading -->
       <% is_preview = params[:preview].present? %>
-      <% if is_preview %>
-        <div class="d-flex justify-content-end mt-3">
-          <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary" %>
-        </div>
-        <h1 class="text-start mt-6">About LSA Biorepository Application</h1>
-        <% if (announcement = Announcement.find_by(location: "about")) %>
-          <div class="text-start mt-6">
-            <%= sanitize(announcement.content.to_s) %>
-          </div>
-        <% end %>
-      <% else %> 
-        <h1 class="text-start mt-6">About LSA Biorepository Application</h1>
-        <% if (announcement = Announcement.find_by(location: "about")) && announcement.displayed? %>
-          <div class="text-start mt-6">
-            <%= sanitize(announcement.content.to_s) %>
-          </div>
-        <% end %>
-      <% end %>
-      <!-- <p class="text-start mt-6">The Biorepository Web Portal project supports the University of Michigan Museum of Zoology (UMMZ) in developing a new public-facing platform that provides access to several of its specialized biological collections. These collections, including wildlife tissues and specimen records from the Pathogen Biorepository, Mammal Tissues, and Herpetology Tissues units, are vital resources for researchers and public health professionals. The portal will serve as an access point for users to search specimen data, explore collection records, and submit loan requests for physical materials used in scientific research. </p> -->
+      <%= render "layouts/announcement", is_preview: is_preview, location: "about" %>
+    </div>
   </div>
 
-  <div>
-    <div class="d-grid w-25 mt-6 mb-8">
-      <% if current_user %>
-        <div>
-          <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign" do %>
-            <span>Log Out</span>
-          <% end %>
-        </div>
-      <% else %> 
-        <div>
-          <%= button_to "Sign In", user_saml_omniauth_authorize_path, data: {turbo: "false"}, class: "btn btn-sign" %>
-        </div>
-      <% end %>
+  <div class="d-grid w-25 mt-6 mb-8">
+    <% if current_user %>
+      <div>
+        <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign" do %>
+          <span>Log Out</span>
+        <% end %>
+      </div>
+    <% else %> 
+      <div>
+        <%= button_to "Sign In", user_saml_omniauth_authorize_path, data: {turbo: "false"}, class: "btn btn-sign" %>
+      </div>
+    <% end %>
   </div>
 </div>

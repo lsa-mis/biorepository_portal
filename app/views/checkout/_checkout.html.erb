@@ -1,24 +1,7 @@
 <% is_preview = params[:preview].present? %>
-<% if is_preview %>
-  <div class="d-flex justify-content-end mt-3">
-    <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary" %>
-  </div>
-<% end %> 
 
 <%= turbo_frame_tag "checkout" do %>
-  <% if is_preview %>
-    <% if (announcement = Announcement.find_by(location: "checkout")) %>
-      <div class="text-start mt-5 mb-5">
-        <%= sanitize(announcement.content.to_s) %>
-      </div>
-    <% end %>
-  <% else %>
-    <% if (announcement = Announcement.find_by(location: "checkout")) && announcement.displayed? %>
-      <div class="text-start mt-5 mb-5">
-        <%= sanitize(announcement.content.to_s) %>
-      </div>
-    <% end %>
-  <% end %>
+  <%= render "layouts/announcement", is_preview: is_preview, location: "checkout" %>
   <div class="d-flex justify-content-between">
     <h1 class="py-5">Checkout</h1>
     <% if @checkout.requestables.where(saved_for_later: false).exists? %>
