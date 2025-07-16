@@ -151,34 +151,36 @@ class ItemsController < ApplicationController
       csv = CSV.new(response.stream)
       csv << TITLEIZED_HEADERS
       items = if params[:q].present?
-        @q = Item.includes(:collection, :current_identification, :preparations).ransack(params[:q])
+        @q = Item.ransack(params[:q])
         @q.result
       else
-        Item.includes(:collection, :current_identification, :preparations).all
+        Item.all
       end
-      items.find_each(batch_size: 1000) do |item|
-        row = []
-        ITEM_FIELDS.each do |key|
-          if key == "collection_id"
-            row << sanitize_csv_value(item.collection.division)
-          else
-            row << sanitize_csv_value(item.attributes[key])
+      items.in_batches(of: 1000) do |batch|
+        batch = batch.includes(:collection, :current_identification, :preparations)
+        batch.each do |item|
+          row = []
+          ITEM_FIELDS.each do |key|
+            if key == "collection_id"
+              row << sanitize_csv_value(item.collection.division)
+            else
+              row << sanitize_csv_value(item.attributes[key])
+            end
           end
-        end
 
-        identification = item.current_identification
-        if identification
-          IDENTIFICATIONS_FIELDS.each do |id_key|
-            row << sanitize_csv_value(identification.attributes[id_key])
+          identification = item.current_identification
+          if identification
+            IDENTIFICATIONS_FIELDS.each do |id_key|
+              row << sanitize_csv_value(identification.attributes[id_key])
+            end
+          else
+            IDENTIFICATIONS_FIELDS.each do |id_key|
+              row << sanitize_csv_value(nil)
+            end
           end
-        else
-          IDENTIFICATIONS_FIELDS.each do |id_key|
-            row << sanitize_csv_value(nil)
+          item.preparations.each do |prep|
+            csv << generate_row_with_preparation(row, prep)
           end
-        end
-        
-        item.preparations.each do |prep|
-          csv << generate_row_with_preparation(row, prep)
         end
       end
     ensure
