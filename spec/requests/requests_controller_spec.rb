@@ -60,6 +60,19 @@ RSpec.describe RequestsController, type: :request do
     end
   end
 
+  describe 'GET /show_information_request/:id' do
+    let(:information_request) { FactoryBot.create(:information_request, user: user, question: "Can I get details on specimen 123?", send_to: "example@example.com") }
+    it 'renders a turbo stream modal for the request' do
+
+      get show_information_request_path(information_request), headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Submitted Information Request")
+      expect(response.body).to include("Can I get details on specimen 123?")
+      expect(response.body).to include("example@example.com")
+      expect(response.body).to include("No checkout items included")
+    end
+  end
+
   describe 'GET /loan_request' do
     it 'renders the loan request form' do
       get loan_request_path
@@ -71,25 +84,19 @@ RSpec.describe RequestsController, type: :request do
   describe 'POST /send_loan_request' do
     let(:checkout) { instance_double("Checkout", requestables: []) }
 
-    before do
-      controller = RequestsController.new
-      controller.instance_variable_set(:@checkout, checkout)
-    end
-
     context 'when checkout is missing or empty' do
       it 'redirects with an alert' do
         expect(post send_loan_request_path, params: { checkout: nil }).to redirect_to(root_path)
         expect(flash[:alert]).to eq("No items in checkout.")
       end
     end
-#---------
 
     context 'with valid data and completed fields' do
       before do
         # Set up mock checkout items
-        prep = FactoryBot.create(:preparation)
-        item = prep.item
-        collection = item.collection
+        collection = FactoryBot.create(:collection)
+        item = FactoryBot.create(:item, collection: collection)
+        prep = FactoryBot.create(:preparation, item: item, count: 1)
 
         requestable = double("Requestable", preparation: prep, count: 1, saved_for_later: false)
         checkout = double("Checkout", requestables: [requestable])
@@ -115,12 +122,4 @@ RSpec.describe RequestsController, type: :request do
       end
     end
   end
-
-  # describe 'GET /show_information_request/:id' do
-  #   it 'renders a turbo stream modal for the request' do
-  #     get show_information_request_path(information_request), headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
-  #     expect(response).to have_http_status(:ok)
-  #     expect(response.body).to include("turbo-stream").or include("Information Request Details")
-  #   end
-  # end
 end
