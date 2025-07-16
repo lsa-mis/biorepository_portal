@@ -59,7 +59,10 @@ class Item < ApplicationRecord
 
   def display_name
     # Placeholder for displaying the item name
-    "#{current_identification&.scientific_name} - #{current_identification&.vernacular_name} - #{self.country} - #{self.event_date_start}"
+    display_name = self.name if self.name.present?
+    display_name += " - #{self.country}" if self.country.present?
+    display_name += " - #{self.event_date_start}" if self.event_date_start.present?
+    display_name
   end
 
   def name
