@@ -107,9 +107,6 @@ RSpec.describe RequestsController, type: :request do
         allow_any_instance_of(RequestsController).to receive(:create_csv_file).and_return(Tempfile.new)
         allow_any_instance_of(RequestsController).to receive(:attach_attachments_from_answers)
 
-        controller = RequestsController.new
-        controller.instance_variable_set(:@checkout, checkout)
-
         # Attach PDF/CSV stubs
         allow(Tempfile).to receive(:new).and_return(Tempfile.new("loan_request"))
         allow(PdfGenerator).to receive_message_chain(:new, :generate_pdf_content).and_return("PDF content")
