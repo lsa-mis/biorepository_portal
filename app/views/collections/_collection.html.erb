@@ -17,7 +17,7 @@
 </div>
 
 <div id="<%= dom_id collection %>">
-  </div>
+  <div>
     <% if collection.image.attached? %>
       <%= image_tag collection.image, alt: "image_#{collection.image.id}", class: "img-fluid img-thumbnail", style: "max-width: 30%" %>
     <% end %>

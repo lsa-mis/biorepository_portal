@@ -18,14 +18,19 @@
     <%= render partial: "layouts/navbar" %>
     <%= render partial: "layouts/additional_bar" %>
     
-    <main class="container">
+    <main>
       <div id="flash">
         <%= render "layouts/flash" %>
       </div>
-      <div>
+      <% if controller.controller_name == "home" && controller.action_name == "about" %>
         <%= yield %>
         <%= turbo_frame_tag "remote_modal", target: "_top" %>
-      </div>
+      <% else %>
+        <div class="mx-9">
+          <%= yield %>
+          <%= turbo_frame_tag "remote_modal", target: "_top" %>
+        </div>
+      <% end %>
     </main>
     <%= render partial: "layouts/footer" %>
   </body>

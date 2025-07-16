@@ -72,14 +72,6 @@ class ProfilesController < ApplicationController
     end
   end
 
-  def show_loan_questions
-    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
-	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
-	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
-    end
-    
-  end
-
   def edit_loan_questions
     @loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
     @loan_answers = current_user.loan_answers.includes(:loan_question)
@@ -128,6 +120,10 @@ class ProfilesController < ApplicationController
         question_answer_hash[question] = answer
       end
       @collection_answers[collection] = question_answer_hash
+    end
+    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
+	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
+	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
     end
   end
 
