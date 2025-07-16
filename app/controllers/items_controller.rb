@@ -140,22 +140,52 @@ class ItemsController < ApplicationController
     
   end
 
+  include ActionController::Live
+
   def export_to_csv
     transform_search_groupings
-    if params[:format] == 'csv'
-      if params[:q].present? 
-        @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
-        items = @q.result
+    response.headers['Content-Type'] = 'text/csv'
+    response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today}.csv"
+    response.headers['Last-Modified'] = Time.now.httpdate
+    begin
+      csv = CSV.new(response.stream)
+      csv << TITLEIZED_HEADERS
+      items = if params[:q].present?
+        @q = Item.ransack(params[:q])
+        @q.result
       else
-        items = Item.all
+        Item.all
       end
-      data = data_to_csv(items)
-    end
+      items.in_batches(of: 1000) do |batch|
+        batch = batch.includes(:collection, :current_identification, :preparations)
+        batch.each do |item|
+          row = []
+          ITEM_FIELDS.each do |key|
+            if key == "collection_id"
+              row << sanitize_csv_value(item.collection.division)
+            else
+              row << sanitize_csv_value(item.attributes[key])
+            end
+          end
 
-    respond_to do |format|
-      format.csv { send_data data, filename: "items-#{Date.today}.csv"}
+          identification = item.current_identification
+          if identification
+            IDENTIFICATIONS_FIELDS.each do |id_key|
+              row << sanitize_csv_value(identification.attributes[id_key])
+            end
+          else
+            IDENTIFICATIONS_FIELDS.each do |id_key|
+              row << sanitize_csv_value(nil)
+            end
+          end
+          item.preparations.each do |prep|
+            csv << generate_row_with_preparation(row, prep)
+          end
+        end
+      end
+    ensure
+      response.stream.close
     end
-
   end
 
   private
@@ -202,34 +232,6 @@ class ItemsController < ApplicationController
           transformed_groupings[group_index]["m"] = group_data["m"].presence || "or"
         end
         params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
-      end
-    end
-
-    def data_to_csv(items)
-      CSV.generate(headers: true) do |csv|
-        csv << TITLEIZED_HEADERS
-        items.each do |item|
-          row = []
-          ITEM_FIELDS.each do |key|
-            if key == "collection_id"
-              row << sanitize_csv_value(item.collection.division)
-            else
-              row << sanitize_csv_value(item.attributes[key])
-            end
-          end
-          item.identifications.each do |identification|
-            if identification.current
-              IDENTIFICATIONS_FIELDS.each do |id_key|
-                row << sanitize_csv_value(identification.attributes[id_key])
-              end
-              break
-            end
-          end
-          # Generate a row for each preparation associated with the item.
-          item.preparations.each do |prep|
-            csv << generate_row_with_preparation(row, prep)
-          end
-        end
       end
     end
 

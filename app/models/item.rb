@@ -57,17 +57,19 @@ class Item < ApplicationRecord
   has_one :current_identification, -> { where(current: true) }, class_name: 'Identification', foreign_key: 'item_id'
   has_many :preparations, dependent: :destroy
 
-  def display_name
-    # Placeholder for displaying the item name
-    "#{current_identification&.scientific_name} - #{current_identification&.vernacular_name} - #{self.country} - #{self.event_date_start}"
-  end
-
   def name
-      name = "#{current_identification&.scientific_name&.humanize}"
+    name = "#{current_identification&.scientific_name&.humanize}"
     if current_identification&.vernacular_name.present?
       name += " [#{current_identification&.vernacular_name.humanize}]"
     end
     name
+  end
+
+  def display_name
+    display_name = self.name
+    display_name += " - #{self.country}" if self.country.present?
+    display_name += " - #{self.event_date_start}" if self.event_date_start.present?
+    display_name
   end
 
   def coordinates
