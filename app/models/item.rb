@@ -58,7 +58,7 @@ class Item < ApplicationRecord
   has_many :preparations, dependent: :destroy
 
   def display_name
-    # Placeholder for displaying the item name
+    display_name = ""
     display_name = self.name if self.name.present?
     display_name += " - #{self.country}" if self.country.present?
     display_name += " - #{self.event_date_start}" if self.event_date_start.present?
@@ -66,7 +66,8 @@ class Item < ApplicationRecord
   end
 
   def name
-      name = "#{current_identification&.scientific_name&.humanize}"
+    name = ""
+    name = "#{current_identification&.scientific_name&.humanize}"
     if current_identification&.vernacular_name.present?
       name += " [#{current_identification&.vernacular_name.humanize}]"
     end
