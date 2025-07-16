@@ -151,10 +151,10 @@ class ItemsController < ApplicationController
       csv = CSV.new(response.stream)
       csv << TITLEIZED_HEADERS
       items = if params[:q].present?
-        @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
+        @q = Item.includes(:collection, :current_identification, :preparations).ransack(params[:q])
         @q.result
       else
-        Item.includes(:collection, :identifications, :preparations).all
+        Item.includes(:collection, :current_identification, :preparations).all
       end
       items.find_each(batch_size: 1000) do |item|
         row = []
@@ -165,14 +165,18 @@ class ItemsController < ApplicationController
             row << sanitize_csv_value(item.attributes[key])
           end
         end
-        item.identifications.each do |identification|
-          if identification.current
-            IDENTIFICATIONS_FIELDS.each do |id_key|
-              row << sanitize_csv_value(identification.attributes[id_key])
-            end
-            break
+
+        identification = item.current_identification
+        if identification
+          IDENTIFICATIONS_FIELDS.each do |id_key|
+            row << sanitize_csv_value(identification.attributes[id_key])
+          end
+        else
+          IDENTIFICATIONS_FIELDS.each do |id_key|
+            row << sanitize_csv_value(nil)
           end
         end
+        
         item.preparations.each do |prep|
           csv << generate_row_with_preparation(row, prep)
         end
