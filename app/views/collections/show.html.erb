@@ -1,3 +1,13 @@
+<% content_for :head do %>
+ <%= tag.meta name: "turbo-cache-control", content: "no-cache" %>
+<% end %>
+
+<% if (announcement = Announcement.find_by(location: "collection_show")) && announcement.displayed? %>
+  <div class="text-start mt-5 mb-5">
+    <%= sanitize(announcement.content.to_s) %>
+  </div>
+<% end %>
+
 <div class="py-3">
   <%= render @collection %>
 </div>

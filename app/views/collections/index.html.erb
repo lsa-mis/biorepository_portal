@@ -1,3 +1,5 @@
+<% is_preview = params[:preview].present? %>
+<%= render "layouts/announcement", is_preview: is_preview, location: "collections_index" %>
 <h1 class="p-5 text-center">Explore Collection Catalog</h1>
 <div class="row row-cols-1 row-cols-lg-2 g-5">
   <% @collections.each do |collection| %>

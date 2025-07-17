@@ -1,4 +1,7 @@
+<% is_preview = params[:preview].present? %>
+
 <%= turbo_frame_tag "checkout" do %>
+  <%= render "layouts/announcement", is_preview: is_preview, location: "checkout" %>
   <div class="d-flex justify-content-between">
     <h1 class="py-5">Checkout</h1>
     <% if @checkout.requestables.where(saved_for_later: false).exists? %>

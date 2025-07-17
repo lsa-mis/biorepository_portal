@@ -17,14 +17,17 @@
       <% end %>
     <% end %>
   </p>
-
-  <%= link_to "Edit",
-              edit_user_field_path(field_name, format: :turbo_stream),
-              data: {
-                turbo_frame: "modal_content_frame",
-                bs_toggle: "modal",
-                bs_target: "#sharedModal"
-              },
-              class: "btn btn-sm btn-outline-primary" %>
+  <% if local_assigns[:disabled] %>
+    <button class="btn btn-sm btn-outline-secondary" disabled >Edit</button>
+  <% else %>
+    <%= link_to "Edit",
+                edit_user_field_path(field_name, format: :turbo_stream),
+                data: {
+                  turbo_frame: "modal_content_frame",
+                  bs_toggle: "modal",
+                  bs_target: "#sharedModal"
+                },
+                class: "btn btn-sm btn-outline-primary" %>
+  <% end %>
 
 </div>

@@ -1,3 +1,4 @@
+require 'csv'
 class ItemsController < ApplicationController
   include ActiveFiltersHelper
   skip_before_action :authenticate_user!, only: [ :show, :search ]
@@ -26,34 +27,7 @@ class ItemsController < ApplicationController
       @view = @view.present? ? @view : 'rows'
     end
 
-    if params[:q] && params[:q][:groupings] && !params[:page].present?
-
-      transformed_groupings = {}
-
-      params[:q][:groupings].each do |group_index, group_data|
-        group = {}
-
-        group_data.each do |field_index, field_data|
-          next if field_index == "m"
-          next unless field_data["field"].present? && field_data["value"].present?
-
-          field = field_data["field"]
-          value = field_data["value"]
-
-          group[field] ||= []
-          group[field] << value
-        end
-
-        # Wrap group in an indexed key
-        transformed_groupings[group_index] = group
-
-        # Add matcher if present
-        transformed_groupings[group_index]["m"] = group_data["m"].presence || "or"
-      end
-
-      params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
-      
-    end
+    transform_search_groupings
 
     if params[:q]&.dig(:collection_id_in).present?
       collection_ids = params[:q][:collection_id_in]
@@ -138,7 +112,8 @@ class ItemsController < ApplicationController
         .sort_by { |pair| pair[0] }
     end
 
-    @q = Item.includes(:collection, preparations: :requestables).ransack(params[:q])
+    @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
+    
     @items = @q.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @collections = Item.joins(:collection).where(id: @q.result.select(:id))
                         .distinct.pluck('collections.division').join(', ')
@@ -159,11 +134,66 @@ class ItemsController < ApplicationController
     end
     
     @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+
     respond_to do |format|
-      format.turbo_stream
+      format.turbo_stream do     
+        render turbo_stream: [turbo_stream.update('items_result_list',
+                                                   partial: 'result_list',
+                                                   locals: { items: @items, view: @view}),
+                              turbo_stream.update('active_filters', partial: 'layouts/current_filters',
+                                                  locals: { active_filters: @active_filters })
+                              ]
+      end
       format.html { render :search_result }
     end
-    
+  end
+
+  include ActionController::Live
+
+  def export_to_csv
+    transform_search_groupings
+    response.headers['Content-Type'] = 'text/csv'
+    response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today}.csv"
+    response.headers['Last-Modified'] = Time.now.httpdate
+    begin
+      csv = CSV.new(response.stream)
+      csv << TITLEIZED_HEADERS
+      items = if params[:q].present?
+        @q = Item.ransack(params[:q])
+        @q.result
+      else
+        Item.all
+      end
+      items.in_batches(of: 1000) do |batch|
+        batch = batch.includes(:collection, :current_identification, :preparations)
+        batch.each do |item|
+          row = []
+          ITEM_FIELDS.each do |key|
+            if key == "collection_id"
+              row << sanitize_csv_value(item.collection.division)
+            else
+              row << sanitize_csv_value(item.attributes[key])
+            end
+          end
+
+          identification = item.current_identification
+          if identification
+            IDENTIFICATIONS_FIELDS.each do |id_key|
+              row << sanitize_csv_value(identification.attributes[id_key])
+            end
+          else
+            IDENTIFICATIONS_FIELDS.each do |id_key|
+              row << sanitize_csv_value(nil)
+            end
+          end
+          item.preparations.each do |prep|
+            csv << generate_row_with_preparation(row, prep)
+          end
+        end
+      end
+    ensure
+      response.stream.close
+    end
   end
 
   private
@@ -186,5 +216,38 @@ class ItemsController < ApplicationController
 
     def search_params
       params.permit(:q)
+    end
+
+    def transform_search_groupings
+      if params[:q] && params[:q][:groupings] && !params[:page].present?
+        transformed_groupings = {}
+        params[:q][:groupings].each do |group_index, group_data|
+          group = {}
+          group_data.each do |field_index, field_data|
+            next if field_index == "m"
+            next unless field_data["field"].present? && field_data["value"].present?
+
+            field = field_data["field"]
+            value = field_data["value"]
+
+            group[field] ||= []
+            group[field] << value
+          end
+
+          # Wrap group in an indexed key
+          transformed_groupings[group_index] = group
+          # Add matcher if present
+          transformed_groupings[group_index]["m"] = group_data["m"].presence || "or"
+        end
+        params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
+      end
+    end
+
+    def generate_row_with_preparation(row, prep)
+      row_with_prep = row.dup
+      PREPARATIONS_FIELDS.each do |prep_key|
+        row_with_prep << sanitize_csv_value(prep.attributes[prep_key])
+      end
+      row_with_prep
     end
 end

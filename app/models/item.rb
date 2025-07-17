@@ -57,17 +57,19 @@ class Item < ApplicationRecord
   has_one :current_identification, -> { where(current: true) }, class_name: 'Identification', foreign_key: 'item_id'
   has_many :preparations, dependent: :destroy
 
-  def display_name
-    # Placeholder for displaying the item name
-    "#{current_identification&.scientific_name} - #{current_identification&.vernacular_name} - #{self.country} - #{self.event_date_start}"
-  end
-
   def name
-      name = "#{current_identification&.scientific_name&.humanize}"
+    name = "#{current_identification&.scientific_name&.humanize}"
     if current_identification&.vernacular_name.present?
       name += " [#{current_identification&.vernacular_name.humanize}]"
     end
     name
+  end
+
+  def display_name
+    display_name = self.name
+    display_name += " - #{self.country}" if self.country.present?
+    display_name += " - #{self.event_date_start}" if self.event_date_start.present?
+    display_name
   end
 
   def coordinates
@@ -95,7 +97,7 @@ class Item < ApplicationRecord
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    ["archived", "associated_sequences", "catalog_number", "collection_id", "continent_case_insensitive", "coordinate_uncertainty_in_meters",
+    ["associated_sequences", "catalog_number", "collection_id", "continent_case_insensitive", "coordinate_uncertainty_in_meters",
     "country_case_insensitive", "county", "created_at", "decimal_latitude", "decimal_longitude", "event_date_end", "event_date_start", "event_remarks",
     "field_number", "geodetic_datum", "georeference_protocol", "georeferenced_by", "georeferenced_date", "id", "individual_count",
     "life_stage", "locality", "maximum_elevation_in_meters", "minimum_elevation_in_meters", "modified", "occurrence_id",

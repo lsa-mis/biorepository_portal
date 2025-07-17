@@ -71,6 +71,7 @@ class RequestsController < ApplicationController
     if @checkout.nil? || @checkout.requestables.empty?
       flash[:alert] = "No items in checkout."
       redirect_to root_path
+      return
     end
     
     @checkout_items = get_checkout_items
