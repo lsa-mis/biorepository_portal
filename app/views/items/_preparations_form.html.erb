@@ -1,5 +1,5 @@
 <% @item.preparations.each do |prep| %>
-  <% in_checkout, available = preparation_checkout_counts(prep, @checkout, @max_number_of_preparations) %>
+  <% in_checkout, available = preparation_checkout_counts(prep, @checkout) %>
 
   <%= form_with(url: checkout_add_path, method: :post, data: { turbo_stream: true, turbo_frame: "_top" }) do |form| %>
     <div class="card p-4 shadow-sm mb-3">

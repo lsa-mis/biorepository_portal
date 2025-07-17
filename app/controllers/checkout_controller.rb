@@ -14,9 +14,8 @@ class CheckoutController < ApplicationController
     elsif count <= 0
       current_requestable.destroy
     else
-      @checkout.requestables.create(preparation: @preparation, count:)
+      @checkout.requestables.create(preparation: @preparation, count: count)
     end
-    @max_number_of_preparations = fetch_max_number_of_preparations(@preparation.item.collection.id)
 
     respond_to do |format|
       format.turbo_stream do
@@ -52,7 +51,6 @@ class CheckoutController < ApplicationController
     else
       notice = "No matching preparation found in checkout."
     end
-    @max_number_of_preparations = fetch_max_number_of_preparations(@preparation.item.collection.id)
     respond_to do |format|
       format.turbo_stream do
         flash.now[:notice] = notice
