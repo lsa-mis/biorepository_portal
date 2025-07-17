@@ -22,15 +22,10 @@
       <div id="flash">
         <%= render "layouts/flash" %>
       </div>
-      <% if controller.controller_name == "home" && controller.action_name == "about" %>
+      <div class="<%= controller.controller_name == 'home' && controller.action_name == 'about' ? '' : 'mx-9' %>">
         <%= yield %>
         <%= turbo_frame_tag "remote_modal", target: "_top" %>
-      <% else %>
-        <div class="mx-9">
-          <%= yield %>
-          <%= turbo_frame_tag "remote_modal", target: "_top" %>
-        </div>
-      <% end %>
+      </div>
     </main>
     <%= render partial: "layouts/footer" %>
   </body>
