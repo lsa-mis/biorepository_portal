@@ -88,7 +88,7 @@ module ApplicationHelper
 
   def preparation_checkout_counts(preparation, checkout)
     in_checkout = checkout.requestables.find_by(preparation_id: preparation.id)&.count.to_i
-    available = preparation.count - in_checkout
+    available = [preparation.count - in_checkout, 0].max
     [in_checkout, available]
   end
 
