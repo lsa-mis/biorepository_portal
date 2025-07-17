@@ -4,7 +4,24 @@
   <%= link_to "Clear Filters", search_items_path(switch_view: @view), class: "btn btn-outline-secondary" %>
 </div>
 
+<%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form" } do |f| %>
+
   <div class="m-2">
+    <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+      <div>
+        <label for="switch_view" class="h5">Switch View</label>
+        <%= select_tag "switch_view", options_for_select(item_views, selected: @view), :"data-action" => "search#submit" %>
+      </div>
+      <div>
+        <label for="per" class="h5">Items per page:</label>
+        <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "search#submit" %>
+      </div>
+      <div class="mt-4">
+        <%= link_to export_to_csv_path(request.parameters.slice(:q).merge(format: 'csv')), class: "link_to" do %>
+          Export to CSV
+        <% end %>
+      </div>
+    </div>
 
     <!-- Strings - use _i_cont (contains) or _eq (exact match) -->
     <div class="mb-3">
@@ -21,350 +38,13 @@
         <% end %>
       </div>
     </div>
-
-    <div>
-      <div id="groups-container" data-search-target="groupsContainer">
-        <% if @dynamic_fields.present? %>
-          <% @dynamic_fields.each_with_index do |group, group_index| %>
-            <div data-search-target="group" data-group-index="<%= group_index %>" class="search-group mb-3 p-3 rounded border border-primary">
-              <div data-search-target="rows">
-                <% curr_row_index = 0 %>
-                <% group.each do |field_hash| %>
-                  <% field_hash[:value].each do |value| %>
-                    <%= render partial: "layouts/search_field", locals: { selected_field: field_hash[:field], entered_value: value, field_index: curr_row_index, group_index: group_index } %>
-                    <% curr_row_index += 1 %>
-                  <% end %>
-                <% end %>
-              </div>
-              <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
-            </div>
-          <% end %>
-        <% else %>
-          <div data-search-target="group" data-group-index="0" class="search-group mb-3 p-3 rounded border border-primary">
-            <div data-search-target="rows">
-              <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil, field_index: 0, group_index: 0 } %>
-            </div>
-            <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
-          </div>
-        <% end %>
-      </div>
-
-      <template data-search-target="groupTemplate">
-        <div data-search-target="group" class="search-group mb-3 p-3 rounded border border-primary">
-          <div data-search-target="rows">
-            <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil, field_index: 0, group_index: "__GROUP_INDEX__" } %>
-          </div>
-          <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
-        </div>
-      </template>
-
-      <button type="button" class="btn btn-outline-primary mb-3" data-action="click->search#addGroup">+ Add AND Group</button>
-    </div>
-
-    <div class="row">
-
-      <% if @kingdoms.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="kingdom-filter-group">
-            <legend class="h5">Kingdom</legend>
-            <small>Select kingdom to narrow your results</small>
-            <label for="kingdom-filter" class="visually-hidden">Filter Kingdom</label>
-            <input id="kingdom-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('kingdom-filters', this.value)">
-
-            <div id="kingdom-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <% if @kingdoms.blank? %>
-                <p>No kingdom options available to select from.</p>
-              <% else %>
-                <% @kingdoms.each do |name, lower_name| %>
-                  <% kingdom_id = "kingdom_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[identifications_kingdom_case_insensitive_in][]", lower_name, params.dig(:q, :identifications_kingdom_case_insensitive_in)&.include?(lower_name), id: kingdom_id, "data-action": "search#submit" %>
-                    <%= label_tag kingdom_id, name %>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-
-      <% if @phylums.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="phylum-filter-group">
-            <legend class="h5">Phylum</legend>
-            <small>Select phylum to narrow your results</small>
-            <label for="phylum-filter" class="visually-hidden">Filter Phylum</label>
-            <input id="phylum-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('phylum-filters', this.value)">
-
-            <div id="phylum-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <% if @phylums.blank? %>
-                <p>No phylum options available to select from.</p>
-              <% else %>
-                <% @phylums.each do |name, lower_name| %>
-                  <% phylum_id = "phylum_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[identifications_phylum_case_insensitive_in][]", lower_name, params.dig(:q, :identifications_phylum_case_insensitive_in)&.include?(lower_name), id: phylum_id, "data-action": "search#submit" %>
-                    <%= label_tag phylum_id, name %>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-
-      <% if @classes.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="class_name-filter-group">
-            <legend class="h5">Class</legend>
-            <small>Select class to narrow your results</small>
-            <label for="class_name-filter" class="visually-hidden">Filter Class</label>
-            <input id="class_name-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('class_name-filters', this.value)">
-
-            <div id="class_name-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <% if @classes.blank? %>
-                <p>No class options available to select from.</p>
-              <% else %>
-                <% @classes.each do |name, lower_name| %>
-                  <% class_name_id = "class_name_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[identifications_class_name_case_insensitive_in][]", lower_name, params.dig(:q, :identifications_class_name_case_insensitive_in)&.include?(lower_name), id: class_name_id, "data-action": "search#submit" %>
-                    <%= label_tag class_name_id, name %>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-
-      <% if @orders.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="order_name-filter-group">
-            <legend class="h5">Order</legend>
-            <small>Select order to narrow your results</small>
-            <label for="order_name-filter" class="visually-hidden">Filter Order</label>
-            <input id="order_name-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('order_name-filters', this.value)">
-
-            <div id="order_name-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <% if @orders.blank? %>
-                <p>No order options available to select from.</p>
-              <% else %>
-                <% @orders.each do |name, lower_name| %>
-                  <% order_name_id = "order_name_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[identifications_order_name_case_insensitive_in][]", lower_name, params.dig(:q, :identifications_order_name_case_insensitive_in)&.include?(lower_name), id: order_name_id, "data-action": "search#submit" %>
-                    <%= label_tag order_name_id, name %>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-
-      <% if @families.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="family-filter-group">
-            <legend class="h5">Family</legend>
-            <small>Select family to narrow your results</small>
-            <label for="family-filter" class="visually-hidden">Filter Family</label>
-            <input id="family-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('family-filters', this.value)">
-
-            <div id="family-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <% if @families.blank? %>
-                <p>No family options available to select from.</p>
-              <% else %>
-                <% @families.each do |name, lower_name| %>
-                  <% family_id = "family_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[identifications_family_case_insensitive_in][]", lower_name, params.dig(:q, :identifications_family_case_insensitive_in)&.include?(lower_name), id: family_id, "data-action": "search#submit" %>
-                    <%= label_tag family_id, name %>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-
-      <% if @genuses.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="genus-filter-group">
-            <legend class="h5">Genus</legend>
-            <small>Select genus to narrow your results</small>
-            <label for="genus-filter" class="visually-hidden">Filter Genus</label>
-            <input id="genus-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('genus-filters', this.value)">
-
-            <div id="genus-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <% if @genuses.blank? %>
-                <p>No genus options available to select from.</p>
-              <% else %>
-                <% @genuses.each do |name, lower_name| %>
-                  <% genus_id = "genus_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[identifications_genus_case_insensitive_in][]", lower_name, params.dig(:q, :identifications_genus_case_insensitive_in)&.include?(lower_name), id: genus_id, "data-action": "search#submit" %>
-                    <%= label_tag genus_id, name %>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-
-      <% if @sexs.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="sex-filter-group">
-            <legend class="h5">Sex</legend>
-            <small>Select sex to narrow your results</small>
-            <label for="sex-filter" class="visually-hidden">Filter Sex</label>
-            <input id="sex-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('sex-filters', this.value)">
-
-            <div id="sex-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <% if @sexs.blank? %>
-                <p>No sex options available to select from.</p>
-              <% else %>
-                <% @sexs.each do |name, lower_name| %>
-                  <% sex_id = "sex_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[sex_case_insensitive_in][]", lower_name, params.dig(:q, :sex_case_insensitive_in)&.include?(lower_name), id: sex_id, "data-action": "search#submit" %>
-                    <%= label_tag sex_id, name %>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-
-      <% if @continents.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="continent-filter-group">
-            <legend class="h5">Continent</legend>
-            <small>Select one or more continents to narrow your results</small>
-            <label for="continent-filter" class="visually-hidden">Filter continent</label>
-            <input id="continent-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('continent-filters', this.value)">
-
-            <div id="continent-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <%if @continents.present?%>
-                <% @continents.each do |name, lower_name| %>
-                  <% continent_id = "continent_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[continent_case_insensitive_in][]", lower_name, params.dig(:q, :continent_case_insensitive_in)&.include?(lower_name), id: continent_id, "data-action": "search#submit" %>
-                    <%= label_tag continent_id, name %>
-                  </div>
-                <% end %>
-              <% else %>
-                <p>No continent available to select from.</p>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-      
-      <% if @countries.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="country-filter-group">
-            <legend class="h5">Country or Region</legend>
-            <small>Select one or more countries or regions to narrow your results</small>
-            <label for="country-filter" class="visually-hidden">Filter Countries</label>
-            <input id="country-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('country-filters', this.value)">
-
-            <div id="country-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <% if @countries.blank? %>
-                <p>No countries available to select from.</p>
-              <%else%>
-                <% @countries.each do |name, lower_name| %>
-                  <% country_id = "country_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[country_case_insensitive_in][]", lower_name,
-                          params.dig(:q, :country_case_insensitive_in)&.include?(lower_name),
-                          id: country_id, "data-action": "search#submit" %>
-                    <%= label_tag country_id, name %>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-
-      <% if @states.count > 1 %>
-        <div class="col-md-6 mb-3">
-          <fieldset class="mb-3" id="state-province-filter-group">
-            <legend class="h5">State / Province</legend>
-            <small>Select one or more states or provinces to narrow your results</small>
-            <label for="state-province-filter" class="visually-hidden">Filter State / Province</label>
-            <input id="state-province-filter" type="text" class="form-control my-2" placeholder="Filter" onkeyup="filterCheckboxes('state-filters', this.value)">
-
-            <div id="state-filters" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
-              <% if @states.blank? %>
-                <p>No states or provinces available to select from.</p>
-              <%else%>
-                <% @states.each do |name, lower_name| %>
-                  <% state_id = "state_#{lower_name.parameterize}" %>
-                  <div class="form-check">
-                    <%= check_box_tag "q[state_province_case_insensitive_in][]", lower_name ,
-                          params.dig(:q, :state_province_case_insensitive_in)&.include?(lower_name),
-                          id: state_id, "data-action": "search#submit" %>
-                    <%= label_tag state_id, name %>
-                  </div>
-                <% end %>
-              <% end %>
-            </div>
-          </fieldset>
-        </div>
-      <% end %>
-
-    </div>
-    <div class="mb-2">
-      <!-- Dates - use _gteq / _lteq -->
-      <%= f.label :event_date_start_gteq, "Event Date Start (After)" %>
-      <%= f.date_field :event_date_start_gteq, class: "form-control form-control-sm"  %>
-    </div>
-    <div class="mb-2">
-      <%= f.label :event_date_end_lteq, "Event Date End (Before)" %>
-      <%= f.date_field :event_date_end_lteq, class: "form-control form-control-sm"  %>
-    </div>
-    <div class="mb-2">
-      <%= f.label :georeferenced_date_eq, "Georeferenced Date" %>
-      <%= f.date_field :georeferenced_date_eq, class: "form-control form-control-sm"  %>
-    </div>
-    <div class="mb-2">
-      <%= f.label :modified_eq, "Date Modified" %>
-      <%= f.date_field :modified_eq, class: "form-control form-control-sm"  %>
-    </div>
-    <div class="mb-2">
-      <!-- Numbers - use _gteq / _lteq / _eq -->
-      <%= f.label :coordinate_uncertainty_in_meters_lteq, "Max Coord. Uncertainty" %>
-      <%= f.search_field :coordinate_uncertainty_in_meters_lteq, placeholder: 'Cooordinate in Meters', class: "form-control form-control-sm"  %>
-    </div>
-    <div class="mb-2">
-      <%= f.label :individual_count_gteq, "Minimum Individual Count" %>
-      <%= f.search_field :individual_count_gteq, placeholder: 'Minimum Individual Count', class: "form-control form-control-sm"  %>
-    </div>
-    <div class="mb-2">
-      <%= f.label :minimum_elevation_in_meters_gteq, "Min Elevation" %>
-      <%= f.search_field :minimum_elevation_in_meters_gteq, placeholder: 'Min Elevation', class: "form-control form-control-sm"  %>
-    </div>
-    <div class="mb-2">
-      <%= f.label :maximum_elevation_in_meters_lteq, "Max Elevation" %>
-      <%= f.search_field :maximum_elevation_in_meters_lteq, placeholder: 'Max Elevation', class: "form-control form-control-sm"  %>
-    </div>
-    <div class="mb-2">
-      <%= f.label :decimal_latitude_eq, "Latitude" %>
-      <%= f.search_field :decimal_latitude_eq, placeholder: 'Latitude', class: "form-control form-control-sm"  %>
-    </div>
-    <div class="mb-2">
-      <%= f.label :decimal_longitude_eq, "Longitude" %>
-      <%= f.search_field :decimal_longitude_eq, placeholder: 'Longitude', class: "form-control form-control-sm"  %>
-    </div>
+    <%= render partial: 'layouts/advance_filters', locals: { f: f } %>
   </div>
 
   <div>
     <%= f.submit "Search", class: "btn btn-primary" %>
   </div>
+<% end %>
 
 <%# JavaScript part %>
 <script>
