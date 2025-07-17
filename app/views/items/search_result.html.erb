@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  <%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form" } do |f| %>
+  <%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :post, data: { turbo_stream: true, controller: "search", action: "submit->search#submit", search_target: "form" } do |f| %>
     <div class="row">
       <!-- Sidebar: Advanced Search -->
       <div class="col-md-5 mt-3">
@@ -35,20 +35,7 @@
         </div>
   <% end %>
         <%= turbo_frame_tag "items_result_list" do %>
-          <div class="my-2 ml-4">
-            <%= page_entries_info @items %> from <%= @collections %>
-          </div>
-          <% if @items.empty? %>
-            <div class="alert alert-warning mt-3">
-              No items available for this search.
-            </div>
-          <% else %>
-            <% if @view == 'rows' %>
-              <%= render partial: 'result_rows', locals: { items: @items } %>
-            <% else %>
-              <%= render partial: 'result_cards', locals: { items: @items } %>
-            <% end %>
-          <% end %>
+          <%= render partial: 'items/result_list', locals: { items: @items, view: @view } %>
         <% end %>
       </div>
     </div>
