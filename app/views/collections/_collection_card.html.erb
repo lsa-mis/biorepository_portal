@@ -1,26 +1,17 @@
-<div class="card h-100 shadow-sm" id="<%= dom_id collection %>">
-  <div>
-    <% if collection.image.attached? %>
-      <%= image_tag collection.image, alt: "image_#{collection.image.id}", class: "img-fluid img-thumbnail" %>
-    <% end %>
-  </div>
+<div class="col-12">
+  <%# The link wrapper with text-decoration removed %>
+  <%= link_to collection_path(collection), class: "text-decoration-none", data: { turbo_frame: "_top" } do %>
 
-  <div class="card-header">
-    <%= link_to collection.division, collection_path(collection), class: "link_to", data: { turbo_frame: "_top" }  %>
-  </div>
-  <div class="card-body">
-    <p class="card-text">
-      <%= collection.short_description %> <br>
-    </p>
-
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">
-        Division page url: <%= link_to (collection.division + " Info Page"), collection.division_page_url, class: "link_to" %>
-      </li>
-
-      <li class="list-group-item">
-        Link to policies: <%= link_to (collection.division + " Policy Page"), collection.link_to_policies, class: "link_to" %>
-      </li>
-    </ul>
-  </div>
+    <%# The card container.%>
+    <div class="collection-card position-relative overflow-hidden rounded-3 text-white h-100 shadow-sm" style="<%= "background-image: url(#{url_for(collection.image)})" if collection.image.attached? %>">
+      <%#for transparency %>
+      <div class="collection-overlay">
+        <%# The content%>
+        <div class="w-100 h-100 d-flex flex-column justify-content-center align-items-center text-center p-4">
+          <h3 class="fw-bold mb-3"><%= collection.division %></h3>
+          <p class="fs-6 fw-bold text-white"><%= collection.short_description %></p>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>

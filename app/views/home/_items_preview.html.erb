@@ -1,6 +1,3 @@
-<div class="my-2">
-  <%= page_entries_info @items %> from <%= @collections %>
-</div>
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
     <% @items.each do |item| %>
       <div class="col mb-5">
@@ -10,7 +7,6 @@
       </div>
     <% end %>
   </div>
-<%= paginate @items %>
 
 <%= render "layouts/remote_modal",
             id: "addItemToCheckoutModal",
