@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="py-3 container-fluid">
   <%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form" } do |f| %>
     <div class="row">
       <!-- Sidebar: Advanced Search -->

@@ -1,49 +1,73 @@
-
-<div class="d-flex justify-content-between align-items-center">
-  <h1><%= collection.division %></h1>
-  <div class="d-flex align-items-end flex-column gap-1 mt-2">
-    <%= link_to "Back to Collections", collections_path, class: "link_to", data: { turbo_frame: "_top" }  %>
-    <% if policy(collection).edit? %>
-      <%= link_to edit_collection_path(collection), class: "btn btn-primary h-50 mt-auto mb-auto" do %>
-        Edit Collection <i class="bi bi-pencil-square"></i>
+<div class="shadow-sm rounded p-4">
+  <div class="row g-4 align-items-center">
+    <!-- Text Content -->
+    <div class="col-12 col-lg-8">
+      <h1 class="fw-bold mb-3"><%= collection.division %></h1>
+      <% if is_super_admin? %>
+        <p class="mb-2"><strong>Admin Group:</strong> <%= collection.admin_group %></p>
       <% end %>
-    <% end %>
-    <% if policy(collection).destroy? %>
-      <%= button_to collection, method: :delete, class: "btn btn-danger h-50 mt-auto mb-auto", data: { turbo_confirm: "Are you sure you want to delete this collection?" } do %>
-        Delete Collection <i class="bi bi-trash-fill"></i>
-      <% end %>
-    <% end %>
-  </div>
-</div>
 
-<div id="<%= dom_id collection %>">
-  <div>
-    <% if collection.image.attached? %>
-      <%= image_tag collection.image, alt: "image_#{collection.image.id}", class: "img-fluid img-thumbnail", style: "max-width: 30%" %>
-    <% end %>
-  </div>
-  <div class="mt-3">
-    <% if is_super_admin? %>
-      <p>
-        <strong>Admin Group: </strong> 
-        <%= collection.admin_group %>
+      <p class="mb-2"><%= collection.long_description %></p>
+
+      <p class="mb-2">
+        <%= link_to "#{collection.division} Division Page", collection.division_page_url, class: "link_to" %>
       </p>
+
+      <p class="mb-2">
+        <%= link_to "#{collection.division} Policy Page", collection.link_to_policies, class: "link_to" %>
+      </p>
+
+      <% if policy(CollectionQuestion).create? %>
+        <div class="mb-2">
+          <%= link_to "Collection-Specific Loan Question",
+                      collection_collection_questions_path(@collection),
+                      class: "btn btn-success" %>
+        </div>
+      <% end %>
+
+      <div class="mb-2">
+        <%= link_to "← Back to Collections", collections_path, class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
+
+    <!-- Right: Image -->
+    <% if collection.image.attached? %>
+      <div class="col-12 col-lg-4 d-flex justify-content-center">
+        <div class="w-100" style="max-width: 300px;">
+          <%= image_tag collection.image,
+                alt: "image_#{collection.image.id}",
+                class: "img-fluid img-thumbnail w-100",
+                style: "height: auto;" %>
+        </div>
+      </div>
     <% end %>
-
-    <p>
-      <strong>Description: </strong> 
-      <%= collection.long_description %>
-    </p>
-
-    <p>
-      <strong>Division page url:</strong>
-      <%= link_to (collection.division + " Info Page"), collection.division_page_url, class: "link_to" %>
-    </p>
-
-    <p>
-      <strong>Link to policies:</strong>
-      <%= link_to (collection.division + " Policy Page"), collection.link_to_policies, class: "link_to" %>
-    </p>
   </div>
-
 </div>
+
+<!-- Admin Actions -->
+<% if policy(collection).edit? || policy(collection).destroy? %>
+  <div class="mt-4 rounded p-4 shadow-sm">
+    <h3 class="fw-semibold mb-3">Admin Actions</h3>
+
+    <div class="mb-3">
+      <%= render 'import' if policy(@collection).import? %>
+    </div>
+
+    <div class="d-flex flex-column flex-sm-row flex-wrap gap-2">
+      <% if policy(collection).edit? %>
+        <%= link_to edit_collection_path(collection), class: "btn btn-primary" do %>
+          <i class="bi bi-pencil-square me-1"></i>Edit Collection
+        <% end %>
+      <% end %>
+
+      <% if policy(collection).destroy? %>
+        <%= button_to collection,
+              method: :delete,
+              class: "btn btn-danger",
+              data: { turbo_confirm: "Are you sure you want to delete this collection?" } do %>
+          <i class="bi bi-trash-fill me-1"></i>Delete Collection
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
