@@ -11,7 +11,6 @@ class CollectionsController < ApplicationController
   def show
     @q1 = @collection.items.includes(preparations: :requestables).ransack(params[:q1])
     @items = @q1.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
-    @max_number_of_preparations = fetch_max_number_of_preparations(@collection.id)
     @collection_questions = @collection.collection_questions.includes(:collection_options)
     respond_to do |format|
       format.html # normal full page
@@ -22,13 +21,11 @@ class CollectionsController < ApplicationController
   def search
     @q1 = @collection.items.ransack(params[:q1])
     @items = @q1.result.page(params[:page]).per(params[:per]).max_paginates_per(500)
-    @max_number_of_preparations = fetch_max_number_of_preparations(@collection.id)
     render :show
   end
 
   def add_item_to_checkout
     @item = Item.find(params[:item_id])
-    @max_number_of_preparations = fetch_max_number_of_preparations(@item.collection.id)
     render turbo_stream: turbo_stream.update("modal_content_frame") {
       render_to_string(
         partial: "items/preparations_form",

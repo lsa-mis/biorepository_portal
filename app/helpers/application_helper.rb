@@ -74,18 +74,6 @@ module ApplicationHelper
   def show_boolean(value)
     value ? "Yes" : "No" 
   end
-
-  def show_count(preparation, max_number_of_preparations)
-    max_number_of_preparations > 0 ? [preparation.count, max_number_of_preparations].min : preparation.count
-  end
-
-  def fetch_max_number_of_preparations(collection_id)
-    AppPreference.find_by(name: "max_number_of_preparations", collection_id: collection_id)&.value.to_i || 0
-  end
-
-  def collection_max_preparations(collection_id)
-    fetch_max_number_of_preparations(collection_id)
-  end
   
   def show_state_province_county(item)
     string = ""
@@ -98,12 +86,9 @@ module ApplicationHelper
     string
   end
 
-  def preparation_checkout_counts(preparation, checkout, max_number_of_preparations = nil)
-    if max_number_of_preparations.nil?
-      max_number_of_preparations = fetch_max_number_of_preparations(preparation.item.collection.id)
-    end
+  def preparation_checkout_counts(preparation, checkout)
     in_checkout = checkout.requestables.find_by(preparation_id: preparation.id)&.count.to_i
-    available = [show_count(preparation, max_number_of_preparations) - in_checkout, 0].max
+    available = preparation.count - in_checkout
     [in_checkout, available]
   end
 

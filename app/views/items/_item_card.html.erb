@@ -20,7 +20,7 @@
       </thead>
       <tbody class="">
         <% item.preparations.each do |preparation| %>
-          <% in_checkout, available = preparation_checkout_counts(preparation, @checkout, @max_number_of_preparations) %>
+          <% in_checkout, available = preparation_checkout_counts(preparation, @checkout) %>
           <tr>
             <td class="text-start"><%= preparation.display_name %></td>
             <td class="text-center"><%= available %></td>
