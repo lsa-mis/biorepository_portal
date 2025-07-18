@@ -41,7 +41,7 @@ Rails.application.routes.draw do
   post "faqs/enable_preview", to: "faqs#enable_preview", as: :preview_faqs_access
   post "collections/enable_preview", to: "collections#enable_preview", as: :preview_collections_access
   post "checkout/enable_preview", to: "checkout#enable_preview", as: :preview_checkout_access
-  post "app_preferences/enable_preview", to: "app_preferences#enable_preview", as: :preview_app_prefs_access
+  # post "/app_preferences/preview", to: "app_preferences#enable_preview", as: "preview_app_prefs"
   post "home/enable_preview", to: "home#enable_preview", as: :preview_about_access
 
   patch "update_loan_answer/:id", to: "loan_answers#update", as: :update_loan_answer

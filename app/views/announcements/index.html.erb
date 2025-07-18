@@ -20,8 +20,8 @@
           <% when "about" %>
             <%= button_to "Preview", preview_about_access_path, method: :post, class: "btn btn-link" %>
           <% when "app_preferences" %>
-            <%= link_to "Preview", app_prefs_path(preview: true) %>
-            <%= button_to "Preview", preview_app_prefs_access_path, method: :post, class: "btn btn-link" %>
+            <%= link_to "Preview", app_prefs_path(preview: true), class: "btn btn-link" %>
+            <%#= button_to "Preview", preview_app_prefs_path, method: :post, class: "btn btn-link" %>
           <% when "checkout" %>
             <%= button_to "Preview", preview_checkout_access_path, method: :post, class: "btn btn-link" %>
           <% when "collections_index" %>
