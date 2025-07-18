@@ -144,7 +144,7 @@
         </div>
       <% else %>
         <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
-          <%= button_to "Sign In", user_saml_omniauth_authorize_path, data: {turbo: "false"}, class: "btn btn-sign" %>
+          <%= link_to "Sign In", new_user_session_path, data: {turbo: "false"}, class: "btn btn-sign" %>
         </div>
       <% end %>
     </div>
