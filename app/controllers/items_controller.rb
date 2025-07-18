@@ -210,7 +210,7 @@ class ItemsController < ApplicationController
     end
 
     def transform_search_groupings
-      if params[:q] && params[:q][:groupings] && !params[:page].present?
+      if params[:q] && params[:q][:groupings] && params[:q][:groupings]["0"]["0"].present?
         transformed_groupings = {}
         params[:q][:groupings].each do |group_index, group_data|
           group = {}
