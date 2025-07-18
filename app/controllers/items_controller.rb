@@ -30,8 +30,6 @@ class ItemsController < ApplicationController
       @view = @view.present? ? @view : 'rows'
     end
 
-    # transform_search_groupings
-
     if params[:q]&.dig(:collection_id_in).present?
       collection_ids = params[:q][:collection_id_in]
     else
