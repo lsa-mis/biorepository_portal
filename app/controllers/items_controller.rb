@@ -116,6 +116,7 @@ class ItemsController < ApplicationController
     if flash[:quick_search_q].present?
       @q = Item.ransack(flash[:quick_search_q])
       transform_quick_search_params
+      @message = "Quick search results for: Scientific Name or Vernacular Name or Country or State/Province LIKE '#{flash[:quick_search_q].values.join(', ')}'"
     else
       transform_search_groupings
       @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
