@@ -135,14 +135,6 @@ class ItemsController < ApplicationController
     @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
 
     respond_to do |format|
-      format.turbo_stream do     
-        render turbo_stream: [turbo_stream.update('items_result_list',
-                                                   partial: 'result_list',
-                                                   locals: { items: @items, view: @view}),
-                              turbo_stream.update('active_filters', partial: 'layouts/current_filters',
-                                                  locals: { active_filters: @active_filters })
-                              ]
-      end
       format.html { render :search_result }
     end
   end
