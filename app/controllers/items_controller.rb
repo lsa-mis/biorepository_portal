@@ -214,22 +214,23 @@ class ItemsController < ApplicationController
     end
 
     def transform_quick_search_params
-      return unless quick_search_param.present?
-      quick_search_param = nil
+      quick_search_param = ""
       if flash[:quick_search_q].is_a?(Hash) && flash[:quick_search_q].key?("country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont")
         quick_search_param = flash[:quick_search_q]["country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont"]
       end
-
-      params[:q] = ActionController::Parameters.new({:groupings =>{"0" => {
-        "identifications_scientific_name_i_cont_any" => [quick_search_param],
-        "identifications_vernacular_name_i_cont_any" => [quick_search_param],
-        "m" => "or"
-      }}}).permit!
-      if @countries.flatten.any?(quick_search_param.downcase)
-        params[:q]["country_case_insensitive_in"] = [quick_search_param.downcase]
-      end
-      if @states.flatten.any?(quick_search_param.downcase)
-        params[:q]["state_province_case_insensitive_in"] = [quick_search_param.downcase]
+      return unless quick_search_param.present?
+      if quick_search_param.is_a?(String)
+        params[:q] = ActionController::Parameters.new({:groupings =>{"0" => {
+          "identifications_scientific_name_i_cont_any" => [quick_search_param],
+          "identifications_vernacular_name_i_cont_any" => [quick_search_param],
+          "m" => "or"
+        }}}).permit!
+        if @countries.flatten.any?(quick_search_param.downcase)
+          params[:q]["country_case_insensitive_in"] = [quick_search_param.downcase]
+        end
+        if @states.flatten.any?(quick_search_param.downcase)
+          params[:q]["state_province_case_insensitive_in"] = [quick_search_param.downcase]
+        end
       end
     end
 
