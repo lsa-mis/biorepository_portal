@@ -59,6 +59,7 @@ Rails.application.routes.draw do
   get 'export_to_csv', to: 'items#export_to_csv', as: :export_to_csv
   resources :items, only: [ :index, :show ] do
     collection do
+      match 'quick_search' => 'items#quick_search', via: [:get, :post]
       match 'search' => 'items#search', via: [:get, :post]
     end
   end

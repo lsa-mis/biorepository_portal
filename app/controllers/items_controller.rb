@@ -16,8 +16,12 @@ class ItemsController < ApplicationController
     @collections = Collection.all
   end
 
-  def search
+  def quick_search
+    @q = Item.ransack(params[:q])
+    redirect_to search_items_path, flash: { quick_search_q: params[:q] }
+  end
 
+  def search
     if params[:switch_view] == 'rows'
       @view = 'rows'
     elsif params[:switch_view] == 'cards'
@@ -26,7 +30,7 @@ class ItemsController < ApplicationController
       @view = @view.present? ? @view : 'rows'
     end
 
-    transform_search_groupings
+    # transform_search_groupings
 
     if params[:q]&.dig(:collection_id_in).present?
       collection_ids = params[:q][:collection_id_in]
@@ -111,8 +115,14 @@ class ItemsController < ApplicationController
         .sort_by { |pair| pair[0] }
     end
 
-    @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
-    
+    if flash[:quick_search_q].present?
+      @q = Item.ransack(flash[:quick_search_q])
+      transform_quick_search_params
+    else
+      transform_search_groupings
+      @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
+    end
+
     @items = @q.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @collections = Item.joins(:collection).where(id: @q.result.select(:id))
                         .distinct.pluck('collections.division').join(', ')
@@ -207,6 +217,20 @@ class ItemsController < ApplicationController
 
     def search_params
       params.permit(:q)
+    end
+
+    def transform_quick_search_params
+      params[:q] = ActionController::Parameters.new({:groupings =>{"0" => {
+        "identifications_scientific_name_i_cont_any" => [flash[:quick_search_q]["country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont"]],
+        "identifications_vernacular_name_i_cont_any" => [flash[:quick_search_q]["country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont"]],
+        "m" => "or"
+      }}}).permit!
+      if @countries.flatten.any?(flash[:quick_search_q]["country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont"].downcase)
+        params[:q]["country_case_insensitive_in"] = [flash[:quick_search_q]["country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont"].downcase]
+      end
+      if @states.flatten.any?(flash[:quick_search_q]["country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont"].downcase)
+        params[:q]["state_province_case_insensitive_in"] = [flash[:quick_search_q]["country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont"].downcase]
+      end
     end
 
     def transform_search_groupings
