@@ -9,9 +9,12 @@ Rails.application.routes.draw do
       patch :move_down
     end
   end
-  # get "profile/show"
-  # get "profile/edit"
-  # get "profile/update"
+  resources :reports, only: [:index] do
+    collection do
+      get 'information_requests_report', to: 'reports#information_requests_report'
+      get 'loan_requests_report', to: 'reports#loan_requests_report'
+    end
+  end
 
   resource :profile, only: [:show, :edit, :update] do
     get :show_loan_questions
