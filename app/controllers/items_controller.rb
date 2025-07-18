@@ -215,10 +215,6 @@ class ItemsController < ApplicationController
         :georeferenced_date, :geodetic_datum, :georeference_protocol, :archived, :collection_id)
     end
 
-    def search_params
-      params.permit(:q)
-    end
-
     def transform_quick_search_params
       params[:q] = ActionController::Parameters.new({:groupings =>{"0" => {
         "identifications_scientific_name_i_cont_any" => [flash[:quick_search_q]["country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont"]],
