@@ -1,5 +1,11 @@
 class AppPreferencesController < ApplicationController
   before_action :set_pref_types, only: %i[ index new create]
+  before_action :ensure
+
+  def enable_preview
+    session[:came_from_announcement_preview] = true
+    redirect_to app_prefs_path(preview: true)
+  end
 
   # GET /app_preferences or /app_preferences.json
   def index
@@ -74,7 +80,15 @@ class AppPreferencesController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-
+    def ensure
+      puts "✅ preview: #{params[:preview]}"
+      if params[:preview] == "true"
+        unless session.delete(:came_from_announcement_preview)
+          redirect_to announcements_path, alert: "You must access this preview from the announcements page."
+        end
+      end
+    end
+  
     def set_collections
       @collections = Collection.where(id: session[:collection_ids])
     end

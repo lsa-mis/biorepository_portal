@@ -1,6 +1,12 @@
 class CollectionsController < ApplicationController
   before_action :set_collection, only: %i[ show edit update destroy search ]
   skip_before_action :authenticate_user!, only: [ :index, :show, :add_item_to_checkout ]
+  before_action :ensure
+
+  def enable_preview
+    session[:came_from_announcement_preview] = true
+    redirect_to collections_path(preview: true)
+  end
 
   # GET /collections or /collections.json
   def index
@@ -108,6 +114,15 @@ class CollectionsController < ApplicationController
   end
 
   private
+
+    def ensure
+      if params[:preview] == "true"
+        unless session.delete(:came_from_announcement_preview)
+          redirect_to announcements_path, alert: "You must access this preview from the announcements page."
+        end
+      end
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
       @collection = Collection.find(params[:id])

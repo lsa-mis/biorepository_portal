@@ -4,11 +4,11 @@
   <%= render "layouts/announcement", is_preview: is_preview, location: "checkout" %>
   <div class="d-flex justify-content-between">
     <h1 class="py-5">Checkout</h1>
-    <% if @checkout.requestables.where(saved_for_later: false).exists? %>
-      <%= link_to loan_request_path, class: "btn btn-primary h-50 mt-auto mb-auto", data: { turbo_frame: "_top" } do %>
-        <i class="bi bi-envelope"></i> Send Loan Request
+      <% if @checkout.requestables.where(saved_for_later: false).exists? %>
+        <%= button_to enable_loan_request_path, method: :post, class: "btn btn-primary h-48 mt-1 mb-1", data: { turbo_frame: "_top" } do %>
+          <i class="bi bi-envelope"></i> Send Loan Request
+        <% end %>
       <% end %>
-    <% end %>
   </div>
   <% if @checkout.requestables.where(saved_for_later: false).exists? %>
     <%= render "checkout/requestables" %>

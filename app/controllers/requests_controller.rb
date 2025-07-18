@@ -2,6 +2,17 @@ require "csv"
 
 class RequestsController < ApplicationController
   before_action :set_redirection_url
+  before_action :ensure_loan_request_enabled, only: [:loan_request]
+
+  def enable
+    session[:loan_request_enabled] = true
+    redirect_to loan_request_path
+  end
+
+  def enable_preview
+    session[:came_from_announcement_preview] = true
+    redirect_to loan_request_path(preview: true)
+  end
 
   def show_information_request
     @information_request = InformationRequest.find(params[:id])
@@ -277,4 +288,15 @@ class RequestsController < ApplicationController
       end
     end
 
+    def ensure_loan_request_enabled
+      if params[:preview] == "true"
+        unless session.delete(:came_from_announcement_preview)
+          redirect_to announcements_path, alert: "You must access this preview from the announcements page."
+        end
+      else 
+        unless session.delete(:loan_request_enabled)
+          redirect_to checkout_path, alert: "You must use the 'Send Loan Request' button on Checkout page."
+        end
+      end
+    end
 end

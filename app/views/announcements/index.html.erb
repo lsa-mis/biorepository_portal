@@ -18,19 +18,20 @@
         <td>
           <% case announcement.location %>
           <% when "about" %>
-            <%= link_to "Preview", about_path(preview: true) %>
+            <%= button_to "Preview", preview_about_access_path, method: :post, class: "btn btn-link" %>
           <% when "app_preferences" %>
             <%= link_to "Preview", app_prefs_path(preview: true) %>
+            <%= button_to "Preview", preview_app_prefs_access_path, method: :post, class: "btn btn-link" %>
           <% when "checkout" %>
-            <%= link_to "Preview", checkout_path(preview: true) %>
+            <%= button_to "Preview", preview_checkout_access_path, method: :post, class: "btn btn-link" %>
           <% when "collections_index" %>
-            <%= link_to "Preview", collections_path(preview: true) %>
+            <%= button_to "Preview", preview_collections_access_path, method: :post, class: "btn btn-link" %>
           <% when "faq" %>
-            <%= link_to "Preview", faqs_path(preview: true) %>
+            <%= button_to "Preview", preview_faqs_access_path, method: :post, class: "btn btn-link" %>
           <% when "loan_questions" %>
-            <%= link_to "Preview", loan_questions_path(preview: true) %>
+            <%= button_to "Preview", preview_loan_questions_access_path, method: :post, class: "btn btn-link" %>
           <% when "loan_request" %>
-            <%= link_to "Preview", loan_request_path(preview: true) %>
+            <%= button_to "Preview", preview_loan_request_access_path, method: :post, class: "btn btn-link" %>
           <% when "collection_questions" %>
             <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#collectionQuestionModal">
               Preview

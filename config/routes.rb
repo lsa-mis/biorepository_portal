@@ -35,6 +35,14 @@ Rails.application.routes.draw do
   get "requests/show_information_request/:id", to: "requests#show_information_request", as: :show_information_request
   get "requests/loan_request", to: "requests#loan_request", as: :loan_request
   post "requests/send_loan_request", to: "requests#send_loan_request", as: :send_loan_request
+  post "request/enable", to: "requests#enable", as: :enable_loan_request
+  post "requests/enable_preview", to: "requests#enable_preview", as: :preview_loan_request_access
+  post "loan_questions/enable_preview", to: "loan_questions#enable_preview", as: :preview_loan_questions_access
+  post "faqs/enable_preview", to: "faqs#enable_preview", as: :preview_faqs_access
+  post "collections/enable_preview", to: "collections#enable_preview", as: :preview_collections_access
+  post "checkout/enable_preview", to: "checkout#enable_preview", as: :preview_checkout_access
+  post "app_preferences/enable_preview", to: "app_preferences#enable_preview", as: :preview_app_prefs_access
+  post "home/enable_preview", to: "home#enable_preview", as: :preview_about_access
 
   patch "update_loan_answer/:id", to: "loan_answers#update", as: :update_loan_answer
   get "edit_loan_answer/:id", to: "loan_answers#edit", as: :edit_loan_answer

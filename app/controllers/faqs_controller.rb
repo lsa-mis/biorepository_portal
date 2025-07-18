@@ -2,6 +2,12 @@ class FaqsController < ApplicationController
   before_action :set_redirection_url
   before_action :set_faq, only: %i[ show edit update destroy move_up move_down]
   skip_before_action :authenticate_user!, only: %i[index]
+  before_action :ensure
+
+  def enable_preview
+    session[:came_from_announcement_preview] = true
+    redirect_to faqs_path(preview: true)
+  end
 
   # GET /faqs or /faqs.json
   def index
@@ -75,6 +81,15 @@ class FaqsController < ApplicationController
   end
 
   private
+  
+    def ensure
+      if params[:preview] == "true"
+        unless session.delete(:came_from_announcement_preview)
+          redirect_to announcements_path, alert: "You must access this preview from the announcements page."
+        end
+      end
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_faq
       @faq = Faq.find(params[:id])
