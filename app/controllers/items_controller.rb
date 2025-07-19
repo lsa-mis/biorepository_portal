@@ -36,19 +36,20 @@ class ItemsController < ApplicationController
 
     included_items = Item.where(collection: collection_ids)
 
-    plucked_items = included_items.pluck(:continent, :country, :state_province, :sex)
-    @continents, @countries, @states, @sexs = Array.new(4) { Set.new }
-    plucked_items.each do |continent, country, state_province, sex|
-      @continents.add([continent&.titleize, continent&.downcase]) if continent.present?
-      @countries.add([country&.titleize, country&.downcase]) if country.present?
-      @states.add([state_province&.titleize, state_province&.downcase]) if state_province.present?
-      @sexs.add([sex&.titleize, sex&.downcase]) if sex.present?
-    end
+    @continents, @countries, @states, @sexs =
+      Rails.cache.fetch("geo_filters_#{collection_ids.sort.join('_')}", expires_in: 12.hours) do
+        plucked_items = included_items.pluck(:continent, :country, :state_province, :sex)
+        continents, countries, states, sexs = Array.new(4) { Set.new }
 
-    @continents = @continents.sort_by { |pair| pair[0] }
-    @countries = @countries.sort_by { |pair| pair[0] }
-    @states = @states.sort_by { |pair| pair[0] }
-    @sexs = @sexs.sort_by { |pair| pair[0] }
+        plucked_items.each do |continent, country, state_province, sex|
+          continents.add([continent&.titleize, continent&.downcase]) if continent.present?
+          countries.add([country&.titleize, country&.downcase]) if country.present?
+          states.add([state_province&.titleize, state_province&.downcase]) if state_province.present?
+          sexs.add([sex&.titleize, sex&.downcase]) if sex.present?
+        end
+
+        [continents, countries, states, sexs].map { |set| set.sort_by(&:first) }
+      end
 
     # @continents = included_items.pluck(:continent)
     #   .compact.reject(&:blank?)
@@ -73,26 +74,48 @@ class ItemsController < ApplicationController
     #   .uniq
     #   .sort_by { |pair| pair[0] }
 
-    taxonomies = included_items.joins(:current_identification)
-      .pluck('identifications.kingdom', 'identifications.phylum', 'identifications.class_name', 'identifications.order_name', 'identifications.family', 'identifications.genus')
+    # taxonomies = included_items.joins(:current_identification)
+    #   .pluck('identifications.kingdom', 'identifications.phylum', 'identifications.class_name', 'identifications.order_name', 'identifications.family', 'identifications.genus')
 
-    @kingdoms, @phylums, @classes, @orders, @families, @genuses = Array.new(6) { Set.new }
+    # @kingdoms, @phylums, @classes, @orders, @families, @genuses = Array.new(6) { Set.new }
 
-    taxonomies.each do |kingdom, phylum, class_name, order_name, family, genus|
-      @kingdoms.add([kingdom&.titleize, kingdom&.downcase]) if kingdom.present?
-      @phylums.add([phylum&.titleize, phylum&.downcase]) if phylum.present?
-      @classes.add([class_name&.titleize, class_name&.downcase]) if class_name.present?
-      @orders.add([order_name&.titleize, order_name&.downcase]) if order_name.present?
-      @families.add([family&.titleize, family&.downcase]) if family.present?
-      @genuses.add([genus&.titleize, genus&.downcase]) if genus.present?
-    end
+    # taxonomies.each do |kingdom, phylum, class_name, order_name, family, genus|
+    #   @kingdoms.add([kingdom&.titleize, kingdom&.downcase]) if kingdom.present?
+    #   @phylums.add([phylum&.titleize, phylum&.downcase]) if phylum.present?
+    #   @classes.add([class_name&.titleize, class_name&.downcase]) if class_name.present?
+    #   @orders.add([order_name&.titleize, order_name&.downcase]) if order_name.present?
+    #   @families.add([family&.titleize, family&.downcase]) if family.present?
+    #   @genuses.add([genus&.titleize, genus&.downcase]) if genus.present?
+    # end
 
-    @kingdoms = @kingdoms.sort_by { |pair| pair[0] }
-    @phylums = @phylums.sort_by { |pair| pair[0] }
-    @classes = @classes.sort_by { |pair| pair[0] }
-    @orders = @orders.sort_by { |pair| pair[0] }
-    @families = @families.sort_by { |pair| pair[0] }
-    @genuses = @genuses.sort_by { |pair| pair[0] }
+    # @kingdoms = @kingdoms.sort_by { |pair| pair[0] }
+    # @phylums = @phylums.sort_by { |pair| pair[0] }
+    # @classes = @classes.sort_by { |pair| pair[0] }
+    # @orders = @orders.sort_by { |pair| pair[0] }
+    # @families = @families.sort_by { |pair| pair[0] }
+    # @genuses = @genuses.sort_by { |pair| pair[0] }
+
+    @kingdoms, @phylums, @classes, @orders, @families, @genuses = 
+      Rails.cache.fetch("taxonomy_filters_#{collection_ids.sort.join('_')}", expires_in: 12.hours) do
+        taxonomies = included_items.joins(:current_identification)
+          .pluck('identifications.kingdom', 'identifications.phylum', 'identifications.class_name', 
+                 'identifications.order_name', 'identifications.family', 'identifications.genus')
+
+        kingdoms, phylums, classes, orders, families, genuses = Array.new(6) { Set.new }
+
+        taxonomies.each do |kingdom, phylum, class_name, order_name, family, genus|
+          kingdoms.add([kingdom&.titleize, kingdom&.downcase]) if kingdom.present?
+          phylums.add([phylum&.titleize, phylum&.downcase]) if phylum.present?
+          classes.add([class_name&.titleize, class_name&.downcase]) if class_name.present?
+          orders.add([order_name&.titleize, order_name&.downcase]) if order_name.present?
+          families.add([family&.titleize, family&.downcase]) if family.present?
+          genuses.add([genus&.titleize, genus&.downcase]) if genus.present?
+        end
+
+        [kingdoms, phylums, classes, orders, families, genuses].map do |set|
+          set.sort_by(&:first)
+        end
+      end
 
     # @kingdoms = Rails.cache.fetch('kingdoms', expires_in: 12.hours) do
     #   included_items.joins(:current_identification)
