@@ -35,88 +35,123 @@ class ItemsController < ApplicationController
     end
 
     included_items = Item.where(collection: collection_ids)
-    
-    @continents = included_items.pluck(:continent)
-      .compact.reject(&:blank?)
-      .map { |c| [c.titleize, c.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
-    @countries = included_items.pluck(:country)
-      .compact
-      .reject(&:blank?)
-      .map { |c| [c.titleize, c.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
-    @states = included_items.pluck(:state_province)
-        .compact.reject(&:blank?)
-        .map { |s| [s.titleize, s.downcase] }
-        .uniq
-        .sort_by { |pair| pair[0] }
 
-    @sexs = included_items.pluck(:sex)
-      .compact.reject(&:blank?)
-      .map { |s| [s.titleize, s.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
-
-    @kingdoms = Rails.cache.fetch('kingdoms', expires_in: 12.hours) do
-      included_items.joins(:current_identification)
-        .pluck('identifications.kingdom')
-        .compact.reject(&:blank?)
-        .map { |k| [k.titleize, k.downcase] }
-        .uniq
-        .sort_by { |pair| pair[0] }
+    plucked_items = included_items.pluck(:continent, :country, :state_province, :sex)
+    @continents, @countries, @states, @sexs = Array.new(4) { Set.new }
+    plucked_items.each do |continent, country, state_province, sex|
+      @continents.add([continent&.titleize, continent&.downcase]) if continent.present?
+      @countries.add([country&.titleize, country&.downcase]) if country.present?
+      @states.add([state_province&.titleize, state_province&.downcase]) if state_province.present?
+      @sexs.add([sex&.titleize, sex&.downcase]) if sex.present?
     end
 
-    @phylums = Rails.cache.fetch('phylums', expires_in: 12.hours) do
-      included_items.joins(:current_identification)
-        .pluck('identifications.phylum')
-        .compact.reject(&:blank?)
-        .map { |p| [p.titleize, p.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
+    @continents = @continents.sort_by { |pair| pair[0] }
+    @countries = @countries.sort_by { |pair| pair[0] }
+    @states = @states.sort_by { |pair| pair[0] }
+    @sexs = @sexs.sort_by { |pair| pair[0] }
+
+    # @continents = included_items.pluck(:continent)
+    #   .compact.reject(&:blank?)
+    #   .map { |c| [c.titleize, c.downcase] }
+    #   .uniq
+    #   .sort_by { |pair| pair[0] }
+    # @countries = included_items.pluck(:country)
+    #   .compact
+    #   .reject(&:blank?)
+    #   .map { |c| [c.titleize, c.downcase] }
+    #   .uniq
+    #   .sort_by { |pair| pair[0] }
+    # @states = included_items.pluck(:state_province)
+    #     .compact.reject(&:blank?)
+    #     .map { |s| [s.titleize, s.downcase] }
+    #     .uniq
+    #     .sort_by { |pair| pair[0] }
+
+    # @sexs = included_items.pluck(:sex)
+    #   .compact.reject(&:blank?)
+    #   .map { |s| [s.titleize, s.downcase] }
+    #   .uniq
+    #   .sort_by { |pair| pair[0] }
+
+    taxonomies = included_items.joins(:current_identification)
+      .pluck('identifications.kingdom', 'identifications.phylum', 'identifications.class_name', 'identifications.order_name', 'identifications.family', 'identifications.genus')
+
+    @kingdoms, @phylums, @classes, @orders, @families, @genuses = Array.new(6) { Set.new }
+
+    taxonomies.each do |kingdom, phylum, class_name, order_name, family, genus|
+      @kingdoms.add([kingdom&.titleize, kingdom&.downcase]) if kingdom.present?
+      @phylums.add([phylum&.titleize, phylum&.downcase]) if phylum.present?
+      @classes.add([class_name&.titleize, class_name&.downcase]) if class_name.present?
+      @orders.add([order_name&.titleize, order_name&.downcase]) if order_name.present?
+      @families.add([family&.titleize, family&.downcase]) if family.present?
+      @genuses.add([genus&.titleize, genus&.downcase]) if genus.present?
     end
 
-    @classes = Rails.cache.fetch('classes', expires_in: 12.hours) do
-      included_items.joins(:current_identification)
-        .pluck('identifications.class_name')
-        .compact.reject(&:blank?)
-        .map { |c| [c.titleize, c.downcase] }
-        .uniq
-        .sort_by { |pair| pair[0] }
-    end
+    @kingdoms = @kingdoms.sort_by { |pair| pair[0] }
+    @phylums = @phylums.sort_by { |pair| pair[0] }
+    @classes = @classes.sort_by { |pair| pair[0] }
+    @orders = @orders.sort_by { |pair| pair[0] }  
+    @families = @families.sort_by { |pair| pair[0] }
+    @genuses = @genuses.sort_by { |pair| pair[0] }
 
-    @orders = Rails.cache.fetch('orders', expires_in: 12.hours) do
-      included_items.joins(:current_identification)
-        .pluck('identifications.order_name')
-        .compact.reject(&:blank?)
-        .map { |o| [o.titleize, o.downcase] }
-      .uniq
-      .sort_by { |pair| pair[0] }
-    end
+    # @kingdoms = Rails.cache.fetch('kingdoms', expires_in: 12.hours) do
+    #   included_items.joins(:current_identification)
+    #     .pluck('identifications.kingdom')
+    #     .compact.reject(&:blank?)
+    #     .map { |k| [k.titleize, k.downcase] }
+    #     .uniq
+    #     .sort_by { |pair| pair[0] }
+    # end
 
-    @families = Rails.cache.fetch('families', expires_in: 12.hours) do
-      included_items.joins(:current_identification)
-        .pluck('identifications.family')
-        .compact.reject(&:blank?)
-        .map { |f| [f.titleize, f.downcase] }
-        .uniq
-        .sort_by { |pair| pair[0] }
-    end
+    # @phylums = Rails.cache.fetch('phylums', expires_in: 12.hours) do
+    #   included_items.joins(:current_identification)
+    #     .pluck('identifications.phylum')
+    #     .compact.reject(&:blank?)
+    #     .map { |p| [p.titleize, p.downcase] }
+    #   .uniq
+    #   .sort_by { |pair| pair[0] }
+    # end
 
-    @genuses = Rails.cache.fetch('genuses', expires_in: 12.hours) do
-      included_items.joins(:current_identification)
-        .pluck('identifications.genus')
-        .compact.reject(&:blank?)
-        .map { |g| [g.titleize, g.downcase] }
-        .uniq
-        .sort_by { |pair| pair[0] }
-    end
+    # @classes = Rails.cache.fetch('classes', expires_in: 12.hours) do
+    #   included_items.joins(:current_identification)
+    #     .pluck('identifications.class_name')
+    #     .compact.reject(&:blank?)
+    #     .map { |c| [c.titleize, c.downcase] }
+    #     .uniq
+    #     .sort_by { |pair| pair[0] }
+    # end
+
+    # @orders = Rails.cache.fetch('orders', expires_in: 12.hours) do
+    #   included_items.joins(:current_identification)
+    #     .pluck('identifications.order_name')
+    #     .compact.reject(&:blank?)
+    #     .map { |o| [o.titleize, o.downcase] }
+    #   .uniq
+    #   .sort_by { |pair| pair[0] }
+    # end
+
+    # @families = Rails.cache.fetch('families', expires_in: 12.hours) do
+    #   included_items.joins(:current_identification)
+    #     .pluck('identifications.family')
+    #     .compact.reject(&:blank?)
+    #     .map { |f| [f.titleize, f.downcase] }
+    #     .uniq
+    #     .sort_by { |pair| pair[0] }
+    # end
+
+    # @genuses = Rails.cache.fetch('genuses', expires_in: 12.hours) do
+    #   included_items.joins(:current_identification)
+    #     .pluck('identifications.genus')
+    #     .compact.reject(&:blank?)
+    #     .map { |g| [g.titleize, g.downcase] }
+    #     .uniq
+    #     .sort_by { |pair| pair[0] }
+    # end
 
     @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
-    
-    @items = @q.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
-    @collections = Item.joins(:collection).where(id: @q.result.select(:id))
+    filtered_items = @q.result
+    @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
+    @collections = Item.joins(:collection).where(id: filtered_items.select(:id))
                         .distinct.pluck('collections.division').join(', ')
     @all_collections = Collection.all
     
