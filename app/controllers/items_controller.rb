@@ -119,7 +119,7 @@ class ItemsController < ApplicationController
     if flash[:quick_search_q].present?
       @q = Item.ransack(flash[:quick_search_q])
       transform_quick_search_params
-      @message = "Quick search results for: Scientific Name or Vernacular Name or Country or State/Province LIKE '#{flash[:quick_search_q].values.join(', ')}'"
+      @message = "Quick search results for: Scientific Name or Vernacular Name or Country or State/Province LIKE '#{extract_quick_search_param}'"
     else
       transform_search_groupings
       @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
@@ -218,10 +218,10 @@ class ItemsController < ApplicationController
     end
 
     def transform_quick_search_params
-      quick_search_param = extract_quick_search_param
-      return unless quick_search_param.present?
-      construct_search_params(quick_search_param)
-      add_country_and_state_filters(quick_search_param)
+      @quick_search_param = extract_quick_search_param
+      return unless @quick_search_param.present?
+      construct_search_params(@quick_search_param)
+      add_country_and_state_filters(@quick_search_param)
     end
 
     def extract_quick_search_param
