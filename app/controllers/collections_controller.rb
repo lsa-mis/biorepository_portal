@@ -115,13 +115,6 @@ class CollectionsController < ApplicationController
 
   private
 
-    def ensure
-      if params[:preview] == "true"
-        unless session.delete(:came_from_announcement_preview)
-          redirect_to announcements_path, alert: "You must access this preview from the announcements page."
-        end
-      end
-    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_collection

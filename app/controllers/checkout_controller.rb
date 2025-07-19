@@ -6,14 +6,6 @@ class CheckoutController < ApplicationController
     session[:came_from_announcement_preview] = true
     redirect_to checkout_path(preview: true)
   end
-  
-  def ensure
-    if params[:preview] == "true"
-      unless session.delete(:came_from_announcement_preview)
-        redirect_to announcements_path, alert: "You must access this preview from the announcements page."
-      end
-    end
-  end
  
   def show
     @render_checkout = false
