@@ -1,10 +1,8 @@
 <div class="position-absolute end-0 p-2">
   <% flash.each do |type, message| %>
-    <% if type == "notice" || type == "alert" %>
-      <div data-controller="flash" class="alert alert-dismissible fade show <%= css_class_for_flash(type) %>" role="alert">
-        <%= message %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <% end %>
+    <div data-controller="flash" class="alert alert-dismissible fade show <%= css_class_for_flash(type) %>" role="alert">
+      <%= message %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
   <% end %>
 </div>
