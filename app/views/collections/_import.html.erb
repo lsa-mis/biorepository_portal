@@ -1,5 +1,5 @@
 <div class="d-flex flex-column flex-sm-row flex-wrap gap-2">
-  <h3 class="me-5"> Import Items</h3>
+  <h3 class="me-5">Import Items</h3>
   <%= form_tag import_collections_path, method: :post, multipart: true, onsubmit: "return showImportStart()" do %>
     <%= label_tag 'files_', 'Choose CSV files to import:', class: 'visually-hidden' %>
     <%= file_field_tag 'files[]', accept: ".csv", multiple: true %>

@@ -244,10 +244,10 @@ class ItemsController < ApplicationController
     end
 
     def add_country_and_state_filters(quick_search_param)
-      if @countries.flatten.any?(quick_search_param.downcase)
+      if @countries.flatten.include?(quick_search_param.downcase)
         params[:q]["country_case_insensitive_in"] = [quick_search_param.downcase]
       end
-      if @states.flatten.any?(quick_search_param.downcase)
+      if @states.flatten.include?(quick_search_param.downcase)
         params[:q]["state_province_case_insensitive_in"] = [quick_search_param.downcase]
       end
     end
