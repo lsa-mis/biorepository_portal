@@ -32,6 +32,9 @@ class ItemsController < ApplicationController
 
     if params[:q]&.dig(:collection_id_in).present?
       collection_ids = params[:q][:collection_id_in]
+    elsif params[:collection_id].present?
+      collection_ids = [params[:collection_id].to_i]
+      params[:q] = ActionController::Parameters.new("collection_id_in" => [collection_ids.first])
     else
       collection_ids = Collection.all.pluck(:id)
     end
