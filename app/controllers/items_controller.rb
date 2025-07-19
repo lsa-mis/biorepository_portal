@@ -18,7 +18,8 @@ class ItemsController < ApplicationController
 
   def quick_search
     @q = Item.ransack(params[:q])
-    redirect_to search_items_path, flash: { quick_search_q: params[:q] }
+    session[:quick_search_q] = params[:q]
+    redirect_to search_items_path
   end
 
   def search
@@ -116,10 +117,11 @@ class ItemsController < ApplicationController
         .sort_by { |pair| pair[0] }
     end
 
-    if flash[:quick_search_q].present?
-      @q = Item.ransack(flash[:quick_search_q])
+    if session[:quick_search_q].present?
+      @q = Item.ransack(session[:quick_search_q])
       transform_quick_search_params
       @message = "Quick search results for: Scientific Name or Vernacular Name or Country or State/Province LIKE '#{extract_quick_search_param}'"
+      session.delete(:quick_search_q)
     else
       transform_search_groupings
       @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
@@ -225,8 +227,8 @@ class ItemsController < ApplicationController
     end
 
     def extract_quick_search_param
-      return unless flash[:quick_search_q].is_a?(Hash)
-      flash[:quick_search_q]["country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont"]
+      return unless session[:quick_search_q].is_a?(Hash)
+      session[:quick_search_q]["country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont"]
     end
 
     def construct_search_params(quick_search_param)
