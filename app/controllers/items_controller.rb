@@ -90,7 +90,7 @@ class ItemsController < ApplicationController
     @kingdoms = @kingdoms.sort_by { |pair| pair[0] }
     @phylums = @phylums.sort_by { |pair| pair[0] }
     @classes = @classes.sort_by { |pair| pair[0] }
-    @orders = @orders.sort_by { |pair| pair[0] }  
+    @orders = @orders.sort_by { |pair| pair[0] }
     @families = @families.sort_by { |pair| pair[0] }
     @genuses = @genuses.sort_by { |pair| pair[0] }
 
