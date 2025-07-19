@@ -86,7 +86,7 @@ export default class extends Controller {
         if (index > 0) {
           const orLabel = document.createElement("span")
           orLabel.textContent = "OR"
-          orLabel.classList.add("or-label", "badge", "bg-info", "mx-2")
+          orLabel.classList.add("or-label", "badge", "badge-custom-blue", "mx-2")
           row.insertAdjacentElement("beforebegin", orLabel)
         }
       })
@@ -104,7 +104,7 @@ export default class extends Controller {
       if (index > 0) {
         const andLabel = document.createElement("span")
         andLabel.textContent = "AND"
-        andLabel.classList.add("and-label", "badge", "bg-info", "my-2", "text-center")
+        andLabel.classList.add("and-label", "badge", "badge-custom-blue", "my-2", "text-center")
 
         // Add spacing
         andLabel.style.display = "block"

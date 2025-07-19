@@ -16,8 +16,13 @@ class ItemsController < ApplicationController
     @collections = Collection.all
   end
 
-  def search
+  def quick_search
+    @q = Item.ransack(params[:q])
+    session[:quick_search_q] = params[:q]
+    redirect_to search_items_path
+  end
 
+  def search
     if params[:switch_view] == 'rows'
       @view = 'rows'
     elsif params[:switch_view] == 'cards'
@@ -26,10 +31,11 @@ class ItemsController < ApplicationController
       @view = @view.present? ? @view : 'rows'
     end
 
-    transform_search_groupings
-
     if params[:q]&.dig(:collection_id_in).present?
       collection_ids = params[:q][:collection_id_in]
+    elsif params[:collection_id].present?
+      collection_ids = [params[:collection_id].to_i]
+      params[:q] = ActionController::Parameters.new("collection_id_in" => [collection_ids.first])
     else
       collection_ids = Collection.all.pluck(:id)
     end
@@ -111,8 +117,16 @@ class ItemsController < ApplicationController
         .sort_by { |pair| pair[0] }
     end
 
-    @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
-    
+    if session[:quick_search_q].present?
+      @q = Item.ransack(session[:quick_search_q])
+      transform_quick_search_params
+      @message = "Quick search results for: Scientific Name or Vernacular Name or Country or State/Province LIKE '#{extract_quick_search_param}'"
+      session.delete(:quick_search_q)
+    else
+      transform_search_groupings
+      @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
+    end
+
     @items = @q.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @collections = Item.joins(:collection).where(id: @q.result.select(:id))
                         .distinct.pluck('collections.division').join(', ')
@@ -205,8 +219,37 @@ class ItemsController < ApplicationController
         :georeferenced_date, :geodetic_datum, :georeference_protocol, :archived, :collection_id)
     end
 
-    def search_params
-      params.permit(:q)
+    def transform_quick_search_params
+      @quick_search_param = extract_quick_search_param
+      return unless @quick_search_param.present?
+      construct_search_params(@quick_search_param)
+      add_country_and_state_filters(@quick_search_param)
+    end
+
+    def extract_quick_search_param
+      return unless session[:quick_search_q].is_a?(Hash)
+      session[:quick_search_q]["country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont"]
+    end
+
+    def construct_search_params(quick_search_param)
+      params[:q] = ActionController::Parameters.new({
+        groupings: {
+          "0" => {
+            "identifications_scientific_name_i_cont_any" => [quick_search_param],
+            "identifications_vernacular_name_i_cont_any" => [quick_search_param],
+            "m" => "or"
+          }
+        }
+      }).permit!
+    end
+
+    def add_country_and_state_filters(quick_search_param)
+      if @countries.flatten.include?(quick_search_param.downcase)
+        params[:q]["country_case_insensitive_in"] = [quick_search_param.downcase]
+      end
+      if @states.flatten.include?(quick_search_param.downcase)
+        params[:q]["state_province_case_insensitive_in"] = [quick_search_param.downcase]
+      end
     end
 
     def transform_search_groupings
