@@ -117,4 +117,8 @@ module ApplicationHelper
     value.to_s.start_with?('=', '+', '-', '@') ? "'#{value}'" : value.to_s
   end
 
+  def show_user_name_by_id(id)
+    User.find(id).name_with_email
+  end
+
 end
