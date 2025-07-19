@@ -1,4 +1,5 @@
 class ReportsController < ApplicationController
+  before_action :set_form_values, :collect_form_params
 
   def index
     authorize :report, :index?
@@ -9,8 +10,53 @@ class ReportsController < ApplicationController
       ]
   end
 
+  # Design - For each new report:
+  # 1) run the logic / activerecord query based on params
+  # 2) if there is no record returned, do none of the below
+  # 3) define a title for the report: @title
+  # 4) calculate summary metrics in a hash of description:value pairs : @metrics
+  # 5) for a basic report:
+  #   a) define an array of headers/column titles: @headers
+  #   b) convert the query results into an array of arrays in order same as headers: @data
+  # 6) for a grouped pivot-table report (w/ dates as columns):
+  #   a) set @grouped = true
+  #   b) define an array of date headers: @date_headers
+  #   c) define an array of all headers (indluding date headers): @headers
+  #   d) convert the query results into a grouped hash of hashes: @data
+  #     i) the first key should be an array of 'grouped' keys, like for e.g [zone, building, room]
+  #     ii) the second key should be the date
+  #     iii) the value should be the cell value
+  #     iv) for e.g: @data[[Zone, Building, Room]][Date] = Value
+
   def information_requests_report
     authorize :report, :information_requests_report?
+    if params[:commit]
+      start_time, end_time, collection_id = collect_form_params
+
+      information_requests = InformationRequest.where(created_at: start_time..end_time)
+      # information_requests = information_requests.where(collection_id: collection_id) if collection_id.present?
+
+      if information_requests.any?
+        @title = "Information Requests Report"
+        @metrics = {
+          total_requests: information_requests.count,
+          # total_collections: information_requests.select(:collection_id).distinct.count
+        }
+        @headers = ["Request ID", "Created At", "Submitted By", "Message"]
+        @request_link = true
+        @data = information_requests.map do |request|
+          [request.id, request.created_at.strftime("%Y-%m-%d"), show_user_name_by_id(request.user_id), request.question.to_plain_text]
+        end
+      else
+        @data = nil
+      end
+
+      respond_to do |format|
+        format.html
+        format.csv { send_data csv_data, filename: 'information_requests_report.csv', type: 'text/csv' }
+      end
+    end
+
   end
 
   def loan_requests_report
@@ -18,5 +64,49 @@ class ReportsController < ApplicationController
   end
 
   private
+
+  def set_form_values
+    # @zones = Zone.all.order(:name).map { |z| [z.name, z.id] }
+    # @buildings = Building.active.where.not(zone: nil).map { |building| [building.zone_id, building.name, building.id] }
+    # @need_dates = true
+  end
+
+  def collect_form_params
+    start_time = params[:from].present? ? Date.parse(params[:from]).beginning_of_day : DateTime.new(0)
+    end_time = params[:to].present? ? Date.parse(params[:to]).end_of_day : DateTime::Infinity.new
+    collection_id = params[:collection_id].presence || Collection.all.pluck(:id)
+    [start_time, end_time, collection_id]
+  end
+
+  def csv_data
+    CSV.generate(headers: true) do |csv|
+      next csv << ["No data found"] if !@data
+
+      csv << [@title]
+      csv << []
+      @metrics && @metrics.each { |desc, value| csv << [desc, value] }
+
+      if @grouped
+        @data.each do |group, pivot_table|
+          csv << []
+          csv << (@group_link && group.is_a?(Array) ? ["#{group[0]} #{group[1].room_number}"] : [group])
+          csv << @headers
+          pivot_table.each do |keys, record|
+            keys = [keys[0][0]] + keys[1..] if @room_link && keys[0].is_a?(Array)
+            csv << keys + @date_headers.map { |date| record[date] }
+          end          
+        end
+      else
+        csv << []
+        csv << @headers
+        @data.each do |row|
+          if @room_link
+            row[0] = row[0].request_id
+          end
+          csv << row
+        end
+      end
+    end
+  end
 
 end

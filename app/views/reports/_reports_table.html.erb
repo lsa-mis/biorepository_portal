@@ -1,0 +1,32 @@
+<% @metrics && @metrics.each do |description, value| %>
+  <h2><%= "#{description}: #{value}" %></h2>
+<% end %>
+
+<% if @data.present? %>
+  <table class="table text-center table-striped mt-4">
+    <thead class="table-group-divider">
+    <tr>
+      <% @headers.each do |header| %>
+        <th scope="col"><%= header %></th>
+      <% end %>
+    </tr>
+    </thead>
+    <tbody class="table-group-divider">
+    <% @data.each do |row| %>
+      <tr>
+        <% if @request_link %>
+          <td><%= link_to row[0], information_request_path(InformationRequest.find(row[0].to_i)), class: "link_to" %> </td>
+        <% else %>
+          <td><%= row[0] %></td>
+        <% end %>
+        <% row.shift(1) %>
+        <% row.each do |cell| %>
+          <td><%= cell %></td>
+        <% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No data available for the selected filters.</p>
+<% end %>
