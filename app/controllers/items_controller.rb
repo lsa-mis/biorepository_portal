@@ -57,50 +57,6 @@ class ItemsController < ApplicationController
         [continents, countries, states, sexs].map { |set| set.sort_by(&:first) }
       end
 
-    # @continents = included_items.pluck(:continent)
-    #   .compact.reject(&:blank?)
-    #   .map { |c| [c.titleize, c.downcase] }
-    #   .uniq
-    #   .sort_by { |pair| pair[0] }
-    # @countries = included_items.pluck(:country)
-    #   .compact
-    #   .reject(&:blank?)
-    #   .map { |c| [c.titleize, c.downcase] }
-    #   .uniq
-    #   .sort_by { |pair| pair[0] }
-    # @states = included_items.pluck(:state_province)
-    #     .compact.reject(&:blank?)
-    #     .map { |s| [s.titleize, s.downcase] }
-    #     .uniq
-    #     .sort_by { |pair| pair[0] }
-
-    # @sexs = included_items.pluck(:sex)
-    #   .compact.reject(&:blank?)
-    #   .map { |s| [s.titleize, s.downcase] }
-    #   .uniq
-    #   .sort_by { |pair| pair[0] }
-
-    # taxonomies = included_items.joins(:current_identification)
-    #   .pluck('identifications.kingdom', 'identifications.phylum', 'identifications.class_name', 'identifications.order_name', 'identifications.family', 'identifications.genus')
-
-    # @kingdoms, @phylums, @classes, @orders, @families, @genuses = Array.new(6) { Set.new }
-
-    # taxonomies.each do |kingdom, phylum, class_name, order_name, family, genus|
-    #   @kingdoms.add([kingdom&.titleize, kingdom&.downcase]) if kingdom.present?
-    #   @phylums.add([phylum&.titleize, phylum&.downcase]) if phylum.present?
-    #   @classes.add([class_name&.titleize, class_name&.downcase]) if class_name.present?
-    #   @orders.add([order_name&.titleize, order_name&.downcase]) if order_name.present?
-    #   @families.add([family&.titleize, family&.downcase]) if family.present?
-    #   @genuses.add([genus&.titleize, genus&.downcase]) if genus.present?
-    # end
-
-    # @kingdoms = @kingdoms.sort_by { |pair| pair[0] }
-    # @phylums = @phylums.sort_by { |pair| pair[0] }
-    # @classes = @classes.sort_by { |pair| pair[0] }
-    # @orders = @orders.sort_by { |pair| pair[0] }
-    # @families = @families.sort_by { |pair| pair[0] }
-    # @genuses = @genuses.sort_by { |pair| pair[0] }
-
     @kingdoms, @phylums, @classes, @orders, @families, @genuses = 
       Rails.cache.fetch("taxonomy_filters_#{collection_ids.sort.join('_')}", expires_in: 12.hours) do
         taxonomies = included_items.joins(:current_identification)
@@ -123,61 +79,6 @@ class ItemsController < ApplicationController
         end
       end
 
-    # @kingdoms = Rails.cache.fetch('kingdoms', expires_in: 12.hours) do
-    #   included_items.joins(:current_identification)
-    #     .pluck('identifications.kingdom')
-    #     .compact.reject(&:blank?)
-    #     .map { |k| [k.titleize, k.downcase] }
-    #     .uniq
-    #     .sort_by { |pair| pair[0] }
-    # end
-
-    # @phylums = Rails.cache.fetch('phylums', expires_in: 12.hours) do
-    #   included_items.joins(:current_identification)
-    #     .pluck('identifications.phylum')
-    #     .compact.reject(&:blank?)
-    #     .map { |p| [p.titleize, p.downcase] }
-    #   .uniq
-    #   .sort_by { |pair| pair[0] }
-    # end
-
-    # @classes = Rails.cache.fetch('classes', expires_in: 12.hours) do
-    #   included_items.joins(:current_identification)
-    #     .pluck('identifications.class_name')
-    #     .compact.reject(&:blank?)
-    #     .map { |c| [c.titleize, c.downcase] }
-    #     .uniq
-    #     .sort_by { |pair| pair[0] }
-    # end
-
-    # @orders = Rails.cache.fetch('orders', expires_in: 12.hours) do
-    #   included_items.joins(:current_identification)
-    #     .pluck('identifications.order_name')
-    #     .compact.reject(&:blank?)
-    #     .map { |o| [o.titleize, o.downcase] }
-    #   .uniq
-    #   .sort_by { |pair| pair[0] }
-    # end
-
-    # @families = Rails.cache.fetch('families', expires_in: 12.hours) do
-    #   included_items.joins(:current_identification)
-    #     .pluck('identifications.family')
-    #     .compact.reject(&:blank?)
-    #     .map { |f| [f.titleize, f.downcase] }
-    #     .uniq
-    #     .sort_by { |pair| pair[0] }
-    # end
-
-    # @genuses = Rails.cache.fetch('genuses', expires_in: 12.hours) do
-    #   included_items.joins(:current_identification)
-    #     .pluck('identifications.genus')
-    #     .compact.reject(&:blank?)
-    #     .map { |g| [g.titleize, g.downcase] }
-    #     .uniq
-    #     .sort_by { |pair| pair[0] }
-    # end
-
-
     if session[:quick_search_q].present?
       @q = Item.ransack(session[:quick_search_q])
       transform_quick_search_params
@@ -190,11 +91,7 @@ class ItemsController < ApplicationController
 
     filtered_items = @q.result
     @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
-    @collections = Item.joins(:collection).where(id: filtered_items.select(:id))
-
-    # @items = @q.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
-    # @collections = Item.joins(:collection).where(id: @q.result.select(:id))
-    #                     .distinct.pluck('collections.division').join(', ')
+    @collections = Item.joins(:collection).where(id: filtered_items.select(:id)).distinct.pluck('collections.division').join(', ')
     @all_collections = Collection.all
     
     @dynamic_fields = []
