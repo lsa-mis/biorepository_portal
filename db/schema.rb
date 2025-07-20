@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_20_023759) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_20_041642) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -220,11 +220,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_20_023759) do
 
   create_table "loan_requests", force: :cascade do |t|
     t.string "send_to"
-    t.string "checkout_items"
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "collection_ids", default: [], array: true
+    t.string "checkout_items", default: [], array: true
+    t.index ["checkout_items"], name: "index_loan_requests_on_checkout_items", using: :gin
     t.index ["collection_ids"], name: "index_loan_requests_on_collection_ids", using: :gin
     t.index ["user_id"], name: "index_loan_requests_on_user_id"
   end
