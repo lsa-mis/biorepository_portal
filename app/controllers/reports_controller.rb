@@ -60,6 +60,32 @@ class ReportsController < ApplicationController
 
   def loan_requests_report
     authorize :report, :loan_requests_report?
+    if params[:commit]
+      start_time, end_time, collection_id = collect_form_params
+      loan_requests = LoanRequest.where(created_at: start_time..end_time).order(created_at: :desc)
+      loan_requests = loan_requests.where("collection_ids @> ARRAY[?]::integer[]", collection_id) if collection_id.present?
+
+      if loan_requests.any?
+        @title = "Loan Requests Report"
+        fail
+        @metrics = {
+          'Total Loan Requests' => loan_requests.count,
+          'Total Items Requested' => loan_requests.sum(:item_count)
+        }
+        @headers = ["Request ID", "Collections", "Created At", "Submitted By"]
+        @request_link = true
+        @data = loan_requests.map do |request|
+          [request.id, get_collections(request), request.created_at.strftime("%Y-%m-%d"), show_user_name_by_id(request.user_id)]
+        end
+      else
+        @data = nil
+      end
+
+      respond_to do |format|
+        format.html
+        format.csv { send_data csv_data, filename: 'loan_requests_report.csv', type: 'text/csv' }
+      end
+    end
   end
 
   private

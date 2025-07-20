@@ -77,13 +77,9 @@ class RequestsController < ApplicationController
 
     @checkout_items, @collection_ids = get_checkout_items
 
-    @collections_in_checkout = @checkout.requestables
-      .map { |r| r.preparation&.item&.collection }
-      .compact
-      .uniq
-    emails = @collections_in_checkout.map do |collection|
+    emails = @collection_ids.map do |collection_id|
       AppPreference.find_by(
-        collection_id: collection.id,
+        collection_id: collection_id,
         name: "collection_email_to_send_requests"
       )&.value
     end.compact
@@ -91,7 +87,8 @@ class RequestsController < ApplicationController
     @loan_request = LoanRequest.new
     @loan_request.user = current_user
     @loan_request.send_to = emails.join(', ')
-    # @loan_request.save!
+    @loan_request.checkout_items = @checkout_items
+    @loan_request.collection_ids = @collection_ids
 
     loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
     @loan_answers = loan_questions.each_with_object({}) do |question, hash|
@@ -166,7 +163,7 @@ class RequestsController < ApplicationController
       # Clean up checkout items
       @checkout.requestables.where(saved_for_later: false).delete_all
 
-      redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
+      redirect_to checkout_path, notice: "Loan request sent with CSV and PDF attached."
 
     ensure
       csv_tempfile.close
