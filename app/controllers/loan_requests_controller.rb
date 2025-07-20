@@ -1,13 +1,13 @@
 require "csv"
 
-class RequestsController < ApplicationController
+class LoanRequestsController < ApplicationController
   before_action :set_redirection_url
 
-  def show_loan_request
+  def show
     @loan_request = LoanRequest.find(params[:id])
   end
 
-  def loan_request
+  def new
     @loan_questions = LoanQuestion.all
     @loan_request = LoanRequest.new
     @checkout_items, @collection_ids = get_checkout_items

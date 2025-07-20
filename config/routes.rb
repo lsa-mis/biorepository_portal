@@ -34,13 +34,15 @@ Rails.application.routes.draw do
   resources :app_preferences
 
   resources :information_requests, only: [:new, :show]
-  
-  # get "information_requests/information_request", to: "information_requests#information_request", as: :information_request
   post "information_requests/send_information_request", to: "information_requests#send_information_request", as: :send_information_request
   get "information_requests/show_modal/:id", to: "information_requests#show_modal", as: :information_request_show_modal
-  get "requests/loan_request", to: "requests#loan_request", as: :loan_request
-  get "requests/show_loan_request/:id", to: "requests#show_loan_request", as: :show_loan_request
-  post "requests/send_loan_request", to: "requests#send_loan_request", as: :send_loan_request
+
+  resources :loan_requests, only: [:new, :show]
+  post "loan_requests/send_loan_request", to: "loan_requests#send_loan_request", as: :send_loan_request
+  
+  # get "requests/loan_request", to: "requests#loan_request", as: :loan_request
+  # get "requests/show_loan_request/:id", to: "requests#show_loan_request", as: :show_loan_request
+  # post "requests/send_loan_request", to: "requests#send_loan_request", as: :send_loan_request
 
   patch "update_loan_answer/:id", to: "loan_answers#update", as: :update_loan_answer
   get "edit_loan_answer/:id", to: "loan_answers#edit", as: :edit_loan_answer
