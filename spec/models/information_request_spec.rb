@@ -4,6 +4,7 @@
 #
 #  id             :bigint           not null, primary key
 #  checkout_items :string
+#  collection_ids :integer          default([]), is an Array
 #  send_to        :string
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
@@ -11,7 +12,8 @@
 #
 # Indexes
 #
-#  index_information_requests_on_user_id  (user_id)
+#  index_information_requests_on_collection_ids  (collection_ids) USING gin
+#  index_information_requests_on_user_id         (user_id)
 #
 # Foreign Keys
 #

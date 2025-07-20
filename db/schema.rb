@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_11_205426) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_20_023759) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -151,6 +151,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_205426) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "collection_ids", default: [], array: true
+    t.index ["collection_ids"], name: "index_information_requests_on_collection_ids", using: :gin
     t.index ["user_id"], name: "index_information_requests_on_user_id"
   end
 
@@ -222,6 +224,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_11_205426) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "collection_ids", default: [], array: true
+    t.index ["collection_ids"], name: "index_loan_requests_on_collection_ids", using: :gin
     t.index ["user_id"], name: "index_loan_requests_on_user_id"
   end
 
