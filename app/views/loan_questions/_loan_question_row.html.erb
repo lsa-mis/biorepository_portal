@@ -8,14 +8,9 @@
     </td>
   <% end %>
   <td class="text-start align-middle"><%= loan_question.position %></td>
-  <td class="text-start align-middle"><%= loan_question.question %></td>
+  <td class="text-start align-middle"><%= link_to loan_question.question, loan_question_path(loan_question), class: "link_to", 'aria-label': "view_#{loan_question.id}", data: { turbo_frame: "_top" } %></td>
   <td class="text-start align-middle"><%= loan_question.question_type %></td>
   <td class="text-start align-middle"><%= show_boolean(loan_question.required) %></td>
-  <td class="text-start align-middle">
-    <%= link_to loan_question_path(loan_question), 'aria-label': "view_#{loan_question.id}", data: { turbo_frame: "_top" } do %>
-      <i class="bi bi-eye-fill text-primary"></i>
-    <% end %>
-  </td>
   <% if is_super_admin? %>
     <td class="text-start align-middle">
       <%= link_to edit_loan_question_path(loan_question), 'aria-label': "edit_#{loan_question.id}", data: { turbo_frame: "_top" } do %>
