@@ -8,8 +8,9 @@
   <% preparation = requestable.preparation %>
   <div class="card mb-3">
     <div class="card-body">
-      <h5 class="card-title text-center">
-        <%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" } %></h5>
+      <div class="card-title text-center fw-bold">
+        <%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" } %>
+      </div>
       <div class="row">
         <div class="col-md-4 text-start align-middle">
           <strong>Collection:</strong> <%= item.collection.division %>
@@ -25,7 +26,8 @@
                 } do |form| %>
               <%= form.hidden_field :id, value: preparation.id %>
               <div class="position-relative" style="display: inline-block;">
-                <%= form.select :count, options_for_select(0..requestable.preparation.count, requestable.count), { }, { class: "form-control pe-4 checkout-select", "data-action": "change->autosubmit#submit" } %>
+                <%= form.label :count, "Count:", class: "form-label visually-hidden" %>
+                <%= form.select :count, options_for_select(0..requestable.preparation.count, requestable.count), { }, { class: "form-control pe-4 checkout-select", "data-action": "change->autosubmit#submit", "aria-label": "Select count for #{item.display_name}" } %>
                 <span class="position-absolute top-50 end-0 translate-middle-y pe-2" style="pointer-events: none;">
                   <i class="bi bi-caret-down-fill"></i>
                 </span>

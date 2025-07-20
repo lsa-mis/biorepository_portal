@@ -3,7 +3,7 @@
 <%= turbo_frame_tag "checkout" do %>
   <%= render "layouts/announcement", is_preview: is_preview, location: "checkout" %>
   <div class="d-flex justify-content-between">
-    <h1 class="py-5">Checkout</h1>
+    <h1>Checkout</h1>
     <% if @checkout.requestables.where(saved_for_later: false).exists? %>
       <%= link_to new_loan_request_path, class: "btn btn-primary h-50 mt-auto mb-auto", data: { turbo_frame: "_top" } do %>
         <i class="bi bi-envelope"></i> Send Loan Request
@@ -16,10 +16,10 @@
     <p>Your checkout is empty</p>
   <% end %>
 
-  <h1 class="py-5">Saved for Later</h1>
+  <h2 class="py-2">Saved for Later</h2>
   <% if @checkout.requestables.where(saved_for_later: true).exists? %>
       <%= render "checkout/saved_list" %>
   <% else %>
-    <p>You don't have any preparations saved for later.</p> 
+    <p class="mb-4">You don't have any preparations saved for later.</p> 
   <% end %>
 <% end %>

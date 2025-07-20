@@ -30,7 +30,7 @@
           <% when "loan_questions" %>
             <%= link_to "Preview", loan_questions_path(preview: true) %>
           <% when "loan_request" %>
-            <%= link_to "Preview", loan_request_path(preview: true) %>
+            <%= link_to "Preview", new_loan_request_path(preview: true) %>
           <% when "collection_questions" %>
             <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#collectionQuestionModal">
               Preview

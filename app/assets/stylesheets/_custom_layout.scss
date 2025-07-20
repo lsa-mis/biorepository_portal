@@ -48,7 +48,8 @@ h1 {
   font-weight: 900;
   line-height: 54px;
   letter-spacing: 0em;
-  margin-top: 2rem;
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
 }
 
 h2 {
@@ -400,4 +401,14 @@ svg.wh6 {
   .search-bar-container {
     min-width: 520px;
   }
+}
+
+.announcement {
+  background-color: #f8f9fa; /* Light gray background */
+  padding: 1rem; /* Padding around the content */
+  border-radius: 0.5rem; /* Rounded corners */
+  margin-bottom: 1rem; /* Space below the announcement */
+  margin-top: 1rem; /* Space above the announcement */
+  color: #212529; /* Dark text color */
+  font-size: 1rem; /* Font size for readability */
 }
