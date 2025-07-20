@@ -121,4 +121,21 @@ module ApplicationHelper
     User.find(id).name_with_email
   end
 
+  def safe_return_path(return_to_param, fallback_path)
+    return fallback_path if return_to_param.blank?
+    
+    begin
+      uri = URI.parse(return_to_param)
+      
+      # Only allow relative URLs (no host/scheme) or same-host URLs
+      if uri.relative? || (uri.host == request.host && uri.scheme.in?(['http', 'https']))
+        return_to_param
+      else
+        fallback_path
+      end
+    rescue URI::InvalidURIError
+      fallback_path
+    end
+  end
+
 end
