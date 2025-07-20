@@ -15,7 +15,7 @@
     <% @data.each do |row| %>
       <tr>
         <% if @request_link %>
-          <td><%= link_to row[0], information_request_path(InformationRequest.find(row[0].to_i)), class: "link_to" %> </td>
+          <td><%= link_to row[0], show_loan_request_path(LoanRequest.find(row[0].to_i), return_to: request.fullpath), class: "link_to" %> </td>
         <% else %>
           <td><%= row[0] %></td>
         <% end %>

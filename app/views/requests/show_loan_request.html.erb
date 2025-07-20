@@ -1,0 +1,42 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Loan Request Details</h1>
+    <%= link_to (params[:return_to].present? ? html_escape(params[:return_to]) : reports_path), class: "btn btn-outline-primary m-3 z-3 shadow" do %>
+      <i class="bi bi-arrow-left me-2"></i>Back To Report
+    <% end %>  
+  </div>
+
+  <p>
+    <strong>Submitted By:</strong>
+    <%= show_user_name_by_id(@loan_request.user_id) %>
+  </p>
+  <p>
+    <strong>Submitted At:</strong>
+    <%= @loan_request.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%Y-%m-%d %H:%M") %>
+  </p>
+  <p>
+    <strong>Send To:</strong>
+    <%= @loan_request.send_to %>
+  </p>
+  <p>
+    <strong>PDF:</strong>
+    <%= @loan_request.pdf_file.attached? ? link_to('View PDF', rails_blob_url(@loan_request.pdf_file, disposition: "inline"), target: "_blank") : "No PDF" %>
+  </p>
+  <p>
+    <strong>CSV:</strong>
+    <%= @loan_request.csv_file.attached? ? link_to('Download CSV', rails_blob_url(@loan_request.csv_file, disposition: "attachment"), target: "_blank") : "No CSV" %>
+  </p>
+
+  <% if @loan_request.attachment_files.attached? %>
+    <p>
+      <strong>Attachments:</strong>
+    </p>
+    <ul>
+      <% @loan_request.attachment_files.each do |file| %>
+        <li class="list-group-item">
+          <%= link_to file.filename.to_s, rails_blob_url(file, disposition: "inline"), target: "_blank", rel: "noopener noreferrer" %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

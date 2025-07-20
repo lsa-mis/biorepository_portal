@@ -53,6 +53,10 @@ class RequestsController < ApplicationController
     end
   end
 
+  def show_loan_request
+    @loan_request = LoanRequest.find(params[:id])
+  end
+
   def loan_request
     @loan_questions = LoanQuestion.all
     @loan_request = LoanRequest.new

@@ -37,6 +37,7 @@ Rails.application.routes.draw do
   post "requests/send_information_request", to: "requests#send_information_request", as: :send_information_request
   get "requests/show_information_request/:id", to: "requests#show_information_request", as: :show_information_request
   get "requests/loan_request", to: "requests#loan_request", as: :loan_request
+  get "requests/show_loan_request/:id", to: "requests#show_loan_request", as: :show_loan_request
   post "requests/send_loan_request", to: "requests#send_loan_request", as: :send_loan_request
 
   patch "update_loan_answer/:id", to: "loan_answers#update", as: :update_loan_answer

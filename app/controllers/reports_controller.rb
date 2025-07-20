@@ -72,7 +72,7 @@ class ReportsController < ApplicationController
           'Total Items Requested' => loan_requests.sum { |record| record.checkout_items.length }
         }
         @headers = ["Request ID", "Collections", "Created At", "Submitted By"]
-        # @request_link = true
+        @request_link = true
         @data = loan_requests.map do |request|
           [request.id, get_collections(request), request.created_at.strftime("%Y-%m-%d"), show_user_name_by_id(request.user_id)]
         end
@@ -90,9 +90,7 @@ class ReportsController < ApplicationController
   private
 
   def set_form_values
-    # @zones = Zone.all.order(:name).map { |z| [z.name, z.id] }
-    # @buildings = Building.active.where.not(zone: nil).map { |building| [building.zone_id, building.name, building.id] }
-    # @need_dates = true
+    @collections = Collection.all.order(:division).map { |c| [c.division, c.id] }
   end
 
   def collect_form_params

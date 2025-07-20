@@ -9,7 +9,7 @@
     </div>
     <div class="d-flex flex-row justify-content-start align-items-center gap-3" >
       <%= form.label :collection_id, "Collection: ", class: "form-label" %>
-      <%= form.select :collection_id, options_for_select(Collection.all.map { |c| [c.division, c.id] }, params[:collection_id]), { include_blank: "All Collections" }, class: "form-control" %>
+      <%= form.select :collection_id, options_for_select(@collections, params[:collection_id]), { include_blank: "All Collections" }, class: "form-control" %>
     </div>
 
     <!-- define additional specific fields inside a block when using render -->
