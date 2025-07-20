@@ -42,7 +42,7 @@ class ReportsController < ApplicationController
           # total_collections: information_requests.select(:collection_id).distinct.count
         }
         @headers = ["Request ID", "Collections", "Created At", "Submitted By", "Message"]
-        @request_link = true
+        @request_link = false
         @data = information_requests.map do |request|
           [request.id, get_collections(request), request.created_at.strftime("%Y-%m-%d"), show_user_name_by_id(request.user_id), request.question.to_plain_text]
         end
