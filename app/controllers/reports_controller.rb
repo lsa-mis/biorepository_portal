@@ -101,10 +101,10 @@ class ReportsController < ApplicationController
       begin
         Date.strptime(params[:from], '%Y-%m-%d').beginning_of_day
       rescue ArgumentError
-        1.year.ago.beginning_of_day # Fallback to a default value
+        1.week.ago.beginning_of_day # Fallback to a default value
       end
     else
-      1.year.ago.beginning_of_day
+      1.week.ago.beginning_of_day
     end
     end_time = if params[:to].present?
       begin
