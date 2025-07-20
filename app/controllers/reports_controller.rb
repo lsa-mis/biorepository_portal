@@ -5,8 +5,8 @@ class ReportsController < ApplicationController
     authorize :report, :index?
 
     @reports_list = [
-      {title: "Information Requests", url: information_requests_report_reports_path, description: "This report shows list of Information Requests" },
-      {title: "Loan Requests", url: loan_requests_report_reports_path, description: "This report shows list of Loan Requests" },
+      {title: "Information Requests", url: information_requests_report_reports_path, description: "This report shows Information Requests statistics" },
+      {title: "Loan Requests", url: loan_requests_report_reports_path, description: "This report shows Loan Requests statistics" },
       ]
   end
 
@@ -32,14 +32,13 @@ class ReportsController < ApplicationController
     authorize :report, :information_requests_report?
     if params[:commit]
       start_time, end_time, collection_id = collect_form_params
-
-      information_requests = InformationRequest.where(created_at: start_time..end_time)
-      # information_requests = information_requests.where(collection_id: collection_id) if collection_id.present?
+      information_requests = InformationRequest.where(created_at: start_time..end_time).order(created_at: :desc)
+      information_requests = information_requests.where("collection_ids @> ARRAY[?]::integer[]", collection_id) if collection_id.present?
 
       if information_requests.any?
         @title = "Information Requests Report"
         @metrics = {
-          total_requests: information_requests.count,
+          'Total Information Requests' => information_requests.count,
           # total_collections: information_requests.select(:collection_id).distinct.count
         }
         @headers = ["Request ID", "Collections", "Created At", "Submitted By", "Message"]
@@ -74,7 +73,7 @@ class ReportsController < ApplicationController
   def collect_form_params
     start_time = params[:from].present? ? Date.parse(params[:from]).beginning_of_day : DateTime.new(0)
     end_time = params[:to].present? ? Date.parse(params[:to]).end_of_day : DateTime::Infinity.new
-    collection_id = params[:collection_id].presence || Collection.all.pluck(:id)
+    collection_id = params[:collection_id].presence || nil
     [start_time, end_time, collection_id]
   end
 
