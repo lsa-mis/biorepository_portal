@@ -1,62 +1,16 @@
 require "csv"
 
-class RequestsController < ApplicationController
+class LoanRequestsController < ApplicationController
   before_action :set_redirection_url
 
-  def show_information_request
-    @information_request = InformationRequest.find(params[:id])
-    render turbo_stream: turbo_stream.update("modal_content_frame"){
-      render_to_string partial: "information_requests/review", 
-        formats: [:html],
-        locals: { information_request: @information_request }
-    }
+  def show
+    @loan_request = LoanRequest.find(params[:id])
   end
 
-  def information_request
-    @information_request = InformationRequest.new
-    @send_to = {}    
-    emails = AppPreference.joins(:collection).where(name: "collection_email_to_send_requests").where.not(value: [nil, '']).pluck("collections.division", :value)
-    emails.each { |division, email| @send_to[division] = email }
-    generic_email = AppPreference.find_by(name: "generic_contact_email")&.value || ""
-    @send_to["Collections email"] = generic_email if generic_email.present?
-  end
-
-  def send_information_request
-
-    checkout_items = ""
-    message = params[:information_request][:question]
-    send_to = params[:information_request][:send_to]
-    if params[:include_items_from_checkout] == "1"
-      # Assuming you have a method to get items from checkout
-      checkout_items = get_checkout_items
-    end
-
-    @information_request = InformationRequest.new(
-      question: message,
-      send_to: send_to,
-      user: current_user,
-      checkout_items: checkout_items
-    )
-    if @information_request.save
-      RequestMailer.with(
-        information_request: @information_request,
-        send_to: send_to,
-        user: current_user,
-        message: message,
-        checkout_items: checkout_items
-      ).send_information_request.deliver_now
-      redirect_to root_path, notice: "Information request sent successfully."
-    else
-      flash.now[:alert] = "Failed to send information request."
-      @send_to = Collection.pluck(:admin_group).compact
-      render :information_request
-    end
-  end
-
-  def loan_request
+  def new
     @loan_questions = LoanQuestion.all
     @loan_request = LoanRequest.new
-    @checkout_items = get_checkout_items
+    @checkout_items, @collection_ids = get_checkout_items
     @user = current_user
 
     loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
@@ -73,16 +27,12 @@ class RequestsController < ApplicationController
       redirect_to root_path
       return
     end
-    
-    @checkout_items = get_checkout_items
 
-    @collections_in_checkout = @checkout.requestables
-      .map { |r| r.preparation&.item&.collection }
-      .compact
-      .uniq
-    emails = @collections_in_checkout.map do |collection|
+    @checkout_items, @collection_ids = get_checkout_items
+
+    emails = @collection_ids.map do |collection_id|
       AppPreference.find_by(
-        collection_id: collection.id,
+        collection_id: collection_id,
         name: "collection_email_to_send_requests"
       )&.value
     end.compact
@@ -90,7 +40,8 @@ class RequestsController < ApplicationController
     @loan_request = LoanRequest.new
     @loan_request.user = current_user
     @loan_request.send_to = emails.join(', ')
-    # @loan_request.save!
+    @loan_request.checkout_items = @checkout_items
+    @loan_request.collection_ids = @collection_ids
 
     loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
     @loan_answers = loan_questions.each_with_object({}) do |question, hash|
@@ -121,7 +72,7 @@ class RequestsController < ApplicationController
 
     if missing_loan_answers || missing_collection_answers|| user_missing_fields
       flash[:alert] = "Please answer all required questions before sending the loan request."
-      redirect_to :loan_request and return
+      redirect_to new_loan_request_path and return
     end
 
     pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
@@ -146,7 +97,6 @@ class RequestsController < ApplicationController
         filename: "loan_request_#{@loan_request.id}.csv",
         content_type: "text/csv"
       )
-
       RequestMailer.send_loan_request(
         send_to: emails,
         user: current_user,
@@ -165,7 +115,7 @@ class RequestsController < ApplicationController
       # Clean up checkout items
       @checkout.requestables.where(saved_for_later: false).delete_all
 
-      redirect_to root_path, notice: "Loan request sent with CSV and PDF attached."
+      redirect_to checkout_path, notice: "Loan request sent with CSV and PDF attached."
 
     ensure
       csv_tempfile.close
@@ -176,22 +126,6 @@ class RequestsController < ApplicationController
   end
 
   private
-    def get_checkout_items
-      checkout_items = ""
-      @checkout.requestables.where(saved_for_later: false).each do |requestable|
-        preparation = requestable.preparation
-        item = preparation.item
-        checkout_items += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"
-        if preparation.barcode.present?
-          checkout_items += "barcode: #{preparation.barcode}"
-        end
-        if preparation.description.present?
-          checkout_items += ", description: #{preparation.description}"
-        end
-        checkout_items += ", count: #{requestable.count}. "
-      end
-      checkout_items
-    end
 
     def create_csv_file(user)
       tempfile = Tempfile.new(["loan_request", ".csv"])

@@ -117,4 +117,47 @@ module ApplicationHelper
     value.to_s.start_with?('=', '+', '-', '@') ? "'#{value}'" : value.to_s
   end
 
+  def show_user_name_by_id(id)
+    user = User.find_by(id: id)
+    user ? user.name_with_email : "User not found"
+  end
+
+  def safe_return_path(return_to_param, fallback_path)
+    return fallback_path if return_to_param.blank?
+    
+    begin
+      uri = URI.parse(return_to_param)
+      
+      # Only allow relative URLs (no host/scheme) or same-host URLs
+      if uri.relative? || (uri.host == request.host && uri.scheme.in?(['http', 'https']))
+        return_to_param
+      else
+        fallback_path
+      end
+    rescue URI::InvalidURIError
+      fallback_path
+    end
+  end
+
+  def get_checkout_items
+    checkout_items = []
+    collection_ids = []
+    @checkout.requestables.where(saved_for_later: false).each do |requestable|
+      checkout_item = ""
+      preparation = requestable.preparation
+      item = preparation.item
+      checkout_item += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"
+      if preparation.barcode.present?
+        checkout_item += "barcode: #{preparation.barcode}"
+      end
+      if preparation.description.present?
+        checkout_item += ", description: #{preparation.description}"
+      end
+      checkout_item += ", count: #{requestable.count}"
+      checkout_items << checkout_item
+      collection_ids << item.collection_id    
+    end
+    [checkout_items, collection_ids.uniq]
+  end
+
 end

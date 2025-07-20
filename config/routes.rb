@@ -9,9 +9,12 @@ Rails.application.routes.draw do
       patch :move_down
     end
   end
-  # get "profile/show"
-  # get "profile/edit"
-  # get "profile/update"
+  resources :reports, only: [:index] do
+    collection do
+      get 'information_requests_report', to: 'reports#information_requests_report'
+      get 'loan_requests_report', to: 'reports#loan_requests_report'
+    end
+  end
 
   resource :profile, only: [:show, :edit, :update] do
     get :show_loan_questions
@@ -29,12 +32,17 @@ Rails.application.routes.draw do
   get 'app_preferences/app_prefs', to: 'app_preferences#app_prefs', as: :app_prefs
   post 'app_preferences/app_prefs', to: 'app_preferences#save_app_prefs'
   resources :app_preferences
+
+  resources :information_requests, only: [:new, :show]
+  post "information_requests/send_information_request", to: "information_requests#send_information_request", as: :send_information_request
+  get "information_requests/show_modal/:id", to: "information_requests#show_modal", as: :information_request_show_modal
+
+  resources :loan_requests, only: [:new, :show]
+  post "loan_requests/send_loan_request", to: "loan_requests#send_loan_request", as: :send_loan_request
   
-  get "requests/information_request", to: "requests#information_request", as: :information_request
-  post "requests/send_information_request", to: "requests#send_information_request", as: :send_information_request
-  get "requests/show_information_request/:id", to: "requests#show_information_request", as: :show_information_request
-  get "requests/loan_request", to: "requests#loan_request", as: :loan_request
-  post "requests/send_loan_request", to: "requests#send_loan_request", as: :send_loan_request
+  # get "requests/loan_request", to: "requests#loan_request", as: :loan_request
+  # get "requests/show_loan_request/:id", to: "requests#show_loan_request", as: :show_loan_request
+  # post "requests/send_loan_request", to: "requests#send_loan_request", as: :send_loan_request
 
   patch "update_loan_answer/:id", to: "loan_answers#update", as: :update_loan_answer
   get "edit_loan_answer/:id", to: "loan_answers#edit", as: :edit_loan_answer

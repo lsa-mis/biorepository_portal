@@ -112,6 +112,9 @@
             <li>
               <%= link_to "Announcement", announcements_path, class: 'dropdown-item navbar_dropdown_item' if policy(Announcement).index? %>
             </li>
+            <li>
+              <%= link_to "Reports", reports_path, class: 'dropdown-item navbar_dropdown_item' %>
+            </li>
           </ul>
         </div>
       <% end %>

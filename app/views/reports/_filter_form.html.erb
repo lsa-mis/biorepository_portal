@@ -1,0 +1,27 @@
+<!-- turning off turbo for the form is necessary - otherwise the browser doesn't download the csv properly -->
+<%= form_with url: report_url, method: :get, data: { turbo: false, controller: "dynamic-building-select" }, class: "mb-3" do |form| %>
+  <div class="nowrap">
+    <div class="d-flex flex-row justify-content-start align-items-center gap-3" >
+      <%= form.label :from, "From: "%>
+      <%= form.date_field :from, value: params[:from] || 1.week.ago.to_date, max: Date.today, class: "form-control" %>
+      <%= form.label :to, "To: "%>
+      <%= form.date_field :to, value: params[:to] || Date.today, max: Date.today, class: "form-control" %>
+    </div>
+    <div class="d-flex flex-row justify-content-start align-items-center gap-3" >
+      <%= form.label :collection_id, "Collection: ", class: "form-label" %>
+      <%= form.select :collection_id, options_for_select(@collections, params[:collection_id]), { include_blank: "All Collections" }, class: "form-control" %>
+    </div>
+
+    <!-- define additional specific fields inside a block when using render -->
+    <%= yield form %>
+    <div class="d-flex flex-row justify-content-start align-items-center gap-3" >
+      <%= form.label :format, "Report Type: ", class: "form-label" %>
+      <%= form.select :format, options_for_select([["Display in Browser", "html"], ["Export to CSV", "csv"]],
+                                                  selected: params[:format]), {}, class: "form-select" %>
+    </div>
+  </div>
+  <div class="d-flex flex-row justify-content-start align-items-center gap-3 mb-6" >
+    <%= form.submit "Run Report" %>
+    <%= link_to "Clear filters", report_url, class: "link_to" %>
+  </div>
+<% end %>
