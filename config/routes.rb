@@ -40,6 +40,14 @@ Rails.application.routes.draw do
   resources :loan_requests, only: [:new, :show]
   post "loan_requests/send_loan_request", to: "loan_requests#send_loan_request", as: :send_loan_request
 
+  post "loan_requests/enable", to: "loan_requests#enable", as: :enable_loan_request
+  post "loan_questions/enable_preview", to: "loan_questions#enable_preview", as: :preview_loan_questions_access
+  post "faqs/enable_preview", to: "faqs#enable_preview", as: :preview_faqs_access
+  post "collections/enable_preview", to: "collections#enable_preview", as: :preview_collections_access
+  post "checkout/enable_preview", to: "checkout#enable_preview", as: :preview_checkout_access
+  post "home/enable_preview", to: "home#enable_preview", as: :preview_about_access
+
+
   patch "update_loan_answer/:id", to: "loan_answers#update", as: :update_loan_answer
   get "edit_loan_answer/:id", to: "loan_answers#edit", as: :edit_loan_answer
 

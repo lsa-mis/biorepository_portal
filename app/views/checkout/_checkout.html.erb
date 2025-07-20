@@ -8,6 +8,7 @@
       <%= link_to new_loan_request_path, class: "btn btn-primary h-50 mt-auto mb-auto", data: { turbo_frame: "_top" } do %>
         <i class="bi bi-envelope"></i> Send Loan Request
       <% end %>
+    <% end %>
   </div>
   <% if @checkout.requestables.where(saved_for_later: false).exists? %>
     <%= render "checkout/requestables" %>

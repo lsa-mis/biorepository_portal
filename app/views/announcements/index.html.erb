@@ -21,7 +21,6 @@
             <%= button_to "Preview", preview_about_access_path, method: :post, class: "btn btn-link" %>
           <% when "app_preferences" %>
             <%= link_to "Preview", app_prefs_path(preview: true), class: "btn btn-link" %>
-            <%#= button_to "Preview", preview_app_prefs_path, method: :post, class: "btn btn-link" %>
           <% when "checkout" %>
             <%= button_to "Preview", preview_checkout_access_path, method: :post, class: "btn btn-link" %>
           <% when "collections_index" %>
@@ -31,7 +30,7 @@
           <% when "loan_questions" %>
             <%= button_to "Preview", preview_loan_questions_access_path, method: :post, class: "btn btn-link" %>
           <% when "loan_request" %>
-            <%= link_to "Preview", new_loan_request_path(preview: true) %>
+            <%= link_to "Preview", new_loan_request_path(preview: true), class: "btn btn-link" %>
           <% when "collection_questions" %>
             <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#collectionQuestionModal">
               Preview
