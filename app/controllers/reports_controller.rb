@@ -39,7 +39,6 @@ class ReportsController < ApplicationController
         @title = "Information Requests Report"
         @metrics = {
           'Total Information Requests' => information_requests.count,
-          # total_collections: information_requests.select(:collection_id).distinct.count
         }
         @headers = ["Request ID", "Collections", "Created At", "Submitted By", "Message"]
         @request_link = true
