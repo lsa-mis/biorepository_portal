@@ -72,7 +72,7 @@ class LoanRequestsController < ApplicationController
 
     if missing_loan_answers || missing_collection_answers|| user_missing_fields
       flash[:alert] = "Please answer all required questions before sending the loan request."
-      redirect_to :loan_request and return
+      redirect_to new_loan_request_path and return
     end
 
     pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])

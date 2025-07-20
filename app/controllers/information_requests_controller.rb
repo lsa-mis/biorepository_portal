@@ -53,7 +53,7 @@ class InformationRequestsController < ApplicationController
     else
       flash.now[:alert] = "Failed to send information request."
       @send_to = Collection.pluck(:admin_group).compact
-      render :information_request
+      render :new
     end
   end
 
