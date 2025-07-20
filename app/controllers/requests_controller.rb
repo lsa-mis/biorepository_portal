@@ -28,14 +28,15 @@ class RequestsController < ApplicationController
     send_to = params[:information_request][:send_to]
     if params[:include_items_from_checkout] == "1"
       # Assuming you have a method to get items from checkout
-      checkout_items = get_checkout_items
+      checkout_items, collection_ids = get_checkout_items
     end
 
     @information_request = InformationRequest.new(
       question: message,
       send_to: send_to,
       user: current_user,
-      checkout_items: checkout_items
+      checkout_items: checkout_items,
+      collection_ids: collection_ids
     )
     if @information_request.save
       RequestMailer.with(
@@ -56,7 +57,7 @@ class RequestsController < ApplicationController
   def loan_request
     @loan_questions = LoanQuestion.all
     @loan_request = LoanRequest.new
-    @checkout_items = get_checkout_items
+    @checkout_items, @collection_ids = get_checkout_items
     @user = current_user
 
     loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
@@ -73,8 +74,8 @@ class RequestsController < ApplicationController
       redirect_to root_path
       return
     end
-    
-    @checkout_items = get_checkout_items
+
+    @checkout_items, @collection_ids = get_checkout_items
 
     @collections_in_checkout = @checkout.requestables
       .map { |r| r.preparation&.item&.collection }
@@ -178,6 +179,7 @@ class RequestsController < ApplicationController
   private
     def get_checkout_items
       checkout_items = ""
+      collection_ids = []
       @checkout.requestables.where(saved_for_later: false).each do |requestable|
         preparation = requestable.preparation
         item = preparation.item
@@ -189,8 +191,10 @@ class RequestsController < ApplicationController
           checkout_items += ", description: #{preparation.description}"
         end
         checkout_items += ", count: #{requestable.count}. "
+  
+        collection_ids << item.collection_id    
       end
-      checkout_items
+      [checkout_items, collection_ids.uniq]
     end
 
     def create_csv_file(user)

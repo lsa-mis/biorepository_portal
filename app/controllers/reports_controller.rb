@@ -42,10 +42,10 @@ class ReportsController < ApplicationController
           total_requests: information_requests.count,
           # total_collections: information_requests.select(:collection_id).distinct.count
         }
-        @headers = ["Request ID", "Created At", "Submitted By", "Message"]
+        @headers = ["Request ID", "Collections", "Created At", "Submitted By", "Message"]
         @request_link = true
         @data = information_requests.map do |request|
-          [request.id, request.created_at.strftime("%Y-%m-%d"), show_user_name_by_id(request.user_id), request.question.to_plain_text]
+          [request.id, get_collections(request), request.created_at.strftime("%Y-%m-%d"), show_user_name_by_id(request.user_id), request.question.to_plain_text]
         end
       else
         @data = nil
@@ -76,6 +76,12 @@ class ReportsController < ApplicationController
     end_time = params[:to].present? ? Date.parse(params[:to]).end_of_day : DateTime::Infinity.new
     collection_id = params[:collection_id].presence || Collection.all.pluck(:id)
     [start_time, end_time, collection_id]
+  end
+
+  def get_collections(request)
+    collection_ids = request.collection_ids
+    collections = collection_ids.map { |id| Collection.find(id).division }.uniq
+    collections.join(', ')
   end
 
   def csv_data
