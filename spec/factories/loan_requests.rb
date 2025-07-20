@@ -22,6 +22,6 @@
 #
 FactoryBot.define do
   factory :loan_request do
-    
+    send_to { "MyString" }
   end
 end
