@@ -118,7 +118,8 @@ module ApplicationHelper
   end
 
   def show_user_name_by_id(id)
-    User.find(id).name_with_email
+    user = User.find_by(id: id)
+    user ? user.name_with_email : "User not found"
   end
 
   def safe_return_path(return_to_param, fallback_path)
