@@ -27,7 +27,7 @@
   <div class="mb-3">
     <label class="form-label fw-semibold">Checkout Items:</label>
     <% begin %>
-      <% items = JSON.parse(information_request.checkout_items) rescue [] %>
+      <% items = information_request.checkout_items.split(" | ") %>
       <% if items.any? %>
         <ul class="list-group">
           <% items.each do |item| %>
