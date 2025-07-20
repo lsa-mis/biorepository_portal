@@ -44,7 +44,7 @@ class ReportsController < ApplicationController
         @headers = ["Request ID", "Collections", "Created At", "Submitted By", "Message"]
         @request_link = true
         @url = "information_request_path"
-        @model_class = InformationRequest
+        @model_class = "InformationRequest"
         @data = information_requests.map do |request|
           [request.id, get_collections(request), request.created_at.strftime("%Y-%m-%d"), show_user_name_by_id(request.user_id), request.question.to_plain_text]
         end
@@ -75,6 +75,8 @@ class ReportsController < ApplicationController
         }
         @headers = ["Request ID", "Collections", "Created At", "Submitted By"]
         @request_link = true
+        @url = "loan_request_path"
+        @model_class = "LoanRequest"
         @data = loan_requests.map do |request|
           [request.id, get_collections(request), request.created_at.strftime("%Y-%m-%d"), show_user_name_by_id(request.user_id)]
         end

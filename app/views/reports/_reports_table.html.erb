@@ -15,7 +15,12 @@
     <% @data.each do |row| %>
       <tr>
         <% if @request_link %>
-          <td><%= link_to row[0], loan_request_path(LoanRequest.find(row[0].to_i), return_to: request.fullpath), class: "link_to" %> </td>
+          <% 
+            model_class = @model_class.constantize
+            record = model_class.find(row[0].to_i)
+            url_path = send(@url, record, return_to: request.fullpath)
+          %>
+          <td><%= link_to row[0], url_path, class: "link_to" %> </td>
         <% else %>
           <td><%= row[0] %></td>
         <% end %>
