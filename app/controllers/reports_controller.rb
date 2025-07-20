@@ -94,8 +94,24 @@ class ReportsController < ApplicationController
   end
 
   def collect_form_params
-    start_time = params[:from].present? ? Date.parse(params[:from]).beginning_of_day : DateTime.new(0)
-    end_time = params[:to].present? ? Date.parse(params[:to]).end_of_day : DateTime::Infinity.new
+    start_time = if params[:from].present?
+      begin
+        Date.strptime(params[:from], '%Y-%m-%d').beginning_of_day
+      rescue ArgumentError
+        DateTime.new(0) # Fallback to a default value
+      end
+    else
+      DateTime.new(0)
+    end
+    end_time = if params[:to].present?
+      begin
+        Date.strptime(params[:to], '%Y-%m-%d').end_of_day
+      rescue ArgumentError
+        DateTime::Infinity.new # Fallback to a default value
+      end
+    else
+      DateTime::Infinity.new
+    end
     collection_id = params[:collection_id].presence || nil
     [start_time, end_time, collection_id]
   end
