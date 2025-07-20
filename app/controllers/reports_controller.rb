@@ -102,19 +102,19 @@ class ReportsController < ApplicationController
       begin
         Date.strptime(params[:from], '%Y-%m-%d').beginning_of_day
       rescue ArgumentError
-        DateTime.new(0) # Fallback to a default value
+        1.year.ago.beginning_of_day # Fallback to a default value
       end
     else
-      DateTime.new(0)
+      1.year.ago.beginning_of_day
     end
     end_time = if params[:to].present?
       begin
         Date.strptime(params[:to], '%Y-%m-%d').end_of_day
       rescue ArgumentError
-        DateTime::Infinity.new # Fallback to a default value
+        Time.current.end_of_day # Fallback to a default value
       end
     else
-      DateTime::Infinity.new
+      Time.current.end_of_day
     end
     collection_id = params[:collection_id].presence || nil
     [start_time, end_time, collection_id]
@@ -122,7 +122,7 @@ class ReportsController < ApplicationController
 
   def get_collections(request)
     collection_ids = request.collection_ids
-    collections = collection_ids.map { |id| Collection.find(id).division }.uniq
+    collections = Collection.where(id: collection_ids).pluck(:division).uniq
     collections.join(', ')
   end
 
