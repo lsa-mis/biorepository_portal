@@ -23,14 +23,13 @@ class RequestsController < ApplicationController
 
   def send_information_request
 
-    checkout_items = ""
+    checkout_items = []
     message = params[:information_request][:question]
     send_to = params[:information_request][:send_to]
     if params[:include_items_from_checkout] == "1"
       # Assuming you have a method to get items from checkout
       checkout_items, collection_ids = get_checkout_items
     end
-
     @information_request = InformationRequest.new(
       question: message,
       send_to: send_to,
@@ -187,7 +186,7 @@ class RequestsController < ApplicationController
         if preparation.description.present?
           checkout_item += ", description: #{preparation.description}"
         end
-        checkout_item += ", count: #{requestable.count}. "
+        checkout_item += ", count: #{requestable.count}"
         checkout_items << checkout_item
         collection_ids << item.collection_id    
       end
