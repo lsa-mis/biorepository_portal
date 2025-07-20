@@ -126,26 +126,6 @@ class LoanRequestsController < ApplicationController
   end
 
   private
-    def get_checkout_items
-      checkout_items = []
-      collection_ids = []
-      @checkout.requestables.where(saved_for_later: false).each do |requestable|
-        checkout_item = ""
-        preparation = requestable.preparation
-        item = preparation.item
-        checkout_item += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"
-        if preparation.barcode.present?
-          checkout_item += "barcode: #{preparation.barcode}"
-        end
-        if preparation.description.present?
-          checkout_item += ", description: #{preparation.description}"
-        end
-        checkout_item += ", count: #{requestable.count}"
-        checkout_items << checkout_item
-        collection_ids << item.collection_id    
-      end
-      [checkout_items, collection_ids.uniq]
-    end
 
     def create_csv_file(user)
       tempfile = Tempfile.new(["loan_request", ".csv"])
