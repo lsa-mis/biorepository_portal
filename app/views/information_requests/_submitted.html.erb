@@ -13,7 +13,7 @@
           <td><%= l(request.created_at, format: :short) %></td>
           <td><%= request.send_to %></td>
           <td>
-            <%= link_to "Show", show_information_request_path(request), 
+            <%= link_to "Show", information_request_path(request), 
               data: {
                 turbo_frame: "modal_content_frame",
                 bs_toggle: "modal",

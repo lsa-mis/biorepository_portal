@@ -32,10 +32,12 @@ Rails.application.routes.draw do
   get 'app_preferences/app_prefs', to: 'app_preferences#app_prefs', as: :app_prefs
   post 'app_preferences/app_prefs', to: 'app_preferences#save_app_prefs'
   resources :app_preferences
+
+  resources :information_requests, only: [:new, :show]
   
-  get "requests/information_request", to: "requests#information_request", as: :information_request
-  post "requests/send_information_request", to: "requests#send_information_request", as: :send_information_request
-  get "requests/show_information_request/:id", to: "requests#show_information_request", as: :show_information_request
+  # get "information_requests/information_request", to: "information_requests#information_request", as: :information_request
+  post "information_requests/send_information_request", to: "information_requests#send_information_request", as: :send_information_request
+  # get "information_requests/show_information_request/:id", to: "information_requests#show_information_request", as: :show_information_request
   get "requests/loan_request", to: "requests#loan_request", as: :loan_request
   get "requests/show_loan_request/:id", to: "requests#show_loan_request", as: :show_loan_request
   post "requests/send_loan_request", to: "requests#send_loan_request", as: :send_loan_request
