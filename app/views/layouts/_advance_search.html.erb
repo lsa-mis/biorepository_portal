@@ -1,10 +1,10 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h1 class="mb-0">Advanced Search</h1>
+  <h1 class="mt-0 mb-0">Advanced Search</h1>
 
   <%= link_to "Clear Filters", search_items_path(switch_view: @view), class: "btn btn-outline-secondary" %>
 </div>
 
-<%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, turbo: true, data: { controller: "search", action: "submit->search#submit", search_target: "form" } do |f| %>
+<%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, data: { controller: "search", action: "submit->search#submit", search_target: "form" } do |f| %>
 
   <div class="m-2">
     <div class="d-flex justify-content-between align-items-center gap-2 mb-2">

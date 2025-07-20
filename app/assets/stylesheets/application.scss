@@ -1,3 +1,8 @@
+// Custom badge color for search logic
+.badge-custom-blue {
+  background-color: #0D6EFD !important;
+  color: #fff !important;
+}
 @import "bootstrap/mixins/banner";
 @include bsBanner("");
 

@@ -1,12 +1,12 @@
 <div class="bg-secondary text-white text-center px-2">
 
-  <div class="d-flex flex-column justify-content-between align-items-center">
+  <div class="d-flex flex-column justify-content-between">
     <!-- Welcome Message -->
     <div class="text-center">
-      <h2 class="pt-4">Welcome<br><%= current_user.first_name.present? ? "#{current_user.first_name}!" : "" %></h2>
+      <h1>Welcome<br><%= current_user.first_name.present? ? "#{current_user.first_name}!" : "" %></h1>
     </div>
     <!-- Edit Profile Link -->
-    <div class="pt-2">
+    <div class="ps-4 pt-2 text-start">
       <div class="text-white">
         Affiliation: <%= current_user.affiliation.present? ? "#{current_user.affiliation}" : "Not provided" %>
       </div>
@@ -19,13 +19,13 @@
     </div>
     <hr class="w-100 my-2" />
     <!-- Show Collection Specific Questions -->
-    <div class="pt-2">
+    <div class="ps-4 pt-2 text-start">
       <%= link_to show_collections_questions_profile_path, class: 'text-white link-underline link-underline-opacity-0' do %>
         <i class="bi bi-question-circle"></i> <span class="fw-light">Questionnaire Information</span>
       <% end %>
     </div>
     <!-- Update Loan Question Link -->
-    <div>
+    <div class="ps-4 py-2 text-start">
       <%= link_to edit_loan_questions_profile_path, class: 'text-white link-underline link-underline-opacity-0' do %>
         <i class="bi bi-pencil"></i> <span class="fw-light">Loan Questionnaire</span>
       <% end %>
@@ -33,7 +33,7 @@
     <!-- Update Collection Specific Question Link -->
     <% @collections.each do |collection| %>
       <div class="d-flex gap-2">
-        <div>
+        <div class="ps-4 text-start">
           <%= link_to collection_questions_profile_path(collection), class: 'text-white link-underline link-underline-opacity-0' do %>
             <span class="fw-light"><i class="bi bi-pencil"></i> <%= collection.division %> Questionnaire</span>
           <% end %>

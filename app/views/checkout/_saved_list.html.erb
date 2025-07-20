@@ -7,8 +7,9 @@
   <% preparation = requestable.preparation %>
   <div class="card mb-3">
     <div class="card-body">
-      <h5 class="card-title
-        text-center"><%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" } %></h5>
+      <div class="card-title text-center fw-bold">
+        <%= link_to item.display_name, item_path(item), class: "link_to", data: { turbo_frame: "_top" } %>
+      </div>
       <div class="row">
         <div class="col-md-4 text-start align-middle">
           <strong>Collection:</strong> <%= item.collection.division %>

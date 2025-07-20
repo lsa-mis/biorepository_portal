@@ -6,14 +6,9 @@
     </div>
   </td>
   <td class="text-start align-middle"><%= collection_question.position %></td>
-  <td class="text-start align-middle"><%= collection_question.question %></td>
+  <td class="text-start align-middle"><%= link_to collection_question.question, collection_collection_question_path(@collection, collection_question), class: "link_to", 'aria-label': "view_#{collection_question.id}", data: { turbo_frame: "_top" } %></td>
   <td class="text-start align-middle"><%= collection_question.question_type %></td>
   <td class="text-start align-middle"><%= show_boolean(collection_question.required) %></td>
-  <td class="text-start align-middle">
-    <%= link_to collection_collection_question_path(@collection, collection_question), 'aria-label': "view_#{collection_question.id}", data: { turbo_frame: "_top" } do %>
-      <i class="bi bi-eye-fill text-primary"></i>
-    <% end %>
-  </td>
   <td class="text-start align-middle">
     <%= link_to edit_collection_collection_question_path(@collection, collection_question), 'aria-label': "edit_#{collection_question.id}", data: { turbo_frame: "_top" } do %>
       <i class="bi bi-pencil-square text-primary"></i>

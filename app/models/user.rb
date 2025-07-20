@@ -49,4 +49,12 @@ class User < ApplicationRecord
       email
     end
   end
+
+  def name_with_email
+    name = email
+    if first_name.present? && last_name.present?
+      name += " - #{first_name} #{last_name}"
+    end
+    name
+  end
 end

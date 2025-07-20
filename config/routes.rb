@@ -9,9 +9,12 @@ Rails.application.routes.draw do
       patch :move_down
     end
   end
-  # get "profile/show"
-  # get "profile/edit"
-  # get "profile/update"
+  resources :reports, only: [:index] do
+    collection do
+      get 'information_requests_report', to: 'reports#information_requests_report'
+      get 'loan_requests_report', to: 'reports#loan_requests_report'
+    end
+  end
 
   resource :profile, only: [:show, :edit, :update] do
     get :show_loan_questions
@@ -29,20 +32,13 @@ Rails.application.routes.draw do
   get 'app_preferences/app_prefs', to: 'app_preferences#app_prefs', as: :app_prefs
   post 'app_preferences/app_prefs', to: 'app_preferences#save_app_prefs'
   resources :app_preferences
-  
-  get "requests/information_request", to: "requests#information_request", as: :information_request
-  post "requests/send_information_request", to: "requests#send_information_request", as: :send_information_request
-  get "requests/show_information_request/:id", to: "requests#show_information_request", as: :show_information_request
-  get "requests/loan_request", to: "requests#loan_request", as: :loan_request
-  post "requests/send_loan_request", to: "requests#send_loan_request", as: :send_loan_request
-  post "request/enable", to: "requests#enable", as: :enable_loan_request
-  post "requests/enable_preview", to: "requests#enable_preview", as: :preview_loan_request_access
-  post "loan_questions/enable_preview", to: "loan_questions#enable_preview", as: :preview_loan_questions_access
-  post "faqs/enable_preview", to: "faqs#enable_preview", as: :preview_faqs_access
-  post "collections/enable_preview", to: "collections#enable_preview", as: :preview_collections_access
-  post "checkout/enable_preview", to: "checkout#enable_preview", as: :preview_checkout_access
-  # post "/app_preferences/preview", to: "app_preferences#enable_preview", as: "preview_app_prefs"
-  post "home/enable_preview", to: "home#enable_preview", as: :preview_about_access
+
+  resources :information_requests, only: [:new, :show]
+  post "information_requests/send_information_request", to: "information_requests#send_information_request", as: :send_information_request
+  get "information_requests/show_modal/:id", to: "information_requests#show_modal", as: :information_request_show_modal
+
+  resources :loan_requests, only: [:new, :show]
+  post "loan_requests/send_loan_request", to: "loan_requests#send_loan_request", as: :send_loan_request
 
   patch "update_loan_answer/:id", to: "loan_answers#update", as: :update_loan_answer
   get "edit_loan_answer/:id", to: "loan_answers#edit", as: :edit_loan_answer
@@ -67,6 +63,7 @@ Rails.application.routes.draw do
   get 'export_to_csv', to: 'items#export_to_csv', as: :export_to_csv
   resources :items, only: [ :index, :show ] do
     collection do
+      match 'quick_search' => 'items#quick_search', via: [:get, :post]
       match 'search' => 'items#search', via: [:get, :post]
     end
   end

@@ -1,0 +1,32 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Information Request Details</h1>
+    <%= link_to safe_return_path(params[:return_to], reports_path), class: "btn btn-outline-primary m-3 z-3 shadow" do %>
+      <i class="bi bi-arrow-left me-2"></i>Back To Report
+    <% end %>  
+  </div>
+
+  <p>
+    <strong>Submitted By:</strong>
+    <%= show_user_name_by_id(@information_request.user_id) %>
+  </p>
+  <p>
+    <strong>Submitted At:</strong>
+    <%= @information_request.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%Y-%m-%d %H:%M") %>
+  </p>
+  <p>
+    <strong>Send To:</strong>
+    <%= @information_request.send_to %>
+  </p>
+  <% if @information_request.checkout_items.any? %>
+    <p>
+      <strong>Items:</strong>
+      <ul>
+        <% @information_request.checkout_items.each do |item| %>
+          <li><%= item %></li>
+        <% end %>
+      </ul>
+    </p>
+  <% end %>
+  
+</div>

@@ -25,7 +25,7 @@
         </div>
         <%= form_with(url: checkout_add_path) do |form| %>
           <%= form.hidden_field :id, value: prep.id %>
-          <%= form.select :count, options_for_select(1..show_count(prep, @max_number_of_preparations)), class: "form-select w-auto" %>
+          <%= form.select :count, options_for_select(1..prep.count), class: "form-select w-auto" %>
           <div class="mt-3">
             <%= form.submit "Add to Checkout", class: "btn btn-primary" %>
           </div>
