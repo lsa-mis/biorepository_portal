@@ -144,7 +144,6 @@ class RequestsController < ApplicationController
         filename: "loan_request_#{@loan_request.id}.csv",
         content_type: "text/csv"
       )
-
       RequestMailer.send_loan_request(
         send_to: emails,
         user: current_user,
@@ -175,20 +174,21 @@ class RequestsController < ApplicationController
 
   private
     def get_checkout_items
-      checkout_items = ""
+      checkout_items = []
       collection_ids = []
       @checkout.requestables.where(saved_for_later: false).each do |requestable|
+        checkout_item = ""
         preparation = requestable.preparation
         item = preparation.item
-        checkout_items += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"
+        checkout_item += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"
         if preparation.barcode.present?
-          checkout_items += "barcode: #{preparation.barcode}"
+          checkout_item += "barcode: #{preparation.barcode}"
         end
         if preparation.description.present?
-          checkout_items += ", description: #{preparation.description}"
+          checkout_item += ", description: #{preparation.description}"
         end
-        checkout_items += ", count: #{requestable.count}. "
-  
+        checkout_item += ", count: #{requestable.count}. "
+        checkout_items << checkout_item
         collection_ids << item.collection_id    
       end
       [checkout_items, collection_ids.uniq]

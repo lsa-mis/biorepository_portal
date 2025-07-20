@@ -67,13 +67,12 @@ class ReportsController < ApplicationController
 
       if loan_requests.any?
         @title = "Loan Requests Report"
-        fail
         @metrics = {
           'Total Loan Requests' => loan_requests.count,
-          'Total Items Requested' => loan_requests.sum(:item_count)
+          'Total Items Requested' => loan_requests.sum { |record| record.checkout_items.length }
         }
         @headers = ["Request ID", "Collections", "Created At", "Submitted By"]
-        @request_link = true
+        # @request_link = true
         @data = loan_requests.map do |request|
           [request.id, get_collections(request), request.created_at.strftime("%Y-%m-%d"), show_user_name_by_id(request.user_id)]
         end

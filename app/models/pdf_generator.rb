@@ -18,13 +18,6 @@ class PdfGenerator
     @collection_answers = collection_answers
   end
 
-  # def self.generate_pdf(content)
-  #   Prawn::Document.new do
-  #     text "Hello, World!"
-  #     text content
-  #   end.render
-  # end
-
   def generate_pdf_content
     Prawn::Document.new do |pdf|
       register_fonts(pdf)
@@ -59,10 +52,10 @@ class PdfGenerator
         pdf.stroke_horizontal_rule
         pdf.move_down 10
 
-        items = @checkout_items.split(/\.(?:\s+|$)/).map(&:strip).reject(&:blank?)
+        # items = @checkout_items.split(/\.(?:\s+|$)/).map(&:strip).reject(&:blank?)
         table_data = [["Collection", "Occurrence ID", "Preparation", "Barcode", "Description", "Count"]]
 
-        items.each do |item_str|
+        @checkout_items.each do |item_str|
           collection   = item_str[/^([^,]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
           occurrence_id = item_str[/occurrenceID:\s*([^;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
           preparation  = item_str[/preparation:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
