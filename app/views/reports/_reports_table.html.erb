@@ -16,8 +16,7 @@
       <tr>
         <% if @request_link %>
           <% 
-            model_class = @model_class.constantize
-            record = model_class.find(row[0].to_i)
+            record = @model_class.find(row[0].to_i)
             url_path = send(@url, record, return_to: request.fullpath)
           %>
           <td><%= link_to row[0], url_path, class: "link_to" %> </td>
