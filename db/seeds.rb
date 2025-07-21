@@ -84,6 +84,7 @@ locations = [
   "app_preferences",
   "checkout",
   "loan_request",
+  "information_request",
   "faq",
   "loan_questions",
   "collection_questions"
