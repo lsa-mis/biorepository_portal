@@ -1,6 +1,10 @@
 class InformationRequestsController < ApplicationController
   before_action :set_redirection_url
 
+  def enable
+    redirect_to new_loan_request_path(preview: true)
+  end
+
   def show_modal
     @information_request = InformationRequest.find(params[:id])
     render turbo_stream: turbo_stream.update("modal_content_frame"){

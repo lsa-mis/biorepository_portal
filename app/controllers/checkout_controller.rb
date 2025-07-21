@@ -1,6 +1,12 @@
 class CheckoutController < ApplicationController
   skip_before_action :authenticate_user!
-  
+  before_action :ensure
+
+  def enable_preview
+    session[:came_from_announcement_preview] = true
+    redirect_to checkout_path(preview: true)
+  end
+ 
   def show
     @render_checkout = false
   end

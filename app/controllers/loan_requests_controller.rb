@@ -2,6 +2,11 @@ require "csv"
 
 class LoanRequestsController < ApplicationController
   before_action :set_redirection_url
+  before_action :ensure_loan_request_enabled, only: [:loan_request]
+
+  def enable
+    redirect_to new_loan_request_path(preview: true)
+  end
 
   def show
     @loan_request = LoanRequest.find(params[:id])

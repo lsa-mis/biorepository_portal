@@ -1,6 +1,12 @@
 class LoanQuestionsController < ApplicationController
   before_action :set_loan_question, only: %i[ show edit update destroy move_up move_down ]
   before_action :set_question_types, only: %i[ index new edit create update ]
+  before_action :ensure
+
+  def enable_preview
+    session[:came_from_announcement_preview] = true
+    redirect_to loan_questions_path(preview: true)
+  end
 
   # GET /loan_questions or /loan_questions.json
   def index
