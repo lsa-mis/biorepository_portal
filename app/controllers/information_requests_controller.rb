@@ -53,7 +53,7 @@ class InformationRequestsController < ApplicationController
         message: message,
         checkout_items: checkout_items
       ).send_information_request.deliver_now
-      redirect_to root_path, notice: "Information request sent successfully."
+      redirect_to faqs_path, notice: "Information request sent successfully."
     else
       flash.now[:alert] = "Failed to send information request."
       @send_to = Collection.pluck(:admin_group).compact
