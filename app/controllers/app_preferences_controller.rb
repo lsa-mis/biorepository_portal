@@ -2,7 +2,6 @@ class AppPreferencesController < ApplicationController
   before_action :set_pref_types, only: %i[ index new create]
 
   def enable_preview
-    # session[:allow_preview] = true
     redirect_to app_prefs_path(preview: true)
   end
 
@@ -14,10 +13,6 @@ class AppPreferencesController < ApplicationController
   end
 
   def app_prefs
-    # unless params[:preview] && session.delete(:allow_preview)
-    #   redirect_to announcements_path, alert: "You must access this preview from the announcements page." and return
-    # end
-    
     @collections = Collection.where(id: session[:collection_ids])
     @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
     authorize @app_prefs
