@@ -19,6 +19,10 @@ class GlobalPreferencePolicy < ApplicationPolicy
     is_developer?
   end
 
+  def app_prefs?
+    is_super_admin?
+  end
+
   def save_app_prefs?
     is_super_admin?
   end

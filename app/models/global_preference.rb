@@ -12,6 +12,7 @@
 #
 class GlobalPreference < ApplicationRecord
   enum :pref_type, [:boolean, :integer, :string, :image], prefix: true, scopes: true
+  has_one_attached :image
   
   validates :name, uniqueness: true
   validates_presence_of :pref_type, :description
