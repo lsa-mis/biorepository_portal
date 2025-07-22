@@ -17,7 +17,7 @@ class GlobalPreference < ApplicationRecord
   validates :name, uniqueness: true
   validates_presence_of :pref_type, :description
 
-    def name=(value)
+  def name=(value)
     super(value.try(:strip))
   end
 end

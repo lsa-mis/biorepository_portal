@@ -27,7 +27,7 @@ class AppPreference < ApplicationRecord
   validates :name, uniqueness: { scope: :collection_id, message: "should be unique." }
   validates_presence_of :pref_type, :description
 
-    def name=(value)
+  def name=(value)
     super(value.try(:strip))
   end
 end
