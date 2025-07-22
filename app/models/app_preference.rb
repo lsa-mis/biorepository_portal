@@ -22,7 +22,7 @@
 class AppPreference < ApplicationRecord
   belongs_to :collection
 
-  enum :pref_type, [:boolean, :integer, :string], prefix: true, scopes: true
+  enum :pref_type, [:boolean, :integer, :string, :image], prefix: true, scopes: true
   
   validates :name, uniqueness: { scope: :collection_id, message: "should be unique." }
   validates_presence_of :pref_type, :description
