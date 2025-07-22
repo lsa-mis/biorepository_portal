@@ -12,6 +12,9 @@
 #
 FactoryBot.define do
   factory :global_preference do
-    
+    name { "Default Name" }
+    description { "Default Description" }
+    pref_type { 1 }
+    value { "Default Value" }
   end
 end
