@@ -10,8 +10,8 @@ class AppPreferencesController < ApplicationController
     @app_preference = AppPreference.new
     authorize AppPreference
     @app_preferences = []
-    AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type).map {|pref| @app_preferences << pref + ["no"]}
-    GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type).map {|pref| @app_preferences << pref + ["yes"]}
+    AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["no"]}
+    GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["yes"]}
   end
 
   def app_prefs
@@ -28,19 +28,17 @@ class AppPreferencesController < ApplicationController
       authorize @app_prefs
       @app_prefs.where(pref_type: 'boolean').update(value: "0")
       params[:global_prefs].each do |k, v|
-        # pref.each do |k, v|
-          app_pref = GlobalPreference.find_by(name: k)
-          if app_pref.pref_type == "image" && v.present?
-            app_pref.image.attach(v)
-            next
-          else
-            unless app_pref&.update(value: v)
-              flash.now[:alert] = "Error updating global preference: #{app_pref&.errors&.full_messages&.join(', ') || 'Preference not found.'}"
-              @global_prefs = GlobalPreference.all.order(:pref_type, :description)
-              render :global_prefs, status: :unprocessable_entity and return
-            end
+        app_pref = GlobalPreference.find_by(name: k)
+        if app_pref.pref_type == "image" && v.present?
+          app_pref.image.attach(v)
+          next
+        else
+          unless app_pref&.update(value: v)
+            flash.now[:alert] = "Error updating global preference: #{app_pref&.errors&.full_messages&.join(', ') || 'Preference not found.'}"
+            @global_prefs = GlobalPreference.all.order(:pref_type, :description)
+            render :global_prefs, status: :unprocessable_entity and return
           end
-        # end
+        end
       end
     elsif params[:app_prefs].present?
       @app_prefs = AppPreference.where(collection_id: session[:collection_ids])
