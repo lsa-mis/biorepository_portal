@@ -6,9 +6,11 @@
         <%= fields_for 'global_prefs[]' do %>
           <div>
             <% if pref.pref_type == "boolean" %>
-              <%= check_box_tag "global_prefs[#{pref.name}]", 1, string_to_boolean(pref.value), class: "form-check-input" %>
-              <span class="check_box_text"><%= pref.description %></span>
-              <label for=<%= "global_prefs_#{pref.name}" %> class="invisible"><%= pref.description %></label>
+              <div class="my-3">
+                <%= check_box_tag "global_prefs[#{pref.name}]", 1, string_to_boolean(pref.value), class: "form-check-input" %>
+                <span class="check_box_text"><%= pref.description %></span>
+                <label for=<%= "global_prefs_#{pref.name}" %> class="invisible"><%= pref.description %></label>
+              </div>
             <% elsif pref.pref_type == "string" %>
               <label for=<%= "global_prefs_#{pref.name}" %>><%= pref.description %></label>
               <%= text_field_tag("global_prefs[#{pref.name}]", pref.value, disabled: !is_super_admin?) %>
@@ -52,9 +54,11 @@
         <%= fields_for 'app_prefs[]' do %>
           <div>
             <% if pref.pref_type == "boolean" %>
-              <%= check_box_tag "app_prefs[#{pref.name}]", 1, string_to_boolean(pref.value), class: "form-check-input" %>
-              <span class="check_box_text"><%= pref.description %></span>
-              <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %> class="invisible"><%= pref.description %></label>
+              <div class="my-3">
+                <%= check_box_tag "app_prefs[#{collection.id}][#{pref.name}]", 1, string_to_boolean(pref.value), class: "form-check-input" %>
+                <span class="check_box_text"><%= pref.description %></span>
+                <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %> class="invisible"><%= pref.description %></label>
+              </div>
             <% elsif pref.pref_type == "string" %>
               <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %>><%= pref.description %></label>
               <%= text_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value) %>
