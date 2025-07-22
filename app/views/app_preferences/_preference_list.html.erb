@@ -6,11 +6,12 @@
           <th scope="col" class="text-start">Name</th>
           <th scope="col">Description</th>
           <th scope="col" class="text-center">Type</th>
+          <th scope="col" class="text-center">Global</th>
           <th scope="col" class="text-center">Delete</th>
         </tr>
       </thead>
       <tbody class="table-group-divider" id="app_preferences">
-        <% @app_preferences.each do |name, descr, pref_type| %>
+        <% @app_preferences.each do |name, descr, pref_type, global| %>
           <tr>
             <td class="text-start">
               <%= name %>
@@ -22,7 +23,10 @@
               <%= pref_type %>
             </td>
             <td class="text-center">
-              <%= link_to delete_preference_path(name), 'aria-label': "delete_#{name}", data: { turbo_confirm: "Are you sure you want to delete this preference?" , turbo_method: :get } do %>
+              <%= global %>
+            </td>
+            <td class="text-center">
+              <%= link_to delete_preference_path(name, global), 'aria-label': "delete_#{name}", data: { turbo_confirm: "Are you sure you want to delete this preference?", turbo_method: :get } do %>
                 <i class="bi bi-trash-fill text-danger"></i>
               <% end %>
             </td>

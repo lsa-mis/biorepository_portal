@@ -26,7 +26,7 @@ RSpec.describe InformationRequestsController, type: :request do
             send_to: "curator@example.com"
           }
         }
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(faqs_path)
         get profile_path
         expect(response.body).to include("curator@example.com")
       end

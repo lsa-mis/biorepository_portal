@@ -81,7 +81,7 @@ RSpec.describe CollectionQuestion, type: :request do
       it 'denies access to new collection question form' do
         get new_collection_collection_question_path(collection)
         expect(flash[:alert]).to eq("You are not authorized to perform this action.")
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(collections_path)
       end
     end
   end
@@ -144,7 +144,7 @@ RSpec.describe CollectionQuestion, type: :request do
       it 'shows not authorized alert' do
         get edit_collection_collection_question_path(collection, question)
         expect(flash[:alert]).to eq("You are not authorized to perform this action.")
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(collections_path)
       end
     end
   end
@@ -252,7 +252,7 @@ RSpec.describe CollectionQuestion, type: :request do
 
       it 'redirects and shows unauthorized flash' do
         get preview_collection_collection_questions_path(collection)
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(collections_path)
         expect(flash[:alert]).to eq("You are not authorized to perform this action.")
       end
     end
@@ -319,13 +319,13 @@ RSpec.describe CollectionQuestion, type: :request do
 
       it 'cannot move up' do
         patch move_up_collection_collection_question_path(collection, question2)
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(collections_path)
         expect(flash[:alert]).to eq("You are not authorized to perform this action.")
       end
 
       it 'cannot move down' do
         patch move_down_collection_collection_question_path(collection, question1)
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(collections_path)
         expect(flash[:alert]).to eq("You are not authorized to perform this action.")
       end
     end

@@ -8,6 +8,8 @@ class HomeController < ApplicationController
   end
   
   def about
+    home_page_image = GlobalPreference.find_by(name: 'home_page_image')
+    @home_page_image = home_page_image&.image&.attached? ? home_page_image.image : nil
     @items = Item.order("RANDOM()").limit(6)
   end
 end
