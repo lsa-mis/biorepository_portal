@@ -1,47 +1,53 @@
-<%= turbo_frame_tag 'all_preferences' do %>  <h2 class="m-4">Global Preferences</h2>
-  <%= form_with model: @global_prefs, url: app_prefs_path, method: :post, multipart: true do |form| %>
-    <% @global_prefs.each do |pref| %>
-      <%= fields_for 'global_prefs[]' do %>
-        <div>
-          <% if pref.pref_type == "boolean" %>
-            <%= check_box_tag "global_prefs[#{pref.name}]", 1, string_to_boolean(pref.value), class: "form-check-input" %>
-            <span class="check_box_text"><%= pref.description %></span>
-            <label for=<%= "global_prefs_#{pref.name}" %> class="invisible"><%= pref.description %></label>
-          <% elsif pref.pref_type == "string" %>
-            <label for=<%= "global_prefs_#{pref.name}" %>><%= pref.description %></label>
-            <%= text_field_tag("global_prefs[#{pref.name}]", pref.value) %>
-          <% elsif pref.pref_type == "integer" %>
-            <label for=<%= "global_prefs_#{pref.name}" %>><%= pref.description %></label>
-            <%= number_field_tag("global_prefs[#{pref.name}]", pref.value) %>
-          <% elsif pref.pref_type == "image" %>
-            <p><%= pref.description %></p>
+<%= turbo_frame_tag 'all_preferences' do %>  
+  <h2 class="m-4">Global Preferences</h2>
+  <% if is_admin? %>
+    <%= form_with model: @global_prefs, url: app_prefs_path, method: :post, multipart: true do |form| %>
+      <% @global_prefs.each do |pref| %>
+        <%= fields_for 'global_prefs[]' do %>
+          <div>
+            <% if pref.pref_type == "boolean" %>
+              <%= check_box_tag "global_prefs[#{pref.name}]", 1, string_to_boolean(pref.value), class: "form-check-input" %>
+              <span class="check_box_text"><%= pref.description %></span>
+              <label for=<%= "global_prefs_#{pref.name}" %> class="invisible"><%= pref.description %></label>
+            <% elsif pref.pref_type == "string" %>
+              <label for=<%= "global_prefs_#{pref.name}" %>><%= pref.description %></label>
+              <%= text_field_tag("global_prefs[#{pref.name}]", pref.value, disabled: !is_super_admin?) %>
+            <% elsif pref.pref_type == "integer" %>
+              <label for=<%= "global_prefs_#{pref.name}" %>><%= pref.description %></label>
+              <%= number_field_tag("global_prefs[#{pref.name}]", pref.value, disabled: !is_super_admin?) %>
+            <% elsif pref.pref_type == "image" %>
+              <p><%= pref.description %></p>
 
-            <p>Currently Attached:
-              <% if pref.image.attached? %>
-                <%= link_to("#{pref.image.filename.to_s}", pref.image, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %>
-              <% else %>
-                None
+              <p>Currently Attached:
+                <% if pref.image.attached? %>
+                  <%= link_to("#{pref.image.filename.to_s}", pref.image, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %>
+                <% else %>
+                  None
+                <% end %>
+              </p>
+              <% if is_super_admin? %>
+                <div class="ms-3">
+                  <%= label_tag "global_prefs_#{pref.name}", pref.description, class: 'visually-hidden' %>
+                  <%= file_field_tag "global_prefs[#{pref.name}]", accept: ".jpg,.jpeg,.png", class: "form-control ms-3" %>
+                </div>
               <% end %>
-            </p>
-            <div class="ms-3">
-              <%= label_tag "global_prefs_#{pref.name}", pref.description, class: 'visually-hidden' %>
-              <%= file_field_tag "global_prefs[#{pref.name}]", accept: ".jpg,.jpeg,.png", class: "form-control ms-3" %>
-            </div>
-          <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+      <% if is_super_admin? %>
+        <div class="my-4">
+          <div class="inline">
+            <%= submit_tag 'Update Global Preferences', class: "secondary_blue_button" %>
+          </div>
         </div>
       <% end %>
     <% end %>
-    <div class="my-4">
-      <div class="inline">
-        <%= submit_tag 'Update your preferences', class: "secondary_blue_button" %>
-      </div>
-    </div>
   <% end %>
-
-
+  <h2 class="m-4">Collections Preferences</h2>
   <%= form_with model: @app_prefs, url: app_prefs_path, method: :post do |form| %>
     <% @collections.each do |collection| %>
-      <h2 class="m-4"><%= collection.division %></h2>
+      <h3 class="my-4 ms-6"><%= collection.division %></h3>
       <% @app_prefs.where(collection_id: collection).each do |pref| %>
         <%= fields_for 'app_prefs[]' do %>
           <div>
@@ -63,7 +69,7 @@
 
     <div class="my-4">
       <div class="inline">
-        <%= submit_tag 'Update your preferences', class: "secondary_blue_button" %>
+        <%= submit_tag 'Update Collection Preferences', class: "secondary_blue_button" %>
       </div>
     </div>
   <% end %>

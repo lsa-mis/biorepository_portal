@@ -20,7 +20,7 @@ class GlobalPreferencePolicy < ApplicationPolicy
   end
 
   def app_prefs?
-    is_super_admin?
+    is_admin?
   end
 
   def save_app_prefs?
