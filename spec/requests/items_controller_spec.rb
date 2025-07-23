@@ -63,6 +63,11 @@ RSpec.describe ItemsController, type: :request do
       post quick_search_items_path, params: search_params
       expect(response).to redirect_to(search_items_path)
     end
+
+    it 'works with POST method' do
+      post search_items_path, params: search_params
+      expect(response).to have_http_status(:ok)
+    end
   end
 
   describe 'GET/POST /items/search' do
@@ -116,25 +121,15 @@ RSpec.describe ItemsController, type: :request do
                 }
               }
             }
-      get search_items_path, params: complex_params
-      expect(response).to have_http_status(:ok)
-    end
-  end
-
-    context 'with pagination' do
-      it 'handles per page parameter' do
-        get search_items_path, params: { per: 25 }
+        get search_items_path, params: complex_params
         expect(response).to have_http_status(:ok)
       end
     end
+  end
 
-    it 'works without authentication' do
-      get search_items_path
-      expect(response).to have_http_status(:ok)
-    end
-
-    it 'works with POST method' do
-      post search_items_path, params: { q: { "country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont"=>"test" } }
+  context 'with pagination' do
+    it 'handles per page parameter' do
+      get search_items_path, params: { per: 25 }
       expect(response).to have_http_status(:ok)
     end
   end
