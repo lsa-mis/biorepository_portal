@@ -2,6 +2,9 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
   include Pundit::Authorization
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+  rescue_from StandardError, with: :render_500
+  rescue_from ActiveRecord::RecordNotFound, with: :render_404
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
   before_action :authenticate_user!
@@ -15,6 +18,36 @@ class ApplicationController < ActionController::Base
   end
   
   private
+
+  def render_404
+    respond_to do |format|
+      format.html { render 'errors/not_found', status: :not_found, layout: 'application' }
+      format.json { render json: { error: 'Not Found' }, status: :not_found }
+    end
+  end
+
+  def render_500(exception)
+    # Prevent infinite loops by checking if we're already handling an error
+    return if @handling_error
+    @handling_error = true
+    
+    # Log the error for debugging
+    Rails.logger.error "Internal Server Error: #{exception.class} - #{exception.message}"
+    Rails.logger.error exception.backtrace.join("\n") if exception.backtrace
+    
+    begin
+      respond_to do |format|
+        format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'application' }
+        format.json { render json: { error: 'Internal Server Error' }, status: :internal_server_error }
+      end
+    rescue => e
+      # If rendering the error page fails, fall back to a simple response
+      Rails.logger.error "Error rendering error page: #{e.message}"
+      render plain: "Internal Server Error", status: :internal_server_error
+    ensure
+      @handling_error = false
+    end
+  end
 
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
