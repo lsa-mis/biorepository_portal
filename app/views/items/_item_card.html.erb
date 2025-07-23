@@ -9,37 +9,6 @@
     <p>
       <%= item.coordinates %>
     </p>
-    <p class="fw-normal lh-sm">Preparations</p>
-    <table class="table table-sm table-item-card">
-      <thead class="">
-        <tr>
-          <th scope="col" class="text-start">Type</th>
-          <th scope="col" class="text-start">Available</th>
-          <th scope="col" class="text-end">Checkout</th>
-        </tr>
-      </thead>
-      <tbody class="">
-        <% item.preparations.each do |preparation| %>
-          <% in_checkout, available = preparation_checkout_counts(preparation, @checkout) %>
-          <tr>
-            <td class="text-start"><%= preparation.display_name %></td>
-            <td class="text-center"><%= available %></td>
-              <td class="text-center"><%= in_checkout %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-  <div class="card-footer">
-    <div class="d-flex justify-content-end">
-      <%= link_to "Add To Checkout",
-                  add_item_to_checkout_path(item),
-                  data: {
-                    turbo_frame: "modal_content_frame",
-                    bs_toggle: "modal",
-                    bs_target: "#addItemToCheckoutModal"
-                  },
-                  class: "btn btn-sm btn-outline-primary mb-2" %>
-    </div>
+    <%= render partial: "collections/preparation_for_checkout", locals: { item: item, checkout: @checkout } %>
   </div>
 </div>

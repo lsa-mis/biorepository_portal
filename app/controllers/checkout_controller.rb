@@ -13,14 +13,19 @@ class CheckoutController < ApplicationController
 
   def add
     @preparation = Preparation.find(params[:id])
-    count = params[:count].to_i
-    current_requestable = @checkout.requestables.find_by(preparation_id: @preparation.id)
-    if current_requestable && count > 0
-      current_requestable.update(count: current_requestable.count + count)
-    elsif count <= 0
-      current_requestable.destroy
+    in_checkout = @checkout.requestables.find_by(preparation_id: @preparation.id)&.count.to_i
+    available = [@preparation.count - in_checkout, 0].max
+    if available <= 0
+      flash.now[:alert] = "No available preparations to add to checkout."
+      count = 0
     else
+      count = 1
+    end
+    current_requestable = @checkout.requestables.find_by(preparation_id: @preparation.id)
+    if !current_requestable
       @checkout.requestables.create(preparation: @preparation, count: count)
+    else
+        current_requestable.update(count: current_requestable.count + count)
     end
 
     respond_to do |format|
@@ -36,6 +41,11 @@ class CheckoutController < ApplicationController
                               turbo_stream.update(
                                 "checkout_item_#{@preparation.item_id}",
                                 partial: 'collections/item_card',
+                                locals: { item: @preparation.item }
+                              ),
+                              turbo_stream.update(
+                                "checkout_item_row_#{@preparation.item_id}",
+                                partial: 'collections/preparation_for_checkout',
                                 locals: { item: @preparation.item }
                               )]
       end
