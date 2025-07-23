@@ -1,0 +1,29 @@
+<div class="mt-4">
+  <h5 class="fw-bold mb-3">Preparations for Checkout</h5>
+  <div class="d-flex flex-wrap gap-2">
+
+    <% item.preparations.each do |preparation| %>
+      <% in_checkout, available = preparation_checkout_counts(preparation, @checkout) %>
+
+      <% checked_out = in_checkout > 0 %>
+      <% disabled = available <= 0 %>
+
+      <div>
+        <form action="<%= checkout_add_path %>" method="post" data-turbo="true">
+          <%= hidden_field_tag :id, preparation.id %>
+          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+
+          <button type="submit"
+                  class="btn btn-sm <%= checked_out ? 'btn-success' : 'btn-primary' %> d-flex align-items-center gap-1"
+                  <%= 'disabled' if disabled %>>
+            <% if checked_out %>
+              <i class="bi bi-check-circle-fill"></i>
+            <% end %>
+            <%= preparation.display_name %>
+          </button>
+        </form>
+      </div>
+    <% end %>
+
+  </div>
+</div>
