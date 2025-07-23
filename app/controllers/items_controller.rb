@@ -1,7 +1,7 @@
 require 'csv'
 class ItemsController < ApplicationController
   include ActiveFiltersHelper
-  skip_before_action :authenticate_user!, only: [ :show, :search ]
+  skip_before_action :authenticate_user!, only: [ :show, :search, :quick_search ]
   before_action :set_item, only: [ :show ]
 
   # GET /items or /items.json
