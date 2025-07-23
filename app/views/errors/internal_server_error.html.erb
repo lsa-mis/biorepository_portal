@@ -1,11 +1,22 @@
-<div class="container d-flex flex-column mt-4" style="max-width: 600px; height: 100px;">
-  <h1>Oops!</h1>
-  <p class="text-left">🤖 My brain is broken 🤖</p>
-  <p>Try using our navigation to get back on track.</p>
-  <div class="text-muted">
-    Go back to the <a href="/" class="link_to">homepage</a>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>We're sorry, but something went wrong (500)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+
+<body class="rails-default-error-page">
+  <!-- This file lives in public/500.html -->
+  <div class="dialog">
+    <div>
+      <h1>We're sorry, but something went wrong.</h1>
+    </div>
+    <p>Try using navigation to get back on track<br>
+      
+      or go to the <a href="/" class="link_to">homepage</a>
+      
+      or <a id="myCustomTrigger" class="link_to" href="#" data-email="<%= session[:user_email]%>">Report an Issue</a>
+      </p>
   </div>
-  <div>
-    <%= image_tag 'error_500.svg', alt: 'Error Page' %>
-  </div>
-</div>
+</body>
+</html>
