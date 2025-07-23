@@ -1,9 +1,9 @@
 class ApplicationController < ActionController::Base
   include ApplicationHelper
   include Pundit::Authorization
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
   rescue_from StandardError, with: :render_500
   rescue_from ActiveRecord::RecordNotFound, with: :render_404
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
