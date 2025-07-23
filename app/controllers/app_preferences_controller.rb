@@ -118,6 +118,20 @@ class AppPreferencesController < ApplicationController
     end
   end
 
+  def delete_image
+    @preference = GlobalPreference.find(params[:pref_id])
+    authorize @preference
+    
+    if @preference.image.attached?
+      @preference.image.purge
+      flash[:notice] = "Image deleted successfully."
+    else
+      flash[:alert] = "No image found to delete."
+    end
+    
+    redirect_to app_prefs_path
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
 

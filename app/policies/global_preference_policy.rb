@@ -27,4 +27,8 @@ class GlobalPreferencePolicy < ApplicationPolicy
     is_super_admin?
   end
 
+  def delete_image?
+    is_super_admin?
+  end
+
 end

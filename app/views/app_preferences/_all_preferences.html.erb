@@ -22,7 +22,14 @@
 
               <p>Currently Attached:
                 <% if pref.image.attached? %>
-                  <%= link_to("#{pref.image.filename.to_s}", pref.image, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %>
+                  <div class="d-flex align-items-center gap-3">
+                    <%= link_to("#{pref.image.filename.to_s}", pref.image, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %>
+                    <% if is_super_admin? %>
+                      
+                      <%= link_to "Delete", delete_image_app_prefs_path(pref.id), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "btn btn-danger btn-sm" %>
+
+                    <% end %>
+                  </div>
                 <% else %>
                   None
                 <% end %>
