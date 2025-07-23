@@ -1,13 +1,22 @@
-<div class="container d-flex flex-column mt-7" style="width: 100%; max-width: 600px;">
-    <h1>Oops!</h1>
-    <%= image_tag 'error_robot.svg', alt: 'Error Page', class: "img-fluid", width: 235, height: 144 %>
-    <p class="text-center">👽 Oops! Looks like we’ve been abducted! 👽</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The page you were looking for doesn't exist (404)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
 
-    <p>We couldn’t find the page you were looking for. Maybe it’s lost in space, or some 
-      friendly aliens borrowed it for a joyride across the galaxy.</p>
-
-    <p>🔭 Try using our navigation to get back on track before they come back for more pages!</p>
-  <div style="color: #6C757D; text-align: center; padding-bottom: 120px;">
-    Go back to the <a href="/" class="link_to">homepage</a> or <a id="myCustomTrigger" class="link_to" href="#" data-email="<%= session[:user_email]%>">Report an Issue</a>
-  </div>
-</div>
+  <body class="rails-default-error-page">
+    <!-- This file lives in app/views/errors/not_found.html.erb -->
+    <div class="dialog">
+      <div>
+        <h1>The page you were looking for doesn't exist.</h1>
+        <p>You may have mistyped the address or the page may have moved.</p>
+      </div>
+      <p>Try using navigation to get back on track<br>
+      
+      or go to the <a href="/" class="link_to">homepage</a>
+      
+      or <a id="myCustomTrigger" class="link_to" href="#" data-email="<%= session[:user_email]%>">Report an Issue</a></p>
+    </div>
+  </body>
+</html>
