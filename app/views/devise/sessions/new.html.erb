@@ -1,10 +1,12 @@
-<div class="position-relative overflow-hidden">
+<div class="position-relative overflow-hidden" style="min-height: 800px;">
 
   <% find_image = GlobalPreference.find_by(name: 'home_page_image') %>
   <% home_page_image = find_image&.image&.attached? ? find_image.image : nil %>
 
   <% if home_page_image.present? %>
     <%= image_tag home_page_image, alt: "Home Page Image", class: "w-100", style: "height: 800px; object-fit: cover; object-position: center;" %>
+  <% else %>
+    <div class="w-100 bg-light" style="height: 800px;"></div>
   <% end %>
 
   <div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="z-index: 1;">
