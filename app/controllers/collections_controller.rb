@@ -1,6 +1,6 @@
 class CollectionsController < ApplicationController
   before_action :set_collection, only: %i[ show edit update destroy search ]
-  skip_before_action :authenticate_user!, only: [ :index, :show, :add_item_to_checkout ]
+  skip_before_action :authenticate_user!, only: [ :index, :show, :add_item_to_checkout, :search ]
   before_action :ensure
 
   def enable_preview
