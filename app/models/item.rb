@@ -66,6 +66,7 @@ class Item < ApplicationRecord
   end
 
   def display_name
+    display_name = ""
     display_name = self.catalog_number + " - " if self.catalog_number.present?
     display_name += self.name
     display_name += " - " + self.preparations.map(&:prep_type).join(", ") if self.preparations.any?
