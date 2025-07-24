@@ -52,7 +52,7 @@ module ApplicationHelper
 
   def show_current(identification)
     if identification.current
-      "Current"
+      "Current Identification:"
     else
       ""
     end
