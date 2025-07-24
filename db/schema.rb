@@ -56,7 +56,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_22_141428) do
     t.string "location"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "displayed", default: false, null: false
+    t.boolean "displayed"
   end
 
   create_table "app_preferences", force: :cascade do |t|

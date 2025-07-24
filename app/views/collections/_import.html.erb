@@ -1,6 +1,10 @@
 <div class="d-flex flex-column flex-sm-row flex-wrap gap-2">
   <h3 class="me-5">Import Items</h3>
-  <%= form_tag import_collections_path, method: :post, multipart: true, onsubmit: "return showImportStart()" do %>
+  <%= form_tag import_collections_path, 
+              method: :post, 
+              multipart: true, 
+              data: { turbo: false }, 
+              onsubmit: "return showImportStart()" do %>
     <%= label_tag 'files_', 'Choose CSV files to import:', class: 'visually-hidden' %>
     <%= file_field_tag 'files[]', accept: ".csv", multiple: true %>
     <%= hidden_field_tag :collection_id, @collection.id %>
@@ -23,19 +27,22 @@
       alert.remove();
     });
 
-    const newAlert = document.createElement('div');
-    newAlert.className = 'alert alert-info alert-dismissible fade show';
-    newAlert.setAttribute('role', 'alert');
-    newAlert.innerHTML = `
-      Import Started...
+    const container = document.createElement('div');
+    container.className = 'position-fixed end-0 px-3 py-6';
+    container.style.top = '80px';
+    container.style.zIndex = '1050';
+
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-info alert-dismissible fade show shadow-lg';
+    alertDiv.style.minWidth = '300px';
+    alertDiv.setAttribute('role', 'alert');
+
+    alertDiv.innerHTML = `
+      Import initiated. Please wait without refreshing the page.
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
 
-    const container = document.querySelector('.position-absolute.end-0.p-2');
-    if (container) {
-      container.prepend(newAlert);
-    } else {
-      document.body.prepend(newAlert);
-    }
+    container.appendChild(alertDiv);
+    document.body.prepend(container);
   }
 </script>
