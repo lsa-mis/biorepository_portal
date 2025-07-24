@@ -20,7 +20,7 @@
 
   <p>
     <strong>Question type:</strong>
-    <%= @collection_question.question_type %>
+    <%= @collection_question.question_type.titleize %>
   </p>
 
   <% if @collection_question.collection_options.present? %>
