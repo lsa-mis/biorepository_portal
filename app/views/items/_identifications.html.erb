@@ -1,6 +1,6 @@
 <% @identifications.each do |identification| %>
   <div id="<%= dom_id identification %>">
-    <p>
+    <p class="fw-bold fs-5">
       <%= show_current(identification) %>
     </p>
     <% if identification.type_status.present? %>

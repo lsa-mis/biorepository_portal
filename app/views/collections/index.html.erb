@@ -1,9 +1,10 @@
 <% is_preview = params[:preview].present? %>
 <%= render "layouts/announcement", is_preview: is_preview, location: "collections_index" %>
-<h1 class="p-5 text-center">Explore Collection Catalog</h1>
+
+<h1 class="pt-5 text-center">Explore Collection Catalog</h1>
 <% if is_super_admin? %>
-  <div class="mt-4 mb-4 text-end">
-    <%= link_to "New Collection", new_collection_path, class: "btn btn-success" %>
+  <div class="my-3 text-end">
+    <%= link_to "New Collection", new_collection_path, class: "btn btn-primary" %>
   </div>
 <% end %>
 <div class="row row-cols-1 row-cols-lg-2 g-5">
@@ -13,4 +14,3 @@
     </div>
   <% end %>
 </div>
-
