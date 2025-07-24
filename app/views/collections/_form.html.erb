@@ -12,38 +12,44 @@
   <% end %>
 
   <div>
-    <%= form.label :division %><span class="text-danger"> *</span>
+    <%= form.label :division, :division.to_s.titleize %><span class="text-danger"> *</span>
     <%= form.text_field :division, required: true %>
   </div>
 
   <div>
-    <%= form.label :admin_group %><span class="text-danger"> *</span>
+    <%= form.label :admin_group, :admin_group.to_s.titleize %><span class="text-danger"> *</span>
     <%= form.text_field :admin_group, required: true %>
   </div>
 
   <div>
-    <%= form.label :short_description %><span class="text-danger"> *</span>
-    <%= form.textarea :short_description, class: "w-100 mt-2", required: true %>
+    <%= form.label :short_description, "#{:short_description.to_s.titleize} (200 characters)" %><span class="text-danger"> *</span>
+    <%= form.text_area :short_description,
+          class: "w-100 mt-2",
+          required: true,
+          maxlength: 200,
+          id: "short_description_textarea" %>
+
+    <div class="text-muted mt-1" id="char_counter">0 / 200</div>
   </div>
 
   <div>
-    <%= form.label :long_description %><span class="text-danger"> *</span>
+    <%= form.label :long_description, :long_description.to_s.titleize %><span class="text-danger"> *</span>
     <%= form.rich_text_area :long_description, required: true %>
   </div>
 
   <div>
-    <%= form.label :division_page_url %><span class="text-danger"> *</span>
+    <%= form.label :division_page_url, :division_page_url.to_s.titleize %><span class="text-danger"> *</span>
     <%= form.text_field :division_page_url, required: true %>
   </div>
 
   <div>
-    <%= form.label :link_to_policies %><span class="text-danger"> *</span>
+    <%= form.label :link_to_policies, :link_to_policies.to_s.titleize %><span class="text-danger"> *</span>
     <%= form.text_field :link_to_policies, required: true %>
   </div>
 
   <div>
-    <%= form.label :image, class: "w-100 mb-2" %>
-    <%= form.file_field :image %>
+    <%= form.label :image, :image.to_s.titleize, class: "w-100 mb-2" %>
+    <%= form.file_field :image, accept: ".jpg,.jpeg,.png" %>
   </div>
 
   <div class="mt-3">
@@ -51,3 +57,20 @@
     <%= link_to "Cancel", collections_path, class: "link_to" %>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener("turbo:load", function () {
+    const textarea = document.getElementById("short_description_textarea");
+    const counter = document.getElementById("char_counter");
+
+    if (textarea && counter) {
+      function updateCounter() {
+        const currentLength = textarea.value.length;
+        counter.textContent = `${currentLength} / ${textarea.maxLength}`;
+      }
+
+      updateCounter();
+      textarea.addEventListener("input", updateCounter);
+    }
+  });
+</script>

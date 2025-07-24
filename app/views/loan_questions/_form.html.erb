@@ -16,12 +16,12 @@
   </div>
 
   <div>
-    <%= form.label :question, class: "form-label" %>
+    <%= form.label :question, :question.to_s.titleize %><span class="text-danger"> *</span>
     <%= form.text_field :question, required: true %>
   </div>
 
   <div>
-    <%= form.label :question_type, class: "form-label" %>
+    <%= form.label :question_type, :question_type.to_s.titleize %><span class="text-danger"> *</span>
     <%= form.select(
           :question_type,
           @question_types,

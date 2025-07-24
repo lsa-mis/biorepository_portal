@@ -1,5 +1,6 @@
 <% is_preview = params[:preview].present? %>
 <%= render "layouts/announcement", is_preview: is_preview, location: "collections_index" %>
+
 <h1 class="pt-5 text-center">Explore Collection Catalog</h1>
 <% if is_super_admin? %>
   <div class="my-3 text-end">
