@@ -42,6 +42,10 @@ class CollectionPolicy < ApplicationPolicy
     true
   end
 
+  def delete_image?
+    update?
+  end
+
   private
 
   def is_collection_admin?

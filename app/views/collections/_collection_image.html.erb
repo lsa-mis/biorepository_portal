@@ -1,0 +1,18 @@
+<%= turbo_frame_tag "collection_image" do %>
+  <div class="mb-3">
+    <% if collection.image.attached? %>
+      <div class="d-flex align-items-center gap-3">
+        <span class="body-sm-text">Currently Attached:</span>
+        <%= link_to("#{collection.image.filename.to_s}", collection.image, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %>
+        <%= link_to "Delete", collection_delete_image_path(collection.id), 
+            data: { 
+              turbo_method: :get,
+              turbo_confirm: 'Are you sure?'
+            }, 
+            class: "btn btn-danger btn-sm" %>
+      </div>
+    <% else %>
+      <p class="body-sm-text">Currently Attached: None</p>
+    <% end %>
+  </div>
+<% end %>
