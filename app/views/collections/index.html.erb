@@ -7,7 +7,7 @@
     <%= link_to "New Collection", new_collection_path, class: "btn btn-primary" %>
   </div>
 <% end %>
-<div class="row row-cols-1 row-cols-lg-2 g-5">
+<div class="row row-cols-1 row-cols-lg-2 g-5 mb-5">
   <% @collections.each do |collection| %>
     <div class="col">
       <%= render partial: "collection_card", locals: { collection: collection } %>
