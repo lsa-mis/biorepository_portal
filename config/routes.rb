@@ -98,6 +98,7 @@ Rails.application.routes.draw do
     resources :collection_answers, module: :collections, only: [:edit, :update]
 
   end
+  get "delete_image/:id", to: "collections#delete_image", as: :collection_delete_image
   get "collection/:id/items", to: "collections#items", as: :collection_items
   get 'add_item_to_checkout/:item_id', to: 'collections#add_item_to_checkout', as: :add_item_to_checkout
 

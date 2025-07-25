@@ -88,6 +88,16 @@ class CollectionsController < ApplicationController
     end
   end
 
+  def delete_image
+    @collection = Collection.find(params[:id])
+    authorize @collection
+    @collection.image.purge if @collection.image.attached?
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("collection_image", partial: "collections/collection_image", locals: { collection: @collection }) }
+      format.html { redirect_to edit_collection_path(@collection), notice: "Image deleted successfully." }
+    end
+  end
+
   def import
     collection_id = params[:collection_id]
     return redirect_to request.referer, notice: 'No file added' if params[:files].nil?
