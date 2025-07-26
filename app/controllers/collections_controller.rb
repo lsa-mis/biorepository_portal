@@ -114,10 +114,12 @@ class CollectionsController < ApplicationController
         occurrence_file = file
       end
     end
-    ItemImportService.new(occurrence_file, collection_id).call if occurrence_file.present?
+    errors = ItemImportService.new(occurrence_file, collection_id, current_user).call if occurrence_file.present?
     IdentificationImportService.new(identification_file, collection_id).call if identification_file.present?
+    notice = "Import finished."
+    alert  = "#{errors} error(s) occurred during import. Check reports for details" if errors && errors > 0
 
-    redirect_to request.referer, notice: 'Import Finished!'
+    redirect_to request.referer, notice: notice, alert: alert
   end
 
   private
