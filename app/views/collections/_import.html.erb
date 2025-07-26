@@ -1,3 +1,6 @@
+<div id="spinner" style="position:fixed;top:50%;left:50%;display:none;">
+      <%= image_tag '12_segments.gif', alt: 'Loading' %>
+    </div>
 <div class="d-flex flex-column flex-sm-row flex-wrap gap-2">
   <h3 class="me-5">Import Items</h3>
   <%= form_tag import_collections_path, 
@@ -41,6 +44,7 @@
       Import initiated. Please wait without refreshing the page.
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
+    document.getElementById('spinner').style.display = 'block';
 
     container.appendChild(alertDiv);
     document.body.prepend(container);
