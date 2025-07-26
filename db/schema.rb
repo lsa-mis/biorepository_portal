@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_24_020431) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_25_133451) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -164,6 +164,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_24_020431) do
     t.index ["checkout_items"], name: "index_information_requests_on_checkout_items", using: :gin
     t.index ["collection_ids"], name: "index_information_requests_on_collection_ids", using: :gin
     t.index ["user_id"], name: "index_information_requests_on_user_id"
+  end
+
+  create_table "item_import_logs", force: :cascade do |t|
+    t.datetime "date"
+    t.string "user"
+    t.string "status"
+    t.string "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "items", force: :cascade do |t|
