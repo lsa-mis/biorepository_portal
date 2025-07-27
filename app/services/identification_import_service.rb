@@ -41,11 +41,11 @@ class IdentificationImportService
     }
     task_time = ((total_time.real / 60) % 60).round(2)
     @log.import_logger.info("***********************Identification import completed. Total time: #{task_time} minutes.")
-    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "completed", note: "#{Collection.find(@collection_id).division} - Identification import completed. File: #{@file.original_filename}. Total time: #{task_time} minutes.")
+    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "completed", note: "Identification import completed. File: #{@file.original_filename}. Total time: #{task_time} minutes.")
     return @errors
   rescue => e
     @log.import_logger.error("***********************Error importing identifications: #{e.message}")
-    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "failed", note: "#{Collection.find(@collection_id).division} - Identification import: Error importing identifications. File: #{@file.original_filename}. Error: #{e.message}")
+    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "failed", note: "Identification import: Error importing identifications. File: #{@file.original_filename}. Error: #{e.message}")
     @errors += 1
     return @errors
   end
@@ -57,14 +57,15 @@ class IdentificationImportService
 
     assign_fields(identification, row)
 
-    unless identification.save
+    # unless identification.save
+    if true
       @log.import_logger.error("***********************Failed to save identification: #{identification.errors.full_messages.join(', ')}")
-      ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "failed", note: "#{Collection.find(@collection_id).division} - Identification import: Failed to save identification. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{identification.errors.full_messages.join(', ')}")
+      ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "failed", note: "Identification import: Failed to save identification. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{identification.errors.full_messages.join(', ')}")
       @errors += 1
     end
   rescue => e
     @log.import_logger.error("***********************Error saving identification: #{e.message}")
-    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "failed", note: "#{Collection.find(@collection_id).division} - Identification import: Error saving identification. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}")
+    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "failed", note: "Identification import: Error saving identification. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}")
     @errors += 1
   end
 

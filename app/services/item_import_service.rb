@@ -34,11 +34,11 @@ class ItemImportService
     }
     task_time = ((total_time.real / 60) % 60).round(2)
     @log.import_logger.info("***********************Occurrence import completed. Total time: #{task_time} minutes.")
-    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "completed", note: "#{Collection.find(@collection_id).division} - Occurrence import completed. File: #{@file.original_filename}. Total time: #{task_time} minutes.")
+    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "completed", note: "Occurrence import completed. File: #{@file.original_filename}. Total time: #{task_time} minutes.")
     return @errors
     rescue => e
       @log.import_logger.error("***********************Error importing Item: #{e.message}")
-      ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "failed", note: "#{Collection.find(@collection_id).division} - Occurrence import. File: #{@file.original_filename}. Error: #{e.message}")
+      ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "failed", note: "Occurrence import. File: #{@file.original_filename}. Error: #{e.message}")
       @errors += 1
       return @errors
   end
@@ -56,12 +56,12 @@ class ItemImportService
       update_preparations(item, preparations_string)
     else
       @log.import_logger.error("***********************Failed to save item: #{item.errors.full_messages.join(', ')}")
-      ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "failed", note: "#{Collection.find(@collection_id).division} - Occurrence import: Failed to save item. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{item.errors.full_messages.join(', ')}")
+      ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "failed", note: "Occurrence import: Failed to save item. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{item.errors.full_messages.join(', ')}")
       @errors += 1
     end
   rescue => e
     @log.import_logger.error("***********************Error saving item: #{e.message}")
-    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "failed", note: "#{Collection.find(@collection_id).division} - Occurrence import: Error saving item. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}")
+    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "failed", note: "Occurrence import: Error saving item. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}")
     @errors += 1
   end
 
@@ -71,18 +71,19 @@ class ItemImportService
 
     preparations_string = assign_fields(item, record)
 
-    if item.save
+    # if item.save
+    if false
       @items_in_db.delete(item.occurrence_id)
   
       update_preparations(item, preparations_string)
     else
       @log.import_logger.error("***********************Failed to update item: #{item.errors.full_messages.join(', ')}")
-      ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "failed", note: "#{Collection.find(@collection_id).division} - Occurrence import: failed to update item. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{item.errors.full_messages.join(', ')}")
+      ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "failed", note: "Occurrence import: failed to update item. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{item.errors.full_messages.join(', ')}")
       @errors += 1
     end
   rescue => e
     @log.import_logger.error("***********************Error updating item: #{e.message}")
-    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "failed", note: "#{Collection.find(@collection_id).division} - Occurrence import: Error updating item. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}")
+    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "failed", note: "Occurrence import: Error updating item. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}")
     @errors += 1
   end
 
@@ -154,15 +155,16 @@ class ItemImportService
       preparation = Preparation.new(item: item, prep_type: prep_type, count: count)
 
       update_prep_fields(preparation, values)
-      unless preparation.save
+      # unless preparation.save
+      if true
         @log.import_logger.error("***********************Failed to save preparation (#{prep_type}): #{preparation.errors.full_messages.join(', ')}")
-        ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "failed", note: "#{Collection.find(@collection_id).division} - Occurrence import: Failed to save preparation (#{prep_type}). File: #{@file.original_filename}. Item: #{item.occurrence_id}.Error: #{preparation.errors.full_messages.join(', ')}")
+        ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "failed", note: "Occurrence import: Failed to save preparation (#{prep_type}). File: #{@file.original_filename}. Item: #{item.occurrence_id}.Error: #{preparation.errors.full_messages.join(', ')}")
         @errors += 1
       end
     end
   rescue => e
     @log.import_logger.error("***********************Error updating preparations: #{e.message}")
-    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "failed", note: "#{Collection.find(@collection_id).division} - Occurrence import: Error updating preparations. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}")
+    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "failed", note: "Occurrence import: Error updating preparations. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}")
     @errors += 1
   end
 
@@ -200,13 +202,13 @@ class ItemImportService
       item.event_date_start = date
     else
       @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
-      ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "failed", note: "#{Collection.find(@collection_id).division} - Occurrence import: Invalid eventDate format. File: #{@file.original_filename}, Item: #{item.occurrence_id}. Error: #{e.message}")
+      ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "failed", note: "Occurrence import: Invalid eventDate format. File: #{@file.original_filename}, Item: #{item.occurrence_id}. Error: #{e.message}")
       @errors += 1
       item.verbatim_event_date = value.strip
     end
   rescue ArgumentError => e
     @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
-    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, status: "failed", note: "#{Collection.find(@collection_id).division} - Occurrence import: Invalid eventDate format. File: #{@file.original_filename}, Item: #{item.occurrence_id}. Error: #{e.message}")
+    ItemImportLog.create(date: DateTime.now, user: @user.name_with_email, collection_id: @collection_id, status: "failed", note: "Occurrence import: Invalid eventDate format. File: #{@file.original_filename}, Item: #{item.occurrence_id}. Error: #{e.message}")
     @errors += 1
   end
 
