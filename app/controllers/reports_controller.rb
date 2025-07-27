@@ -95,14 +95,14 @@ class ReportsController < ApplicationController
     authorize :report, :import_data_report?
     if params[:commit]
       start_time, end_time, collection_id = collect_form_params
-      import_logs = ItemImportLog.where(date: start_time..end_time).order(date: :desc)
+      import_logs = ItemImportLog.includes(:collection).where(date: start_time..end_time).order(date: :desc)
       import_logs = import_logs.where(collection_id: collection_id) if collection_id.present?
 
       if import_logs.any?
         @title = "Import Data Report"
         @headers = ["Date", "User", "Status", "Collection", "Note"]
         @data = import_logs.map do |log|
-          [log.date.strftime("%Y-%m-%d %H:%M"), log.user, log.status, Collection.find(log.collection_id).division, log.note]
+          [log.date.strftime("%Y-%m-%d %H:%M"), log.user, log.status, log.collection&.division, log.note]
         end
       else
         @data = nil

@@ -12,4 +12,5 @@
 #  collection_id :integer
 #
 class ItemImportLog < ApplicationRecord
+  belongs_to :collection, optional: true
 end
