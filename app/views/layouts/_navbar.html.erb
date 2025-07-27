@@ -60,6 +60,12 @@
               <li>
                 <%= link_to "Announcements", announcements_path, class: 'dropdown-item navbar_dropdown_item' if policy(Announcement).index? %>
               </li>
+              <li>
+                <%= link_to "Reports", reports_path, class: 'dropdown-item navbar_dropdown_item' %>
+              </li>
+              <li>
+                <%= link_to "Docs", "https://docs.google.com/document/d/e/2PACX-1vQXwhw2yetGRQNlHp_tkAO1rEOgFMCIq6Nsuq66rdvPuE4b0euYUEHeAcJO9OCxSuwG2J7tLbJLFa2f/pub", target: "_blank", class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).app_prefs? %>
+              </li>
             </ul>
           </li>
         <% end %>
@@ -114,6 +120,9 @@
             </li>
             <li>
               <%= link_to "Reports", reports_path, class: 'dropdown-item navbar_dropdown_item' %>
+            </li>
+            <li>
+              <%= link_to "Docs", "https://docs.google.com/document/d/e/2PACX-1vQXwhw2yetGRQNlHp_tkAO1rEOgFMCIq6Nsuq66rdvPuE4b0euYUEHeAcJO9OCxSuwG2J7tLbJLFa2f/pub", target: "_blank", class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).app_prefs? %>
             </li>
           </ul>
         </div>
