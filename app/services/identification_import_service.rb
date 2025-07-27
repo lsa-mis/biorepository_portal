@@ -10,9 +10,9 @@ class IdentificationImportService
     @user = user
     @field_names = {}
     @log = ImportLog.new
-    @note = []
+    @notes = []
     @errors = 0
-    @result = { errors: 0, note: "" }
+    @result = { errors: 0, note: [] }
   end
 
   # Assumes:
@@ -44,16 +44,16 @@ class IdentificationImportService
     }
     task_time = ((total_time.real / 60) % 60).round(2)
     @log.import_logger.info("***********************Identification import completed. Total time: #{task_time} minutes.")
-    @note << "Identification import completed. File: #{@file.original_filename}. Total time: #{task_time} minutes."
+    @notes << "Identification import completed. File: #{@file.original_filename}. Total time: #{task_time} minutes."
     @result[:errors] = @errors
-    @result[:note] = @note
+    @result[:note] = @notes.reverse # Reverse to maintain order of processing
     return @result
     
   rescue => e
     @log.import_logger.error("***********************Error importing identifications: #{e.message}")
-    @note << "Identification import: Error importing identifications. File: #{@file.original_filename}. Error: #{e.message}"
+    @notes << "Identification import: Error importing identifications. File: #{@file.original_filename}. Error: #{e.message}"
     @result[:errors] = @errors + 1
-    @result[:note] = @note
+    @result[:note] = @notes.reverse
     return @result
   end
 
@@ -67,12 +67,12 @@ class IdentificationImportService
     unless identification.save
       @log.import_logger.error("***********************Failed to save identification: #{identification.errors.full_messages.join(', ')}")
       @errors += 1
-      @note << "Identification import: Failed to save identification. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{identification.errors.full_messages.join(', ')}"
+      @notes << "Identification import: Failed to save identification. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{identification.errors.full_messages.join(', ')}"
     end
   rescue => e
     @log.import_logger.error("***********************Error saving identification: #{e.message}")
     @errors += 1
-    @note << "Identification import: Error saving identification. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}"
+    @notes << "Identification import: Error saving identification. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
 
   def assign_fields(identification, row)
