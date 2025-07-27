@@ -9,6 +9,15 @@ class RequestMailer < ApplicationMailer
     mail(to: send_to, subject: subject)
   end
 
+  def confirmation_information_request
+    @information_request = params[:information_request]
+    @user = params[:user]
+    @message = params[:message]
+    @checkout_items = params[:checkout_items] if params[:checkout_items].present?
+    subject = "Confirmation: Your Information Request Has Been Sent"
+    mail(to: @user.email, subject: subject)
+  end
+
   def send_loan_request(send_to:, user:, loan_request:, csv_file: nil, pdf_file: nil)
     @user = user
     attachments["loan_request.csv"] = csv_file.read if csv_file.present?
@@ -23,7 +32,7 @@ class RequestMailer < ApplicationMailer
     mail(to: send_to, subject: subject)
   end
 
-  def user_confirmation_email(user, loan_request, csv_file:, pdf_file:)
+  def confirmation_loan_request(user, loan_request, csv_file:, pdf_file:)
     @user = user
     @loan_request = loan_request
     attachments["loan_request.csv"] = { content: File.read(csv_file), content_type: "text/csv" } if csv_file.present?
