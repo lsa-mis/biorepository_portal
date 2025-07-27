@@ -162,7 +162,7 @@ class ItemImportService
       unless preparation.save
         @log.import_logger.error("***********************Failed to save preparation (#{prep_type}): #{preparation.errors.full_messages.join(', ')}")
         @errors += 1
-        @notes << "Occurrence import: Failed to save preparation (#{prep_type}). File: #{@file.original_filename}. Item: #{item.occurrence_id}.Error: #{preparation.errors.full_messages.join(', ')}"
+        @notes << "Occurrence import: Failed to save preparation (#{prep_type}). File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{preparation.errors.full_messages.join(', ')}"
       end
     end
   rescue => e
