@@ -4,7 +4,7 @@
 #
 #  id            :bigint           not null, primary key
 #  date          :datetime
-#  note          :string
+#  note          :string           default([]), is an Array
 #  status        :string
 #  user          :string
 #  created_at    :datetime         not null

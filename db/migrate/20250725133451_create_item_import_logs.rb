@@ -5,7 +5,7 @@ class CreateItemImportLogs < ActiveRecord::Migration[8.0]
       t.string :user
       t.integer :collection_id
       t.string :status
-      t.string :note
+      t.string :note, array: true, default: []
 
       t.timestamps
     end
