@@ -114,13 +114,16 @@ class CollectionsController < ApplicationController
         occurrence_file = file
       end
     end
-    item_result = {errors:0, note: []}
-    identification_result = {errors:0, note: []}
-    item_result = ItemImportService.new(occurrence_file, collection_id, current_user).call if occurrence_file.present?
-    identification_result = IdentificationImportService.new(identification_file, collection_id, current_user).call if identification_file.present?
-    
-    create_import_log_record(item_result, collection_id)
-    create_import_log_record(identification_result, collection_id)
+    if occurrence_file.present?
+      item_result = {errors:0, note: []}
+      item_result = ItemImportService.new(occurrence_file, collection_id, current_user).call
+      create_import_log_record(item_result, collection_id)
+    end
+    if identification_file.present?
+      identification_result = {errors:0, note: []}
+      identification_result = IdentificationImportService.new(identification_file, collection_id, current_user).call
+      create_import_log_record(identification_result, collection_id)
+    end
     
     errors = item_result[:errors] + identification_result[:errors]
     if errors > 0
