@@ -1,6 +1,6 @@
 Dear <%= @user.first_name %>,
 
-We've received your loan request submitted on <%= @information_request.created_at.strftime("%B %d, %Y") %>
+We've received your information request submitted on <%= @information_request.created_at.strftime("%B %d, %Y") %>
 with the following question:
 
 <%= raw(@message) %>
