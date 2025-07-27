@@ -53,6 +53,12 @@ class InformationRequestsController < ApplicationController
         message: message,
         checkout_items: checkout_items
       ).send_information_request.deliver_now
+      RequestMailer.with(
+        information_request: @information_request,
+        user: current_user,
+        message: message,
+        checkout_items: checkout_items
+      ).confirmation_information_request.deliver_now
       redirect_to faqs_path, notice: "Information request sent successfully."
     else
       flash.now[:alert] = "Failed to send information request."

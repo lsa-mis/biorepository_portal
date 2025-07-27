@@ -1,6 +1,6 @@
 <p>Dear <%= @user.first_name %>,</p>
 
-<p>We've received your loan request submitted on <%= @loan_request.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%B %d, %Y at %I:%M %p %Z") %>.</p>
+<p>We've received your loan request submitted on <%= @loan_request.created_at.strftime("%B %d, %Y") %>.</p>
 
 <p>Attached to this email, you'll find a copy of your request in both PDF and CSV formats.</p>
 
