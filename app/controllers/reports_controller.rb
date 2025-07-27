@@ -7,6 +7,7 @@ class ReportsController < ApplicationController
     @reports_list = [
       {title: "Information Requests", url: information_requests_report_reports_path, description: "This report shows Information Requests statistics" },
       {title: "Loan Requests", url: loan_requests_report_reports_path, description: "This report shows Loan Requests statistics" },
+      {title: "Import Data", url: import_data_report_reports_path, description: "This report shows Import Data Log statistics" },
       ]
   end
 
@@ -86,6 +87,25 @@ class ReportsController < ApplicationController
       respond_to do |format|
         format.html
         format.csv { send_data csv_data, filename: 'loan_requests_report.csv', type: 'text/csv' }
+      end
+    end
+  end
+
+  def import_data_report
+    authorize :report, :import_data_report?
+    if params[:commit]
+      start_time, end_time, collection_id = collect_form_params
+      import_logs = ItemImportLog.where(date: start_time..end_time).order(date: :desc)
+      import_logs = import_logs.where(collection_id: collection_id) if collection_id.present?
+
+      if import_logs.any?
+        @title = "Import Data Report"
+        @headers = ["Date", "User", "Status", "Collection", "Note"]
+        @data = import_logs.map do |log|
+          [log.date.strftime("%Y-%m-%d %H:%M"), log.user, log.status, Collection.find(log.collection_id).division, log.note]
+        end
+      else
+        @data = nil
       end
     end
   end
