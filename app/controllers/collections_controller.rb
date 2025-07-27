@@ -120,9 +120,14 @@ class CollectionsController < ApplicationController
     identification_errors = IdentificationImportService.new(identification_file, collection_id, current_user).call if identification_file.present?
     notice = "Import finished."
     errors = item_errors + identification_errors
-    alert  = "#{errors} error(s) occurred during import. Check reports for details" if errors && errors > 0
-
-    redirect_to request.referer, notice: notice, alert: alert
+    if errors > 0
+      flash[:alert] = "Import finished with #{errors} error(s). Please check reports for details"
+      flash[:alert_no_timeout] = true  # Add flag to disable timeout
+    else
+      flash[:notice] = "Import finished successfully."
+      flash[:notice_no_timeout] = true  # Add flag to disable timeout
+    end
+    redirect_to request.referer
   end
 
   private
