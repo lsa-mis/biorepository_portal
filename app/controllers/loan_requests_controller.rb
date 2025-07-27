@@ -109,7 +109,7 @@ class LoanRequestsController < ApplicationController
         pdf_file: pdf_tempfile
       ).deliver_now
 
-      RequestMailer.user_confirmation_email(
+      RequestMailer.confirmation_loan_request(
         current_user,
         @loan_request,
         csv_file: csv_tempfile,

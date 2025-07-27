@@ -1,0 +1,22 @@
+<p>Dear <%= @user.first_name %>,</p>
+
+<p>We've received your information request submitted on <%= @information_request.created_at.strftime("%B %d, %Y") %>
+  with the following question:
+</p>
+<p>
+  <%= raw(@message) %>
+</p>
+<% if @checkout_items.present? %>
+  <p>
+    <b>Checkout Items:</b>
+  </p>
+  <p>
+    <% @checkout_items.each do |item| %>
+      <%= item %> <br>
+    <% end %>
+  </p>
+<% end %>
+
+<p>Thank you for using our system. We'll reach out to you if we need more information.</p>
+
+<p>The Collections Team</p>
