@@ -51,7 +51,7 @@ class IdentificationImportService
     
   rescue => e
     @log.import_logger.error("***********************Error importing identifications: #{e.message}")
-    @notes << "Identification import: Error importing identifications. File: #{@file.original_filename}. Error: #{e.message}"
+    @notes << "Identification import: Error importing identifications. Error: #{e.message}"
     @result[:errors] = @errors + 1
     @result[:note] = @notes.reverse
     return @result
@@ -67,12 +67,12 @@ class IdentificationImportService
     unless identification.save
       @log.import_logger.error("***********************Failed to save identification: #{identification.errors.full_messages.join(', ')}")
       @errors += 1
-      @notes << "Identification import: Failed to save identification. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{identification.errors.full_messages.join(', ')}"
+      @notes << "Identification import: Failed to save identification. Item: #{item.occurrence_id}. Error: #{identification.errors.full_messages.join(', ')}"
     end
   rescue => e
     @log.import_logger.error("***********************Error saving identification: #{e.message}")
     @errors += 1
-    @notes << "Identification import: Error saving identification. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}"
+    @notes << "Identification import: Error saving identification. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
 
   def assign_fields(identification, row)

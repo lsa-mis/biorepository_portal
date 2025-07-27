@@ -42,7 +42,7 @@ class ItemImportService
     return @result
     rescue => e
       @log.import_logger.error("***********************Error importing Item: #{e.message}")
-      @notes << "Occurrence import: Error importing Item. File: #{@file.original_filename}. Error: #{e.message}"
+      @notes << "Occurrence import: Error importing Item. Error: #{e.message}"
       @result[:errors] = @errors + 1
       @result[:note] = @notes.reverse
       return @result
@@ -62,12 +62,12 @@ class ItemImportService
     else
       @log.import_logger.error("***********************Failed to save item: #{item.errors.full_messages.join(', ')}")
       @errors += 1
-      @notes << "Occurrence import: Failed to save item. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{item.errors.full_messages.join(', ')}"
+      @notes << "Occurrence import: Failed to save item. Item: #{item.occurrence_id}. Error: #{item.errors.full_messages.join(', ')}"
     end
   rescue => e
     @log.import_logger.error("***********************Error saving item: #{e.message}")
     @errors += 1
-    @notes << "Occurrence import: Error saving item. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}"
+    @notes << "Occurrence import: Error saving item. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
 
   def update_item(record)
@@ -83,12 +83,12 @@ class ItemImportService
     else
       @log.import_logger.error("***********************Failed to update item: #{item.errors.full_messages.join(', ')}")
       @errors += 1
-      @notes << "Occurrence import: failed to update item. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{item.errors.full_messages.join(', ')}"
+      @notes << "Occurrence import: failed to update item. Item: #{item.occurrence_id}. Error: #{item.errors.full_messages.join(', ')}"
     end
   rescue => e
     @log.import_logger.error("***********************Error updating item: #{e.message}")
     @errors += 1
-    @notes << "Occurrence import: Error updating item. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}"
+    @notes << "Occurrence import: Error updating item. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
 
   def assign_fields(item, record)
@@ -162,13 +162,13 @@ class ItemImportService
       unless preparation.save
         @log.import_logger.error("***********************Failed to save preparation (#{prep_type}): #{preparation.errors.full_messages.join(', ')}")
         @errors += 1
-        @notes << "Occurrence import: Failed to save preparation (#{prep_type}). File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{preparation.errors.full_messages.join(', ')}"
+        @notes << "Occurrence import: Failed to save preparation (#{prep_type}). Item: #{item.occurrence_id}. Error: #{preparation.errors.full_messages.join(', ')}"
       end
     end
   rescue => e
     @log.import_logger.error("***********************Error updating preparations: #{e.message}")
     @errors += 1
-    @notes << "Occurrence import: Error updating preparations. File: #{@file.original_filename}. Item: #{item.occurrence_id}. Error: #{e.message}"
+    @notes << "Occurrence import: Error updating preparations. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
 
 
@@ -206,13 +206,13 @@ class ItemImportService
     else
       @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
       @errors += 1
-      @notes << "Occurrence import: Invalid eventDate format. File: #{@file.original_filename}, Item: #{item.occurrence_id}. Error: #{e.message}"
+      @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
       item.verbatim_event_date = value.strip
     end
   rescue ArgumentError => e
     @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
     @errors += 1
-    @notes << "Occurrence import: Invalid eventDate format. File: #{@file.original_filename}, Item: #{item.occurrence_id}. Error: #{e.message}"
+    @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
 
   # def handle_event_date(item, value)
