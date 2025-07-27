@@ -114,12 +114,14 @@ class CollectionsController < ApplicationController
         occurrence_file = file
       end
     end
-    item_errors = 0
-    identification_errors = 0
-    item_errors = ItemImportService.new(occurrence_file, collection_id, current_user).call if occurrence_file.present?
-    identification_errors = IdentificationImportService.new(identification_file, collection_id, current_user).call if identification_file.present?
-    notice = "Import finished."
-    errors = item_errors + identification_errors
+    item_result = {errors:0, note: []}
+    identification_result = {errors:0, note: []}
+    item_result = ItemImportService.new(occurrence_file, collection_id, current_user).call if occurrence_file.present?
+    identification_result = IdentificationImportService.new(identification_file, collection_id, current_user).call if identification_file.present?
+    errors = item_result[:errors] + identification_result[:errors]
+    note = item_result[:note] + identification_result[:note]
+    status = errors > 0 ? "completed with errors" : "completed"
+    ItemImportLog.create(date: DateTime.now, user: current_user.name_with_email, collection_id: collection_id, status: status, note: note)
     if errors > 0
       flash[:alert] = "Import finished with #{errors} error(s). Please check reports for details"
       flash[:alert_no_timeout] = true  # Add flag to disable timeout
