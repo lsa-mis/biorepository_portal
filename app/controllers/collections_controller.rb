@@ -114,14 +114,29 @@ class CollectionsController < ApplicationController
         occurrence_file = file
       end
     end
-    ItemImportService.new(occurrence_file, collection_id).call if occurrence_file.present?
-    IdentificationImportService.new(identification_file, collection_id).call if identification_file.present?
-
-    redirect_to request.referer, notice: 'Import Finished!'
+    if occurrence_file.present?
+      item_result = {errors:0, note: []}
+      item_result = ItemImportService.new(occurrence_file, collection_id, current_user).call
+      create_import_log_record(item_result, collection_id)
+    end
+    if identification_file.present?
+      identification_result = {errors:0, note: []}
+      identification_result = IdentificationImportService.new(identification_file, collection_id, current_user).call
+      create_import_log_record(identification_result, collection_id)
+    end
+    
+    errors = item_result[:errors] + identification_result[:errors]
+    if errors > 0
+      flash[:alert] = "Import finished with #{errors} error(s). Please check reports for details"
+      flash[:alert_no_timeout] = true  # Add flag to disable timeout
+    else
+      flash[:notice] = "Import finished successfully."
+      flash[:notice_no_timeout] = true  # Add flag to disable timeout
+    end
+    redirect_to request.referer
   end
 
   private
-
 
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
@@ -135,6 +150,17 @@ class CollectionsController < ApplicationController
         return false unless File.extname(file.original_filename).downcase == ".csv"
       end
       true
+    end
+
+    def create_import_log_record(result, collection_id)
+      if result[:errors] > 0
+        status = "completed with errors"
+        note = result[:note]
+      else
+        status = "completed"
+        note = ["Item import completed successfully."]
+      end
+      ItemImportLog.create(date: DateTime.now, user: current_user.name_with_email, collection_id: collection_id, status: status, note: note)
     end
 
     # Only allow a list of trusted parameters through.

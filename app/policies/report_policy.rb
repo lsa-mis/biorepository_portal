@@ -11,4 +11,8 @@ class ReportPolicy < ApplicationPolicy
     is_admin?
   end
 
+  def import_data_report?
+    is_admin?
+  end
+
 end

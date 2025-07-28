@@ -4,17 +4,21 @@ require 'set'
 class IdentificationImportService
   attr_reader :file
 
-  def initialize(file, collection_id)
+  def initialize(file, collection_id, user)
     @file = file
     @collection_id = collection_id
+    @user = user
     @field_names = {}
     @log = ImportLog.new
-    total_time = 0
+    @notes = []
+    @errors = 0
+    @result = { errors: 0, note: [] }
   end
 
   # Assumes:
   # - First column is occurrence_id (linked to Item)
   def call
+    @errors = 0
     total_time = Benchmark.measure {
       @log.import_logger.info("#{DateTime.now} - #{Collection.find(@collection_id).division} - Processing Identifications File: #{@file.original_filename}")
       # Group rows by occurrence_id
@@ -40,8 +44,17 @@ class IdentificationImportService
     }
     task_time = ((total_time.real / 60) % 60).round(2)
     @log.import_logger.info("***********************Identification import completed. Total time: #{task_time} minutes.")
+    @notes << "Identification import completed. File: #{@file.original_filename}. Total time: #{task_time} minutes."
+    @result[:errors] = @errors
+    @result[:note] = @notes.reverse # Reverse to maintain order of processing
+    return @result
+    
   rescue => e
     @log.import_logger.error("***********************Error importing identifications: #{e.message}")
+    @notes << "Identification import: Error importing identifications. Error: #{e.message}"
+    @result[:errors] = @errors + 1
+    @result[:note] = @notes.reverse
+    return @result
   end
 
   private
@@ -53,9 +66,13 @@ class IdentificationImportService
 
     unless identification.save
       @log.import_logger.error("***********************Failed to save identification: #{identification.errors.full_messages.join(', ')}")
+      @errors += 1
+      @notes << "Identification import: Failed to save identification. Item: #{item.occurrence_id}. Error: #{identification.errors.full_messages.join(', ')}"
     end
   rescue => e
     @log.import_logger.error("***********************Error saving identification: #{e.message}")
+    @errors += 1
+    @notes << "Identification import: Error saving identification. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
 
   def assign_fields(identification, row)
