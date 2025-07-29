@@ -11,7 +11,11 @@
       <% if answer&.attachment&.attached? %>
         <%= link_to answer.attachment.filename.to_s, rails_blob_path(answer.attachment, disposition: "attachment"), target: "_blank", rel: "noopener noreferrer" %>
       <% else %>
-        No attachment provided.
+        <% if question.required? %>
+          <span class="text-danger">Warning: This question is required but not answered.</span>
+        <% else %>
+          <%= "No answer provided" %>
+        <% end %>
       <% end %>
     </p>
   <% else %>
