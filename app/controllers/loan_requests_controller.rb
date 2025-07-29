@@ -41,6 +41,8 @@ class LoanRequestsController < ApplicationController
       )&.value
     end.compact
 
+    # Use default email from ApplicationMailer if no collection-specific emails found
+    emails = [ApplicationMailer.default[:to]] if emails.present?
     @loan_request = LoanRequest.new
     @loan_request.user = current_user
     @loan_request.send_to = emails.join(', ')
@@ -83,44 +85,47 @@ class LoanRequestsController < ApplicationController
     csv_tempfile = create_csv_file(current_user)
 
     begin
-      @loan_request.save
-      
-      File.open(pdf_tempfile, "wb") do |file|
-        file.write(PdfGenerator.new(@loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
+      if @loan_request.save
+        File.open(pdf_tempfile, "wb") do |file|
+          file.write(PdfGenerator.new(@loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
+        end
+        pdf_tempfile.rewind
+
+        @loan_request.pdf_file.attach(
+          io: pdf_tempfile,
+          filename: "loan_request_#{@loan_request.id}.pdf",
+          content_type: "application/pdf"
+        )
+
+        @loan_request.csv_file.attach(
+          io: csv_tempfile,
+          filename: "loan_request_#{@loan_request.id}.csv",
+          content_type: "text/csv"
+        )
+        RequestMailer.send_loan_request(
+          send_to: emails,
+          user: current_user,
+          loan_request: @loan_request,
+          csv_file: csv_tempfile,
+          pdf_file: pdf_tempfile
+        ).deliver_now
+
+        RequestMailer.confirmation_loan_request(
+          current_user,
+          @loan_request,
+          csv_file: csv_tempfile,
+          pdf_file: pdf_tempfile
+        ).deliver_now
+
+        # Clean up checkout items
+        @checkout.requestables.where(saved_for_later: false).delete_all
+
+        redirect_to checkout_path, notice: "Loan request sent with CSV and PDF attached."
+      else
+        flash[:alert] = "Failed to create loan request. Please try again: #{@loan_request.errors.full_messages.join(', ')}"
+        redirect_to new_loan_request_path
       end
-      pdf_tempfile.rewind
-
-      @loan_request.pdf_file.attach(
-        io: pdf_tempfile,
-        filename: "loan_request_#{@loan_request.id}.pdf",
-        content_type: "application/pdf"
-      )
-
-      @loan_request.csv_file.attach(
-        io: csv_tempfile,
-        filename: "loan_request_#{@loan_request.id}.csv",
-        content_type: "text/csv"
-      )
-      RequestMailer.send_loan_request(
-        send_to: emails,
-        user: current_user,
-        loan_request: @loan_request,
-        csv_file: csv_tempfile,
-        pdf_file: pdf_tempfile
-      ).deliver_now
-
-      RequestMailer.confirmation_loan_request(
-        current_user,
-        @loan_request,
-        csv_file: csv_tempfile,
-        pdf_file: pdf_tempfile
-      ).deliver_now
-
-      # Clean up checkout items
-      @checkout.requestables.where(saved_for_later: false).delete_all
-
-      redirect_to checkout_path, notice: "Loan request sent with CSV and PDF attached."
-
+    
     ensure
       csv_tempfile.close
       csv_tempfile.unlink
@@ -146,7 +151,7 @@ class LoanRequestsController < ApplicationController
           "Barcode"
         ]
 
-        @checkout.requestables.each do |requestable|
+        @checkout.requestables.active.each do |requestable|
           csv << [
             [user.first_name, user.last_name].compact.join(" "),
             user.affiliation,
