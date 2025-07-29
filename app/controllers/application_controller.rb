@@ -73,6 +73,16 @@ class ApplicationController < ActionController::Base
       @checkout = Checkout.create
       session[:checkout_id] = @checkout.id
     end
+
+    if user_signed_in?
+      if current_user.checkout.present?
+        @checkout = current_user.checkout
+        session[:checkout_id] = @checkout.id
+      else
+        @checkout.user = current_user
+        @checkout.save
+      end
+    end
   end
   
   def make_q
