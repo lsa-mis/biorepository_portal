@@ -42,7 +42,7 @@ class LoanRequestsController < ApplicationController
     end.compact
 
     # Use default email from ApplicationMailer if no collection-specific emails found
-    emails = [ApplicationMailer.default[:to]] if emails.present?
+    emails = [ApplicationMailer.default[:to]] unless emails.present?
     @loan_request = LoanRequest.new
     @loan_request.user = current_user
     @loan_request.send_to = emails.join(', ')
