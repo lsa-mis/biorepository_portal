@@ -142,7 +142,7 @@ module ApplicationHelper
   def get_checkout_items
     checkout_items = []
     collection_ids = []
-    @checkout.requestables.where(saved_for_later: false).each do |requestable|
+    @checkout.requestables.active.each do |requestable|
       checkout_item = ""
       preparation = requestable.preparation
       item = preparation.item
