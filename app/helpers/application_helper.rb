@@ -146,9 +146,9 @@ module ApplicationHelper
       checkout_item = ""
       preparation = requestable.preparation
       item = preparation.item
-      checkout_item += "#{item.collection.division}, occurrenceID: #{item.occurrence_id}; preparation: #{preparation.prep_type}"
+      checkout_item += "#{item.collection.division}, preparation: #{preparation.prep_type}"
       if preparation.barcode.present?
-        checkout_item += "barcode: #{preparation.barcode}"
+        checkout_item += ", barcode: #{preparation.barcode}"
       end
       if preparation.description.present?
         checkout_item += ", description: #{preparation.description}"
