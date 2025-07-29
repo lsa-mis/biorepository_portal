@@ -75,14 +75,30 @@ class ApplicationController < ActionController::Base
     end
 
     if user_signed_in?
-      if current_user.checkout.present?
-        @checkout = current_user.checkout
+      current_user_with_checkout = User.includes(:checkout).find(current_user.id)
+      if current_user_with_checkout.checkout.present?
+        unless @checkout.id == current_user_with_checkout.checkout.id
+          merge_checkouts(@checkout, current_user_with_checkout.checkout)
+        end
+        @checkout = current_user_with_checkout.checkout
         session[:checkout_id] = @checkout.id
       else
         @checkout.user = current_user
         @checkout.save
       end
     end
+  end
+
+  def merge_checkouts(old_checkout, new_checkout)
+    new_checkout_preparations_id = new_checkout.requestables.pluck(:preparation_id)
+    old_checkout.requestables.each do |requestable|
+      preparation_id = requestable.preparation.id
+      unless new_checkout_preparations_id.include?(preparation_id)
+        # If it doesn't exist, create a new requestable in the new checkout
+        new_checkout.requestables.create(preparation: requestable.preparation, count: requestable.count)
+      end
+    end
+    old_checkout.destroy
   end
   
   def make_q
