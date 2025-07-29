@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_25_133451) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_29_154748) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -73,6 +73,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_25_133451) do
   create_table "checkouts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_checkouts_on_user_id"
   end
 
   create_table "collection_answers", force: :cascade do |t|
@@ -317,6 +319,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_25_133451) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "app_preferences", "collections"
+  add_foreign_key "checkouts", "users"
   add_foreign_key "collection_answers", "collection_questions"
   add_foreign_key "collection_answers", "users"
   add_foreign_key "collection_options", "collection_questions"
