@@ -1,7 +1,7 @@
 
 <% @checkout
   .requestables
-  .where(saved_for_later: false)
+  .active
   .order(:id)
   .each do |requestable| %>
   <% item = requestable.preparation.item %>

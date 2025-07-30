@@ -23,4 +23,8 @@
 class Requestable < ApplicationRecord
   belongs_to :preparation
   belongs_to :checkout
+
+  scope :saved_for_later, -> { where(saved_for_later: true) }
+  scope :active, -> { where(saved_for_later: false) }
+  
 end

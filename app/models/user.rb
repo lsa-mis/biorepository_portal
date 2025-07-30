@@ -41,6 +41,7 @@ class User < ApplicationRecord
   has_many :loan_answers, dependent: :destroy
   has_many :information_requests, dependent: :destroy
   has_many :loan_requests, dependent: :destroy
+  has_one :checkout, dependent: :destroy
 
   def display_name
     if first_name.present? && last_name.present?
