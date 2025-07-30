@@ -70,9 +70,13 @@
           </li>
         <% end %>
         <li class="d-flex flex-row mt-2">
-          <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign" do %>
-            <span>Log Out</span>
-          <% end %> 
+          <% if user_signed_in? %>
+            <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign" do %>
+              <span>Log Out</span>
+            <% end %>
+          <% else %>
+            <%= link_to "Sign In", new_user_session_path, data: {turbo: "false"}, class: "btn btn-sign" %>
+          <% end %>
         </li>
       </ul>
     </div>
