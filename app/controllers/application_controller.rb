@@ -95,7 +95,7 @@ class ApplicationController < ActionController::Base
       preparation_id = requestable.preparation.id
       unless new_checkout_preparations_id.include?(preparation_id)
         # If it doesn't exist, create a new requestable in the new checkout
-        new_checkout.requestables.create(preparation: requestable.preparation, count: requestable.count)
+        new_checkout.requestables.create(preparation: requestable.preparation, saved_for_later: requestable.saved_for_later, count: requestable.count)
       end
     end
     old_checkout.destroy
