@@ -1,6 +1,16 @@
-<h2>User Loan Items from Checkout</h2>
+<h2 class="text-center">Items for Checkout</h2>
 <p>
-  <% @checkout_items.split('. ').each do |item| %>
-    <%= item %> <br>
-  <% end %>
+  <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3">
+    <% @checkout_items.each do |item| %>
+      <div class="col">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <% item.split(',').each do |part| %>
+              <p class="mb-1"><%= part.strip %></p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
 </p>
