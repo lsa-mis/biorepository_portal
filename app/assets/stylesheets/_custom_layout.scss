@@ -473,6 +473,10 @@ svg.wh6 {
   transition: top 0.3s ease-in-out;
 }
 
-.skiplink:focus {
+skiplink:focus,
+.skiplink:focus-visible {
   top: 6px;
+  outline: 4px solid #fff; /* High-contrast outline for visibility */
+  outline-offset: 2px; /* Space between the outline and the element */
+  border-radius: 4px; /* Rounded corners for the outline */
 }
