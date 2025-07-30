@@ -75,12 +75,11 @@ class ApplicationController < ActionController::Base
     end
 
     if user_signed_in?
-      current_user_with_checkout = User.includes(:checkout).find(current_user.id)
-      if current_user_with_checkout.checkout.present?
-        unless @checkout.id == current_user_with_checkout.checkout.id
-          merge_checkouts(@checkout, current_user_with_checkout.checkout)
+      if current_user.checkout.present?
+        unless @checkout.id == current_user.checkout.id
+          merge_checkouts(@checkout, current_user.checkout)
         end
-        @checkout = current_user_with_checkout.checkout
+        @checkout = current_user.checkout
         session[:checkout_id] = @checkout.id
       else
         @checkout.user = current_user
