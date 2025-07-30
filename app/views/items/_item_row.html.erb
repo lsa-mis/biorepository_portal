@@ -1,5 +1,10 @@
 <div class="accordion-item mb-2">
-  <button class="accordion-button collapsed bg-accordion" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse<%= (index + 1) %>" aria-expanded="false" aria-controls="panelsStayOpen-collapse<%= (index + 1) %>">
+  <button class="accordion-button collapsed bg-accordion custom-focus-ring" 
+          type="button" 
+          data-bs-toggle="collapse" 
+          data-bs-target="#panelsStayOpen-collapse<%= (index + 1) %>" 
+          aria-expanded="false" 
+          aria-controls="panelsStayOpen-collapse<%= (index + 1) %>">
     <%= item.collection.division %>: <%= item.display_name %>
   </button>
   <div id="panelsStayOpen-collapse<%= (index + 1) %>" class="accordion-collapse collapse">
