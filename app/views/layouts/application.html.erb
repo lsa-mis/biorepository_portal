@@ -15,10 +15,14 @@
   </head>
 
   <body>
+    <a class="skiplink" href="#maincontent">Skip to main content</a>
+    <% if controller.controller_name == 'items' && controller.action_name == 'search' %>
+      <a class="skiplink" href="#search-results">Skip to search results</a>
+    <% end %>
     <%= render partial: "layouts/navbar" %>
     <%= render partial: "layouts/additional_bar" %>
-    
-    <main>
+
+    <main id="maincontent">
       <div id="flash">
         <%= render "layouts/flash" %>
       </div>
