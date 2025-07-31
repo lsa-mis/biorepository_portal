@@ -40,6 +40,11 @@ class CheckoutController < ApplicationController
                               turbo_stream.update('flash', partial: 'layouts/flash'),
                               turbo_stream.update(
                                 "checkout_item_#{@preparation.item_id}",
+                                partial: 'items/item_card',
+                                locals: { item: @preparation.item }
+                              ),
+                              turbo_stream.update(
+                                "checkout_item_in_collection#{@preparation.item_id}",
                                 partial: 'collections/item_card',
                                 locals: { item: @preparation.item }
                               ),

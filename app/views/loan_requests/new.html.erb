@@ -5,13 +5,26 @@
 <% is_preview = params[:preview].present? %>
 <%= render "layouts/announcement", is_preview: is_preview, location: "loan_request" %>
 
-<h1>Send Loan Request</h1>
+<h1 class="text-center">Send Loan Request</h1>
 
-<h2>User Info</h2>
-<%= render "profiles/user_field", label: "First Name", field_name: "first_name", value: @user.first_name, disabled: is_preview %>
-<%= render "profiles/user_field", label: "Last Name", field_name: "last_name", value: @user.last_name, disabled: is_preview %>
-<%= render "profiles/user_field", label: "Affiliation", field_name: "affiliation", value: @user.affiliation, disabled: is_preview %>
-<%= render "profiles/user_field", label: "Orcid", field_name: "orcid", value: @user.orcid, disabled: is_preview %>
+<!-- User Info Section -->
+<div class="mb-4">
+  <h2 class="mb-3 text-center">User Information</h2>
+  <div class="row g-3">
+    <div class="col-md-3">
+      <%= render "profiles/user_field", label: "First Name", field_name: "first_name", value: @user.first_name, disabled: is_preview %>
+    </div>
+    <div class="col-md-3">
+      <%= render "profiles/user_field", label: "Last Name", field_name: "last_name", value: @user.last_name, disabled: is_preview %>
+    </div>
+    <div class="col-md-3">
+      <%= render "profiles/user_field", label: "Affiliation", field_name: "affiliation", value: @user.affiliation, disabled: is_preview %>
+    </div>
+    <div class="col-md-3">
+      <%= render "profiles/user_field", label: "ORCID", field_name: "orcid", value: @user.orcid, disabled: is_preview %>
+    </div>
+  </div>
+</div>
 
 <%= render "profiles/user_loan_answers", disabled: is_preview %>
 
@@ -23,7 +36,7 @@
 
 <%= form_with(model: @loan_request, url: send_loan_request_path) do |form| %>
 
-  <div class="mt-1 gap-1 d-flex flex-row justify-content-start align-items-center">
+  <div class="my-2 gap-1 d-flex flex-row justify-content-start align-items-center">
     <%= form.submit 'Send Loan Request', disabled: is_preview %>
     <%= link_to "Cancel", checkout_path, class: "link_to" %>
   </div>

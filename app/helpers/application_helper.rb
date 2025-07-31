@@ -146,14 +146,14 @@ module ApplicationHelper
       checkout_item = ""
       preparation = requestable.preparation
       item = preparation.item
-      checkout_item += "#{item.collection.division}, preparation: #{preparation.prep_type}"
+      checkout_item += "#{item.collection.division}, Preparation: #{preparation.prep_type}"
       if preparation.barcode.present?
-        checkout_item += ", barcode: #{preparation.barcode}"
+        checkout_item += ", Barcode: #{preparation.barcode}"
       end
       if preparation.description.present?
-        checkout_item += ", description: #{preparation.description}"
+        checkout_item += ", Description: #{preparation.description}"
       end
-      checkout_item += ", count: #{requestable.count}"
+      checkout_item += ", Count: #{requestable.count}"
       checkout_items << checkout_item
       collection_ids << item.collection_id    
     end

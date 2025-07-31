@@ -16,18 +16,20 @@
         <span class="text-danger">Warning: This question is required but not answered.</span>
       <% end %>
     <% end %>
-  </p>
-  <% if local_assigns[:disabled] %>
-    <button class="btn btn-sm btn-outline-secondary" disabled >Edit</button>
-  <% else %>
-    <%= link_to "Edit",
-                edit_user_field_path(field_name, format: :turbo_stream),
-                data: {
-                  turbo_frame: "modal_content_frame",
-                  bs_toggle: "modal",
-                  bs_target: "#sharedModal"
-                },
-                class: "btn btn-sm btn-outline-primary" %>
-  <% end %>
 
+    <% if local_assigns[:disabled] %>
+      <button class="btn btn-sm btn-outline-secondary" disabled >Edit</button>
+    <% else %>
+      <%= link_to edit_user_field_path(field_name, format: :turbo_stream),
+                  data: {
+                    turbo_frame: "modal_content_frame",
+                    bs_toggle: "modal",
+                    bs_target: "#sharedModal"
+                  },
+                  aria: { label: "Edit #{label}" },
+                  title: "Edit #{label}" do %>
+        <i class="bi bi-pencil-square text-primary" aria-hidden="true"></i>
+      <% end %>
+    <% end %>
+  </p>
 </div>
