@@ -2,9 +2,9 @@
   <div class="card p-3">
     <div class="card-body">
       <label class="form-label"><%= field == 'orcid' ? 'ORCID' : field.titleize %></label>
-      <%= text_field_tag "user[#{field}]", user.send(field), class: "form-control" %>
+      <%= text_area_tag "user[#{field}]", user.send(field), class: "form-control", rows: 3, style: "resize: vertical;" %>
 
-      <%= submit_tag "Save test", class: "btn btn-primary mt-3" %>
+      <%= submit_tag "Save", class: "btn btn-primary mt-3" %>
     </div>
   </div>
 <% end %>
