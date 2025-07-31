@@ -18,7 +18,7 @@
     <% @faqs.each do |faq| %>
       <div class="accordion-item" id="<%= dom_id faq %>">
         <h2 class="accordion-header" id="heading-<%= faq.id %>">
-          <button class="accordion-button collapsed"
+          <button class="accordion-button collapsed custom-focus-ring"
                   type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#collapse-<%= faq.id %>"

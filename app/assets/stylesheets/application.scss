@@ -103,6 +103,10 @@ input[type=submit]:hover {
   max-width: 900px;
 }
 
+textarea {
+  resize: vertical;
+}
+
 .search-input.form-control {
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
