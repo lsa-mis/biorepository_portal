@@ -1,10 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
-import { Modal } from "bootstrap"
 
 export default class extends Controller {
   connect() {
     console.log("RemoteModalController connected")
-    this.modal = new Modal(this.element)
+    // Use global bootstrap object loaded via CDN
+    this.modal = new window.bootstrap.Modal(this.element)
   }
 
   hideBeforeRender(event) {
