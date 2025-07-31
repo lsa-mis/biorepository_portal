@@ -44,6 +44,11 @@ class CheckoutController < ApplicationController
                                 locals: { item: @preparation.item }
                               ),
                               turbo_stream.update(
+                                "checkout_item_in_collection#{@preparation.item_id}",
+                                partial: 'collections/item_card',
+                                locals: { item: @preparation.item }
+                              ),
+                              turbo_stream.update(
                                 "checkout_item_row_#{@preparation.item_id}",
                                 partial: 'collections/preparation_for_checkout',
                                 locals: { item: @preparation.item }

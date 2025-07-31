@@ -13,7 +13,7 @@
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
     <% @items.each do |item| %>
       <div class="col">
-        <%= turbo_frame_tag "checkout_item_#{item.id}" do %>
+        <%= turbo_frame_tag "checkout_item_in_collection#{item.id}" do %>
           <%= render partial: "item_card", locals: { item: item } %>
         <% end %>
       </div>
