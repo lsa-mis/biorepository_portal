@@ -118,13 +118,13 @@ class CollectionsController < ApplicationController
     if occurrence_file.present?
       item_result = {errors:0, note: []}
       item_result = ItemImportService.new(occurrence_file, collection_id, current_user).call
-      create_import_log_record(item_result, collection_id)
+      create_import_log_record(item_result, collection_id, 'Item')
       errors += item_result[:errors]
     end
     if identification_file.present?
       identification_result = {errors:0, note: []}
       identification_result = IdentificationImportService.new(identification_file, collection_id, current_user).call
-      create_import_log_record(identification_result, collection_id)
+      create_import_log_record(identification_result, collection_id, 'Identification')
       errors += identification_result[:errors]
     end
     
@@ -154,13 +154,13 @@ class CollectionsController < ApplicationController
       true
     end
 
-    def create_import_log_record(result, collection_id)
+    def create_import_log_record(result, collection_id, import_type)
       if result[:errors] > 0
         status = "completed with errors"
         note = result[:note]
       else
         status = "completed"
-        note = ["Item import completed successfully."]
+        note = ["#{import_type} import completed successfully."]
       end
       ItemImportLog.create(date: DateTime.now, user: current_user.name_with_email, collection_id: collection_id, status: status, note: note)
     end
