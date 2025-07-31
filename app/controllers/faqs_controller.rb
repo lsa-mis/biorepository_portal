@@ -11,7 +11,8 @@ class FaqsController < ApplicationController
 
   # GET /faqs or /faqs.json
   def index
-    @faqs = Faq.all
+    @faqs = Faq.order(:position)
+    authorize @faqs
   end
 
   # GET /faqs/1 or /faqs/1.json
