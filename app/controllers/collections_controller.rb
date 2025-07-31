@@ -106,6 +106,7 @@ class CollectionsController < ApplicationController
     files = params[:files]
     identification_file = nil
     occurrence_file = nil
+    errors = 0
 
     files.each do |file|
       if file.original_filename.include?("identification")
@@ -118,14 +119,15 @@ class CollectionsController < ApplicationController
       item_result = {errors:0, note: []}
       item_result = ItemImportService.new(occurrence_file, collection_id, current_user).call
       create_import_log_record(item_result, collection_id)
+      errors += item_result[:errors]
     end
     if identification_file.present?
       identification_result = {errors:0, note: []}
       identification_result = IdentificationImportService.new(identification_file, collection_id, current_user).call
       create_import_log_record(identification_result, collection_id)
+      errors += identification_result[:errors]
     end
     
-    errors = item_result[:errors] + identification_result[:errors]
     if errors > 0
       flash[:alert] = "Import finished with #{errors} error(s). Please check reports for details"
       flash[:alert_no_timeout] = true  # Add flag to disable timeout
