@@ -228,9 +228,45 @@ svg.wh6 {
 
 .navbar_dropdown_item:focus {
   background-color: $um_blue;
-  outline: none; 
-  border: 2px solid #E5E5E5;
+  outline: 2px solid #E5E5E5 !important; 
+  outline-offset: 2px !important;
   border-radius: .25rem;
+  /* Ensure focus ring appears in Safari */
+  -webkit-appearance: none;
+  appearance: none;
+  /* Force focus ring in Firefox */
+  box-shadow: 0 0 0 2px #E5E5E5;
+}
+
+/* Cross-browser focus styles for navbar links */
+.navbar .nav-link:focus,
+.navbar .nav-link:focus-visible {
+  outline: 2px solid #E5E5E5 !important;
+  outline-offset: 2px !important;
+  border-radius: .25rem;
+  box-shadow: 0 0 0 2px #E5E5E5;
+}
+
+/* Safari-specific focus fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: .001dpcm) {
+  .navbar .nav-link:focus,
+  .navbar_dropdown_item:focus,
+  .navbar [data-bs-toggle="dropdown"]:focus {
+    outline: 2px solid #E5E5E5 !important;
+    outline-offset: 2px !important;
+    -webkit-focus-ring-color: #E5E5E5;
+  }
+}
+
+/* Firefox-specific focus fixes */
+@-moz-document url-prefix() {
+  .navbar .nav-link:focus,
+  .navbar_dropdown_item:focus,
+  .navbar [data-bs-toggle="dropdown"]:focus {
+    outline: 2px solid #E5E5E5 !important;
+    outline-offset: 2px !important;
+    -moz-outline-radius: .25rem;
+  }
 }
 
 .nav-item.dropdown:hover > .dropdown-menu {
@@ -467,20 +503,51 @@ svg.wh6 {
 
 .skiplink {
   position: absolute;
-  top: -40px;
-  left: 6px;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
   background: #000;
   color: #fff;
-  padding: 8px;
+  padding: 8px 16px;
   text-decoration: none;
-  z-index: 9999;
-  transition: top 0.3s ease-in-out;
+  z-index: 10000;
+  font-size: 16px;
+  border-radius: 4px;
 }
 
-skiplink:focus,
+.skiplink:focus,
 .skiplink:focus-visible {
-  top: 6px;
-  outline: 4px solid #fff; /* High-contrast outline for visibility */
-  outline-offset: 2px; /* Space between the outline and the element */
-  border-radius: 4px; /* Rounded corners for the outline */
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  background: #000;
+  color: #fff;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 10001;
+  outline: 4px solid #fff !important;
+  outline-offset: 2px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Force Safari to show skip links */
+@supports (-webkit-appearance: none) {
+  .skiplink:focus,
+  .skiplink:focus-visible {
+    position: fixed !important;
+    left: 10px !important;
+    top: 10px !important;
+    z-index: 10001 !important;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
 }
