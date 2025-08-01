@@ -15,10 +15,10 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <a class="skiplink" href="#maincontent">Skip to main content</a>
+  <body data-controller="skiplink">
+    <a class="skiplink" href="#maincontent" tabindex="0" role="link">Skip to main content</a>
     <% if controller.controller_name == 'items' && controller.action_name == 'search' %>
-      <a class="skiplink" href="#search-results">Skip to search results</a>
+      <a class="skiplink" href="#search-results" tabindex="0" role="link">Skip to search results</a>
     <% end %>
     <%= render partial: "layouts/navbar" %>
     <%= render partial: "layouts/additional_bar" %>

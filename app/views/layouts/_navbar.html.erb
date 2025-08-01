@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-xl navbar-dark bg-um-blue justify-content-between align-items-center">
+<nav class="navbar navbar-expand-xl navbar-dark bg-um-blue justify-content-between align-items-center" data-controller="navbar">
   <div class="container-fluid" style="--bs-focus-ring-color:#E5E5E5;" >
     <%= link_to root_path, class: "a-nav focus-ring border-0 rounded-2" do %>
       <div id="LSAlogo" class="d-flex align-items-center">
@@ -44,10 +44,10 @@
 
         <% if user_signed_in? && is_admin? %>
           <li class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0">
-            <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" tabindex="0">
               Admin
             </a>
-            <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item">
+            <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item" role="menu" aria-labelledby="admin-dropdown-mobile">
               <li>
                 <%= link_to "Loan Questions", loan_questions_path, class: 'dropdown-item navbar_dropdown_item' if policy(LoanQuestion).index? %>
               </li>
@@ -106,10 +106,10 @@
 
       <% if user_signed_in? && is_admin? %>
         <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0">
-          <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" tabindex="0">
             Admin
           </a>
-          <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item text-white">
+          <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item text-white" role="menu" aria-labelledby="admin-dropdown">
             <li>
               <%= link_to "Loan Questions", loan_questions_path, class: 'dropdown-item navbar_dropdown_item' if policy(LoanQuestion).index? %>
             </li>
@@ -134,11 +134,11 @@
 
       <% if user_signed_in? %>
         <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 mr-2 rounded-0 border-0 hide-on-mobile">
-          <a class="d-flex justify-content-center align-items-center focus-ring border-0 rounded-2 body-md-text mt-2 hide-on-mobile nav-user btn btn-warning fw-semibold rounded-5 py-2 py-2 ms-3" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="d-flex justify-content-center align-items-center focus-ring border-0 rounded-2 body-md-text mt-2 hide-on-mobile nav-user btn btn-warning fw-semibold rounded-5 py-2 py-2 ms-3" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" tabindex="0">
             Account
           </a>
           
-            <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item" style="position: absolute; top:100; right:0; width:250px;">
+            <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item" style="position: absolute; top:100; right:0; width:250px;" role="menu" aria-labelledby="account-dropdown">
               <li class="dropdown-item navbar_dropdown_item">
                 <div class="card w-100 p-3 justify-content-center align-items-center ">
                   <span><strong><%= current_user.display_name %></strong></span>

@@ -9,6 +9,8 @@ import CheckboxGroupRequiredController from "./checkbox_group_required_controlle
 import AutosubmitController from "./autosubmit_controller"
 import RemoteModalController from "./remote_modal_controller"
 import ModalResetController from "./modal_reset_controller"
+import NavbarController from "./navbar_controller"
+import SkiplinkController from "./skiplink_controller"
 
 application.register("collection-dropdown", CollectionDropdownController)
 application.register("preparation", PreparationController)
@@ -18,4 +20,6 @@ application.register("checkbox-group-required", CheckboxGroupRequiredController)
 application.register("autosubmit", AutosubmitController)
 application.register("remote-modal", RemoteModalController)
 application.register("modal-reset", ModalResetController)
+application.register("navbar", NavbarController)
+application.register("skiplink", SkiplinkController)
 eagerLoadControllersFrom("controllers", application)
