@@ -87,7 +87,7 @@ class LoanRequestsController < ApplicationController
     begin
       if @loan_request.save
         File.open(pdf_tempfile, "wb") do |file|
-          file.write(PdfGenerator.new(@loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
+          file.write(PdfGenerator.new(current_user, @loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
         end
         pdf_tempfile.rewind
 

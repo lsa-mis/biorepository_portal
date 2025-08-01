@@ -12,10 +12,11 @@ class PdfGenerator
     }
   }.freeze
 
-  def initialize(loan_answers, checkout_items, collection_answers = {})
+  def initialize(user, loan_answers, checkout_items, collection_answers = {})
     @loan_answers = loan_answers
     @checkout_items = checkout_items
     @collection_answers = collection_answers
+    @user = user
   end
 
   def generate_pdf_content
@@ -24,9 +25,16 @@ class PdfGenerator
       pdf.font('Montserrat')
 
       # Title
-      pdf.text "#{@loan_answers.first[1].user&.first_name} #{@loan_answers.first[1].user&.last_name} - #{Date.today.strftime("%B %d, %Y")}",
-              size: 20, style: :bold, align: :center
+      pdf.text "#{@user&.name_with_email}", size: 20, style: :bold, align: :center
+      pdf.text "#{Date.today.strftime("%B %d, %Y")}", size: 20, style: :bold, align: :center
       pdf.move_down 20
+
+      # Section: User Information
+      pdf.text "User Information", size: 16, style: :bold
+      pdf.stroke_horizontal_rule
+      pdf.move_down 10
+
+      render_user_information(pdf, @user)
 
       # Section: Generic Loan Questions
       pdf.text "Generic Loan Questions", size: 16, style: :bold
@@ -100,6 +108,14 @@ class PdfGenerator
 
       pdf.move_down 8
     end
+  end
+
+  def render_user_information(pdf, user)
+    pdf.text "Name: #{user.display_name}", size: 12
+    pdf.text "Email: #{user.email}", size: 12
+    pdf.text "Affiliation: #{user.affiliation}", size: 12
+    pdf.text "ORCID: #{user.orcid}", size: 12 if user.orcid.present?
+    pdf.move_down 10
   end
 
 end
