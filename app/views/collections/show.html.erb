@@ -2,50 +2,52 @@
  <%= tag.meta name: "turbo-cache-control", content: "no-cache" %>
 <% end %>
 
-<% if (announcement = Announcement.find_by(location: "collection_show")) && announcement.displayed? %>
-  <div class="announcement">
-    <%= sanitize(announcement.content.to_s) %>
+<div class="mx-2 mx-lg-9">
+  <% if (announcement = Announcement.find_by(location: "collection_show")) && announcement.displayed? %>
+    <div class="announcement">
+      <%= sanitize(announcement.content.to_s) %>
+    </div>
+  <% end %>
+
+  <div class="py-3">
+    <%= render @collection %>
   </div>
-<% end %>
 
-<div class="py-3">
-  <%= render @collection %>
-</div>
+  <div class="shadow-sm rounded p-4">
+    <h4 class="fw-bold">Collection Items</h4>
+    <div class="d-flex align-items-center gap-3">
+      <%= search_form_for @q1, url: search_collection_path(@collection), turbo: true, data: { turbo_frame: "all_items" }, method: :post, as: :q1 do |f| %>
+        <div class="rounded-3 shadow-sm search-bar-container">
+          <div class="mb-2">
+            <%= f.label :country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont,
+                        "Search Items in Collection", class: "visually-hidden" %>
 
-<div class="shadow-sm rounded p-4">
-  <h4 class="fw-bold">Collection Items</h4>
-  <div class="d-flex align-items-center gap-3">
-    <%= search_form_for @q1, url: search_collection_path(@collection), turbo: true, data: { turbo_frame: "all_items" }, method: :post, as: :q1 do |f| %>
-      <div class="rounded-3 shadow-sm search-bar-container">
-        <div class="mb-2">
-          <%= f.label :country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont,
-                      "Search Items in Collection", class: "visually-hidden" %>
+            <div class="input-group input-group-sm">
+              <%= f.search_field :country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont,
+                                placeholder: "Search by Scientific or Vernacular Name or Country, State, Province",
+                                class: "form-control small-search-input",
+                                aria: { label: "Search" } %>
 
-          <div class="input-group input-group-sm">
-            <%= f.search_field :country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont,
-                              placeholder: "Search by Scientific or Vernacular Name or Country, State, Province",
-                              class: "form-control small-search-input",
-                              aria: { label: "Search" } %>
-
-            <button class="search-icon-button" type="submit">
-              <i class="bi bi-search" aria-hidden="true"></i>
-              <span class="visually-hidden">Search</span>
-            </button>
+              <button class="search-icon-button" type="submit">
+                <i class="bi bi-search" aria-hidden="true"></i>
+                <span class="visually-hidden">Search</span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    <% end %>
-    <span class="text-black">Or go to</span>
-    <%= link_to "Advanced Search", search_items_path(collection_id: @collection), class: "link_to" %>
-  </div>
-  <div class="mb-4">
-    <%= turbo_frame_tag "all_items" do %>
-      <% if @items.empty? %>
-        No items available in this collection.
-      <% else %>
-        <%= render partial: "items" %>
       <% end %>
-    <% end %>
+      <span class="text-black">Or go to</span>
+      <%= link_to "Advanced Search", search_items_path(collection_id: @collection), class: "link_to" %>
+    </div>
+    <div class="mb-4">
+      <%= turbo_frame_tag "all_items" do %>
+        <% if @items.empty? %>
+          No items available in this collection.
+        <% else %>
+          <%= render partial: "items" %>
+        <% end %>
+      <% end %>
+    </div>
   </div>
+  <br>
 </div>
-<br>
