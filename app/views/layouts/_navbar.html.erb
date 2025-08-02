@@ -17,68 +17,78 @@
     </button>
 
     <!-- this is the hamburger menu-->
-    <div class="collapse navbar-collapse d-md-none" id="navbarBurgerMenu">
-      <ul class="navbar-nav me-auto mb-2 mb-md-0">
-        <% if user_signed_in? %>
-          <li class="nav-section mt-2">
-            <div class="card w-100 p-3 justify-content-center align-items-center">
-              <span><strong> <%= current_user.display_name %></strong></span>
-              <% if is_admin? %>
-                <span><%= user_role %></span>
-              <% end %>
-              <%= link_to "View Profile", profile_path(current_user), class: "btn btn-warning fw-semibold rounded-2 px-3 py-2 ms-3 mt-2" %>
-            </div>
-          </li>
-        <% end %>
-        
-        <li class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
-          <%= link_to "Explore Collections", collections_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white' %>
-        </li>
-
-        <li class="d-flex align-items-center gap-2 nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
-          <%= link_to "Checkout", checkout_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white' %>
-          <%= turbo_frame_tag "total1" do %>
-            <%= render 'checkout/total' %>
-          <% end %>
-        </li>
-
-        <% if user_signed_in? && is_admin? %>
-          <li class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0">
-            <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Admin
-            </a>
-            <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item">
-              <li>
-                <%= link_to "Loan Questions", loan_questions_path, class: 'dropdown-item navbar_dropdown_item' if policy(LoanQuestion).index? %>
-              </li>
-              <li>
-                <%= link_to "Create Preferences", app_preferences_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).index? %>
-              </li>
-              <li>
-                <%= link_to "App Preferences", app_prefs_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).app_prefs? %>
-              </li>
-              <li>
-                <%= link_to "Announcements", announcements_path, class: 'dropdown-item navbar_dropdown_item' if policy(Announcement).index? %>
-              </li>
-              <li>
-                <%= link_to "Reports", reports_path, class: 'dropdown-item navbar_dropdown_item' %>
-              </li>
-              <li>
-                <%= link_to "Docs", "https://docs.google.com/document/d/e/2PACX-1vQXwhw2yetGRQNlHp_tkAO1rEOgFMCIq6Nsuq66rdvPuE4b0euYUEHeAcJO9OCxSuwG2J7tLbJLFa2f/pub", target: "_blank", class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).app_prefs? %>
-              </li>
-            </ul>
-          </li>
-        <% end %>
-        <li class="d-flex flex-row mt-2">
+    <div class="collapse navbar-collapse d-md-none justify-content-center text-center" id="navbarBurgerMenu">
+      <div class="w-100 d-flex flex-column align-items-center justify-content-center">
+        <ul class="navbar-nav justify-content-center align-items-center">
           <% if user_signed_in? %>
-            <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign" do %>
-              <span>Log Out</span>
-            <% end %>
-          <% else %>
-            <%= link_to "Sign In", new_user_session_path, data: {turbo: "false"}, class: "btn btn-sign" %>
+            <li class="nav-section mt-2">
+              <div class="card w-100 p-3 justify-content-center align-items-center">
+                <span><strong> <%= current_user.display_name %></strong></span>
+                <% if is_admin? %>
+                  <span><%= user_role %></span>
+                <% end %>
+                <%= link_to "View Profile", profile_path(current_user), class: "btn btn-warning fw-semibold rounded-2 px-3 py-2 ms-3 mt-2" %>
+              </div>
+            </li>
           <% end %>
-        </li>
-      </ul>
+          
+          <li class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+            <%= link_to "Explore Collections", collections_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white' %>
+          </li>
+
+          <li class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+            <%= link_to "Advanced Search", search_items_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white' %>
+          </li>
+
+          <li class="d-flex align-items-center gap-2 nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+            <%= link_to "Checkout", checkout_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white' %>
+            <%= turbo_frame_tag "total1" do %>
+              <%= render 'checkout/total' %>
+            <% end %>
+          </li>
+
+          <li class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
+            <%= link_to "FAQ", faqs_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white' %>
+          </li>
+
+          <% if user_signed_in? && is_admin? %>
+            <li class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0">
+              <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Admin
+              </a>
+              <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item">
+                <li>
+                  <%= link_to "Loan Questions", loan_questions_path, class: 'dropdown-item navbar_dropdown_item' if policy(LoanQuestion).index? %>
+                </li>
+                <li>
+                  <%= link_to "Create Preferences", app_preferences_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).index? %>
+                </li>
+                <li>
+                  <%= link_to "App Preferences", app_prefs_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).app_prefs? %>
+                </li>
+                <li>
+                  <%= link_to "Announcements", announcements_path, class: 'dropdown-item navbar_dropdown_item' if policy(Announcement).index? %>
+                </li>
+                <li>
+                  <%= link_to "Reports", reports_path, class: 'dropdown-item navbar_dropdown_item' %>
+                </li>
+                <li>
+                  <%= link_to "Docs", "https://docs.google.com/document/d/e/2PACX-1vQXwhw2yetGRQNlHp_tkAO1rEOgFMCIq6Nsuq66rdvPuE4b0euYUEHeAcJO9OCxSuwG2J7tLbJLFa2f/pub", target: "_blank", class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).app_prefs? %>
+                </li>
+              </ul>
+            </li>
+          <% end %>
+          <li class="d-flex flex-row mt-2">
+            <% if user_signed_in? %>
+              <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign" do %>
+                Log Out
+              <% end %>
+            <% else %>
+              <%= link_to "Sign In", new_user_session_path, data: {turbo: "false"}, class: "btn btn-sign" %>
+            <% end %>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <!-- this is regular navbar-->
