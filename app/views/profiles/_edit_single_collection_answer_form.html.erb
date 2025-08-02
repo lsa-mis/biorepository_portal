@@ -8,7 +8,7 @@
 
       <% case collection_question.question_type %>
       <% when "text" %>
-        <%= text_field_tag "collection_answers[#{collection_question.id}]", existing_answer&.answer&.to_plain_text&.strip, class: "form-control" %>
+        <%= text_area_tag "collection_answers[#{collection_question.id}]", existing_answer&.answer&.to_plain_text&.strip, class: "form-control", rows: 3, style: "resize: vertical;" %>
 
       <% when "checkbox" %>
         <p>Pick one or more options below</p>
