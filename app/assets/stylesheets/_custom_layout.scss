@@ -485,14 +485,20 @@ skiplink:focus,
   border-radius: 4px; /* Rounded corners for the outline */
 }
 
+/* CSS Custom Properties (Variables) */
+:root {
+  --navbar-height: 100px;
+  --navbar-offset: 20px;
+}
+
 /* Items to Loan Box Styles */
 .items-to-loan-box {
   position: fixed;
-  top: 120px; /* Adjust based on navbar height */
+  top: calc(var(--navbar-height) + var(--navbar-offset)); /* Uses CSS variables */
   right: 20px;
   width: 280px;
   z-index: 1000;
-  max-height: calc(100vh - 140px);
+  max-height: calc(100vh - var(--navbar-height) - var(--navbar-offset) * 2);
   overflow-y: auto;
 }
 
