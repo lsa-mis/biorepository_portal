@@ -484,3 +484,81 @@ skiplink:focus,
   outline-offset: 2px; /* Space between the outline and the element */
   border-radius: 4px; /* Rounded corners for the outline */
 }
+
+/* Items to Loan Box Styles */
+.items-to-loan-box {
+  position: fixed;
+  top: 120px; /* Adjust based on navbar height */
+  right: 20px;
+  width: 280px;
+  z-index: 1000;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+.items-to-loan-box .card {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.items-to-loan-box .card-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.items-to-loan-box .card-body {
+  padding: 12px 16px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.items-to-loan-box .list-unstyled li {
+  padding: 6px 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.items-to-loan-box .list-unstyled li:last-child {
+  border-bottom: none;
+}
+
+.items-to-loan-box .badge {
+  font-size: 0.75rem;
+  min-width: 24px;
+}
+
+/* Hide on mobile devices */
+@media (max-width: 768px) {
+  .items-to-loan-box {
+    display: none;
+  }
+}
+
+/* Adjust position for smaller screens */
+@media (max-width: 1200px) {
+  .items-to-loan-box {
+    width: 250px;
+    right: 10px;
+  }
+}
+
+/* Account Dropdown Styles */
+.account-dropdown {
+  width: 250px !important;
+  z-index: 1050 !important;
+  position: absolute !important;
+  right: 0 !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+/* Ensure consistent positioning for both hover and click */
+.nav-item.dropdown:hover .account-dropdown,
+.nav-item.dropdown .account-dropdown.show {
+  display: block;
+  position: absolute !important;
+  right: 0 !important;
+  left: auto !important;
+  top: 100% !important;
+  transform: none !important;
+}
