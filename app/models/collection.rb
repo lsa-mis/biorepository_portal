@@ -11,6 +11,10 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #
+# Indexes
+#
+#  index_collections_on_division  (division)
+#
 class Collection < ApplicationRecord
   has_many :items, dependent: :destroy
   has_many :collection_questions, dependent: :destroy

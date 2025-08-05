@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_29_154748) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_05_232730) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -114,6 +114,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_29_154748) do
     t.string "link_to_policies"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["division"], name: "index_collections_on_division"
   end
 
   create_table "faqs", force: :cascade do |t|
