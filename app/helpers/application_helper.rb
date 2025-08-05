@@ -159,5 +159,11 @@ module ApplicationHelper
     end
     [checkout_items, collection_ids.uniq]
   end
+  
+  def number_of_items_to_loan
+    Collection.joins(:items)
+              .group('collections.division')
+              .count('items.id')
+  end
 
 end
