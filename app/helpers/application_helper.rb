@@ -165,6 +165,7 @@ module ApplicationHelper
       Collection.joins(:items)
                 .group('collections.division')
                 .count('items.id')
+    end
   end
 
 end
