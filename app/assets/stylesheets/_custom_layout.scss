@@ -527,15 +527,29 @@ skiplink:focus,
   min-width: 24px;
 }
 
-/* Hide on mobile devices */
+/* Adjust for mobile devices */
 @media (max-width: 768px) {
   .items-to-loan-box {
-    display: none;
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 10px;
+    z-index: 1000;
+    max-height: none;
+    overflow-y: visible;
+  }
+  
+  .items-to-loan-box .card-body {
+    max-height: none;
+    overflow-y: visible;
   }
 }
 
 /* Adjust position for smaller screens */
-@media (max-width: 1200px) {
+@media (max-width: 1200px) and (min-width: 769px) {
   .items-to-loan-box {
     width: 250px;
     right: 10px;
