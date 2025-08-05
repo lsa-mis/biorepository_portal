@@ -116,27 +116,27 @@
 
       <% if user_signed_in? && is_admin? %>
         <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0">
-          <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" tabindex="0">
+          <a id="admin-dropdown" class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" tabindex="0">
             Admin
           </a>
           <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item text-white admin-dropdown" role="menu" aria-labelledby="admin-dropdown">
-            <li>
-              <%= link_to "Loan Questions", loan_questions_path, class: 'dropdown-item navbar_dropdown_item' if policy(LoanQuestion).index? %>
+            <li role="none">
+              <%= link_to "Loan Questions", loan_questions_path, class: 'dropdown-item navbar_dropdown_item', role: 'menuitem' if policy(LoanQuestion).index? %>
             </li>
-            <li>
-              <%= link_to "Create Preferences", app_preferences_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).index? %>
+            <li role="none">
+              <%= link_to "Create Preferences", app_preferences_path, class: 'dropdown-item navbar_dropdown_item', role: 'menuitem' if policy(AppPreference).index? %>
             </li>
-            <li>
-              <%= link_to "App Preferences", app_prefs_path, class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).app_prefs? %>
+            <li role="none">
+              <%= link_to "App Preferences", app_prefs_path, class: 'dropdown-item navbar_dropdown_item', role: 'menuitem' if policy(AppPreference).app_prefs? %>
             </li>
-            <li>
-              <%= link_to "Announcements", announcements_path, class: 'dropdown-item navbar_dropdown_item' if policy(Announcement).index? %>
+            <li role="none">
+              <%= link_to "Announcements", announcements_path, class: 'dropdown-item navbar_dropdown_item', role: 'menuitem' if policy(Announcement).index? %>
             </li>
-            <li>
-              <%= link_to "Reports", reports_path, class: 'dropdown-item navbar_dropdown_item' %>
+            <li role="none">
+              <%= link_to "Reports", reports_path, class: 'dropdown-item navbar_dropdown_item', role: 'menuitem' %>
             </li>
-            <li>
-              <%= link_to "Docs", "https://docs.google.com/document/d/e/2PACX-1vQXwhw2yetGRQNlHp_tkAO1rEOgFMCIq6Nsuq66rdvPuE4b0euYUEHeAcJO9OCxSuwG2J7tLbJLFa2f/pub", target: "_blank", class: 'dropdown-item navbar_dropdown_item' if policy(AppPreference).app_prefs? %>
+            <li role="none">
+              <%= link_to "Docs", "https://docs.google.com/document/d/e/2PACX-1vQXwhw2yetGRQNlHp_tkAO1rEOgFMCIq6Nsuq66rdvPuE4b0euYUEHeAcJO9OCxSuwG2J7tLbJLFa2f/pub", target: "_blank", class: 'dropdown-item navbar_dropdown_item', role: 'menuitem' if policy(AppPreference).app_prefs? %>
             </li>
           </ul>
         </div>
@@ -144,23 +144,23 @@
 
       <% if user_signed_in? %>
         <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 mr-2 rounded-0 border-0 hide-on-mobile">
-          <a class="d-flex justify-content-center align-items-center focus-ring border-0 rounded-2 body-md-text mt-2 hide-on-mobile nav-user btn btn-warning fw-semibold rounded-5 py-2 py-2 ms-3" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" tabindex="0">
+          <a id="account-dropdown" class="d-flex justify-content-center align-items-center focus-ring border-0 rounded-2 body-md-text mt-2 hide-on-mobile nav-user btn btn-warning fw-semibold rounded-5 py-2 py-2 ms-3" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" tabindex="0">
             Account
           </a>
           
             <ul class="dropdown-menu dropdown-menu-end bg-primary rounded-0 navbar_dropdown_item account-dropdown" role="menu" aria-labelledby="account-dropdown">
-              <li class="dropdown-item navbar_dropdown_item">
-                <div class="card w-100 p-3 justify-content-center align-items-center ">
+              <li role="none" class="dropdown-item navbar_dropdown_item">
+                <div class="card w-100 p-3 justify-content-center align-items-center" role="menuitem" tabindex="-1">
                   <span><strong><%= current_user.display_name %></strong></span>
                   <% if is_admin? %>
                     <span><%= user_role %></span>
                   <% end %>
-                  <%= link_to "View Profile", profile_path(current_user), class: "btn btn-warning fw-semibold rounded-2 px-3 py-2 ms-3 mt-2" %>
+                  <%= link_to "View Profile", profile_path(current_user), class: "btn btn-warning fw-semibold rounded-2 px-3 py-2 ms-3 mt-2", role: "menuitem" %>
                 </div>
               </li>
-              <li class="dropdown-item navbar_dropdown_item">
-                <div class="d-flex flex-row justify-content-center align-items-center mt-2">
-                  <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign " do %>
+              <li role="none" class="dropdown-item navbar_dropdown_item">
+                <div class="d-flex flex-row justify-content-center align-items-center mt-2" role="menuitem" tabindex="-1">
+                  <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign", role: "menuitem" do %>
                     Log Out
                   <% end %> 
                 </div>
