@@ -161,9 +161,10 @@ module ApplicationHelper
   end
   
   def number_of_items_to_loan
-    Collection.joins(:items)
-              .group('collections.division')
-              .count('items.id')
+    Rails.cache.fetch("number_of_items_to_loan", expires_in: 10.hours) do
+      Collection.joins(:items)
+                .group('collections.division')
+                .count('items.id')
   end
 
 end
