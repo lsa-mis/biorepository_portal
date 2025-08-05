@@ -562,3 +562,18 @@ skiplink:focus,
   top: 100% !important;
   transform: none !important;
 }
+
+/* Admin Dropdown Styles */
+.admin-dropdown {
+  z-index: 1050 !important;
+  position: absolute !important;
+}
+
+/* Ensure consistent positioning for admin dropdown */
+.nav-item.dropdown:hover .admin-dropdown,
+.nav-item.dropdown .admin-dropdown.show {
+  display: block;
+  position: absolute !important;
+  top: 100% !important;
+  transform: none !important;
+}
