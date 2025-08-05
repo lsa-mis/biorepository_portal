@@ -150,7 +150,7 @@
           
             <ul class="dropdown-menu dropdown-menu-end bg-primary rounded-0 navbar_dropdown_item account-dropdown" role="menu" aria-labelledby="account-dropdown">
               <li role="none" class="dropdown-item navbar_dropdown_item">
-                <div class="card w-100 p-3 justify-content-center align-items-center" role="menuitem" tabindex="-1">
+                <div class="card w-100 p-3 justify-content-center align-items-center" tabindex="-1">
                   <span><strong><%= current_user.display_name %></strong></span>
                   <% if is_admin? %>
                     <span><%= user_role %></span>
@@ -159,7 +159,7 @@
                 </div>
               </li>
               <li role="none" class="dropdown-item navbar_dropdown_item">
-                <div class="d-flex flex-row justify-content-center align-items-center mt-2" role="menuitem" tabindex="-1">
+                <div class="d-flex flex-row justify-content-center align-items-center mt-2" tabindex="-1">
                   <%= button_to destroy_user_session_path, method: :delete, data: {turbo: "false"}, class: "btn btn-sign", role: "menuitem" do %>
                     Log Out
                   <% end %> 
