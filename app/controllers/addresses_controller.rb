@@ -12,7 +12,11 @@ class AddressesController < ApplicationController
   def create
     @address = current_user.addresses.new(address_params)
     if @address.save
-      redirect_to addresses_path, notice: "Address saved."
+      if params[:ship_to_new_address]
+        redirect_to new_loan_request_path, notice: "New Address Added"
+      else
+        redirect_to addresses_path, notice: "Address saved."
+      end
     else
       render :new
     end
@@ -41,6 +45,6 @@ class AddressesController < ApplicationController
   end
 
   def address_params
-    params.require(:address).permit(:first_name, :last_name, :email, :street, :city, :state, :zip, :country, :phone, :primary)
+    params.require(:address).permit(:first_name, :last_name, :email, :street, :address_line_2, :city, :state, :zip, :country, :phone, :primary)
   end
 end
