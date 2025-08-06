@@ -1,5 +1,5 @@
 class AddressesController < ApplicationController
-  before_action :set_address, only: [:edit, :update, :destroy]
+  before_action :set_address, only: [:edit, :update, :destroy, :set_primary]
 
   def index
     @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
@@ -35,6 +35,19 @@ class AddressesController < ApplicationController
   def destroy
     @address.destroy
     redirect_to addresses_path, notice: "Address deleted."
+  end
+
+  def set_primary
+    # First, unset primary for all user's addresses
+    current_user.addresses.update_all(primary: false)
+    
+    # Then set this address as primary
+    @address.update(primary: true)
+    
+    respond_to do |format|
+      format.json { render json: { success: true, message: "Primary address updated" } }
+      format.html { redirect_back(fallback_location: addresses_path, notice: "Primary address updated.") }
+    end
   end
 
   private

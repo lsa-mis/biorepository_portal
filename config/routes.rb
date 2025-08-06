@@ -29,7 +29,11 @@ Rails.application.routes.draw do
 
   resources :users, only: [:edit, :update]
 
-  resources :addresses, only: [:show, :edit, :update, :destroy, :new, :create, :index]
+  resources :addresses, only: [:show, :edit, :update, :destroy, :new, :create, :index] do
+    member do
+      patch :set_primary
+    end
+  end
 
   get 'app_preference/:name/:global', to: 'app_preferences#delete_preference', as: :delete_preference
   get 'app_preferences/app_prefs', to: 'app_preferences#app_prefs', as: :app_prefs
