@@ -29,7 +29,8 @@
 FactoryBot.define do
   factory :address do
     user { nil }
-    name { "MyString" }
+    first_name { "MyString" }
+    last_name { "MyString" }
     street { "MyString" }
     city { "MyString" }
     state { "MyString" }
