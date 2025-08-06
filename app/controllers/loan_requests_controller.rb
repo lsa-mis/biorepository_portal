@@ -77,7 +77,10 @@ class LoanRequestsController < ApplicationController
     user_missing_fields = true unless current_user.last_name.present?
     user_missing_fields = true unless current_user.affiliation.present?
 
-    if missing_loan_answers || missing_collection_answers|| user_missing_fields
+    # Check if shipping information is missing
+    shipping_address = get_shipping_address
+
+    if missing_loan_answers || missing_collection_answers|| user_missing_fields || shipping_address.nil?
       flash[:alert] = "Please answer all required questions before sending the loan request."
       redirect_to new_loan_request_path and return
     end
@@ -199,6 +202,13 @@ class LoanRequestsController < ApplicationController
         end
       end
       return false
+    end
+
+    def get_shipping_address
+      if current_user.addresses.any?
+        shipping_address = current_user.addresses.find_by(primary: true)
+      end
+      shipping_address.present? ? shipping_address : false
     end
 
     def attach_attachments_from_answers(answers, prefix_resolver)

@@ -29,12 +29,18 @@
       </div>
     <% end %>
   </div>
+  <% unless addresses.find_by(primary: true) %>
+    <div class="alert alert-warning text-center mt-3">
+      <span class="text-danger">Warning: Select an address to ship to. address is required.</span>
+    </div>
+  <% end %>
+  <div class="text-center mt-3">
+    <%= link_to "Ship to a New Address", new_address_path, class: "btn btn-outline-primary" %>
+  </div>
 <% else %>
   <div class="alert alert-warning text-center mt-3">
-    No addresses available. Please <%= link_to "add a new one", new_address_path %> first.
+    No addresses available. 
+    <span class="text-danger">Warning: Shipping address is required.</span>
+    Please <%= link_to "add a new one", new_address_path %> first.
   </div>
 <% end %>
-
-<div class="text-center mt-3">
-  <%= link_to "Ship to a New Address", new_address_path, class: "btn btn-outline-primary" %>
-</div>

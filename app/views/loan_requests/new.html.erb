@@ -79,7 +79,7 @@
     <%= render "layouts/remote_modal", id: "sharedModal", title: "", show: false %>
 
   <%= form_with(model: @loan_request, url: send_loan_request_path, html: { id: "loanForm" }) do |form| %>
-    <div class="d-flex justify-content-between mt-4">
+    <div class="d-flex justify-content-between my-4">
       <button type="button" class="btn btn-outline-secondary" id="prevStep" disabled>Previous</button>
       <button type="button" class="btn btn-primary" id="nextStep">Next</button>
       <%= form.submit "Send Loan Request", class: "btn btn-success d-none", id: "submitRequest" %>
