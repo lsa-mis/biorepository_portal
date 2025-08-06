@@ -26,6 +26,9 @@
                 <p class="card-text mb-1"><%= address.email %></p>
                 <p class="card-text text-muted"><i class="bi bi-telephone"></i> <%= address.phone %></p>
               </div>
+              <div class="card-footer d-flex justify-content-between align-items-center px-3">
+                <%= link_to "Edit", edit_address_path(address), class: "btn btn-sm btn-outline-secondary ms-auto" %>
+              </div>
             </div>
           <% end %>
         </div>
