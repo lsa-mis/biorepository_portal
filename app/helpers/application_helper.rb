@@ -162,7 +162,7 @@ module ApplicationHelper
   
   def number_of_items_to_loan
     Rails.cache.fetch("number_of_items_to_loan", expires_in: 10.hours) do
-      Collection.joins(:items).count('items.id')
+      Item.count
     end
   end
 
