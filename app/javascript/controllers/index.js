@@ -9,6 +9,7 @@ import CheckboxGroupRequiredController from "./checkbox_group_required_controlle
 import AutosubmitController from "./autosubmit_controller"
 import RemoteModalController from "./remote_modal_controller"
 import ModalResetController from "./modal_reset_controller"
+import LoanWizardController from "./loan_wizard_controller"
 
 application.register("collection-dropdown", CollectionDropdownController)
 application.register("preparation", PreparationController)
@@ -18,4 +19,5 @@ application.register("checkbox-group-required", CheckboxGroupRequiredController)
 application.register("autosubmit", AutosubmitController)
 application.register("remote-modal", RemoteModalController)
 application.register("modal-reset", ModalResetController)
+application.register("loan-wizard", LoanWizardController)
 eagerLoadControllersFrom("controllers", application)
