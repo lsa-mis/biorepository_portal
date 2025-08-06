@@ -12,7 +12,6 @@ class ItemsController < ApplicationController
   end
 
   def quick_search
-    @q = Item.ransack(params[:q])
     session[:quick_search_q] = params[:q]
     redirect_to search_items_path
   end
@@ -85,6 +84,7 @@ class ItemsController < ApplicationController
     end
 
     filtered_items = @q.result
+    @total_items = filtered_items.count
     @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @collections = Item.joins(:collection).where(id: filtered_items.select(:id)).distinct.pluck('collections.division').join(', ')
     @all_collections = Collection.all
@@ -92,9 +92,11 @@ class ItemsController < ApplicationController
     @dynamic_fields = []
     # Reprocessing params to ensure dynamic fields are included
     if params.dig(:q, :groupings).present?
+      
       params.dig(:q, :groupings).each do |group_num, values|
         group_pairs = []
         values.each do |field, val|
+          
           next if field == "m" || val.blank?
           group_pairs << { field: field, value: val }
         end
@@ -210,7 +212,7 @@ class ItemsController < ApplicationController
     end
 
     def transform_search_groupings
-      if params[:q] && params[:q][:groupings] && params[:q][:groupings]["0"]["0"].present?
+      if params[:q] && params[:q][:groupings]
         transformed_groupings = {}
         params[:q][:groupings].each do |group_index, group_data|
           group = {}

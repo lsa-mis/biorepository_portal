@@ -1,0 +1,37 @@
+<div class="container">
+  <h1 class="py-3 text-center">Shipping Addresses</h1>
+
+  <%= link_to "+ Add Address", new_address_path, class: "btn btn-primary mb-3" %>
+
+  <% if @addresses.any? %>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <% @addresses.each do |address| %>
+        <div class="col">
+          <%= link_to edit_address_path(address), class: "text-decoration-none text-reset" do %>
+            <div class="card h-100 shadow-sm <%= 'border-primary' if address.primary %>">
+              <div class="card-body <%= 'bg-light border border-primary' if address.primary %>">
+                <% if address.primary %>
+                  <span class="badge bg-primary mb-2">Primary</span>
+                <% end %>
+                <p class="card-title fw-bold mb-1"><%= address.first_name %> <%= address.last_name %></p>
+                <p class="card-text mb-1"><%= address.street %></p>
+                <% if address.address_line_2.present? %>
+                  <p class="card-text mb-1"><%= address.address_line_2 %></p>
+                <% end %>
+                <p class="card-text mb-1"><%= "#{address.city}, #{address.state} #{address.zip}" %></p>
+                <p class="card-text mb-1"><%= address.country %></p>
+                <p class="card-text mb-1"><%= address.email %></p>
+                <p class="card-text text-muted"><i class="bi bi-telephone"></i> <%= address.phone %></p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info text-center mt-4">
+      <p class="mb-1">No addresses saved yet.</p>
+      <%= link_to "Add a new address", new_address_path, class: "btn btn-sm btn-outline-primary mt-2" %>
+    </div>
+  <% end %>
+</div>

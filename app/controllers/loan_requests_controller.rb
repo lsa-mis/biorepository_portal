@@ -16,6 +16,7 @@ class LoanRequestsController < ApplicationController
     @loan_request = LoanRequest.new
     @checkout_items, @collection_ids = get_checkout_items
     @user = current_user
+    @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
 
     loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
 	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
