@@ -33,50 +33,46 @@
     </div>
   </div>
 
-
-
-    <!-- Step 1: User Info -->
-    <div class="wizard-step step-1 animate__animated animate__fadeIn" data-loan-wizard-target="step">
-      <h2 class="mb-3 text-center">User Information</h2>
-      <div class="row g-3">
-        <div class="col-md-3">
-          <%= render "profiles/user_field", label: "First Name", field_name: "first_name", value: @user.first_name %>
-        </div>
-        <div class="col-md-3">
-          <%= render "profiles/user_field", label: "Last Name", field_name: "last_name", value: @user.last_name %>
-        </div>
-        <div class="col-md-3">
-          <%= render "profiles/user_field", label: "Affiliation", field_name: "affiliation", value: @user.affiliation %>
-        </div>
-        <div class="col-md-3">
-          <%= render "profiles/user_field", label: "ORCID", field_name: "orcid", value: @user.orcid %>
-        </div>
+  <!-- Step 1: User Info -->
+  <div class="wizard-step step-1 animate__animated animate__fadeIn" data-loan-wizard-target="step">
+    <h2 class="mb-3 text-center">User Information</h2>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <%= render "profiles/user_field", label: "First Name", field_name: "first_name", value: @user.first_name %>
+      </div>
+      <div class="col-md-3">
+        <%= render "profiles/user_field", label: "Last Name", field_name: "last_name", value: @user.last_name %>
+      </div>
+      <div class="col-md-3">
+        <%= render "profiles/user_field", label: "Affiliation", field_name: "affiliation", value: @user.affiliation %>
+      </div>
+      <div class="col-md-3">
+        <%= render "profiles/user_field", label: "ORCID", field_name: "orcid", value: @user.orcid %>
       </div>
     </div>
+  </div>
 
-    <!-- Step 2: Loan Answers -->
-    <div class="wizard-step step-2 d-none animate__animated animate__fadeIn" data-loan-wizard-target="step">
-      <%= render "profiles/user_loan_answers" %>
-    </div>
+  <!-- Step 2: Loan Answers -->
+  <div class="wizard-step step-2 d-none animate__animated animate__fadeIn" data-loan-wizard-target="step">
+    <%= render "profiles/user_loan_answers" %>
+  </div>
 
-    <!-- Step 3: Collections -->
-    <div class="wizard-step step-3 d-none animate__animated animate__fadeIn" data-loan-wizard-target="step">
-      <%= render "profiles/user_collections_answers" %>
-    </div>
+  <!-- Step 3: Collections -->
+  <div class="wizard-step step-3 d-none animate__animated animate__fadeIn" data-loan-wizard-target="step">
+    <%= render "profiles/user_collections_answers" %>
+  </div>
 
-    <!-- Step 4: Items -->
-    <div class="wizard-step step-4 d-none animate__animated animate__fadeIn" data-loan-wizard-target="step">
-      <%= render "profiles/user_loan_items" %>
-    </div>
+  <!-- Step 4: Items -->
+  <div class="wizard-step step-4 d-none animate__animated animate__fadeIn" data-loan-wizard-target="step">
+    <%= render "profiles/user_loan_items" %>
+  </div>
 
-    <!-- Step 5: Shipment -->
-    <div class="wizard-step step-5 d-none animate__animated animate__fadeIn" data-loan-wizard-target="step">
-      <%= render "profiles/shipment_selection", addresses: @addresses %>
-    </div>
+  <!-- Step 5: Shipment -->
+  <div class="wizard-step step-5 d-none animate__animated animate__fadeIn" data-loan-wizard-target="step">
+    <%= render "profiles/shipment_selection", addresses: @addresses %>
+  </div>
 
-      
-
-    <%= render "layouts/remote_modal", id: "sharedModal", title: "", show: false %>
+  <%= render "layouts/remote_modal", id: "sharedModal", title: "", show: false %>
 
   <%= form_with(model: @loan_request, url: send_loan_request_path, html: { id: "loanForm" }) do |form| %>
     <div class="d-flex justify-content-between my-4">
@@ -87,49 +83,3 @@
 
   <% end %>
 </div>
-
-<style>
-  .stepwizard {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem;
-  }
-
-  .stepwizard .step {
-    flex: 0 0 auto;
-    width: 120px; /* adjust as needed for your longest label */
-    text-align: center;
-    flex-shrink: 0;
-  }
-
-
-
-  .stepwizard .circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid var(--bs-primary);
-    font-weight: bold;
-    font-size: 1rem;
-    background-color: white;
-    color: var(--bs-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: auto;
-    transition: all 0.3s ease;
-  }
-
-
-  .stepwizard .circle.bg-primary {
-    background-color: var(--bs-primary) !important;
-    color: white !important;
-  }
-
-  .stepwizard .circle.bg-secondary {
-    background-color: white !important;
-    color: var(--bs-primary) !important;
-  }
-</style>
-

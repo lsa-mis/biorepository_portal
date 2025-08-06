@@ -526,3 +526,44 @@ skiplink:focus,
   top: 100% !important;
   transform: none !important;
 }
+
+/* Loan Wizard Styles */
+.stepwizard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.stepwizard .step {
+  flex: 0 0 auto;
+  width: 120px; /* adjust as needed for your longest label */
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.stepwizard .circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--bs-primary);
+  font-weight: bold;
+  font-size: 1rem;
+  background-color: white;
+  color: var(--bs-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  transition: all 0.3s ease;
+}
+
+.stepwizard .circle.bg-primary {
+  background-color: var(--bs-primary) !important;
+  color: white !important;
+}
+
+.stepwizard .circle.bg-secondary {
+  background-color: white !important;
+  color: var(--bs-primary) !important;
+}
