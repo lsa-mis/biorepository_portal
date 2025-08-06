@@ -132,6 +132,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_06_124221) do
     t.string "link_to_policies"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["division"], name: "index_collections_on_division"
   end
 
   create_table "faqs", force: :cascade do |t|

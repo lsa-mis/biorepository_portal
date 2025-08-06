@@ -1,27 +1,28 @@
 <div class="bg-um-blue py-2">
   <div class="container-fluid ps-8 pe-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
-    <div class="d-flex flex-column mb-2 flex-md-row align-items-stretch align-items-md-center gap-2">
-      <div class="rounded-3 shadow-sm search-bar-container">
-        <%= form_with url: quick_search_items_path,
-                      method: :get,
-                      html: { class: "m-0", role: "search" },
-                      local: true do %>
-          <div class="input-group input-group-sm">
-            <input
-              type="search"
-              name="q[country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont]"
-              class="form-control small-search-input"
-              placeholder="Search by Scientific or Vernacular Name or Country, State, Province"
-              aria-label="Search"
-            />
-            <button class="search-icon-button" type="submit">
-              <i class="bi bi-search" aria-hidden="true"></i>
-              <span class="visually-hidden">Search</span>
-            </button>
-          </div>
-        <% end %>
-      </div>
-
+    <div class="rounded-3 shadow-sm search-bar-container mb-2">
+      <%= form_with url: quick_search_items_path,
+                    method: :get,
+                    html: { class: "m-0", role: "search" },
+                    local: true do %>
+        <div class="input-group input-group-sm">
+          <input
+            type="search"
+            name="q[country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont]"
+            class="form-control small-search-input"
+            placeholder="Search by Scientific or Vernacular Name or Country, State, Province"
+            aria-label="Search"
+          />
+          <button class="search-icon-button" type="submit">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <span class="visually-hidden">Search</span>
+          </button>
+        </div>
+      <% end %>
     </div>
+    <div class="rounded-3 shadow-sm bg-white text-truncate px-2 m-2">
+      <span><%= number_of_items_to_loan %> Items Available for Loan</span>
+    </div>
+
   </div>
 </div>
