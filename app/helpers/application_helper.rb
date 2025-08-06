@@ -159,5 +159,11 @@ module ApplicationHelper
     end
     [checkout_items, collection_ids.uniq]
   end
+  
+  def number_of_items_to_loan
+    Rails.cache.fetch("number_of_items_to_loan", expires_in: 10.hours) do
+      Item.count
+    end
+  end
 
 end

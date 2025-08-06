@@ -484,3 +484,45 @@ skiplink:focus,
   outline-offset: 2px; /* Space between the outline and the element */
   border-radius: 4px; /* Rounded corners for the outline */
 }
+
+/* CSS Custom Properties (Variables) */
+:root {
+  --navbar-height: 100px;
+  --navbar-offset: 20px;
+}
+
+/* Account Dropdown Styles */
+.account-dropdown {
+  width: 250px !important;
+  z-index: 1050 !important;
+  position: absolute !important;
+  right: 0 !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+/* Ensure consistent positioning for both hover and click */
+.nav-item.dropdown:hover .account-dropdown,
+.nav-item.dropdown .account-dropdown.show {
+  display: block;
+  position: absolute !important;
+  right: 0 !important;
+  left: auto !important;
+  top: 100% !important;
+  transform: none !important;
+}
+
+/* Admin Dropdown Styles */
+.admin-dropdown {
+  z-index: 1050 !important;
+  position: absolute !important;
+}
+
+/* Ensure consistent positioning for admin dropdown */
+.nav-item.dropdown:hover .admin-dropdown,
+.nav-item.dropdown .admin-dropdown.show {
+  display: block;
+  position: absolute !important;
+  top: 100% !important;
+  transform: none !important;
+}

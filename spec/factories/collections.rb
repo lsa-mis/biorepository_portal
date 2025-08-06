@@ -11,6 +11,10 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #
+# Indexes
+#
+#  index_collections_on_division  (division)
+#
 FactoryBot.define do
   factory :collection do
     division { "MPABI" }
