@@ -28,7 +28,7 @@
 #
 FactoryBot.define do
   factory :address do
-    user { nil }
+    user { association(:user) }
     first_name { "MyString" }
     last_name { "MyString" }
     street { "MyString" }
