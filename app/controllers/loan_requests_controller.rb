@@ -67,21 +67,26 @@ class LoanRequestsController < ApplicationController
       })
     end
 
-    # Check required questions
-    missing_loan_answers = check_missing_answers(@loan_answers)
-    missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data) }
-
+    @missing_fields_alert = ""
     # Check required user info fields
     user_missing_fields = false
     user_missing_fields = true unless current_user.first_name.present?
     user_missing_fields = true unless current_user.last_name.present?
     user_missing_fields = true unless current_user.affiliation.present?
 
-    # Check if shipping information is missing
-    shipping_address = get_shipping_address
+    if user_missing_fields
+      @missing_fields_alert = "User information is incomplete. "
+    end
 
-    if missing_loan_answers || missing_collection_answers|| user_missing_fields || shipping_address.nil?
-      flash[:alert] = "Please answer all required questions before sending the loan request."
+    # Check required questions
+    missing_loan_answers = check_missing_answers(@loan_answers, 'loan')
+    missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data, 'collection') }
+
+    # Check if shipping information is missing
+    missing_shipping_address = check_shipping_address
+
+    if missing_loan_answers || missing_collection_answers || user_missing_fields || missing_shipping_address
+      flash[:alert] = @missing_fields_alert
       redirect_to new_loan_request_path and return
     end
 
@@ -195,20 +200,28 @@ class LoanRequestsController < ApplicationController
       collection_answers
     end
 
-    def check_missing_answers(answers_hash)
+    def check_missing_answers(answers_hash, type)
       answers_hash.each do |question, answer|
-        if question.required? && (answer.blank? || answer.answer.blank?) 
+        if question.required? && (answer.blank? || answer.answer.blank?)
+          @missing_fields_alert += "Please answer all #{type} questions. "
           return true
         end
       end
       return false
     end
 
-    def get_shipping_address
-      if current_user.addresses.any?
-        shipping_address = current_user.addresses.find_by(primary: true)
+    def check_shipping_address
+      if current_user.addresses.present?
+        unless current_user.addresses.find_by(primary: true)
+          @missing_fields_alert += "Select an address to ship to."
+          return true
+        end
+        return false
+      else
+         @missing_fields_alert += "Shipping address is required"
+        return true
       end
-      shipping_address.present? ? shipping_address : false
+      return false
     end
 
     def attach_attachments_from_answers(answers, prefix_resolver)

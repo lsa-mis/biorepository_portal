@@ -31,11 +31,11 @@
   </div>
   <% unless addresses.find_by(primary: true) %>
     <div class="alert alert-warning text-center mt-3">
-      <span class="text-danger">Warning: Select an address to ship to. address is required.</span>
+      <span class="text-danger">Warning: Select an address to ship to.</span>
     </div>
   <% end %>
   <div class="text-center mt-3">
-    <%= link_to "Ship to a New Address", new_address_path, class: "btn btn-outline-primary" %>
+    <%= link_to "Ship to a New Address", new_address_path(ship_to_new_address: true), class: "btn btn-outline-primary" %>
   </div>
 <% else %>
   <div class="alert alert-warning text-center mt-3">
