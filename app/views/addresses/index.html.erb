@@ -15,6 +15,8 @@
               <div class="card-body <%= 'bg-light border border-primary' if address.primary %>">
                 <% if address.primary %>
                   <span class="badge bg-primary mb-2">Primary</span>
+                <% else %>
+                  <div class="mb-2">&nbsp;</div>
                 <% end %>
                 <p class="card-title fw-bold mb-1"><%= address.first_name %> <%= address.last_name %></p>
                 <p class="card-text mb-1"><%= address.street %></p>
