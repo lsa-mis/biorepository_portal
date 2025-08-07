@@ -14,12 +14,8 @@
             <%= hidden_field_tag :id, preparation.id %>
             <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
-            <button type="submit"
-                    class="btn btn-sm <%= checked_out ? 'btn-success' : 'btn-primary' %> d-flex align-items-center gap-1"
-                    >
-              <% if checked_out %>
-                <i class="bi bi-check-circle-fill"></i>
-              <% end %>
+            <button type="submit" class="btn btn-sm btn-success d-flex align-items-center gap-1">
+              <i class="bi bi-check-circle-fill"></i>
               <%= preparation.display_name %>
             </button>
           </form>
@@ -30,12 +26,7 @@
             <%= hidden_field_tag :id, preparation.id %>
             <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
-            <button type="submit"
-                    class="btn btn-sm <%= checked_out ? 'btn-success' : 'btn-primary' %> d-flex align-items-center gap-1"
-                    >
-              <% if checked_out %>
-                <i class="bi bi-check-circle-fill"></i>
-              <% end %>
+            <button type="submit" class="btn btn-sm btn-primary d-flex align-items-center gap-1">
               <%= preparation.display_name %>
             </button>
           </form>
