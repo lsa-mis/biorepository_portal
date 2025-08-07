@@ -1,9 +1,10 @@
-<% content_for :head do %>
-  <%= tag.meta name: "turbo-cache-control", content: "no-cache" %>
-<% end %>
+<div class="mx-4 mx-lg-9">
+  <% content_for :head do %>
+    <%= tag.meta name: "turbo-cache-control", content: "no-cache" %>
+  <% end %>
 
-<% is_preview = params[:preview].present? %>
-<%= render "layouts/announcement", is_preview: is_preview, location: "loan_request" %>
+  <% is_preview = params[:preview].present? %>
+  <%= render "layouts/announcement", is_preview: is_preview, location: "loan_request" %>
 
 <div>
   <%= link_to "Cancel Loan Request", checkout_path, class: "my-5 btn btn-outline-primary" %>
