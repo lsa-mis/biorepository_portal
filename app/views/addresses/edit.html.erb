@@ -64,11 +64,11 @@
               <%= f.label :primary, "Set as primary address", class: "form-check-label" %>
             </div>
 
-            <%= hidden_field_tag :ship_to_new_address, params[:ship_to_new_address] %>
+            <%= hidden_field_tag :Loan_request, params[:Loan_request] %>
             <%= hidden_field_tag :return_to, params[:return_to] %>
 
             <div class="d-grid">
-              <% if params[:ship_to_new_address] %>
+              <% if params[:Loan_request] %>
                 <%= f.submit "Update Shipping Address", class: "btn btn-primary" %>
               <% else %>
                 <%= f.submit "Update Address", class: "btn btn-primary" %>
