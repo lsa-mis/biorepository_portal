@@ -1,5 +1,5 @@
 class AddressesController < ApplicationController
-  before_action :set_address, only: [:edit, :update, :destroy]
+  before_action :set_address, only: [:edit, :update, :destroy, :set_primary]
 
   def index
     @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
@@ -12,7 +12,11 @@ class AddressesController < ApplicationController
   def create
     @address = current_user.addresses.new(address_params)
     if @address.save
-      redirect_to addresses_path, notice: "Address saved."
+      if params[:ship_to_new_address]
+        redirect_to new_loan_request_path, notice: "New Address Added"
+      else
+        redirect_to addresses_path, notice: "Address saved."
+      end
     else
       render :new
     end
@@ -22,7 +26,11 @@ class AddressesController < ApplicationController
 
   def update
     if @address.update(address_params)
-      redirect_to addresses_path, notice: "Address updated."
+      if params[:ship_to_new_address]
+        redirect_to new_loan_request_path, notice: "Address Updated"
+      else
+        redirect_to addresses_path, notice: "Address updated."
+      end
     else
       render :edit
     end
@@ -33,6 +41,19 @@ class AddressesController < ApplicationController
     redirect_to addresses_path, notice: "Address deleted."
   end
 
+  def set_primary
+    # First, unset primary for all user's addresses
+    current_user.addresses.update_all(primary: false)
+    
+    # Then set this address as primary
+    @address.update(primary: true)
+    
+    respond_to do |format|
+      format.json { render json: { success: true, message: "Primary address updated" } }
+      format.html { redirect_back(fallback_location: addresses_path, notice: "Primary address updated.") }
+    end
+  end
+
   private
 
   def set_address
@@ -41,6 +62,6 @@ class AddressesController < ApplicationController
   end
 
   def address_params
-    params.require(:address).permit(:first_name, :last_name, :email, :street, :city, :state, :zip, :country, :phone, :primary)
+    params.require(:address).permit(:first_name, :last_name, :email, :address_line_1, :address_line_2, :city, :state, :zip, :country, :phone, :primary)
   end
 end

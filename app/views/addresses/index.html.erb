@@ -1,8 +1,11 @@
 <div class="container">
   <h1 class="py-3 text-center">Shipping Addresses</h1>
 
-  <%= link_to "+ Add Address", new_address_path, class: "btn btn-primary mb-3" %>
-
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <%= link_to "+ Add Address", new_address_path, class: "btn btn-primary" %>
+    <%= link_to "Back to Profile", profile_path(current_user), class: "btn btn-outline-secondary" %>
+  </div>
+  
   <% if @addresses.any? %>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
       <% @addresses.each do |address| %>
@@ -12,9 +15,11 @@
               <div class="card-body <%= 'bg-light border border-primary' if address.primary %>">
                 <% if address.primary %>
                   <span class="badge bg-primary mb-2">Primary</span>
+                <% else %>
+                  <div class="mb-2">&nbsp;</div>
                 <% end %>
                 <p class="card-title fw-bold mb-1"><%= address.first_name %> <%= address.last_name %></p>
-                <p class="card-text mb-1"><%= address.street %></p>
+                <p class="card-text mb-1"><%= address.address_line_1 %></p>
                 <% if address.address_line_2.present? %>
                   <p class="card-text mb-1"><%= address.address_line_2 %></p>
                 <% end %>
@@ -22,6 +27,9 @@
                 <p class="card-text mb-1"><%= address.country %></p>
                 <p class="card-text mb-1"><%= address.email %></p>
                 <p class="card-text text-muted"><i class="bi bi-telephone"></i> <%= address.phone %></p>
+              </div>
+              <div class="card-footer d-flex justify-content-between align-items-center px-3">
+                <%= link_to "Edit", edit_address_path(address), class: "btn btn-sm btn-outline-secondary ms-auto" %>
               </div>
             </div>
           <% end %>

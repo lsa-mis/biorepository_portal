@@ -67,18 +67,26 @@ class LoanRequestsController < ApplicationController
       })
     end
 
-    # Check required questions
-    missing_loan_answers = check_missing_answers(@loan_answers)
-    missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data) }
-
+    @missing_fields_alert = ""
     # Check required user info fields
     user_missing_fields = false
     user_missing_fields = true unless current_user.first_name.present?
     user_missing_fields = true unless current_user.last_name.present?
     user_missing_fields = true unless current_user.affiliation.present?
 
-    if missing_loan_answers || missing_collection_answers|| user_missing_fields
-      flash[:alert] = "Please answer all required questions before sending the loan request."
+    if user_missing_fields
+      @missing_fields_alert = "User information is incomplete. "
+    end
+
+    # Check required questions
+    missing_loan_answers = check_missing_answers(@loan_answers, 'loan')
+    missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data, 'collection') }
+
+    # Check if shipping information is missing
+    missing_shipping_address = check_shipping_address
+
+    if missing_loan_answers || missing_collection_answers || user_missing_fields || missing_shipping_address
+      flash[:alert] = @missing_fields_alert
       redirect_to new_loan_request_path and return
     end
 
@@ -142,15 +150,25 @@ class LoanRequestsController < ApplicationController
 
       CSV.open(tempfile.path, "w") do |csv|
         csv << [
-          "User Name",
-          "User Institution",
-          "User Email",
+          "Requester Name",
+          "Requester Institution",
+          "Requester Email",
           "Division",
           "Catalog Number",
           "Prep Type",
           "Count",
-          "Barcode"
+          "Barcode",
+          "Address Line 1",
+          "Address Line 2",
+          "City",
+          "State",
+          "ZIP Code",
+          "Phone Number",
+          "Shipping Name",
+          "Shipping Email"
         ]
+
+        shipping_address = user.shipping_address
 
         @checkout.requestables.active.each do |requestable|
           csv << [
@@ -161,7 +179,15 @@ class LoanRequestsController < ApplicationController
             requestable.preparation.item.catalog_number,
             requestable.preparation.prep_type,
             requestable.count,
-            requestable.preparation.barcode
+            requestable.preparation.barcode,
+            shipping_address&.address_line_1,
+            shipping_address&.address_line_2,
+            shipping_address&.city,
+            shipping_address&.state,
+            shipping_address&.zip,
+            shipping_address&.phone,
+            [shipping_address&.first_name, shipping_address&.last_name].compact.join(" "),
+            shipping_address&.email
           ]
         end
       end
@@ -192,11 +218,26 @@ class LoanRequestsController < ApplicationController
       collection_answers
     end
 
-    def check_missing_answers(answers_hash)
+    def check_missing_answers(answers_hash, type)
       answers_hash.each do |question, answer|
-        if question.required? && (answer.blank? || answer.answer.blank?) 
+        if question.required? && (answer.blank? || answer.answer.blank?)
+          @missing_fields_alert += "Please answer all #{type} questions. "
           return true
         end
+      end
+      return false
+    end
+
+    def check_shipping_address
+      if current_user.addresses.present?
+        unless current_user.addresses.find_by(primary: true)
+          @missing_fields_alert += "Select an address to ship to."
+          return true
+        end
+        return false
+      else
+         @missing_fields_alert += "Shipping address is required. "
+        return true
       end
       return false
     end

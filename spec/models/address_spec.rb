@@ -3,6 +3,7 @@
 # Table name: addresses
 #
 #  id             :bigint           not null, primary key
+#  address_line_1 :string
 #  address_line_2 :string
 #  city           :string
 #  country        :string
@@ -12,7 +13,6 @@
 #  phone          :string
 #  primary        :boolean
 #  state          :string
-#  street         :string
 #  zip            :string
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
