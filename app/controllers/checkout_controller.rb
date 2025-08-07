@@ -103,7 +103,7 @@ class CheckoutController < ApplicationController
 
   def remove_preparation
     @preparation = Preparation.find(params[:id])
-    requestable = Requestable.find_by(preparation_id: @preparation.id)
+    requestable = @checkout.requestables.find_by(preparation_id: @preparation.id)
     if requestable
       requestable.destroy
       flash.now[:notice] = "Preparation removed from checkout."
