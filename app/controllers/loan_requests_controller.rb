@@ -92,11 +92,11 @@ class LoanRequestsController < ApplicationController
 
     pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
     csv_tempfile = create_csv_file(current_user)
-
+    
     begin
       if @loan_request.save
         File.open(pdf_tempfile, "wb") do |file|
-          file.write(PdfGenerator.new(current_user, @loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
+          file.write(PdfGenerator.new(current_user, @shipping_address, @loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
         end
         pdf_tempfile.rewind
 
@@ -168,8 +168,6 @@ class LoanRequestsController < ApplicationController
           "Shipping Email"
         ]
 
-        shipping_address = user.shipping_address
-
         @checkout.requestables.active.each do |requestable|
           csv << [
             [user.first_name, user.last_name].compact.join(" "),
@@ -180,14 +178,14 @@ class LoanRequestsController < ApplicationController
             requestable.preparation.prep_type,
             requestable.count,
             requestable.preparation.barcode,
-            shipping_address&.address_line_1,
-            shipping_address&.address_line_2,
-            shipping_address&.city,
-            shipping_address&.state,
-            shipping_address&.zip,
-            shipping_address&.phone,
-            [shipping_address&.first_name, shipping_address&.last_name].compact.join(" "),
-            shipping_address&.email
+            @shipping_address&.address_line_1,
+            @shipping_address&.address_line_2,
+            @shipping_address&.city,
+            @shipping_address&.state,
+            @shipping_address&.zip,
+            @shipping_address&.phone,
+            [@shipping_address&.first_name, @shipping_address&.last_name].compact.join(" "),
+            @shipping_address&.email
           ]
         end
       end
@@ -229,17 +227,18 @@ class LoanRequestsController < ApplicationController
     end
 
     def check_shipping_address
-      if current_user.addresses.present?
-        unless current_user.addresses.find_by(primary: true)
-          @missing_fields_alert += "Select an address to ship to."
-          return true
-        end
+      if params[:shipping_address_id].present?
+        @shipping_address = Address.find(params[:shipping_address_id])
         return false
       else
-         @missing_fields_alert += "Shipping address is required. "
+        @missing_fields_alert +=  " Select an address to ship to."
         return true
       end
-      return false
+
+      unless current_user.addresses.present?
+        @missing_fields_alert += "Add a Shipping address. "
+        return true
+      end
     end
 
     def attach_attachments_from_answers(answers, prefix_resolver)
