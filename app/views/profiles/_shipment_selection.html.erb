@@ -29,7 +29,7 @@
                 } %>
             <label for="shipment_<%= address.id %>" class="form-check-label mb-0">Ship to this address</label>
 
-            <%= link_to "Edit", edit_address_path(address, Loan_request: true), class: "btn btn-sm btn-outline-secondary ms-auto" %>
+            <%= link_to "Edit", edit_address_path(address, loan_request: true), class: "btn btn-sm btn-outline-secondary ms-auto" %>
           </div>
         </label>
       </div>
@@ -41,7 +41,7 @@
     </div>
   <% end %>
   <div class="text-center mt-3">
-    <%= link_to "Ship to a New Address", new_address_path(Loan_request: true), class: "btn btn-outline-primary" %>
+    <%= link_to "Ship to a New Address", new_address_path(loan_request: true), class: "btn btn-outline-primary" %>
   </div>
 <% else %>
   <div class="alert alert-warning text-center mt-3">
