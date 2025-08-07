@@ -6,7 +6,6 @@
       <% in_checkout, available = preparation_checkout_counts(preparation, @checkout) %>
 
       <% checked_out = in_checkout > 0 %>
-      <% disabled = available <= 0 %>
 
       <% if checked_out %>
         <div>
