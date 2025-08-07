@@ -1,7 +1,7 @@
 <div class="search-row" data-search-target="row">
   <% select_id = "search_field_#{group_index}_#{field_index}" %>
   <% base_name = "q[groupings][#{group_index}][#{field_index}]" %>
-  <div class="d-flex justify-content-between allign-items-center">
+  <div class="d-flex justify-content-between align-items-center">
     <label for="<%= select_id %>" class="form-label me-2">Search Field</label>
     <button type="button" class="btn btn-outline-danger" data-action="click->search#removeField" aria-label="Remove search field">✕</button>
   </div>
