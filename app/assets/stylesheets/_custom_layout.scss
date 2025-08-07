@@ -233,6 +233,14 @@ svg.wh6 {
   border-radius: .25rem;
 }
 
+.nav-item:hover {
+  color: $um_maize !important;
+}
+
+.nav-item:hover .nav-link {
+  color: $um_maize !important;
+}
+
 .nav-item.dropdown:hover > .dropdown-menu {
   display: block;
 }
