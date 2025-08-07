@@ -236,7 +236,7 @@ class LoanRequestsController < ApplicationController
         end
         return false
       else
-         @missing_fields_alert += "Shipping address is required"
+         @missing_fields_alert += "Shipping address is required. "
         return true
       end
       return false
