@@ -31,6 +31,7 @@
                   (controller.controller_name == 'sessions' && controller.action_name == 'new') || 
                   (controller.controller_name == 'collections' && ['show', 'index'].include?(controller.action_name)) ||
                   (controller.controller_name == 'items' && controller.action_name == 'search') ||
+                  (controller.controller_name == 'loan_requests' && controller.action_name == 'new') || 
                   (controller.controller_name == 'checkout' && controller.action_name == 'show') ? '' : 'mx-9' %>">
         <%= yield %>
         <%= turbo_frame_tag "remote_modal", target: "_top" %>

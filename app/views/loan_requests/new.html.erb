@@ -1,177 +1,179 @@
-<% content_for :head do %>
-  <%= tag.meta name: "turbo-cache-control", content: "no-cache" %>
-<% end %>
+<div class="mx-4 mx-lg-9">
+  <% content_for :head do %>
+    <%= tag.meta name: "turbo-cache-control", content: "no-cache" %>
+  <% end %>
 
-<% is_preview = params[:preview].present? %>
-<%= render "layouts/announcement", is_preview: is_preview, location: "loan_request" %>
+  <% is_preview = params[:preview].present? %>
+  <%= render "layouts/announcement", is_preview: is_preview, location: "loan_request" %>
 
-<div>
-  <%= link_to "Cancel Loan Request", checkout_path, class: "my-5 btn btn-outline-primary" %>
-</div>
-
-<div id="loanWizard" class="container">
-  <div class="stepwizard d-flex justify-content-center mb-4">
-    <div class="step" data-step="1">
-      <div class="circle bg-primary text-white">1</div>
-      <div>User Info</div>
-    </div>
-    <div class="step" data-step="2">
-      <div class="circle bg-secondary text-white">2</div>
-      <div>Loan Answers</div>
-    </div>
-    <div class="step" data-step="3">
-      <div class="circle bg-secondary text-white">3</div>
-      <div>Collection Answers</div>
-    </div>
-    <div class="step" data-step="4">
-      <div class="circle bg-secondary text-white">4</div>
-      <div>Loan Items</div>
-    </div>
-    <div class="step" data-step="5">
-      <div class="circle bg-secondary text-white">5</div>
-      <div>Shipment</div>
-    </div>
+  <div>
+    <%= link_to "Cancel Loan Request", checkout_path, class: "my-5 btn btn-outline-primary" %>
   </div>
 
-
-
-    <!-- Step 1: User Info -->
-    <div class="wizard-step step-1 animate__animated animate__fadeIn">
-      <h2 class="mb-3 text-center">User Information</h2>
-      <div class="row g-3">
-        <div class="col-md-3">
-          <%= render "profiles/user_field", label: "First Name", field_name: "first_name", value: @user.first_name %>
-        </div>
-        <div class="col-md-3">
-          <%= render "profiles/user_field", label: "Last Name", field_name: "last_name", value: @user.last_name %>
-        </div>
-        <div class="col-md-3">
-          <%= render "profiles/user_field", label: "Affiliation", field_name: "affiliation", value: @user.affiliation %>
-        </div>
-        <div class="col-md-3">
-          <%= render "profiles/user_field", label: "ORCID", field_name: "orcid", value: @user.orcid %>
-        </div>
+  <div id="loanWizard" class="container">
+    <div class="stepwizard d-flex justify-content-center mb-4">
+      <div class="step" data-step="1">
+        <div class="circle bg-primary text-white">1</div>
+        <div>User Info</div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="circle bg-secondary text-white">2</div>
+        <div>Loan Answers</div>
+      </div>
+      <div class="step" data-step="3">
+        <div class="circle bg-secondary text-white">3</div>
+        <div>Collection Answers</div>
+      </div>
+      <div class="step" data-step="4">
+        <div class="circle bg-secondary text-white">4</div>
+        <div>Loan Items</div>
+      </div>
+      <div class="step" data-step="5">
+        <div class="circle bg-secondary text-white">5</div>
+        <div>Shipment</div>
       </div>
     </div>
 
-    <!-- Step 2: Loan Answers -->
-    <div class="wizard-step step-2 d-none animate__animated animate__fadeIn">
-      <%= render "profiles/user_loan_answers" %>
-    </div>
 
-    <!-- Step 3: Collections -->
-    <div class="wizard-step step-3 d-none animate__animated animate__fadeIn">
-      <%= render "profiles/user_collections_answers" %>
-    </div>
 
-    <!-- Step 4: Items -->
-    <div class="wizard-step step-4 d-none animate__animated animate__fadeIn">
-      <%= render "profiles/user_loan_items" %>
-    </div>
+      <!-- Step 1: User Info -->
+      <div class="wizard-step step-1 animate__animated animate__fadeIn">
+        <h2 class="mb-3 text-center">User Information</h2>
+        <div class="row g-3">
+          <div class="col-md-3">
+            <%= render "profiles/user_field", label: "First Name", field_name: "first_name", value: @user.first_name %>
+          </div>
+          <div class="col-md-3">
+            <%= render "profiles/user_field", label: "Last Name", field_name: "last_name", value: @user.last_name %>
+          </div>
+          <div class="col-md-3">
+            <%= render "profiles/user_field", label: "Affiliation", field_name: "affiliation", value: @user.affiliation %>
+          </div>
+          <div class="col-md-3">
+            <%= render "profiles/user_field", label: "ORCID", field_name: "orcid", value: @user.orcid %>
+          </div>
+        </div>
+      </div>
 
-    <!-- Step 5: Shipment -->
-    <div class="wizard-step step-5 d-none animate__animated animate__fadeIn">
-      <%= render "profiles/shipment_selection", addresses: @addresses %>
-    </div>
+      <!-- Step 2: Loan Answers -->
+      <div class="wizard-step step-2 d-none animate__animated animate__fadeIn">
+        <%= render "profiles/user_loan_answers" %>
+      </div>
 
-      
+      <!-- Step 3: Collections -->
+      <div class="wizard-step step-3 d-none animate__animated animate__fadeIn">
+        <%= render "profiles/user_collections_answers" %>
+      </div>
 
-    <%= render "layouts/remote_modal", id: "sharedModal", title: "", show: false %>
+      <!-- Step 4: Items -->
+      <div class="wizard-step step-4 d-none animate__animated animate__fadeIn">
+        <%= render "profiles/user_loan_items" %>
+      </div>
 
-  <%= form_with(model: @loan_request, url: send_loan_request_path, html: { id: "loanForm" }) do |form| %>
-    <div class="d-flex justify-content-between mt-4">
-      <button type="button" class="btn btn-outline-secondary" id="prevStep" disabled>Previous</button>
-      <button type="button" class="btn btn-primary" id="nextStep">Next</button>
-      <%= form.submit "Send Loan Request", class: "btn btn-success d-none", id: "submitRequest" %>
-    </div>
+      <!-- Step 5: Shipment -->
+      <div class="wizard-step step-5 d-none animate__animated animate__fadeIn">
+        <%= render "profiles/shipment_selection", addresses: @addresses %>
+      </div>
 
-  <% end %>
-</div>
+        
 
-<script>
-  document.addEventListener("turbo:load", function () {
-    const steps = document.querySelectorAll(".wizard-step");
-    const stepIndicators = document.querySelectorAll(".step");
-    const nextBtn = document.getElementById("nextStep");
-    const prevBtn = document.getElementById("prevStep");
-    const submitBtn = document.getElementById("submitRequest");
-    let currentStep = 0;
+      <%= render "layouts/remote_modal", id: "sharedModal", title: "", show: false %>
 
-    function showStep(step) {
-      steps.forEach((el, idx) => {
-        el.classList.toggle("d-none", idx !== step);
-        stepIndicators[idx].querySelector(".circle").classList.remove("bg-primary");
-        stepIndicators[idx].querySelector(".circle").classList.add("bg-secondary");
+    <%= form_with(model: @loan_request, url: send_loan_request_path, html: { id: "loanForm" }) do |form| %>
+      <div class="d-flex justify-content-between mt-4">
+        <button type="button" class="btn btn-outline-secondary" id="prevStep" disabled>Previous</button>
+        <button type="button" class="btn btn-primary" id="nextStep">Next</button>
+        <%= form.submit "Send Loan Request", class: "btn btn-success d-none", id: "submitRequest" %>
+      </div>
+
+    <% end %>
+  </div>
+
+  <script>
+    document.addEventListener("turbo:load", function () {
+      const steps = document.querySelectorAll(".wizard-step");
+      const stepIndicators = document.querySelectorAll(".step");
+      const nextBtn = document.getElementById("nextStep");
+      const prevBtn = document.getElementById("prevStep");
+      const submitBtn = document.getElementById("submitRequest");
+      let currentStep = 0;
+
+      function showStep(step) {
+        steps.forEach((el, idx) => {
+          el.classList.toggle("d-none", idx !== step);
+          stepIndicators[idx].querySelector(".circle").classList.remove("bg-primary");
+          stepIndicators[idx].querySelector(".circle").classList.add("bg-secondary");
+        });
+        steps[step].classList.remove("d-none");
+        stepIndicators[step].querySelector(".circle").classList.remove("bg-secondary");
+        stepIndicators[step].querySelector(".circle").classList.add("bg-primary");
+
+        prevBtn.disabled = step === 0;
+        nextBtn.classList.toggle("d-none", step === steps.length - 1);
+        submitBtn.classList.toggle("d-none", step !== steps.length - 1);
+      }
+
+      nextBtn.addEventListener("click", () => {
+        if (currentStep < steps.length - 1) {
+          currentStep++;
+          showStep(currentStep);
+        }
       });
-      steps[step].classList.remove("d-none");
-      stepIndicators[step].querySelector(".circle").classList.remove("bg-secondary");
-      stepIndicators[step].querySelector(".circle").classList.add("bg-primary");
 
-      prevBtn.disabled = step === 0;
-      nextBtn.classList.toggle("d-none", step === steps.length - 1);
-      submitBtn.classList.toggle("d-none", step !== steps.length - 1);
+      prevBtn.addEventListener("click", () => {
+        if (currentStep > 0) {
+          currentStep--;
+          showStep(currentStep);
+        }
+      });
+
+      showStep(currentStep);
+    });
+  </script>
+
+  <style>
+    .stepwizard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
     }
 
-    nextBtn.addEventListener("click", () => {
-      if (currentStep < steps.length - 1) {
-        currentStep++;
-        showStep(currentStep);
-      }
-    });
-
-    prevBtn.addEventListener("click", () => {
-      if (currentStep > 0) {
-        currentStep--;
-        showStep(currentStep);
-      }
-    });
-
-    showStep(currentStep);
-  });
-</script>
-
-<style>
-  .stepwizard {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem;
-  }
-
-  .stepwizard .step {
-    flex: 0 0 auto;
-    width: 120px; /* adjust as needed for your longest label */
-    text-align: center;
-    flex-shrink: 0;
-  }
+    .stepwizard .step {
+      flex: 0 0 auto;
+      width: 120px; /* adjust as needed for your longest label */
+      text-align: center;
+      flex-shrink: 0;
+    }
 
 
 
-  .stepwizard .circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid var(--bs-primary);
-    font-weight: bold;
-    font-size: 1rem;
-    background-color: white;
-    color: var(--bs-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: auto;
-    transition: all 0.3s ease;
-  }
+    .stepwizard .circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--bs-primary);
+      font-weight: bold;
+      font-size: 1rem;
+      background-color: white;
+      color: var(--bs-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: auto;
+      transition: all 0.3s ease;
+    }
 
 
-  .stepwizard .circle.bg-primary {
-    background-color: var(--bs-primary) !important;
-    color: white !important;
-  }
+    .stepwizard .circle.bg-primary {
+      background-color: var(--bs-primary) !important;
+      color: white !important;
+    }
 
-  .stepwizard .circle.bg-secondary {
-    background-color: white !important;
-    color: var(--bs-primary) !important;
-  }
-</style>
+    .stepwizard .circle.bg-secondary {
+      background-color: white !important;
+      color: var(--bs-primary) !important;
+    }
+  </style>
 
+</div>
