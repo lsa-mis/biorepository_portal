@@ -6,23 +6,31 @@
       <% in_checkout, available = preparation_checkout_counts(preparation, @checkout) %>
 
       <% checked_out = in_checkout > 0 %>
-      <% disabled = available <= 0 %>
 
-      <div>
-        <form action="<%= checkout_add_path %>" method="post" data-turbo="true">
-          <%= hidden_field_tag :id, preparation.id %>
-          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+      <% if checked_out %>
+        <div>
+          <form action="<%= checkout_remove_preparation_path %>" method="post" data-turbo="true">
+            <%= hidden_field_tag :id, preparation.id %>
+            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
-          <button type="submit"
-                  class="btn btn-sm <%= checked_out ? 'btn-success' : 'btn-primary' %> d-flex align-items-center gap-1"
-                  <%= 'disabled' if disabled %>>
-            <% if checked_out %>
+            <button type="submit" class="btn btn-sm btn-success d-flex align-items-center gap-1">
               <i class="bi bi-check-circle-fill"></i>
-            <% end %>
-            <%= preparation.display_name %>
-          </button>
-        </form>
-      </div>
+              <%= preparation.display_name %>
+            </button>
+          </form>
+        </div>
+      <% else %>
+        <div>
+          <form action="<%= checkout_add_path %>" method="post" data-turbo="true">
+            <%= hidden_field_tag :id, preparation.id %>
+            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+
+            <button type="submit" class="btn btn-sm btn-primary d-flex align-items-center gap-1">
+              <%= preparation.display_name %>
+            </button>
+          </form>
+        </div>
+      <% end %>
     <% end %>
 
   </div>

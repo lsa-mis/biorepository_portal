@@ -101,6 +101,41 @@ class CheckoutController < ApplicationController
     end
   end
 
+  def remove_preparation
+    @preparation = Preparation.find(params[:id])
+    requestable = @checkout.requestables.find_by(preparation_id: @preparation.id)
+    if requestable
+      requestable.destroy
+      flash.now[:notice] = "Preparation removed from checkout."
+    else
+      flash.now[:alert] = "No matching preparation found in checkout."
+    end
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+                              turbo_stream.replace(@preparation),
+                              turbo_stream.update('total', partial: 'checkout/total'),
+                              turbo_stream.update('total1', partial: 'checkout/total'),
+                              turbo_stream.update('flash', partial: 'layouts/flash'),
+                              turbo_stream.update(
+                                "checkout_item_#{@preparation.item_id}",
+                                partial: 'items/item_card',
+                                locals: { item: @preparation.item }
+                              ),
+                              turbo_stream.update(
+                                "checkout_item_in_collection#{@preparation.item_id}",
+                                partial: 'collections/item_card',
+                                locals: { item: @preparation.item }
+                              ),
+                              turbo_stream.update(
+                                "checkout_item_row_#{@preparation.item_id}",
+                                partial: 'collections/preparation_for_checkout',
+                                locals: { item: @preparation.item }
+                              )]
+      end
+    end
+  end
+
   def save_for_later
     @preparation = Preparation.find(params[:id])
     current_requestable = @checkout.requestables.find_by(preparation_id: @preparation.id)
