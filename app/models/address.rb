@@ -40,6 +40,17 @@ class Address < ApplicationRecord
     "#{first_name} #{last_name}"
   end
 
+  def shipping_address_string
+    string = ""
+    string += "#{self.full_name}, #{self.phone}, #{self.email}. "
+    string += "#{self.address_line_1}"
+    if self.address_line_2.present?
+      string += ", #{self.address_line_2}"
+    end
+    string += ", #{self.city}, #{self.state} #{self.zip}, #{self.country}"
+    string
+  end
+
   private
 
   def unset_other_primaries # Ensure only one primary address per user

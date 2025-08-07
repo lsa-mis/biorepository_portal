@@ -12,11 +12,12 @@ class PdfGenerator
     }
   }.freeze
 
-  def initialize(user, loan_answers, checkout_items, collection_answers = {})
+  def initialize(user, shipping_address, loan_answers, checkout_items, collection_answers = {})
     @loan_answers = loan_answers
     @checkout_items = checkout_items
     @collection_answers = collection_answers
     @user = user
+    @shipping_address = shipping_address
   end
 
   def generate_pdf_content
@@ -61,17 +62,15 @@ class PdfGenerator
         pdf.move_down 10
 
         # items = @checkout_items.split(/\.(?:\s+|$)/).map(&:strip).reject(&:blank?)
-        table_data = [["Collection", "Occurrence ID", "Preparation", "Barcode", "Description", "Count"]]
+        table_data = [["Collection", "Preparation", "Barcode", "Description", "Count"]]
 
         @checkout_items.each do |item_str|
           collection   = item_str[/^([^,]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
-          occurrence_id = item_str[/occurrenceID:\s*([^;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
-          preparation  = item_str[/preparation:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
-          barcode      = item_str[/barcode:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
-          description  = item_str[/description:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
-          count        = item_str[/count:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
-
-          table_data << [collection, occurrence_id, preparation, barcode, description, count]
+          preparation  = item_str[/Preparation:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
+          barcode      = item_str[/Barcode:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
+          description  = item_str[/Description:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
+          count        = item_str[/Count:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
+          table_data << [collection, preparation, barcode, description, count]
         end
 
         pdf.table(table_data,
@@ -111,11 +110,25 @@ class PdfGenerator
   end
 
   def render_user_information(pdf, user)
+    street = @shipping_address.address_line_1
+    if @shipping_address.address_line_2.present?
+      street += ", " + @shipping_address.address_line_2
+    end
+    city = @shipping_address.city + ", " + @shipping_address.state + " " + @shipping_address.zip + ", " + @shipping_address.country
+    
     pdf.text "Name: #{user.display_name}", size: 12
     pdf.text "Email: #{user.email}", size: 12
     pdf.text "Affiliation: #{user.affiliation}", size: 12
     pdf.text "ORCID: #{user.orcid}", size: 12 if user.orcid.present?
-    pdf.text "Shipping Address: #{user.shipping_address_string}", size: 12 if user.shipping_address.present?
+    pdf.text "Shipping Address: ", size: 12
+
+    # Use indent method to add spacing to the beginning of lines
+    pdf.indent(40) do
+      pdf.text "#{@shipping_address.full_name}, #{@shipping_address.phone}, #{@shipping_address.email}", size: 12
+      pdf.text street, size: 12
+      pdf.text city, size: 12
+    end
+
     pdf.move_down 10
   end
 
