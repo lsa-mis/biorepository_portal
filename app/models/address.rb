@@ -3,6 +3,7 @@
 # Table name: addresses
 #
 #  id             :bigint           not null, primary key
+#  address_line_1 :string
 #  address_line_2 :string
 #  city           :string
 #  country        :string
@@ -12,7 +13,6 @@
 #  phone          :string
 #  primary        :boolean
 #  state          :string
-#  street         :string
 #  zip            :string
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
@@ -32,7 +32,7 @@ class Address < ApplicationRecord
   VALID_EMAIL_REGEX = URI::MailTo::EMAIL_REGEXP
 
   validates :email, presence: true, format: { with: VALID_EMAIL_REGEX, message: "Please Enter a Valid Email" }
-  validates :first_name, :last_name, :street, :city, :state, :zip, :country, :phone, presence: true
+  validates :first_name, :last_name, :address_line_1, :city, :state, :zip, :country, :phone, presence: true
 
   before_save :unset_other_primaries, if: :primary?
 

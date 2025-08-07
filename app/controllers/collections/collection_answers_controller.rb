@@ -40,7 +40,7 @@ class Collections::CollectionAnswersController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { redirect_back fallback_locatiocollection_request_path, alert: "Failed to update answer." }
+        format.html { redirect_back fallback_location: collection_request_path, alert: "Failed to update answer." }
         format.turbo_stream { 
           render turbo_stream: turbo_stream.replace("flash", partial: "layouts/flash", locals: { alert: "Failed to update answer." }),
                 status: :unprocessable_entity

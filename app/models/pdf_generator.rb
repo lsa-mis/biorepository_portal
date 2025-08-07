@@ -29,8 +29,8 @@ class PdfGenerator
       pdf.text "#{Date.today.strftime("%B %d, %Y")}", size: 20, style: :bold, align: :center
       pdf.move_down 20
 
-      # Section: User Information
-      pdf.text "User Information", size: 16, style: :bold
+      # Section: Requester Information
+      pdf.text "Requester Information", size: 16, style: :bold
       pdf.stroke_horizontal_rule
       pdf.move_down 10
 
@@ -115,6 +115,7 @@ class PdfGenerator
     pdf.text "Email: #{user.email}", size: 12
     pdf.text "Affiliation: #{user.affiliation}", size: 12
     pdf.text "ORCID: #{user.orcid}", size: 12 if user.orcid.present?
+    pdf.text "Shipping Address: #{user.shipping_address_string}", size: 12 if user.shipping_address.present?
     pdf.move_down 10
   end
 

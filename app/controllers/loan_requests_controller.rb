@@ -150,15 +150,25 @@ class LoanRequestsController < ApplicationController
 
       CSV.open(tempfile.path, "w") do |csv|
         csv << [
-          "User Name",
-          "User Institution",
-          "User Email",
+          "Requester Name",
+          "Requester Institution",
+          "Requester Email",
           "Division",
           "Catalog Number",
           "Prep Type",
           "Count",
-          "Barcode"
+          "Barcode",
+          "Address Line 1",
+          "Address Line 2",
+          "City",
+          "State",
+          "ZIP Code",
+          "Phone Number",
+          "Shipping Name",
+          "Shipping Email"
         ]
+
+        shipping_address = user.shipping_address
 
         @checkout.requestables.active.each do |requestable|
           csv << [
@@ -169,7 +179,15 @@ class LoanRequestsController < ApplicationController
             requestable.preparation.item.catalog_number,
             requestable.preparation.prep_type,
             requestable.count,
-            requestable.preparation.barcode
+            requestable.preparation.barcode,
+            shipping_address&.address_line_1,
+            shipping_address&.address_line_2,
+            shipping_address&.city,
+            shipping_address&.state,
+            shipping_address&.zip,
+            shipping_address&.phone,
+            [shipping_address&.first_name, shipping_address&.last_name].compact.join(" "),
+            shipping_address&.email
           ]
         end
       end
