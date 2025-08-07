@@ -3,6 +3,7 @@
     <div class="col-md-8 col-lg-6">
       <div class="card shadow-sm">
         <div class="card-body">
+          <h1 class="card-title mb-4 text-center">Edit Address</h1>
 
           <%= form_with model: @address, local: true do |f| %>
             <div class="row">
@@ -63,8 +64,14 @@
               <%= f.label :primary, "Set as primary address", class: "form-check-label" %>
             </div>
 
+            <%= hidden_field_tag :ship_to_new_address, params[:ship_to_new_address] %>
+
             <div class="d-grid">
-              <%= f.submit "Update Address", class: "btn btn-primary" %>
+              <% if params[:ship_to_new_address] %>
+                <%= f.submit "Update Shipping Address", class: "btn btn-primary" %>
+              <% else %>
+                <%= f.submit "Update Address", class: "btn btn-primary" %>
+              <% end %>
             </div>
 
             <div class="d-grid">
