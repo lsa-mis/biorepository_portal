@@ -23,8 +23,8 @@
             </div>
 
             <div class="mb-3">
-              <%= f.label :street, "Address Line 1*", class: "form-label" %>
-              <%= f.text_field :street, class: "form-control", required: true %>
+              <%= f.label :address_line_1, "Address Line 1*", class: "form-label" %>
+              <%= f.text_field :address_line_1, class: "form-control", required: true %>
             </div>
 
             <div class="mb-3">
@@ -65,6 +65,7 @@
             </div>
 
             <%= hidden_field_tag :ship_to_new_address, params[:ship_to_new_address] %>
+            <%= hidden_field_tag :return_to, params[:return_to] %>
 
             <div class="d-grid">
               <% if params[:ship_to_new_address] %>

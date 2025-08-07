@@ -19,7 +19,7 @@
                   <div class="mb-2">&nbsp;</div>
                 <% end %>
                 <p class="card-title fw-bold mb-1"><%= address.first_name %> <%= address.last_name %></p>
-                <p class="card-text mb-1"><%= address.street %></p>
+                <p class="card-text mb-1"><%= address.address_line_1 %></p>
                 <% if address.address_line_2.present? %>
                   <p class="card-text mb-1"><%= address.address_line_2 %></p>
                 <% end %>

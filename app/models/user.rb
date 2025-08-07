@@ -59,4 +59,24 @@ class User < ApplicationRecord
     end
     name
   end
-end
+
+  def shipping_address
+    self.addresses.find_by(primary: true)
+  end
+
+  def shipping_address_string
+    address = shipping_address
+    string = ""
+    if address
+      string = "#{address.address_line_1}"
+      if address.address_line_2.present?
+        string += ", #{address.address_line_2}"
+      end
+      string += ", #{address.city}, #{address.state} #{address.zip}, #{address.country}"
+      string += ", #{address.full_name}, #{address.phone}, #{address.email}"
+    else
+      "No shipping address available"
+    end
+  end
+
+  end
