@@ -103,8 +103,13 @@ class CheckoutController < ApplicationController
 
   def remove_preparation
     @preparation = Preparation.find(params[:id])
-    Requestable.find_by(preparation_id: @preparation.id)&.destroy
-    flash.now[:notice] = "Preparation removed from checkout."
+    requestable = Requestable.find_by(preparation_id: @preparation.id)
+    if requestable
+      requestable.destroy
+      flash.now[:notice] = "Preparation removed from checkout."
+    else
+      flash.now[:notice] = "No matching preparation found in checkout."
+    end
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [
