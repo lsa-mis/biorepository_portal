@@ -12,7 +12,7 @@
               <% end %>
             <% end %>
           </div>
-          <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
+          <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add OR Field</button>
         </div>
       <% end %>
     <% else %>
@@ -20,7 +20,7 @@
         <div data-search-target="rows">
           <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil, field_index: 0, group_index: 0 } %>
         </div>
-        <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
+        <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add OR Field</button>
       </div>
     <% end %>
   </div>
@@ -30,7 +30,7 @@
       <div data-search-target="rows">
         <%= render partial: "layouts/search_field", locals: { selected_field: nil, entered_value: nil, field_index: 0, group_index: "__GROUP_INDEX__" } %>
       </div>
-      <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add Field</button>
+      <button type="button" class="btn btn-outline-primary mt-1" data-action="click->search#addRow">+ Add OR Field</button>
     </div>
   </template>
 
