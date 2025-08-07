@@ -108,7 +108,7 @@ class CheckoutController < ApplicationController
       requestable.destroy
       flash.now[:notice] = "Preparation removed from checkout."
     else
-      flash.now[:notice] = "No matching preparation found in checkout."
+      flash.now[:alert] = "No matching preparation found in checkout."
     end
     respond_to do |format|
       format.turbo_stream do
