@@ -1,7 +1,10 @@
-<div class="search-row d-flex align-items-center mb-2" data-search-target="row">
+<div class="search-row" data-search-target="row">
   <% select_id = "search_field_#{group_index}_#{field_index}" %>
   <% base_name = "q[groupings][#{group_index}][#{field_index}]" %>
-  <label for="<%= select_id %>" class="form-label me-2">Search Field</label>
+  <div class="d-flex justify-content-between allign-items-center">
+    <label for="<%= select_id %>" class="form-label me-2">Search Field</label>
+    <button type="button" class="btn btn-outline-danger" data-action="click->search#removeField" aria-label="Remove search field">✕</button>
+  </div>
 
   <%= select_tag "#{base_name}[field]",
     options_for_select([
@@ -41,6 +44,4 @@
     entered_value, placeholder: "contains...",
     class: "form-control me-2 dynamic-search-value",
     aria: { label: "Search Value" } %>
-
-    <button type="button" class="btn btn-outline-danger" data-action="click->search#removeField" aria-label="Remove search field">✕</button>
 </div>
