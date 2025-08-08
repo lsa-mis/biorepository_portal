@@ -35,13 +35,12 @@ class LoanQuestion < ApplicationRecord
     return if question_text.blank?
     
     # Check if another loan question has the same content (excluding current record)
-    existing_question = LoanQuestion.joins(:rich_text_question)
+    duplicate_exists = LoanQuestion.joins(:rich_text_question)
                                    .where.not(id: id)
-                                   .find_each do |loan_question|
-      if loan_question.question.to_plain_text.strip == question_text
-        errors.add(:question, 'has already been taken')
-        break
-      end
+                                   .where(action_text_rich_texts: { body: question.body })
+                                   .exists?
+    if duplicate_exists
+      errors.add(:question, 'has already been taken')
     end
   end
 

@@ -44,14 +44,15 @@ class CollectionQuestion < ApplicationRecord
     return if question_text.blank?
     
     # Check if another collection question in the same collection has the same content (excluding current record)
-    CollectionQuestion.joins(:rich_text_question)
-                      .where(collection_id: collection_id)
-                      .where.not(id: id)
-                      .find_each do |collection_question|
-      if collection_question.question.to_plain_text.strip == question_text
-        errors.add(:question, 'has already been taken within this collection')
-        break
+    duplicate_exists = CollectionQuestion.joins(:rich_text_question)
+      .where(collection_id: collection_id)
+      .where.not(id: id)
+      .where(action_text_rich_texts: { body: question.body })
+      .any? do |collection_question|
+        collection_question.question.to_plain_text.strip == question_text
       end
+    if duplicate_exists
+      errors.add(:question, 'has already been taken within this collection')
     end
   end
   
