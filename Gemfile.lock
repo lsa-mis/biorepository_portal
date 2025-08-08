@@ -383,6 +383,12 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    sentry-rails (5.26.0)
+      railties (>= 5.0)
+      sentry-ruby (~> 5.26.0)
+    sentry-ruby (5.26.0)
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.0.2)
     skylight (6.0.4)
       activesupport (>= 5.2.0)
     sprockets (4.2.2)
@@ -468,6 +474,8 @@ DEPENDENCIES
   ransack
   redis (>= 4.0.1)
   rspec-rails (~> 8.0.0)
+  sentry-rails
+  sentry-ruby
   skylight
   sprockets-rails
   stimulus-rails
