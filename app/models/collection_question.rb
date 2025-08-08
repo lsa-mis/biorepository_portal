@@ -30,7 +30,6 @@ class CollectionQuestion < ApplicationRecord
 
   enum :question_type, [:text, :dropdown, :checkbox, :attachment], prefix: true
   validates_presence_of :question, message: "can't be blank"
-  # validates :question, uniqueness: { scope: :collection_id, message: "must be unique within the collection" }
   validate :question_content_uniqueness_in_collection
   validates :question_type, presence: true
 
