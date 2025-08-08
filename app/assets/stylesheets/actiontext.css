@@ -30,26 +30,23 @@
   max-width: 100% !important;
 }
 
-.trix-button--icon-decrease-nesting-level {
-  display: none;
-}
-
-.trix-button--icon-increase-nesting-level {
-  display: none;
-}
-
-.trix-button--icon-attach {
-  display: none;
-}
-
-.trix-button-group--file-tools {
+/* More specific selectors to ensure they override default Trix styles */
+trix-toolbar .trix-button--icon-attach,
+.trix-toolbar .trix-button--icon-attach {
   display: none !important;
 }
 
-.trix-button--icon-quote {
+trix-toolbar .trix-button-group--file-tools,
+.trix-toolbar .trix-button-group--file-tools {
   display: none !important;
 }
 
-.trix-button--icon-code {
+trix-toolbar .trix-button--icon-quote,
+.trix-toolbar .trix-button--icon-quote {
+  display: none !important;
+}
+
+trix-toolbar .trix-button--icon-code,
+.trix-toolbar .trix-button--icon-code {
   display: none !important;
 }

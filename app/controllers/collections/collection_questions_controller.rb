@@ -22,16 +22,24 @@ class Collections::CollectionQuestionsController < ApplicationController
     authorize([@collection, @collection_question])
 
     respond_to do |format|
-      if @collection_question.save
-        if collection_question_params[:question_type].in?(%w[dropdown checkbox])
-          options = params[:options_attributes].values
-          options.each do |option|
-            CollectionOption.create(value: option[:value], collection_question_id: @collection_question.id)
+      begin
+        if @collection_question.save
+          if collection_question_params[:question_type].in?(%w[dropdown checkbox])
+            options = params[:options_attributes].values
+            options.each do |option|
+              CollectionOption.create(value: option[:value], collection_question_id: @collection_question.id)
+            end
           end
+          format.html { redirect_to collection_collection_question_path(@collection, @collection_question), notice: "Collection question created." }
+          format.json { render :show, status: :ok, location: [@collection, @collection_question] }
+        else
+          format.html { render :new, status: :unprocessable_entity }
+          format.json { render json: @collection_question.errors, status: :unprocessable_entity }
         end
-        format.html { redirect_to collection_collection_question_path(@collection, @collection_question), notice: "Collection question created." }
-      else
+      rescue => e
+        @collection_question.errors.add(:base, "Unable to save: #{e.message}")
         format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @collection_question.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -41,26 +49,22 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def update
-    success = true
-    ActiveRecord::Base.transaction do
-      begin
-        @collection_question.update(collection_question_params)
-        if @collection_question.question_type.in?(%w[dropdown checkbox]) && params[:options_attributes].present?
-          update_options(@collection_question, params[:options_attributes].values)
-        end
-        success = true
-      rescue => e
-        flash.now[:alert] = "Error updating collection question: #{e.message}"
-        success = false
-        raise ActiveRecord::Rollback
-      end
-    end
-
     respond_to do |format|
-      if success
-        format.html { redirect_to collection_collection_question_path(@collection, @collection_question), notice: "Collection question updated." }
-      else
+      begin
+        if @collection_question.update(collection_question_params)
+          if @collection_question.question_type.in?(%w[dropdown checkbox]) && params[:options_attributes].present?
+            update_options(@collection_question, params[:options_attributes].values)
+          end
+          format.html { redirect_to collection_collection_question_path(@collection, @collection_question), notice: "Collection question updated." }
+          format.json { render :show, status: :ok, location: [@collection, @collection_question] }
+        else
+          format.html { render :edit, status: :unprocessable_entity }
+          format.json { render json: @collection_question.errors, status: :unprocessable_entity }
+        end
+      rescue => e
+        @collection_question.errors.add(:base, "Unable to save: #{e.message}")
         format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @collection_question.errors, status: :unprocessable_entity }
       end
     end
   end

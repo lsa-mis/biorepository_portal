@@ -93,7 +93,7 @@ class PdfGenerator
   def render_question_answers(pdf, question_answer_pairs)
     question_answer_pairs.each do |question, answer|
       number = question.position || "(unpositioned)"
-      pdf.text "#{number}. #{question.question}", size: 12, style: :medium
+      pdf.text "#{number}. #{question.question.to_plain_text}", size: 12, style: :medium
 
       if question.question_type == "attachment"
         attachment_status = answer&.attachment&.attached? ? "File attached" : "No file attached"
