@@ -48,9 +48,7 @@ class CollectionQuestion < ApplicationRecord
       .where(collection_id: collection_id)
       .where.not(id: id)
       .where(action_text_rich_texts: { body: question.body })
-      .any? do |collection_question|
-        collection_question.question.to_plain_text.strip == question_text
-      end
+      .exists?
     if duplicate_exists
       errors.add(:question, 'has already been taken within this collection')
     end
