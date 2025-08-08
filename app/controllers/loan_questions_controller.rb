@@ -35,21 +35,28 @@ class LoanQuestionsController < ApplicationController
   def create
     @loan_question = LoanQuestion.new(loan_question_params)
     authorize @loan_question
+    
     if loan_question_params[:question_type] == "dropdown" || loan_question_params[:question_type] == "checkbox"
       options = params[:options_attributes].values
     end
 
     respond_to do |format|
-      if @loan_question.save
-        if loan_question_params[:question_type] == "dropdown" || loan_question_params[:question_type] == "checkbox" 
+      begin
+        if @loan_question.save
+          if loan_question_params[:question_type] == "dropdown" || loan_question_params[:question_type] == "checkbox" 
             options = params[:options_attributes].values        
             options.each do |option|
               Option.create(value: option[:value], loan_question_id: @loan_question.id)
             end
+          end
+          format.html { redirect_to @loan_question, notice: "Loan question was successfully created." }
+          format.json { render :show, status: :ok, location: @loan_question }
+        else
+          format.html { render :new, status: :unprocessable_entity }
+          format.json { render json: @loan_question.errors, status: :unprocessable_entity }
         end
-        format.html { redirect_to @loan_question, notice: "Loan question was successfully created." }
-        format.json { render :show, status: :ok, location: @loan_question }
-      else
+      rescue => e
+        @loan_question.errors.add(:base, "Unable to save: #{e.message}")
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @loan_question.errors, status: :unprocessable_entity }
       end
@@ -131,7 +138,7 @@ class LoanQuestionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def loan_question_params
-      params.require(:loan_question).permit(:position, :question, :question_type, :required, :options_attributes => [:id, :value])
+      params.require(:loan_question).permit(:position, :question, :question_type, :required, options_attributes: [:id, :value])
     end
 end
 
