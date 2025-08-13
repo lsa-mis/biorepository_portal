@@ -162,7 +162,7 @@ module ApplicationHelper
   
   def number_of_items_to_loan
     Rails.cache.fetch("number_of_items_to_loan", expires_in: 10.hours) do
-      Item.count
+      number_with_delimiter(Item.count)
     end
   end
 
