@@ -3,6 +3,7 @@
   <%= render "layouts/announcement", is_preview: is_preview, location: "collections_index" %>
 
   <h1 class="pt-5 text-center">Explore Collection Catalog</h1>
+  <%= render "layouts/number_of_items_for_loan" %>
   <% if is_super_admin? %>
     <div class="my-3 text-end">
       <%= link_to "New Collection", new_collection_path, class: "btn btn-primary" %>
