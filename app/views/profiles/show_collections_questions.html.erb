@@ -20,10 +20,10 @@
       <div class="card-body">
         <dl class="row mb-0">
           <% @loan_answers.each do |question, answer| %>
-            <dt class="col-sm-4 fw-semibold">
-              <%= "#{question.position}. #{question.question}" %>
+            <dt class="col-sm-4 fw-semibold mb-2">
+              <%= "#{question.position}. " %><%= question.question.to_plain_text %>
               <% if question.required? %>
-                <span class="text-danger">*</span>
+                <span class="text-danger"> *</span>
               <% end %>
             </dt>
             <dd class="col-sm-8 mb-3">
@@ -59,9 +59,9 @@
           <dl class="row mb-0">
             <% qa_data.each do |question, answer| %>
               <dt class="col-sm-4 fw-semibold">
-                <%= "#{question.position}. #{question.question}" %>
+                <%= "#{question.position}. #{question.question.to_plain_text}" %>
                 <% if question.required? %>
-                  <span class="text-danger">*</span>
+                  <span class="text-danger"> *</span>
                 <% end %>
               </dt>
               <dd class="col-sm-8 mb-3">
