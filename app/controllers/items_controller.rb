@@ -83,7 +83,7 @@ class ItemsController < ApplicationController
       @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
     end
 
-    filtered_items = @q.result
+    filtered_items = @q.result(:distinct => true)
     @total_items = filtered_items.count
     @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @collections = Item.joins(:collection).where(id: filtered_items.select(:id)).distinct.pluck('collections.division').join(', ')
