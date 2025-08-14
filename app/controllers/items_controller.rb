@@ -217,7 +217,9 @@ class ItemsController < ApplicationController
         params[:q][:groupings].each do |group_index, group_data|
           group = {}
           group_data.each do |field_index, field_data|
+            
             next if field_index == "m"
+            next if field_data.class == Array
             next unless field_data["field"].present? && field_data["value"].present?
 
             field = field_data["field"]
