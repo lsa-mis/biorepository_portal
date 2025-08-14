@@ -5,100 +5,102 @@
     </p>
     <% if identification.type_status.present? %>
       <p>
-          <strong>Type Status:</strong>
-          <%= identification.type_status %>
+        <strong>Type Status:</strong>
+        <%= identification.type_status %>
       </p>
     <% end %>
     <% if identification.identified_by.present? %>
       <p>
-          <strong>Identified By:</strong>
-          <%= identification.identified_by %>
+        <strong>Identified By:</strong>
+        <%= identification.identified_by %>
       </p>
     <% end %>
     <% if identification.date_identified.present? %>
       <p>
-          <strong>Date Identified:</strong>
-          <%= identification.date_identified %>
+        <strong>Date Identified:</strong>
+        <%= identification.date_identified %>
       </p>
     <% end %>
     <% if identification.identification_remarks.present? %>
       <p>
-          <strong>Identification Remarks:</strong>
-          <%= identification.identification_remarks %>
+        <strong>Identification Remarks:</strong>
+        <%= identification.identification_remarks %>
       </p>
     <% end %>
     <% if identification.scientific_name.present? %>
       <p>
-          <strong>Scientific Name:</strong>
-          <%= identification.scientific_name %>
+        <strong>Scientific Name:</strong>
+        <%= identification.scientific_name %>
       </p>
     <% end %>
     <% if identification.scientific_name_authorship.present? %>
       <p>
-          <strong>Scientific Name Authorship:</strong>
-          <%= identification.scientific_name_authorship %>
+        <strong>Scientific Name Authorship:</strong>
+        <%= identification.scientific_name_authorship %>
       </p>
     <% end %>
     <% if identification.kingdom.present? %>
       <p>
-          <strong>Kingdom:</strong>
-          <%= identification.kingdom %>
+        <strong>Kingdom:</strong>
+        <%= identification.kingdom %>
       </p>
     <% end %>
     <% if identification.phylum.present? %>
       <p>
-          <strong>Phylum:</strong>
-          <%= identification.phylum %>
+        <strong>Phylum:</strong>
+        <%= identification.phylum %>
       </p>
     <% end %>
     <% if identification.class_name.present? %>
       <p>
-          <strong>Class:</strong>
-          <%= identification.class_name %>
+        <strong>Class:</strong>
+        <%= identification.class_name %>
       </p>
     <% end %>
     <% if identification.order_name.present? %>
       <p>
-          <strong>Order:</strong>
-          <%= identification.order_name %>
+        <strong>Order:</strong>
+        <%= identification.order_name %>
       </p>
     <% end %>
     <% if identification.family.present? %>
       <p>
-          <strong>Family:</strong>
-          <%= identification.family %>
+        <strong>Family:</strong>
+        <%= identification.family %>
       </p>
     <% end %>
     <% if identification.genus.present? %>
       <p>
-          <strong>Genus:</strong>
-          <%= identification.genus %>
+        <strong>Genus:</strong>
+        <%= identification.genus %>
       </p>
     <% end %>
     <% if identification.specific_epithet.present? %>
       <p>
-          <strong>Specific Epithet:</strong>
-          <%= identification.specific_epithet %>
+        <strong>Specific Epithet:</strong>
+        <%= identification.specific_epithet %>
       </p>
     <% end %>
     <% if identification.infraspecific_epithet.present? %>
       <p>
-          <strong>Infraspecific Epithet:</strong>
-          <%= identification.infraspecific_epithet %>
+        <strong>Infraspecific Epithet:</strong>
+        <%= identification.infraspecific_epithet %>
       </p>
     <% end %>
     <% if identification.taxon_rank.present? %>
       <p>
-          <strong>Taxon Rank:</strong>
-          <%= identification.taxon_rank %>
+        <strong>Taxon Rank:</strong>
+        <%= identification.taxon_rank %>
       </p>
     <% end %>
     <% if identification.vernacular_name.present? %>
       <p>
-          <strong>Vernacular Name:</strong>
-          <%= identification.vernacular_name %>
+        <strong>Vernacular Name:</strong>
+        <%= identification.vernacular_name %>
       </p>
     <% end %>
   </div>
-  <hr>
+  <% unless identification == @identifications.last %>
+    <hr>
+  <% end %>
 <% end %>

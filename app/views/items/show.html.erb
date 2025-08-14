@@ -3,7 +3,7 @@
 
     <!-- Sidebar: Collection Info + Return Link -->
     <div class="col-12 col-lg-4 order-1 order-lg-1">
-      <div class="bg-light p-4 rounded shadow-sm h-100">
+      <div class="bg-light p-4">
         <h1 class="fw-bold mb-3"><%= @item.collection.division %> Collection</h1>
         <h2><%= @item.display_name %></h2>
         <%= turbo_frame_tag "checkout_item_row_#{@item.id}" do %>
@@ -18,14 +18,14 @@
 
     <!-- Main Content Area: Record Details + Identifications -->
     <div class="col-12 col-lg-4 order-2 order-lg-2">
-      <div class="bg-light p-4 rounded shadow-sm mb-4">
+      <div class="bg-light p-4 mb-4">
         <h2 class="fw-bold mb-3">Record Details</h2>
         <%= render @item %>
       </div>
     </div>
     
     <div class="col-12 col-lg-4 order-3 order-lg-3">
-      <div class="bg-light p-4 rounded shadow-sm mb-4">
+      <div class="bg-light p-4 mb-4">
         <h2 class="fw-bold mb-3">Identifications</h2>
         <%= render "identifications" %>
       </div>
