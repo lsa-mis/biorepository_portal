@@ -156,6 +156,19 @@ export default class extends Controller {
       })
     }
     
+    // Check if this is a direct input field with name="q[key]" and id="key"
+    const directInput = document.getElementById(`q_${key}`)
+    console.log("directInput")
+    console.log(key)
+    console.log(directInput)
+    if (directInput && directInput.name === `q[${key}]` && directInput.value === value) {
+      console.log(directInput.value)
+      console.log(directInput.name)
+      directInput.value = ''
+      this.submit()
+      return
+    }
+    
     // If not found in groups-container, proceed with checkbox handling
     // Find checkbox with name="q[key][]" and value="value"
     const checkboxName = `q[${key}][]`
