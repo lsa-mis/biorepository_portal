@@ -76,7 +76,6 @@ class ItemsController < ApplicationController
     if session[:quick_search_q].present?
       @q = Item.ransack(session[:quick_search_q])
       transform_quick_search_params
-      @message = "Quick search results for: Scientific Name or Vernacular Name or Country or State/Province LIKE '#{extract_quick_search_param}'"
       session.delete(:quick_search_q)
     else
       unless params[:page].present?
