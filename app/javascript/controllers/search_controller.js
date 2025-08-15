@@ -137,8 +137,22 @@ export default class extends Controller {
     const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]`)
     
     checkboxes.forEach(checkbox => {
+      // First check if the checkbox value matches
       if (checkbox.value === value) {
         checkbox.checked = false
+        return
+      }
+      
+      // If no value match, check if the associated label text matches
+      const checkboxId = checkbox.id
+      if (checkboxId) {
+        console.log("label")
+        console.log(checkboxId)
+        const checkbox = document.getElementById(checkboxId)
+        if (checkbox && checkbox.checked){
+          checkbox.checked = false
+          return
+        }
       }
     })
     
