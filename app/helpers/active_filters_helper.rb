@@ -62,7 +62,7 @@ module ActiveFiltersHelper
         group.each do |field_hash|
           label = DYNAMIC_FIELD_LABELS[field_hash[:field]] || field_hash[:field].titleize
           str << Array.wrap(field_hash[:value])
-          group_hash[label] = field_hash[:value]
+          group_hash[field_hash[:field]] = {label => field_hash[:value]}
         end
         filters << "[" + str.join(", ") + "]"
         filters_array << group_hash
@@ -77,12 +77,12 @@ module ActiveFiltersHelper
         if key == "collection_id_in"
           collection_names = Collection.where(id: value).pluck(:division)
           filters << "[#{collection_names.join(", ").titleize}]"
-          filters_array << { "collection" => "[#{collection_names.join(", ").titleize}]" }
+          filters_array << {key => { "collection" => "[#{collection_names.join(", ").titleize}]" }}
           next
         end
         filters << "[#{Array.wrap(value).join(", ").titleize}]"
         label = STANDARD_FILTER_LABELS[key]
-        filters_array << { label => value }
+        filters_array << {key => { label => value }}
       end
     end
     filters.compact.uniq
