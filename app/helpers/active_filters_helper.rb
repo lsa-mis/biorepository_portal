@@ -52,7 +52,6 @@ module ActiveFiltersHelper
 
   def format_active_filters(dynamic_fields: nil)
 
-    filters = []
     filters_array = []
     # Handle dynamic fields
     if dynamic_fields.present?
@@ -64,7 +63,6 @@ module ActiveFiltersHelper
           str << Array.wrap(field_hash[:value])
           group_hash[field_hash[:field]] = {label => field_hash[:value]}
         end
-        filters << "[" + str.join(", ") + "]"
         filters_array << group_hash
       end
     end
@@ -75,7 +73,6 @@ module ActiveFiltersHelper
         next if value.blank? || key == "groupings" # Skip empty values and the "groupings" key
         if key == "collection_id_in"
           collection_names = Collection.where(id: value).pluck(:division)
-          filters << ["#{collection_names.join(", ").titleize}"]
           
           # Create nested hash structure for all collections
           collection_hashes = {}
@@ -87,14 +84,11 @@ module ActiveFiltersHelper
           filters_array << {key => collection_hashes}
           next
         end
-        filters << "[#{Array.wrap(value).join(", ").titleize}]"
         label = STANDARD_FILTER_LABELS[key]
         filters_array << {key => { label => value }}
       end
     end
-    filters.compact.uniq
-    
-    return filters_array
+    filters_array
   end
   
 end
