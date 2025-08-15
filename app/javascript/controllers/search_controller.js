@@ -169,6 +169,14 @@ export default class extends Controller {
       return
     }
     
+    // Check if the key is directly a checkbox ID
+    const directCheckbox = document.getElementById(key)
+    if (directCheckbox && directCheckbox.type === 'checkbox') {
+      directCheckbox.checked = false
+      this.submit()
+      return
+    }
+    
     // If not found in groups-container, proceed with checkbox handling
     // Find checkbox with name="q[key][]" and value="value"
     const checkboxName = `q[${key}][]`
@@ -180,18 +188,7 @@ export default class extends Controller {
         checkbox.checked = false
         return
       }
-      
-      // If no value match, check if the associated label text matches
-      const checkboxId = checkbox.id
-      if (checkboxId) {
-        console.log("label")
-        console.log(checkboxId)
-        const checkbox = document.getElementById(checkboxId)
-        if (checkbox && checkbox.checked){
-          checkbox.checked = false
-          return
-        }
-      }
+
     })
     
     this.submit()
