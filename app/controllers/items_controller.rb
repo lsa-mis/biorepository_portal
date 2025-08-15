@@ -83,7 +83,7 @@ class ItemsController < ApplicationController
       @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
     end
 
-    filtered_items = @q.result
+    filtered_items = @q.result(:distinct => true)
     @total_items = filtered_items.count
     @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @collections = Item.joins(:collection).where(id: filtered_items.select(:id)).distinct.pluck('collections.division').join(', ')
@@ -217,7 +217,9 @@ class ItemsController < ApplicationController
         params[:q][:groupings].each do |group_index, group_data|
           group = {}
           group_data.each do |field_index, field_data|
+            
             next if field_index == "m"
+            next if field_data.class == Array
             next unless field_data["field"].present? && field_data["value"].present?
 
             field = field_data["field"]

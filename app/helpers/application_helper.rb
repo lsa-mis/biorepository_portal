@@ -143,10 +143,10 @@ module ApplicationHelper
     checkout_items = []
     collection_ids = []
     @checkout.requestables.active.each do |requestable|
-      checkout_item = ""
       preparation = requestable.preparation
       item = preparation.item
-      checkout_item += "#{item.collection.division}, Preparation: #{preparation.prep_type}"
+      checkout_item = ""
+      checkout_item += "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{item.current_identification&.scientific_name&.humanize}, Preparation: #{preparation.prep_type}"
       if preparation.barcode.present?
         checkout_item += ", Barcode: #{preparation.barcode}"
       end

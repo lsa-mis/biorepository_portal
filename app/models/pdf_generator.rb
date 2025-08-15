@@ -62,22 +62,24 @@ class PdfGenerator
         pdf.move_down 10
 
         # items = @checkout_items.split(/\.(?:\s+|$)/).map(&:strip).reject(&:blank?)
-        table_data = [["Collection", "Preparation", "Barcode", "Description", "Count"]]
+        table_data = [["Collection", "Catalog Number", "Scientific Name", "Preparation", "Barcode", "Description", "Count"]]
 
         @checkout_items.each do |item_str|
           collection   = item_str[/^([^,]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
+          catalog_number = item_str[/Catalog Number:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
+          scientific_name = item_str[/Scientific Name:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
           preparation  = item_str[/Preparation:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
           barcode      = item_str[/Barcode:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
           description  = item_str[/Description:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
           count        = item_str[/Count:\s*([^,;]+)/, 1]&.strip || NO_RESPONSE_PLACEHOLDER
-          table_data << [collection, preparation, barcode, description, count]
+          table_data << [collection, catalog_number, scientific_name, preparation, barcode, description, count]
         end
 
         pdf.table(table_data,
           header: true,
           width: pdf.bounds.width,
           cell_style: { size: 9, padding: 6 }) do
-            row(0).font_style = :bold
+            row(0).font_style = :light
             row(0).background_color = 'eeeeee'
           end
       end
