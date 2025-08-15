@@ -2,12 +2,29 @@
   <div class="mb-3">
     <span class="fw-bold">For: </span>
     <% @active_filters.each_with_index do |filter_hash, hash_index| %>
-      <% filter_hash.each_with_index do |(key, values), index| %>
-        <span class="badge bg-primary text-white p-2 m-1 d-inline-flex align-items-center">
-          <%= key %>: <%= Array.wrap(values).map { |value| "\"#{value}\"" }.join(" OR ") %>
-          <%= link_to "×", "#", class: "text-white ms-2" %>
-        </span>
-        <% unless index == filter_hash.size - 1 %>
+      <% filter_hash.each_with_index do |(key, label_value_hash), key_index| %>
+        <% label_value_hash.each_with_index do |(label, values), index| %>
+          <% Array.wrap(values).each_with_index do |value, value_index| %>
+            <span class="badge bg-primary text-white p-2 m-1 d-inline-flex align-items-center">
+              <%= label %>: "<%= value %>"
+              <button type="button" 
+                      class="btn-close btn-close-white ms-2" 
+                      data-action="click->search#removeFilter"
+                      data-key="<%= key %>"
+                      data-value="<%= value %>"
+                      title="Remove this filter"
+                      style="font-size: 0.7em;">
+              </button>
+            </span>
+            <% unless value_index == Array.wrap(values).size - 1 %>
+              <span class="fw-bold"> OR </span>
+            <% end %>
+          <% end %>
+          <% unless index == label_value_hash.size - 1 %>
+            <span class="fw-bold"> OR </span>
+          <% end %>
+        <% end %>
+        <% unless key_index == filter_hash.size - 1 %>
           <span class="fw-bold"> OR </span>
         <% end %>
       <% end %>

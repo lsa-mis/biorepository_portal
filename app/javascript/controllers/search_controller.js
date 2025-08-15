@@ -127,4 +127,22 @@ export default class extends Controller {
     this.formTarget.requestSubmit()
   }
 
+  removeFilter(event) {
+    event.preventDefault()
+    const key = event.currentTarget.dataset.key
+    const value = event.currentTarget.dataset.value
+    
+    // Find checkbox with name="q[key][]" and value="value"
+    const checkboxName = `q[${key}][]`
+    const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]`)
+    
+    checkboxes.forEach(checkbox => {
+      if (checkbox.value === value) {
+        checkbox.checked = false
+      }
+    })
+    
+    this.submit()
+  }
+
 }
