@@ -3,8 +3,9 @@
     <span class="fw-bold">For: </span>
     <% @active_filters.each_with_index do |filter_hash, hash_index| %>
       <% filter_hash.each_with_index do |(key, values), index| %>
-        <span class="badge bg-primary text-white p-2 m-1">
+        <span class="badge bg-primary text-white p-2 m-1 d-inline-flex align-items-center">
           <%= key %>: <%= Array.wrap(values).map { |value| "\"#{value}\"" }.join(" OR ") %>
+          <%= link_to "×", "#", class: "text-white ms-2" %>
         </span>
         <% unless index == filter_hash.size - 1 %>
           <span class="fw-bold"> OR </span>
