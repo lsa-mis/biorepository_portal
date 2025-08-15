@@ -21,6 +21,7 @@ export default class extends Controller {
 
     this.addOrSeparators()
     this.addAndSeparators()
+    this.submit()
   }
 
   addRow(event) {
