@@ -79,7 +79,9 @@ class ItemsController < ApplicationController
       @message = "Quick search results for: Scientific Name or Vernacular Name or Country or State/Province LIKE '#{extract_quick_search_param}'"
       session.delete(:quick_search_q)
     else
-      transform_search_groupings
+      unless params[:page].present?
+        transform_search_groupings
+      end
       @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
     end
 
