@@ -84,7 +84,7 @@ module ActiveFiltersHelper
           filters_array << {key => collection_hashes}
           next
         end
-        label = STANDARD_FILTER_LABELS[key]
+        label = STANDARD_FILTER_LABELS[key] || key.titleize
         filters_array << {key => { label => value }}
       end
     end
