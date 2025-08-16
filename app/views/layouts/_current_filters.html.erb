@@ -39,7 +39,11 @@
         <%= or_separator(key_index, filter_hash.size) %>
       <% end %>
       <% unless hash_index == @active_filters.size - 1 %>
-        <span class="fw-bold"> AND </span>
+        <% if @quick_search_filters %>
+          <span class="fw-bold"> OR </span>
+        <% else %>
+          <span class="fw-bold"> AND </span>
+        <% end %>
       <% end %>
     <% end %>
   </div>
