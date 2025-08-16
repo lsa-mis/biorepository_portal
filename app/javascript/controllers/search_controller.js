@@ -135,27 +135,8 @@ export default class extends Controller {
     const value = event.currentTarget.dataset.value
     
     // First, check if this is a dynamic field in groups-container
-    const groupsContainer = document.getElementById('groups-container')
-    if (groupsContainer) {
-      const selects = groupsContainer.querySelectorAll('select')
-      
-      selects.forEach(select => {
-        if (select.value === key) {
-          // Found a select with the matching key value
-          const searchRow = select.closest('.search-row')
-          if (searchRow) {
-            const textInput = searchRow.querySelector('input[type="text"]')
-            if (textInput && textInput.value === value) {
-              // Found matching text input, trigger the remove button
-              const removeButton = searchRow.querySelector('[data-action*="removeField"]')
-              if (removeButton) {
-                removeButton.click()
-                return
-              }
-            }
-          }
-        }
-      })
+    if (this.removeDynamicFieldFilter(key, value)) {
+      return;
     }
     
     // Check if this is a direct input field with name="q[key]" and id="key"
@@ -188,6 +169,32 @@ export default class extends Controller {
     }
     
     this.submit()
+  }
+
+  removeDynamicFieldFilter(key, value) {
+    const groupsContainer = document.getElementById('groups-container')
+    if (groupsContainer) {
+      const selects = groupsContainer.querySelectorAll('select')
+      
+      selects.forEach(select => {
+        if (select.value === key) {
+          // Found a select with the matching key value
+          const searchRow = select.closest('.search-row')
+          if (searchRow) {
+            const textInput = searchRow.querySelector('input[type="text"]')
+            if (textInput && textInput.value === value) {
+              // Found matching text input, trigger the remove button
+              const removeButton = searchRow.querySelector('[data-action*="removeField"]')
+              if (removeButton) {
+                removeButton.click()
+                return true
+              }
+            }
+          }
+        }
+      })
+    }
+    return false
   }
 
 }
