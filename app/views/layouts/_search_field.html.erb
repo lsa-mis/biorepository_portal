@@ -43,5 +43,5 @@
   <%= text_field_tag "#{base_name}[value]",
     entered_value, placeholder: "contains...",
     class: "form-control me-2 dynamic-search-value",
-    aria: { label: "Search Value" } %>
+    aria: { label: "Search Value" }, "data-action": "input->search#submit" %>
 </div>

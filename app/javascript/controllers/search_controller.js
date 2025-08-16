@@ -122,8 +122,11 @@ export default class extends Controller {
   }
 
   submit(event) {
-    const form = this.element
-    this.formTarget.requestSubmit()
+    clearTimeout(this.timeout)
+
+    this.timeout = setTimeout(() => {
+      this.formTarget.requestSubmit()
+    }, 1000)
   }
 
   removeFilter(event) {
