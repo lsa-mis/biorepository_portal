@@ -575,3 +575,15 @@ skiplink:focus,
   background-color: white !important;
   color: var(--bs-primary) !important;
 }
+
+.btn-close-white {
+  filter: brightness(2) invert(1) contrast(2) !important; /* Brighter white close button */
+  font-size: 0.7em;
+  opacity: 1; /* Full opacity for maximum brightness */
+  transition: opacity 0.2s ease;
+}
+
+.btn-close-white:hover {
+  opacity: 1;
+  filter: brightness(2) invert(1) contrast(2) drop-shadow(0 0 4px rgba(255,255,255,1)) !important;
+}
