@@ -77,10 +77,12 @@ class ItemsController < ApplicationController
       @q = Item.ransack(session[:quick_search_q])
       transform_quick_search_params
       session.delete(:quick_search_q)
+      @quick_search_filters = true
     else
       unless params[:page].present?
         transform_search_groupings
       end
+      @quick_search_filters = false
       @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
     end
 
@@ -105,7 +107,7 @@ class ItemsController < ApplicationController
         
       end
     end
-    
+
     @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
 
     respond_to do |format|
