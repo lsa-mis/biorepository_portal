@@ -176,14 +176,13 @@ export default class extends Controller {
     const checkboxName = `q[${key}][]`
     const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]`)
     
-    checkboxes.forEach(checkbox => {
+    for (const checkbox of checkboxes) {
       // First check if the checkbox value matches
       if (checkbox.value === value) {
         checkbox.checked = false
-        return
+        break
       }
-
-    })
+    }
     
     this.submit()
   }
