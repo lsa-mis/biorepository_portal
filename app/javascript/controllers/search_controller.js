@@ -136,7 +136,7 @@ export default class extends Controller {
     
     // First, check if this is a dynamic field in groups-container
     if (this.removeDynamicFieldFilter(key, value)) {
-      return;
+      return
     }
     
     // Check if this is a direct input field with name="q[key]" and id="key"
