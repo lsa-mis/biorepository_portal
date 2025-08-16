@@ -15,9 +15,7 @@
                       title="Remove this filter">
               </button>
             </span>
-            <% unless index == label_value_hash.size - 1 %>
-              <span class="fw-bold"> OR </span>
-            <% end %>
+            <%= or_separator(index, label_value_hash.size) %>
           <% end %>
         <% else %>
           <% label_value_hash.each_with_index do |(label, values), index| %>
@@ -33,18 +31,12 @@
                         style="font-size: 0.7em;">
                 </button>
               </span>
-              <% unless value_index == Array.wrap(values).size - 1 %>
-                <span class="fw-bold"> OR </span>
-              <% end %>
+              <%= or_separator(value_index, Array.wrap(values).size) %>
             <% end %>
-            <% unless index == label_value_hash.size - 1 %>
-              <span class="fw-bold"> OR </span>
-            <% end %>
+            <%= or_separator(index, label_value_hash.size) %>
           <% end %>
         <% end %>
-        <% unless key_index == filter_hash.size - 1 %>
-          <span class="fw-bold"> OR </span>
-        <% end %>
+        <%= or_separator(key_index, filter_hash.size) %>
       <% end %>
       <% unless hash_index == @active_filters.size - 1 %>
         <span class="fw-bold"> AND </span>

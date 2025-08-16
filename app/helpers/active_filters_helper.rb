@@ -90,5 +90,9 @@ module ActiveFiltersHelper
     end
     filters_array
   end
-  
+
+  def or_separator(index, total)
+    index == total - 1 ? "" : content_tag(:span, " OR ", class: "fw-bold")
+  end
+
 end
