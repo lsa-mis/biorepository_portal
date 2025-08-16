@@ -1,12 +1,46 @@
-<% if active_filters.present? %>
+<% if @active_filters.present? %>
   <div class="mb-3">
-    <ul class="list-inline mb-0">
-    For
-      <% active_filters.each do |filter| %>
-        <li class="list-inline-item badge bg-primary text-white p-2 m-1">
-          <%= filter %>
-        </li>
+    <span class="fw-bold">For: </span>
+    <% @active_filters.each_with_index do |filter_hash, hash_index| %>
+      <% filter_hash.each_with_index do |(key, label_value_hash), key_index| %>
+        <% if key == "collection_id_in" %>
+          <% label_value_hash.each_with_index do |(collection_key, collection_name), index| %>
+            <span class="badge bg-primary text-white p-2 m-1 d-inline-flex align-items-center">
+              Collection: "<%= collection_name %>"
+              <button type="button" 
+                      class="btn-close btn-close-white ms-2" 
+                      data-action="click->search#removeFilter"
+                      data-key="<%= collection_key %>"
+                      data-value="<%= collection_name %>"
+                      title="Remove this filter">
+              </button>
+            </span>
+            <%= or_separator(index, label_value_hash.size) %>
+          <% end %>
+        <% else %>
+          <% label_value_hash.each_with_index do |(label, values), index| %>
+            <% Array.wrap(values).each_with_index do |value, value_index| %>
+              <span class="badge bg-primary text-white p-2 m-1 d-inline-flex align-items-center">
+                <%= label %>: "<%= value %>"
+                <button type="button" 
+                        class="btn-close btn-close-white ms-2" 
+                        data-action="click->search#removeFilter"
+                        data-key="<%= key %>"
+                        data-value="<%= value %>"
+                        title="Remove this filter"
+                        style="font-size: 0.7em;">
+                </button>
+              </span>
+              <%= or_separator(value_index, Array.wrap(values).size) %>
+            <% end %>
+            <%= or_separator(index, label_value_hash.size) %>
+          <% end %>
+        <% end %>
+        <%= or_separator(key_index, filter_hash.size) %>
       <% end %>
-    </ul>
+      <% unless hash_index == @active_filters.size - 1 %>
+        <span class="fw-bold"> AND </span>
+      <% end %>
+    <% end %>
   </div>
 <% end %>

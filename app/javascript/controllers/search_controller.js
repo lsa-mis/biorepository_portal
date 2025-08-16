@@ -21,6 +21,7 @@ export default class extends Controller {
 
     this.addOrSeparators()
     this.addAndSeparators()
+    this.submit()
   }
 
   addRow(event) {
@@ -121,9 +122,79 @@ export default class extends Controller {
   }
 
   submit(event) {
-    const form = this.element
+    clearTimeout(this.timeout)
 
-    this.formTarget.requestSubmit()
+    this.timeout = setTimeout(() => {
+      this.formTarget.requestSubmit()
+    }, 1000)
+  }
+
+  removeFilter(event) {
+    event.preventDefault()
+    const key = event.currentTarget.dataset.key
+    const value = event.currentTarget.dataset.value
+    
+    // First, check if this is a dynamic field in groups-container
+    if (this.removeDynamicFieldFilter(key, value)) {
+      return
+    }
+    
+    // Check if this is a direct input field with name="q[key]" and id="key"
+    const directInput = document.getElementById(`q_${key}`)
+    if (directInput && directInput.name === `q[${key}]` && directInput.value === value) {
+      directInput.value = ''
+      this.submit()
+      return
+    }
+    
+    // Check if the key is directly a checkbox ID
+    const directCheckbox = document.getElementById(key)
+    if (directCheckbox && directCheckbox.type === 'checkbox') {
+      directCheckbox.checked = false
+      this.submit()
+      return
+    }
+    
+    // If not found in groups-container, proceed with checkbox handling
+    // Find checkbox with name="q[key][]" and value="value"
+    const checkboxName = `q[${key}][]`
+    const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]`)
+    
+    for (const checkbox of checkboxes) {
+      // First check if the checkbox value matches
+      if (checkbox.value === value) {
+        checkbox.checked = false
+        break
+      }
+    }
+    
+    this.submit()
+  }
+
+  removeDynamicFieldFilter(key, value) {
+    const groupsContainer = document.getElementById('groups-container')
+    if (groupsContainer) {
+      const selects = groupsContainer.querySelectorAll('select')
+      
+      selects.forEach(select => {
+        if (select.value === key) {
+          // Found a select with the matching key value
+          const searchRow = select.closest('.search-row')
+          if (searchRow) {
+            const textInput = searchRow.querySelector('input[type="text"]')
+            if (textInput && textInput.value === value) {
+              // Found matching text input, trigger the remove button
+              const removeButton = searchRow.querySelector('[data-action*="removeField"]')
+              if (removeButton) {
+                removeButton.click()
+                return true
+              }
+            }
+          }
+        }
+      })
+    }
+    return false
   }
 
 }
