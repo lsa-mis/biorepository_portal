@@ -252,18 +252,36 @@ svg.wh6 {
   }
 }
 
-.navbar-collapse.d-md-none {
+.navbar-collapse.d-xl-none {
   display: none;
 }
 
+@media (min-width: 768px) {
+  .navbar-collapse.d-xl-none {
+    display: none;
+  }
+}
+
 @media (max-width: 770px) {
-  .navbar-collapse.d-md-none.show {
+  .navbar-collapse.d-xl-none.show {
     display: flex;
     justify-content: center;
     align-items: center;
   }
 }
 
+@media (max-width: 1199.98px) {
+  #navbarBurgerMenu {
+    display: none; // default hidden
+  }
+
+  #navbarBurgerMenu.show {
+    display: flex !important; // reveal on toggle
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+}
 
 .nav-section {
   display: flex;
@@ -299,15 +317,23 @@ svg.wh6 {
   outline: none;
 }
 
-@media (min-width: 768px) {
-  .navbar-collapse.d-md-none {
-    display: none;
+@media (min-width: 1200px) {
+  #navbarBurgerMenu {
+    display: none !important;
+  }
+  
+  .navbar-toggler {
+    display: none !important;
   }
 }
 
-@media (min-width: 768px) {
-  #navbarBurgerMenu {
-    display: none !important;
+@media (max-width: 1199.98px) {
+  .navbar-toggler {
+    display: block !important;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    z-index: 1000;
   }
 }
 
