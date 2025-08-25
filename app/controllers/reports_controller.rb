@@ -41,7 +41,7 @@ class ReportsController < ApplicationController
         @metrics = {
           'Total Information Requests' => information_requests.count,
         }
-        @headers = ["Request ID", "Collections", "Created At", "Submitted By", "Message"]
+        @headers = ["View Request", "Collections", "Created At", "Submitted By", "Message"]
         @request_link = true
         @url = "information_request_path"
         @model_class = InformationRequest
@@ -73,7 +73,7 @@ class ReportsController < ApplicationController
           'Total Loan Requests' => loan_requests.count,
           'Total Items Requested' => loan_requests.sum { |record| record.checkout_items.length }
         }
-        @headers = ["Request ID", "Collections", "Created At", "Submitted By"]
+        @headers = ["View Request", "Collections", "Created At", "Submitted By"]
         @request_link = true
         @url = "loan_request_path"
         @model_class = LoanRequest
