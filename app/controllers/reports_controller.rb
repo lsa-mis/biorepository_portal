@@ -54,7 +54,7 @@ class ReportsController < ApplicationController
 
       respond_to do |format|
         format.html
-        format.csv { send_data csv_data, filename: 'information_requests_report.csv', type: 'text/csv' }
+        format.csv { send_data csv_data("information_requests"), filename: 'information_requests_report.csv', type: 'text/csv' }
       end
     end
 
@@ -86,7 +86,7 @@ class ReportsController < ApplicationController
 
       respond_to do |format|
         format.html
-        format.csv { send_data csv_data, filename: 'loan_requests_report.csv', type: 'text/csv' }
+        format.csv { send_data csv_data("loan_requests"), filename: 'loan_requests_report.csv', type: 'text/csv' }
       end
     end
   end
@@ -145,7 +145,7 @@ class ReportsController < ApplicationController
     collections.join(', ')
   end
 
-  def csv_data
+  def csv_data(path = "")
     CSV.generate(headers: true) do |csv|
       next csv << ["No data found"] if !@data
 
@@ -153,25 +153,15 @@ class ReportsController < ApplicationController
       csv << []
       @metrics && @metrics.each { |desc, value| csv << [desc, value] }
 
-      if @grouped
-        @data.each do |group, pivot_table|
-          csv << []
-          csv << (@group_link && group.is_a?(Array) ? ["#{group[0]} #{group[1].room_number}"] : [group])
-          csv << @headers
-          pivot_table.each do |keys, record|
-            keys = [keys[0][0]] + keys[1..] if @room_link && keys[0].is_a?(Array)
-            csv << keys + @date_headers.map { |date| record[date] }
-          end          
+      csv << []
+      csv << @headers
+      @data.each do |row|
+        if @request_link
+          row[0] = request.base_url + "/" + path + "/" + row[0].to_s
+        else
+          row[0] = row[0].request_id
         end
-      else
-        csv << []
-        csv << @headers
-        @data.each do |row|
-          if @room_link
-            row[0] = row[0].request_id
-          end
-          csv << row
-        end
+        csv << row
       end
     end
   end
