@@ -159,7 +159,7 @@ class ReportsController < ApplicationController
         if @request_link
           row[0] = request.base_url + "/" + path + "/" + row[0].to_s
         else
-          row[0] = row[0].request_id
+          row[0] = row[0]
         end
         csv << row
       end
