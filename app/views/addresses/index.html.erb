@@ -18,6 +18,9 @@
                 <% else %>
                   <div class="mb-2">&nbsp;</div>
                 <% end %>
+                <% unless address.address_line_2.present? %>
+                  <div class="mb-2">&nbsp;</div>
+                <% end %>
                 <p class="card-title fw-bold mb-1"><%= address.first_name %> <%= address.last_name %></p>
                 <p class="card-text mb-1"><%= address.address_line_1 %></p>
                 <% if address.address_line_2.present? %>
@@ -29,6 +32,7 @@
                 <p class="card-text text-muted"><i class="bi bi-telephone"></i> <%= address.phone %></p>
               </div>
               <div class="card-footer d-flex justify-content-between align-items-center px-3">
+                <%= link_to "Delete", address_path(address), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this address?" }, class: "btn btn-danger" %>
                 <%= link_to "Edit", edit_address_path(address), class: "btn btn-sm btn-outline-secondary ms-auto" %>
               </div>
             </div>
