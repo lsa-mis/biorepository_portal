@@ -6,7 +6,7 @@
 #  address_line_1 :string
 #  address_line_2 :string
 #  city           :string
-#  country        :string
+#  country_code   :string
 #  email          :string
 #  first_name     :string
 #  last_name      :string
@@ -32,12 +32,16 @@ class Address < ApplicationRecord
   VALID_EMAIL_REGEX = URI::MailTo::EMAIL_REGEXP
 
   validates :email, presence: true, format: { with: VALID_EMAIL_REGEX, message: "Please Enter a Valid Email" }
-  validates :first_name, :last_name, :address_line_1, :city, :state, :zip, :country, :phone, presence: true
+  validates :first_name, :last_name, :address_line_1, :city, :state, :zip, :country_code, :phone, presence: true
 
   before_save :unset_other_primaries, if: :primary?
 
   def full_name
     "#{first_name} #{last_name}"
+  end
+
+  def country
+    ISO3166::Country[self.country_code].to_s
   end
 
   def shipping_address_string
@@ -114,5 +118,5 @@ class Address < ApplicationRecord
       [ 'Wisconsin', 'WI' ],
       [ 'Wyoming', 'WY' ]
     ].freeze
-    
+
 end
