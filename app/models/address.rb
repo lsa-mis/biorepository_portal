@@ -41,7 +41,7 @@ class Address < ApplicationRecord
   end
 
   def country
-    ISO3166::Country[self.country_code].common_name
+    ISO3166::Country[self.country_code]&.common_name || 'Unknown'
   end
 
   def shipping_address_string
