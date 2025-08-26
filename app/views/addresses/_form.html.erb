@@ -1,4 +1,4 @@
-<%= form_with model: address, local: true do |f| %>
+<%= form_with model: address, local: true, data: { controller: "address-form", action: "submit->address-form#submitForm" } do |f| %>
   <div class="row">
     <div class="col-md-6 mb-3">
       <%= f.label :first_name, "First Name*", class: "form-label" %>
@@ -12,7 +12,9 @@
 
   <div class="mb-3">
     <%= f.label :email, "Email*", class: "form-label" %>
-    <%= f.email_field :email, class: "form-control", required: true %>
+    <%= f.text_field :email, class: "form-control", required: true, 
+        data: { address_form_target: "email" } %>
+    <div class="invalid-feedback" data-address-form-target="emailError" style="display: none;"></div>
   </div>
 
   <div class="mb-3">
@@ -28,7 +30,7 @@
   <div class="row">
     <div class="col-md-6 mb-3">
       <%= f.label :city, "City*", class: "form-label" %>
-      <%= f.text_field :city, class: "form-control", required: true %>
+      <%= f.text_field :city, required: true %>
     </div>
     <div class="col-md-6 mb-3">
       <%= f.label :state, "State / Province*", class: "form-label" %>
@@ -39,7 +41,7 @@
   <div class="row">
     <div class="col-md-6 mb-3">
       <%= f.label :zip, "ZIP / Postal Code*", class: "form-label" %>
-      <%= f.text_field :zip, class: "form-control", required: true %>
+      <%= f.text_field :zip, required: true %>
     </div>
     <div class="col-md-6 mb-3">
       <%= f.label :country_code, "Country*", class: "form-label" %>
@@ -49,7 +51,9 @@
 
   <div class="mb-3">
     <%= f.label :phone, "Phone*", class: "form-label" %>
-    <%= f.telephone_field :phone, class: "form-control", required: true %>
+    <%= f.text_field :phone, class: "form-control", required: true,
+        data: { address_form_target: "phone" } %>
+    <div class="invalid-feedback" data-address-form-target="phoneError" style="display: none;"></div>
   </div>
 
   <div class="form-check mb-4">
@@ -62,12 +66,12 @@
 
   <div class="d-grid">
     <% if params[:loan_request] %>
-      <%= f.submit "Update Shipping Address", class: "btn btn-primary" %>
+      <%= f.submit "Update Shipping Address", class: "btn btn-primary", data: { address_form_target: "submitButton" } %>
     <% else %>
       <% if address.persisted? %> 
-        <%= f.submit "Update Address", class: "btn btn-primary" %>
+        <%= f.submit "Update Address", class: "btn btn-primary", data: { address_form_target: "submitButton" } %>
       <% else %>
-        <%= f.submit "Create Address", class: "btn btn-primary" %>
+        <%= f.submit "Create Address", class: "btn btn-primary", data: { address_form_target: "submitButton" } %>
       <% end %>
     <% end %>
   </div>
