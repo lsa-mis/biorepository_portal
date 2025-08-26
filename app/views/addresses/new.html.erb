@@ -5,75 +5,7 @@
         <div class="card-body">
           <h1 class="card-title mb-4 text-center">New Address</h1>
 
-          <%= form_with model: @address, local: true do |f| %>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <%= f.label :first_name, "#{:first_name.to_s.titleize}*", class: "form-label" %>
-                <%= f.text_field :first_name, class: "form-control", required: true %>
-              </div>
-              <div class="col-md-6 mb-3">
-                <%= f.label :last_name, "#{:last_name.to_s.titleize}*", class: "form-label" %>
-                <%= f.text_field :last_name, class: "form-control", required: true %>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <%= f.label :email, "#{:email.to_s.titleize}*", class: "form-label" %>
-              <%= f.email_field :email, class: "form-control", required: true %>
-            </div>
-
-            <div class="mb-3">
-              <%= f.label :address_line_1, "Address Line 1*", class: "form-label" %>
-              <%= f.text_field :address_line_1, class: "form-control", required: true %>
-            </div>
-
-            <div class="mb-3">
-              <%= f.label :address_line_2, "Address Line 2", class: "form-label" %>
-              <%= f.text_field :address_line_2, class: "form-control" %>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <%= f.label :city, "#{:city.to_s.titleize}*", class: "form-label" %>
-                <%= f.text_field :city, class: "form-control", required: true %>
-              </div>
-              <div class="col-md-6 mb-3">
-                <%= f.label :state, "State / Province*", class: "form-label" %>
-                <%= f.select :state, Address::STATES, class: "form-control", required: true %>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <%= f.label :zip, "ZIP / Postal Code*", class: "form-label" %>
-                <%= f.text_field :zip, class: "form-control", required: true %>
-              </div>
-              <div class="col-md-6 mb-3">
-                <%= f.label :country_code, "#{:country_code.to_s.titleize}*", class: "form-label" %>
-                <%= f.country_select :country_code, priority_countries: ["United States"], class: "form-control", required: true %>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <%= f.label :phone, "#{:phone.to_s.titleize}*", class: "form-label" %>
-              <%= f.telephone_field :phone, class: "form-control", required: true %>
-            </div>
-
-            <div class="form-check mb-4">
-              <%= f.check_box :primary, class: "form-check-input", id: "primary" %>
-              <%= f.label :primary, "Set as primary address", class: "form-check-label" %>
-            </div>
-
-            <%= hidden_field_tag :loan_request, params[:loan_request] %>
-
-            <div class="d-grid">
-              <% if params[:loan_request] %>
-                <%= f.submit "Ship to this address", class: "btn btn-primary" %>
-              <% else %>
-                <%= f.submit "Save Address", class: "btn btn-primary" %>
-              <% end %>
-            </div>
-          <% end %>
+          <%= render 'form', address: @address %>
         </div>
       </div>
 
