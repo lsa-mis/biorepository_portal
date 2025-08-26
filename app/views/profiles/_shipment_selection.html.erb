@@ -44,6 +44,6 @@
   <div class="alert alert-warning text-center mt-3">
     No addresses available. 
     <span class="text-danger">Warning: Shipping address is required.</span>
-    Please <%= link_to "add a new one", new_address_path %> first.
+    Please <%= link_to "add a new one", new_address_path(loan_request: true) %> first.
   </div>
 <% end %>
