@@ -32,7 +32,7 @@
     </div>
     <div class="col-md-6 mb-3">
       <%= f.label :state, "State / Province*", class: "form-label" %>
-      <%= f.select :state, Address::STATES, class: "form-control", required: true %>
+      <%= f.select :state, Address::STATES, { prompt: 'Select State' }, { class: "form-control", required: true } %>
     </div>
   </div>
 
@@ -43,7 +43,7 @@
     </div>
     <div class="col-md-6 mb-3">
       <%= f.label :country_code, "Country*", class: "form-label" %>
-      <%= f.country_select :country_code, priority_countries: ["United States"], class: "form-control", required: true %>
+      <%= f.country_select :country_code, { priority_countries: ["United States"], prompt: 'Select Country' }, { class: "form-control", required: true } %>
     </div>
   </div>
 
