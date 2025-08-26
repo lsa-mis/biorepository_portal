@@ -41,7 +41,7 @@ class ReportsController < ApplicationController
         @metrics = {
           'Total Information Requests' => information_requests.count,
         }
-        @headers = ["Request ID", "Collections", "Created At", "Submitted By", "Message"]
+        @headers = ["View Request", "Collections", "Created At", "Submitted By", "Message"]
         @request_link = true
         @url = "information_request_path"
         @model_class = InformationRequest
@@ -54,7 +54,7 @@ class ReportsController < ApplicationController
 
       respond_to do |format|
         format.html
-        format.csv { send_data csv_data, filename: 'information_requests_report.csv', type: 'text/csv' }
+        format.csv { send_data csv_data("information_requests"), filename: 'information_requests_report.csv', type: 'text/csv' }
       end
     end
 
@@ -73,7 +73,7 @@ class ReportsController < ApplicationController
           'Total Loan Requests' => loan_requests.count,
           'Total Items Requested' => loan_requests.sum { |record| record.checkout_items.length }
         }
-        @headers = ["Request ID", "Collections", "Created At", "Submitted By"]
+        @headers = ["View Request", "Collections", "Created At", "Submitted By"]
         @request_link = true
         @url = "loan_request_path"
         @model_class = LoanRequest
@@ -86,7 +86,7 @@ class ReportsController < ApplicationController
 
       respond_to do |format|
         format.html
-        format.csv { send_data csv_data, filename: 'loan_requests_report.csv', type: 'text/csv' }
+        format.csv { send_data csv_data("loan_requests"), filename: 'loan_requests_report.csv', type: 'text/csv' }
       end
     end
   end
@@ -145,7 +145,7 @@ class ReportsController < ApplicationController
     collections.join(', ')
   end
 
-  def csv_data
+  def csv_data(path = "")
     CSV.generate(headers: true) do |csv|
       next csv << ["No data found"] if !@data
 
@@ -153,25 +153,13 @@ class ReportsController < ApplicationController
       csv << []
       @metrics && @metrics.each { |desc, value| csv << [desc, value] }
 
-      if @grouped
-        @data.each do |group, pivot_table|
-          csv << []
-          csv << (@group_link && group.is_a?(Array) ? ["#{group[0]} #{group[1].room_number}"] : [group])
-          csv << @headers
-          pivot_table.each do |keys, record|
-            keys = [keys[0][0]] + keys[1..] if @room_link && keys[0].is_a?(Array)
-            csv << keys + @date_headers.map { |date| record[date] }
-          end          
+      csv << []
+      csv << @headers
+      @data.each do |row|
+        if @request_link
+          row[0] = URI.join(request.base_url + "/" + path + "/" + row[0].to_s)
         end
-      else
-        csv << []
-        csv << @headers
-        @data.each do |row|
-          if @room_link
-            row[0] = row[0].request_id
-          end
-          csv << row
-        end
+        csv << row
       end
     end
   end

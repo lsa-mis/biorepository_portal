@@ -196,15 +196,3 @@ textarea {
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-@media (max-width: 991.98px) {
-  #navbarBurgerMenu {
-    display: none; // default hidden
-  }
-
-  #navbarBurgerMenu.show {
-    display: flex !important; // reveal on toggle
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-}
