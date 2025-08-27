@@ -65,6 +65,7 @@ gem 'acts_as_list', '~> 1.2', '>= 1.2.4'
 gem "skylight"
 gem 'sentry-ruby'
 gem 'sentry-rails'
+gem 'country_select'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

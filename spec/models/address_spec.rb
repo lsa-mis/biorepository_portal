@@ -6,7 +6,7 @@
 #  address_line_1 :string
 #  address_line_2 :string
 #  city           :string
-#  country        :string
+#  country_code   :string
 #  email          :string
 #  first_name     :string
 #  last_name      :string

@@ -117,7 +117,7 @@ class PdfGenerator
       street += ", " + @shipping_address.address_line_2
     end
     city = @shipping_address.city + ", " + @shipping_address.state + " " + @shipping_address.zip + ", " + @shipping_address.country
-    
+
     pdf.text "Name: #{user.display_name}", size: 12
     pdf.text "Email: #{user.email}", size: 12
     pdf.text "Affiliation: #{user.affiliation}", size: 12
