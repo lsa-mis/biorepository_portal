@@ -3,10 +3,12 @@
 </div>
 
 <div>
-  <div class="stepwizard d-flex justify-content-center mb-4">
+  <div class="stepwizard d-flex justify-content-center mb-4" data-controller="loan-wizard">
     <div class="step">
-      <div class="circle bg-secondary text-white">1</div>
-      <div>User Info</div>
+      <%= link_to new_loan_request_path, class: "text-decoration-none text-dark step-link" do %>
+        <div class="circle bg-secondary text-white step-circle">1</div>
+        <div>User Info</div>
+      <% end %>
     </div>
     <div class="step">
       <div class="circle bg-primary text-white">2</div>
