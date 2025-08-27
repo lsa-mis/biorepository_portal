@@ -14,19 +14,24 @@ class LoanRequestsController < ApplicationController
   def new
     @loan_questions = LoanQuestion.all
     @loan_request = LoanRequest.new
-    # @checkout_items, @collection_ids = get_checkout_items
     @user = current_user
-    # @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
-
-    # loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
-	  # @loan_answers = loan_questions.each_with_object({}) do |question, hash|
-	  #   hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
-    # end
-
-    # @collection_answers = build_collection_answers(@checkout, current_user)
   end
 
   def step_two
+    @missing_fields_alert = ""
+    # Check required user info fields
+    user_missing_fields = false
+    user_missing_fields = true unless current_user.first_name.present?
+    user_missing_fields = true unless current_user.last_name.present?
+    user_missing_fields = true unless current_user.affiliation.present?
+    if user_missing_fields
+      @missing_fields_alert = "User information is incomplete. "
+    end
+    if user_missing_fields
+      flash[:alert] = @missing_fields_alert
+      redirect_to new_loan_request_path and return
+    end
+
     loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
     @loan_answers = loan_questions.each_with_object({}) do |question, hash|
 	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
@@ -34,18 +39,44 @@ class LoanRequestsController < ApplicationController
   end
 
   def step_three
+    @missing_fields_alert = ""
+    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
+    @loan_answers = loan_questions.each_with_object({}) do |question, hash|
+	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
+    end
+    missing_loan_answers = check_missing_answers(@loan_answers, 'loan')
+    if missing_loan_answers
+      flash[:alert] = @missing_fields_alert
+      redirect_to step_two_path and return
+    end
     @collection_answers = build_collection_answers(@checkout, current_user)
   end
 
   def step_four
+    @missing_fields_alert = ""
+    @collection_answers = build_collection_answers(@checkout, current_user)
+    missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data, 'collection') }
+    if missing_collection_answers
+      flash[:alert] = @missing_fields_alert
+      redirect_to step_three_path and return
+    end
+
     @checkout_items, @collection_ids = get_checkout_items
   end
 
   def step_five
+    @loan_request = LoanRequest.new
     @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
   end
 
   def send_loan_request
+    @missing_fields_alert = ""
+    missing_shipping_address = check_shipping_address
+    if missing_shipping_address
+      flash[:alert] = @missing_fields_alert
+      redirect_to step_five_path and return
+    end
+
     if @checkout.nil? || @checkout.requestables.empty?
       flash[:alert] = "No items in checkout."
       redirect_to root_path
@@ -84,29 +115,6 @@ class LoanRequestsController < ApplicationController
       attach_attachments_from_answers(qa_data, ->(question) {
         question.collection&.division&.parameterize || "NA"
       })
-    end
-
-    @missing_fields_alert = ""
-    # Check required user info fields
-    user_missing_fields = false
-    user_missing_fields = true unless current_user.first_name.present?
-    user_missing_fields = true unless current_user.last_name.present?
-    user_missing_fields = true unless current_user.affiliation.present?
-
-    if user_missing_fields
-      @missing_fields_alert = "User information is incomplete. "
-    end
-
-    # Check required questions
-    missing_loan_answers = check_missing_answers(@loan_answers, 'loan')
-    missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data, 'collection') }
-
-    # Check if shipping information is missing
-    missing_shipping_address = check_shipping_address
-
-    if missing_loan_answers || missing_collection_answers || user_missing_fields || missing_shipping_address
-      flash[:alert] = @missing_fields_alert
-      redirect_to new_loan_request_path and return
     end
 
     pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])

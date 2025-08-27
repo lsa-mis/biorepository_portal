@@ -28,7 +28,7 @@ class AddressesController < ApplicationController
   def update
     if @address.update(address_params)
       if params[:loan_request] == "true"
-        redirect_to new_loan_request_path, notice: "Address Updated"
+        redirect_to step_five_path, notice: "Address Updated"
       else
         redirect_to addresses_path, notice: "Address updated."
       end

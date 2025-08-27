@@ -36,12 +36,17 @@
 </div>
 
 <!-- Step 5: Shipment -->
-<div>
-  <%= render "profiles/shipment_selection", addresses: @addresses %>
-</div>
+<%= form_with(model: @loan_request, url: send_loan_request_path) do |form| %>
 
-<!-- Step 5: Addresses -->
-<div class="d-flex justify-content-between my-4">
-  <%= link_to "Previous", step_four_path, class: "btn btn-primary" %>
-  <%= button_to "Send Loan Request", send_loan_request_path, class: "btn btn-primary" %>
-</div>
+  <div>
+    <%= render "profiles/shipment_selection", addresses: @addresses %>
+  </div>
+
+  <!-- Step 5: Addresses -->
+  <div class="d-flex justify-content-between my-4">
+    <%= link_to "Previous", step_four_path, class: "btn btn-primary" %>
+    <%#= button_to "Send Loan Request", send_loan_request_path, class: "btn btn-primary" %>
+    <%= form.submit "Send Loan Request", class: "btn btn-primary" %>
+
+  </div>
+<% end %>
