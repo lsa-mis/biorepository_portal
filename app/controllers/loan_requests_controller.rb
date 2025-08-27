@@ -14,16 +14,35 @@ class LoanRequestsController < ApplicationController
   def new
     @loan_questions = LoanQuestion.all
     @loan_request = LoanRequest.new
-    @checkout_items, @collection_ids = get_checkout_items
+    # @checkout_items, @collection_ids = get_checkout_items
     @user = current_user
-    @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
+    # @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
 
+    # loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
+	  # @loan_answers = loan_questions.each_with_object({}) do |question, hash|
+	  #   hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
+    # end
+
+    # @collection_answers = build_collection_answers(@checkout, current_user)
+  end
+
+  def step_two
     loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
-	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
+    @loan_answers = loan_questions.each_with_object({}) do |question, hash|
 	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
     end
+  end
 
+  def step_three
     @collection_answers = build_collection_answers(@checkout, current_user)
+  end
+
+  def step_four
+    @checkout_items, @collection_ids = get_checkout_items
+  end
+
+  def step_five
+    @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
   end
 
   def send_loan_request

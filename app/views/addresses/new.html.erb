@@ -10,7 +10,11 @@
       </div>
 
       <div class="text-center mt-3">
-        <%= link_to "← Back to addresses", addresses_path, class: "text-decoration-none" %>
+        <% if params[:loan_request] %>
+          <%= link_to "← Back to loan request", step_five_path, class: "text-decoration-none" %>
+        <% else %>
+          <%= link_to "← Back to addresses", addresses_path, class: "text-decoration-none" %>
+        <% end %>
       </div>
     </div>
   </div>

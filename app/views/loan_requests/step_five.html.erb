@@ -1,0 +1,39 @@
+<div>
+  <%= link_to "Cancel Loan Request", checkout_path, class: "my-5 btn btn-outline-primary" %>
+</div>
+
+<div id="loanWizard" class="container" data-controller="loan-wizard">
+  <div class="stepwizard d-flex justify-content-center mb-4">
+    <div class="step" data-step="1" data-loan-wizard-target="stepIndicator">
+      <div class="circle bg-secondary text-white">1</div>
+      <div>User Info</div>
+    </div>
+    <div class="step" data-step="2" data-loan-wizard-target="stepIndicator">
+      <div class="circle bg-secondary text-white">2</div>
+      <div>Loan Answers</div>
+    </div>
+    <div class="step" data-step="3" data-loan-wizard-target="stepIndicator">
+      <div class="circle bg-secondary text-white">3</div>
+      <div>Collection Answers</div>
+    </div>
+    <div class="step" data-step="4" data-loan-wizard-target="stepIndicator">
+      <div class="circle bg-secondary text-white">4</div>
+      <div>Loan Items</div>
+    </div>
+    <div class="step" data-step="5" data-loan-wizard-target="stepIndicator">
+      <div class="circle bg-primary text-white">5</div>
+      <div>Shipment</div>
+    </div>
+  </div>
+</div>
+
+<!-- Step 5: Shipment -->
+<div>
+  <%= render "profiles/shipment_selection", addresses: @addresses %>
+</div>
+
+<!-- Step 5: Addresses -->
+<div class="d-flex justify-content-between my-4">
+  <%= link_to "Previous", step_four_path, class: "btn btn-primary" %>
+  <%= link_to "Send Loan Request", send_loan_request_path, class: "btn btn-primary" %>
+</div>
