@@ -1,24 +1,24 @@
 <%= form_with model: address, local: true, data: { controller: "address-form", action: "submit->address-form#submitForm" } do |f| %>
   <div class="row">
     <div class="col-md-6 mb-3">
-      <%= f.label :first_name, "First Name*", class: "form-label" %>
+      <%= f.label :first_name, "First Name" %><span class="text-danger"> *</span>
       <%= f.text_field :first_name, class: "form-control", required: true %>
     </div>
     <div class="col-md-6 mb-3">
-      <%= f.label :last_name, "Last Name*", class: "form-label" %>
+      <%= f.label :last_name, "Last Name" %><span class="text-danger"> *</span>
       <%= f.text_field :last_name, class: "form-control", required: true %>
     </div>
   </div>
 
   <div class="mb-3">
-    <%= f.label :email, "Email*", class: "form-label" %>
+    <%= f.label :email, "Email" %><span class="text-danger"> *</span>
     <%= f.text_field :email, class: "form-control", required: true, 
         data: { address_form_target: "email" } %>
     <div class="invalid-feedback" data-address-form-target="emailError" style="display: none;"></div>
   </div>
 
   <div class="mb-3">
-    <%= f.label :address_line_1, "Address Line 1*", class: "form-label" %>
+    <%= f.label :address_line_1, "Address Line 1" %><span class="text-danger"> *</span>
     <%= f.text_field :address_line_1, class: "form-control", required: true %>
   </div>
 
@@ -29,28 +29,28 @@
 
   <div class="row">
     <div class="col-md-6 mb-3">
-      <%= f.label :city, "City*", class: "form-label" %>
+      <%= f.label :city, "City" %><span class="text-danger"> *</span>
       <%= f.text_field :city, class: "form-control", required: true %>
     </div>
     <div class="col-md-6 mb-3">
-      <%= f.label :state, "State / Province*", class: "form-label" %>
+      <%= f.label :state, "State / Province" %><span class="text-danger"> *</span>
       <%= f.select :state, Address::STATES, { prompt: 'Select State' }, { class: "form-select", required: true } %>
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-6 mb-3">
-      <%= f.label :zip, "ZIP / Postal Code*", class: "form-label" %>
+      <%= f.label :zip, "ZIP / Postal Code" %><span class="text-danger"> *</span>
       <%= f.text_field :zip, class: "form-control", required: true %>
     </div>
     <div class="col-md-6 mb-3">
-      <%= f.label :country_code, "Country*", class: "form-label" %>
+      <%= f.label :country_code, "Country" %><span class="text-danger"> *</span>
       <%= f.country_select :country_code, { priority_countries: ["United States"], prompt: 'Select Country' }, { class: "form-select", required: true } %>
     </div>
   </div>
 
   <div class="mb-3">
-    <%= f.label :phone, "Phone*", class: "form-label" %>
+    <%= f.label :phone, "Phone" %><span class="text-danger"> *</span>
     <%= f.text_field :phone, class: "form-control", required: true,
         data: { address_form_target: "phone" } %>
     <div class="invalid-feedback" data-address-form-target="phoneError" style="display: none;"></div>
