@@ -32,18 +32,14 @@ class LoanRequestsController < ApplicationController
       redirect_to new_loan_request_path and return
     end
 
-    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
-    @loan_answers = loan_questions.each_with_object({}) do |question, hash|
-	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
-    end
+    @loan_answers = get_loan_answers
   end
 
   def step_three
     @missing_fields_alert = ""
-    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
-    @loan_answers = loan_questions.each_with_object({}) do |question, hash|
-	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
-    end
+
+    @loan_answers = get_loan_answers
+
     missing_loan_answers = check_missing_answers(@loan_answers, 'loan')
     if missing_loan_answers
       flash[:alert] = @missing_fields_alert
@@ -100,10 +96,7 @@ class LoanRequestsController < ApplicationController
     @loan_request.checkout_items = @checkout_items
     @loan_request.collection_ids = @collection_ids
 
-    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
-    @loan_answers = loan_questions.each_with_object({}) do |question, hash|
-	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
-    end
+    @loan_answers = get_loan_answers
 
     @collection_answers = build_collection_answers(@checkout, current_user)
 
@@ -171,6 +164,13 @@ class LoanRequestsController < ApplicationController
   end
 
   private
+
+    def get_loan_answers
+      loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
+      loan_questions.each_with_object({}) do |question, hash|
+        hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
+      end
+    end
 
     def create_csv_file(user)
       tempfile = Tempfile.new(["loan_request", ".csv"])
