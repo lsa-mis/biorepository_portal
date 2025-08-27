@@ -1,33 +1,4 @@
-<div>
-  <%= link_to "Cancel Loan Request", checkout_path, class: "my-5 btn btn-outline-primary" %>
-</div>
-
-<div>
-  <div class="stepwizard d-flex justify-content-center mb-4">
-    <div class="step">
-      <%= link_to new_loan_request_path, class: "text-decoration-none text-dark step-link" do %>
-        <div class="circle bg-secondary text-white step-circle">1</div>
-        <div>User Info</div>
-      <% end %>
-    </div>
-    <div class="step">
-      <div class="circle bg-primary text-white">2</div>
-      <div>Loan Answers</div>
-    </div>
-    <div class="step">
-      <div class="circle bg-secondary text-white">3</div>
-      <div>Collection Answers</div>
-    </div>
-    <div class="step">
-      <div class="circle bg-secondary text-white">4</div>
-      <div>Loan Items</div>
-    </div>
-    <div class="step">
-      <div class="circle bg-secondary text-white">5</div>
-      <div>Shipment</div>
-    </div>
-  </div>
-</div>
+<%= render "loan_requests/steps", step: 2 %>
 
 <!-- Step 2: Loan Answers -->
 <div>
