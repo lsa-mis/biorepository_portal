@@ -23,7 +23,7 @@ class LoanRequestsController < ApplicationController
     missing_fields = required_fields.select { |field| current_user.send(field).blank? }
 
     if missing_fields.any?
-      flash[:alert] = "User information is incomplete. "
+      flash[:alert] = "User information is incomplete."
       redirect_to new_loan_request_path and return
     end
 
