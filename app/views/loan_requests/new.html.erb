@@ -6,81 +6,30 @@
   <% is_preview = params[:preview].present? %>
   <%= render "layouts/announcement", is_preview: is_preview, location: "loan_request" %>
 
+  <%= render "loan_requests/steps", step: 1 %>
+
+<!-- Step 1: User Info -->
 <div>
-  <%= link_to "Cancel Loan Request", checkout_path, class: "my-5 btn btn-outline-primary" %>
+  <h2 class="mb-3 text-center">User Information</h2>
+  <div class="row g-3">
+    <div class="col-md-3">
+      <%= render "profiles/user_field", label: "First Name", field_name: "first_name", value: @user.first_name %>
+    </div>
+    <div class="col-md-3">
+      <%= render "profiles/user_field", label: "Last Name", field_name: "last_name", value: @user.last_name %>
+    </div>
+    <div class="col-md-3">
+      <%= render "profiles/user_field", label: "Affiliation", field_name: "affiliation", value: @user.affiliation %>
+    </div>
+    <div class="col-md-3">
+      <%= render "profiles/user_field", label: "ORCID", field_name: "orcid", value: @user.orcid %>
+    </div>
+  </div>
 </div>
 
-<div id="loanWizard" class="container" data-controller="loan-wizard">
-  <div class="stepwizard d-flex justify-content-center mb-4">
-    <div class="step" data-step="1" data-loan-wizard-target="stepIndicator">
-      <div class="circle bg-primary text-white">1</div>
-      <div>User Info</div>
-    </div>
-    <div class="step" data-step="2" data-loan-wizard-target="stepIndicator">
-      <div class="circle bg-secondary text-white">2</div>
-      <div>Loan Answers</div>
-    </div>
-    <div class="step" data-step="3" data-loan-wizard-target="stepIndicator">
-      <div class="circle bg-secondary text-white">3</div>
-      <div>Collection Answers</div>
-    </div>
-    <div class="step" data-step="4" data-loan-wizard-target="stepIndicator">
-      <div class="circle bg-secondary text-white">4</div>
-      <div>Loan Items</div>
-    </div>
-    <div class="step" data-step="5" data-loan-wizard-target="stepIndicator">
-      <div class="circle bg-secondary text-white">5</div>
-      <div>Shipment</div>
-    </div>
-  </div>
-
-  <!-- Step 1: User Info -->
-  <div class="wizard-step step-1 animate__animated animate__fadeIn" data-loan-wizard-target="step">
-    <h2 class="mb-3 text-center">User Information</h2>
-    <div class="row g-3">
-      <div class="col-md-3">
-        <%= render "profiles/user_field", label: "First Name", field_name: "first_name", value: @user.first_name %>
-      </div>
-      <div class="col-md-3">
-        <%= render "profiles/user_field", label: "Last Name", field_name: "last_name", value: @user.last_name %>
-      </div>
-      <div class="col-md-3">
-        <%= render "profiles/user_field", label: "Affiliation", field_name: "affiliation", value: @user.affiliation %>
-      </div>
-      <div class="col-md-3">
-        <%= render "profiles/user_field", label: "ORCID", field_name: "orcid", value: @user.orcid %>
-      </div>
-    </div>
-  </div>
-
-  <!-- Step 2: Loan Answers -->
-  <div class="wizard-step step-2 d-none animate__animated animate__fadeIn" data-loan-wizard-target="step">
-    <%= render "profiles/user_loan_answers" %>
-  </div>
-
-  <!-- Step 3: Collections -->
-  <div class="wizard-step step-3 d-none animate__animated animate__fadeIn" data-loan-wizard-target="step">
-    <%= render "profiles/user_collections_answers" %>
-  </div>
-
-  <!-- Step 4: Items -->
-  <div class="wizard-step step-4 d-none animate__animated animate__fadeIn" data-loan-wizard-target="step">
-    <%= render "profiles/user_loan_items" %>
-  </div>
-
-  <%= render "layouts/remote_modal", id: "sharedModal", title: "", show: false %>
-
-  <%= form_with(model: @loan_request, url: send_loan_request_path, html: { id: "loanForm" }) do |form| %>
-    <!-- Step 5: Shipment -->
-    <div class="wizard-step step-5 d-none animate__animated animate__fadeIn" data-loan-wizard-target="step">
-      <%= render "profiles/shipment_selection", addresses: @addresses %>
-    </div>
-
-    <div class="d-flex justify-content-between my-4">
-      <button type="button" class="btn btn-outline-secondary" data-loan-wizard-target="prevBtn" data-action="click->loan-wizard#previous" disabled>Previous</button>
-      <button type="button" class="btn btn-primary" data-loan-wizard-target="nextBtn" data-action="click->loan-wizard#next">Next</button>
-      <%= form.submit "Send Loan Request", class: "btn btn-success d-none", data: { loan_wizard_target: "submitBtn" } %>
-    </div>
-
-  <% end %>
+<div class="d-flex justify-content-between my-4">
+  <div>&nbsp;</div>
+  <%= link_to "Next", step_two_path, class: "btn btn-primary" %>
 </div>
+
+<%= render "layouts/remote_modal", id: "sharedModal", title: "", show: false %>

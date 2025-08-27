@@ -14,19 +14,56 @@ class LoanRequestsController < ApplicationController
   def new
     @loan_questions = LoanQuestion.all
     @loan_request = LoanRequest.new
-    @checkout_items, @collection_ids = get_checkout_items
     @user = current_user
-    @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
+  end
 
-    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
-	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
-	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
+  def step_two
+    # Check required user info fields
+    required_fields = [:first_name, :last_name, :affiliation]
+    missing_fields = required_fields.select { |field| current_user.send(field).blank? }
+
+    if missing_fields.any?
+      flash[:alert] = "User information is incomplete."
+      redirect_to new_loan_request_path and return
     end
 
+    @loan_answers = get_loan_answers
+  end
+
+  def step_three
+    @loan_answers = get_loan_answers
+
+    missing_loan_answers = check_missing_answers(@loan_answers)
+    if missing_loan_answers
+      flash[:alert] = "Please answer all loan questions."
+      redirect_to step_two_path and return
+    end
     @collection_answers = build_collection_answers(@checkout, current_user)
   end
 
+  def step_four
+    @collection_answers = build_collection_answers(@checkout, current_user)
+    missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data) }
+    if missing_collection_answers
+      flash[:alert] = "Please answer all collection questions."
+      redirect_to step_three_path and return
+    end
+
+    @checkout_items, @collection_ids = get_checkout_items
+  end
+
+  def step_five
+    @loan_request = LoanRequest.new
+    @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
+  end
+
   def send_loan_request
+    missing_shipping_address = check_shipping_address
+    if missing_shipping_address
+      flash[:alert] = @missing_fields_alert
+      redirect_to step_five_path and return
+    end
+
     if @checkout.nil? || @checkout.requestables.empty?
       flash[:alert] = "No items in checkout."
       redirect_to root_path
@@ -50,10 +87,7 @@ class LoanRequestsController < ApplicationController
     @loan_request.checkout_items = @checkout_items
     @loan_request.collection_ids = @collection_ids
 
-    loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
-    @loan_answers = loan_questions.each_with_object({}) do |question, hash|
-	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
-    end
+    @loan_answers = get_loan_answers
 
     @collection_answers = build_collection_answers(@checkout, current_user)
 
@@ -65,29 +99,6 @@ class LoanRequestsController < ApplicationController
       attach_attachments_from_answers(qa_data, ->(question) {
         question.collection&.division&.parameterize || "NA"
       })
-    end
-
-    @missing_fields_alert = ""
-    # Check required user info fields
-    user_missing_fields = false
-    user_missing_fields = true unless current_user.first_name.present?
-    user_missing_fields = true unless current_user.last_name.present?
-    user_missing_fields = true unless current_user.affiliation.present?
-
-    if user_missing_fields
-      @missing_fields_alert = "User information is incomplete. "
-    end
-
-    # Check required questions
-    missing_loan_answers = check_missing_answers(@loan_answers, 'loan')
-    missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data, 'collection') }
-
-    # Check if shipping information is missing
-    missing_shipping_address = check_shipping_address
-
-    if missing_loan_answers || missing_collection_answers || user_missing_fields || missing_shipping_address
-      flash[:alert] = @missing_fields_alert
-      redirect_to new_loan_request_path and return
     end
 
     pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
@@ -144,6 +155,13 @@ class LoanRequestsController < ApplicationController
   end
 
   private
+
+    def get_loan_answers
+      loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
+      loan_questions.each_with_object({}) do |question, hash|
+        hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
+      end
+    end
 
     def create_csv_file(user)
       tempfile = Tempfile.new(["loan_request", ".csv"])
@@ -218,10 +236,9 @@ class LoanRequestsController < ApplicationController
       collection_answers
     end
 
-    def check_missing_answers(answers_hash, type)
+    def check_missing_answers(answers_hash)
       answers_hash.each do |question, answer|
         if question.required? && (answer.blank? || answer.answer.blank?)
-          @missing_fields_alert += "Please answer all #{type} questions. "
           return true
         end
       end
@@ -233,12 +250,12 @@ class LoanRequestsController < ApplicationController
         @shipping_address = Address.find(params[:shipping_address_id])
         return false
       else
-        @missing_fields_alert +=  " Select an address to ship to."
+        @missing_fields_alert = "Select an address to ship to."
         return true
       end
 
       unless current_user.addresses.present?
-        @missing_fields_alert += "Add a Shipping address. "
+        @missing_fields_alert = "Add a Shipping address."
         return true
       end
     end

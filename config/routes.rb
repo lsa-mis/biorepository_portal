@@ -45,6 +45,10 @@ Rails.application.routes.draw do
   post "information_requests/send_information_request", to: "information_requests#send_information_request", as: :send_information_request
   get "information_requests/show_modal/:id", to: "information_requests#show_modal", as: :information_request_show_modal
 
+  get "loan_requests/step_two", to: "loan_requests#step_two", as: :step_two
+  get "loan_requests/step_three", to: "loan_requests#step_three", as: :step_three
+  get "loan_requests/step_four", to: "loan_requests#step_four", as: :step_four
+  get "loan_requests/step_five", to: "loan_requests#step_five", as: :step_five
   resources :loan_requests, only: [:new, :show]
   post "loan_requests/send_loan_request", to: "loan_requests#send_loan_request", as: :send_loan_request
 

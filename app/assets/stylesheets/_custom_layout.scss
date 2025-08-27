@@ -602,6 +602,22 @@ skiplink:focus,
   color: var(--bs-primary) !important;
 }
 
+/* Step link hover effects */
+.step-link {
+  transition: all 0.3s ease;
+  color: black !important;
+}
+
+.step-link:hover .step-circle {
+  background-color: var(--bs-primary) !important;
+  color: white !important;
+  transform: scale(1.1);
+}
+
+.step-link:hover {
+  color: var(--bs-primary) !important;
+}
+
 .btn-close-white {
   filter: brightness(2) invert(1) contrast(2) !important; /* Brighter white close button */
   font-size: 0.7em;
