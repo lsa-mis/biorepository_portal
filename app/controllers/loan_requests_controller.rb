@@ -18,17 +18,12 @@ class LoanRequestsController < ApplicationController
   end
 
   def step_two
-    @missing_fields_alert = ""
     # Check required user info fields
-    user_missing_fields = false
-    user_missing_fields = true unless current_user.first_name.present?
-    user_missing_fields = true unless current_user.last_name.present?
-    user_missing_fields = true unless current_user.affiliation.present?
-    if user_missing_fields
-      @missing_fields_alert = "User information is incomplete. "
-    end
-    if user_missing_fields
-      flash[:alert] = @missing_fields_alert
+    required_fields = [:first_name, :last_name, :affiliation]
+    missing_fields = required_fields.select { |field| current_user.send(field).blank? }
+
+    if missing_fields.any?
+      flash[:alert] = "User information is incomplete. "
       redirect_to new_loan_request_path and return
     end
 
@@ -36,24 +31,21 @@ class LoanRequestsController < ApplicationController
   end
 
   def step_three
-    @missing_fields_alert = ""
-
     @loan_answers = get_loan_answers
 
-    missing_loan_answers = check_missing_answers(@loan_answers, 'loan')
+    missing_loan_answers = check_missing_answers(@loan_answers)
     if missing_loan_answers
-      flash[:alert] = @missing_fields_alert
+      flash[:alert] = "Please answer all loan questions."
       redirect_to step_two_path and return
     end
     @collection_answers = build_collection_answers(@checkout, current_user)
   end
 
   def step_four
-    @missing_fields_alert = ""
     @collection_answers = build_collection_answers(@checkout, current_user)
-    missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data, 'collection') }
+    missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data) }
     if missing_collection_answers
-      flash[:alert] = @missing_fields_alert
+      flash[:alert] = "Please answer all collection questions."
       redirect_to step_three_path and return
     end
 
@@ -66,7 +58,6 @@ class LoanRequestsController < ApplicationController
   end
 
   def send_loan_request
-    @missing_fields_alert = ""
     missing_shipping_address = check_shipping_address
     if missing_shipping_address
       flash[:alert] = @missing_fields_alert
@@ -245,10 +236,9 @@ class LoanRequestsController < ApplicationController
       collection_answers
     end
 
-    def check_missing_answers(answers_hash, type)
+    def check_missing_answers(answers_hash)
       answers_hash.each do |question, answer|
         if question.required? && (answer.blank? || answer.answer.blank?)
-          @missing_fields_alert += "Please answer all #{type} questions. "
           return true
         end
       end
@@ -260,12 +250,12 @@ class LoanRequestsController < ApplicationController
         @shipping_address = Address.find(params[:shipping_address_id])
         return false
       else
-        @missing_fields_alert +=  " Select an address to ship to."
+        @missing_fields_alert = "Select an address to ship to."
         return true
       end
 
       unless current_user.addresses.present?
-        @missing_fields_alert += "Add a Shipping address. "
+        @missing_fields_alert = "Add a Shipping address."
         return true
       end
     end
