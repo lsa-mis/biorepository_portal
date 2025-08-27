@@ -33,9 +33,12 @@ export default class extends Controller {
 
   validatePhone() {
     const phone = this.phoneTarget.value.trim()
-    const regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im
+    const us_regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im
+    const international_regex = /^\+(?:[0-9] ?){6,14}[0-9]$/;
 
-    if (!regex.test(phone)) {
+    const us = us_regex.test(phone)
+    const international = international_regex.test(phone)
+    if (!us && !international) {
       this.showPhoneError("Phone number format is incorrect")
       return false
     } else {
