@@ -179,13 +179,6 @@
             }
           }
           
-          // Handle Enter key for checkboxes (in addition to default Space)
-          if (e.key === 'Enter' && document.activeElement.type === 'checkbox') {
-            e.preventDefault();
-            document.activeElement.checked = !document.activeElement.checked;
-            // Trigger change event to update hidden fields and preview
-            document.activeElement.dispatchEvent(new Event('change', { bubbles: true }));
-          }
         }
       });
       
