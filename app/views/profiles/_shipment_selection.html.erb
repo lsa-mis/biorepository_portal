@@ -27,7 +27,7 @@
                   id: "shipment_#{address.id}", 
                   class: "form-check-input shipping-radio me-2"
                   %>
-              <legend for="shipment_<%= address.id %>" class="fs-6 mb-0">Ship to this address</legend>
+              <legend class="fs-6 mb-0">Ship to this address</legend>
 
               <%= link_to "Edit", edit_address_path(address, loan_request: true), class: "btn btn-sm btn-outline-secondary ms-auto" %>
             </div>
