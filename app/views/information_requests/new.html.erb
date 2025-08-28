@@ -43,7 +43,7 @@
             data-bs-title="Select Email Addresses"
             data-bs-content='
               <div class="d-flex flex-column gap-2 p-2" onclick="event.stopPropagation();">
-                <% @send_to.each_with_index do |(collection, email), index| %>
+                <% @send_to.each do |collection, email| %>
                   <div class="form-check form-switch">
                     <input type="checkbox" 
                            value="<%= email %>" 
