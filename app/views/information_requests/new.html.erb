@@ -151,38 +151,45 @@
         }
       });
       
-      // Enhanced keyboard navigation for popover
-      document.addEventListener('keydown', function(e) {
-        const popoverElement = document.querySelector('.popover');
-        
-        if (popoverElement) {
-          // Handle Tab navigation
-          if (e.key === 'Tab') {
-            const focusableElements = popoverElement.querySelectorAll(
-              'input[type="checkbox"], button, [tabindex="0"]'
-            );
+      document._popoverEventsInitialized = true;
+    }
+
+    // Keyboard navigation handler function (defined once, reused)
+    function handlePopoverKeydown(e) {
+      const popoverElement = document.querySelector('.popover');
+      
+      if (popoverElement) {
+        // Handle Tab navigation
+        if (e.key === 'Tab') {
+          const focusableElements = popoverElement.querySelectorAll(
+            'input[type="checkbox"], button, [tabindex="0"]'
+          );
+          
+          if (focusableElements.length > 0) {
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
             
-            if (focusableElements.length > 0) {
-              const firstElement = focusableElements[0];
-              const lastElement = focusableElements[focusableElements.length - 1];
-              
-              // If we're on the last element and pressing Tab (not Shift+Tab)
-              if (!e.shiftKey && document.activeElement === lastElement) {
-                e.preventDefault();
-                firstElement.focus();
-              }
-              // If we're on the first element and pressing Shift+Tab
-              else if (e.shiftKey && document.activeElement === firstElement) {
-                e.preventDefault();
-                lastElement.focus();
-              }
+            // If we're on the last element and pressing Tab (not Shift+Tab)
+            if (!e.shiftKey && document.activeElement === lastElement) {
+              e.preventDefault();
+              firstElement.focus();
+            }
+            // If we're on the first element and pressing Shift+Tab
+            else if (e.shiftKey && document.activeElement === firstElement) {
+              e.preventDefault();
+              lastElement.focus();
             }
           }
-          
         }
-      });
-      
-      document._popoverEventsInitialized = true;
+        
+        // Handle Enter key for checkboxes (in addition to default Space)
+        if (e.key === 'Enter' && document.activeElement.type === 'checkbox') {
+          e.preventDefault();
+          document.activeElement.checked = !document.activeElement.checked;
+          // Trigger change event to update hidden fields and preview
+          document.activeElement.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
     }
 
     // Initial update of the email preview
@@ -196,10 +203,16 @@
       if (firstCheckbox) {
         firstCheckbox.focus();
       }
+      
+      // Add keyboard navigation listener when popover is shown
+      document.addEventListener('keydown', handlePopoverKeydown);
     });
     
     // Clean up focus when popover is hidden
     popoverTrigger.addEventListener('hidden.bs.popover', function() {
+      // Remove keyboard navigation listener when popover is hidden
+      document.removeEventListener('keydown', handlePopoverKeydown);
+      
       // Return focus to the trigger button
       popoverTrigger.focus();
     });
