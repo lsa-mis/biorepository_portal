@@ -159,6 +159,26 @@ module ApplicationHelper
     end
     [checkout_items, collection_ids.uniq]
   end
+
+  def get_checkout_items_with_ids
+    checkout_items = []
+    @checkout.requestables.active.each do |requestable|
+      preparation = requestable.preparation
+      item = preparation.item
+      checkout_item = ""
+      checkout_item += "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{item.current_identification&.scientific_name&.humanize}, Preparation: #{preparation.prep_type}"
+      if preparation.barcode.present?
+        checkout_item += ", Barcode: #{preparation.barcode}"
+      end
+      if preparation.description.present?
+        checkout_item += ", Description: #{preparation.description}"
+      end
+      checkout_item += ", Count: #{requestable.count}"
+      checkout_item += ", #{item.id}"
+      checkout_items << checkout_item
+    end
+    checkout_items
+  end
   
   def number_of_items_to_loan
     number = Rails.cache.fetch("number_of_items_to_loan", expires_in: 10.hours) do

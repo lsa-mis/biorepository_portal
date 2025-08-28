@@ -61,7 +61,6 @@ class PdfGenerator
         pdf.stroke_horizontal_rule
         pdf.move_down 10
 
-        # items = @checkout_items.split(/\.(?:\s+|$)/).map(&:strip).reject(&:blank?)
         table_data = [["Collection", "Catalog Number", "Scientific Name", "Preparation", "Barcode", "Description", "Count"]]
 
         @checkout_items.each do |item_str|

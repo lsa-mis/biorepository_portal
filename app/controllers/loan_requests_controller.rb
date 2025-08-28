@@ -48,8 +48,7 @@ class LoanRequestsController < ApplicationController
       flash[:alert] = "Please answer all collection questions."
       redirect_to step_three_path and return
     end
-
-    @checkout_items, @collection_ids = get_checkout_items
+    @checkout_items = get_checkout_items_with_ids
   end
 
   def step_five
