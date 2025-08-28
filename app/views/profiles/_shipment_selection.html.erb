@@ -7,11 +7,7 @@
         <div class="col">
           <label for="shipment_<%= address.id %>" class="card h-100 shadow-sm address-card <%= 'border-primary' if address.primary %>">
             <div class="card-body <%= 'bg-light border border-primary' if address.primary %>">
-              <% if address.primary %>
-                <span class="badge bg-primary mb-2">Primary</span>
-              <% else %>
-                <span>&nbsp;</span>
-              <% end %>
+              <span class="badge <%= address.primary ? 'bg-primary' : 'invisible' %> mb-2">Primary</span>
               <p class="card-title fs-6 fw-bold"><%= "#{address.first_name} #{address.last_name}" %></p>
               <p class="card-text mb-1"><%= address.address_line_1 %></p>
               <% if address.address_line_2.present? %>
