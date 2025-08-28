@@ -2,13 +2,13 @@
 <p>
   <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3">
     <% @checkout_items.each do |item| %>
-      <% item = item.split(',') %>
-      <%= link_to item_path(item.last), class: "text-decoration-none", data: { turbo_frame: "_top" } do %>
+      <% item_array = item.split(',') %>
+      <%= link_to item_path(item_array.last), class: "text-decoration-none", data: { turbo_frame: "_top" } do %>
         <div class="col">
           <div class="card h-100 shadow-sm">
             <div class="card-body">
-              <% item.pop %>
-              <% item.each do |part| %>
+              <% item_array.pop %>
+              <% item_array.each do |part| %>
                 <p class="mb-1"><%= part.strip %></p>
               <% end %>
             </div>
