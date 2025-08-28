@@ -1,20 +1,22 @@
 <%= turbo_frame_tag 'collection_questions_list' do %>
-  <table class="table text-center mt-4">
-    <thead class="table-group-divider">
-      <tr>
-        <th scope="col" class="text-start">Reorder</th>
-        <th scope="col" class="text-start">Position</th>
-        <th scope="col" class="text-start">Question</th>
-        <th scope="col" class="text-start">Question Type</th>
-        <th scope="col" class="text-start">Required</th>
-        <th scope="col" class="text-start">Edit</th>
-        <th scope="col" class="text-start">Delete</th>
-      </tr>
-    </thead>
-    <tbody class="table-group-divider" id="collection_questions">
-      <% @collection_questions.each do |collection_question| %>
-        <%= render 'collections/collection_questions/collection_question_row', collection_question: collection_question, collection: @collection %>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table text-center mt-4">
+      <thead class="table-group-divider">
+        <tr>
+          <th scope="col" class="text-start">Reorder</th>
+          <th scope="col" class="text-start">Position</th>
+          <th scope="col" class="text-start">Question</th>
+          <th scope="col" class="text-start">Question Type</th>
+          <th scope="col" class="text-start">Required</th>
+          <th scope="col" class="text-start">Edit</th>
+          <th scope="col" class="text-start">Delete</th>
+        </tr>
+      </thead>
+      <tbody class="table-group-divider" id="collection_questions">
+        <% @collection_questions.each do |collection_question| %>
+          <%= render 'collections/collection_questions/collection_question_row', collection_question: collection_question, collection: @collection %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% end %>

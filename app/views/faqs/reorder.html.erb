@@ -3,29 +3,31 @@
     <h1 class="p-5 text-center">Reorder FAQs</h1>
     <%= link_to "Back to FAQs", faqs_path, class: "btn btn-secondary mb-3" %>
   </div>
-  <table class="table text-center mt-4">
-    <thead class="table-group-divider">
-    <tr>
-      <% if is_admin? %>
-        <th scope="col" class="text-start">Reorder</th>
-      <% end %>
-      <th scope="col" class="text-start">Position</th>
-      <th scope="col" class="text-start">Question</th>
-    </thead>
-    <tbody class="table-group-divider" id="faqs">
-    
-      <% @faqs.each do |faq| %>
-        <tr id="<%= dom_id(faq) %>">
-          <td class="text-start align-middle">
-            <div class="d-flex gap-1 justify-content-start align-items-center">
-              <%= button_to "Up", move_up_faq_path(faq), method: :patch, class: "btn btn-sm btn-outline-secondary me-1" %>
-              <%= button_to "Down", move_down_faq_path(faq), method: :patch, class: "btn btn-sm btn-outline-secondary" %>
-            </div>
-          </td>
-          <td class="text-start align-middle"><%= faq.position %></td>
-          <td class="text-start align-middle"><%= faq.question %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table text-center mt-4">
+      <thead class="table-group-divider">
+      <tr>
+        <% if is_admin? %>
+          <th scope="col" class="text-start">Reorder</th>
+        <% end %>
+        <th scope="col" class="text-start">Position</th>
+        <th scope="col" class="text-start">Question</th>
+      </thead>
+      <tbody class="table-group-divider" id="faqs">
+      
+        <% @faqs.each do |faq| %>
+          <tr id="<%= dom_id(faq) %>">
+            <td class="text-start align-middle">
+              <div class="d-flex gap-1 justify-content-start align-items-center">
+                <%= button_to "Up", move_up_faq_path(faq), method: :patch, class: "btn btn-sm btn-outline-secondary me-1" %>
+                <%= button_to "Down", move_down_faq_path(faq), method: :patch, class: "btn btn-sm btn-outline-secondary" %>
+              </div>
+            </td>
+            <td class="text-start align-middle"><%= faq.position %></td>
+            <td class="text-start align-middle"><%= faq.question %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>

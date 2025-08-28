@@ -1,18 +1,17 @@
 <% content_for :title, "Preview Collection Questions" %>
 
-<div class="mt-3 ms-3">
-  <%= link_to collection_collection_questions_path(@collection), class: "btn btn-outline-primary position-fixed start-0 m-3 z-3 shadow" do %>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+  <h1>Collection Questions Preview</h1>  
+  <%= link_to collection_collection_questions_path(@collection), class: "btn btn-outline-primary my-2 m-lg-0" do %>
     <i class="bi bi-arrow-left me-2"></i> Back To Collection Questions
   <% end %>
 </div>
 
-<h1 class="mb-3 text-center">Collection Questions Preview</h1>
-
-<div class="card p-4 shadow-sm">
+<div class="card shadow-sm mb-2">
   <div class="card-body">
     <%= form_with url: "#", local: true, html: { onsubmit: "return false;" } do |f| %>
       <% @collection_questions.each do |collection_question| %>
-        <div class="mb-4 border rounded p-3 bg-light">
+        <div class="mb-4 p-3 bg-light">
           <label class="form-label"><%= collection_question.position %>. <%= collection_question.question %>
             <% if collection_question.required? %>
               <span class="text-danger">*</span>
