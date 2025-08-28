@@ -2,6 +2,7 @@
 
 <% if addresses.any? %>
   <fieldset>
+    <legend class="ms-4">Select Shipping Address</legend>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
       <% addresses.each do |address| %>
         <div class="col">
@@ -23,7 +24,7 @@
                   id: "shipment_#{address.id}", 
                   class: "form-check-input shipping-radio me-2"
                   %>
-              <legend class="fs-6 mb-0">Ship to this address</legend>
+              <span class="fs-6 mb-0">Ship to this address</span>
 
               <%= link_to "Edit", edit_address_path(address, loan_request: true), class: "btn btn-sm btn-outline-secondary ms-auto" %>
             </div>
