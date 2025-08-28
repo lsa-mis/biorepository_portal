@@ -43,19 +43,20 @@
             data-bs-title="Select Email Addresses"
             data-bs-content='
               <div class="d-flex flex-column gap-2 p-2" onclick="event.stopPropagation();">
-                <% @send_to.each do |collection, email| %>
+                <% @send_to.each_with_index do |(collection, email), index| %>
                   <div class="form-check form-switch">
                     <input type="checkbox" 
                            value="<%= email %>" 
                            id="popover_send_to_<%= collection.parameterize.underscore %>" 
                            class="form-check-input email-checkbox-popover"
+                           tabindex="0"
                            <%= "checked" if @information_request.send_to&.include?(email) %> />
                     <label class="form-check-label" for="popover_send_to_<%= collection.parameterize.underscore %>">
                       <%= collection %>
                     </label>
                   </div>
                 <% end %>
-                <button type="button" class="btn btn-sm btn-primary mt-2" onclick="hideEmailPopover()">
+                <button type="button" class="btn btn-sm btn-primary mt-2" tabindex="0" onclick="hideEmailPopover()">
                   Done
                 </button>
               </div>'>
@@ -150,6 +151,44 @@
         }
       });
       
+      // Enhanced keyboard navigation for popover
+      document.addEventListener('keydown', function(e) {
+        const popoverElement = document.querySelector('.popover');
+        
+        if (popoverElement) {
+          // Handle Tab navigation
+          if (e.key === 'Tab') {
+            const focusableElements = popoverElement.querySelectorAll(
+              'input[type="checkbox"], button, [tabindex="0"]'
+            );
+            
+            if (focusableElements.length > 0) {
+              const firstElement = focusableElements[0];
+              const lastElement = focusableElements[focusableElements.length - 1];
+              
+              // If we're on the last element and pressing Tab (not Shift+Tab)
+              if (!e.shiftKey && document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+              }
+              // If we're on the first element and pressing Shift+Tab
+              else if (e.shiftKey && document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+              }
+            }
+          }
+          
+          // Handle Enter key for checkboxes (in addition to default Space)
+          if (e.key === 'Enter' && document.activeElement.type === 'checkbox') {
+            e.preventDefault();
+            document.activeElement.checked = !document.activeElement.checked;
+            // Trigger change event to update hidden fields and preview
+            document.activeElement.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+      });
+      
       document._popoverEventsInitialized = true;
     }
 
@@ -157,7 +196,20 @@
     updateSelectedEmailsPreview();
     
     // Sync checkboxes when popover is shown
-    popoverTrigger.addEventListener('shown.bs.popover', syncPopoverCheckboxes);
+    popoverTrigger.addEventListener('shown.bs.popover', function() {
+      syncPopoverCheckboxes();
+      // Focus the first checkbox in the popover for immediate keyboard navigation
+      const firstCheckbox = document.querySelector('.email-checkbox-popover');
+      if (firstCheckbox) {
+        firstCheckbox.focus();
+      }
+    });
+    
+    // Clean up focus when popover is hidden
+    popoverTrigger.addEventListener('hidden.bs.popover', function() {
+      // Return focus to the trigger button
+      popoverTrigger.focus();
+    });
   }
 
   // Helper functions (keep these the same)
