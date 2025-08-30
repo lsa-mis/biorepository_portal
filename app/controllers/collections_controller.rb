@@ -1,6 +1,6 @@
 class CollectionsController < ApplicationController
   before_action :set_collection, only: %i[ show edit update destroy search ]
-  skip_before_action :authenticate_user!, only: [ :index, :show, :add_item_to_checkout, :search ]
+  skip_before_action :authenticate_user!, only: [ :index, :show, :search ]
   before_action :ensure
 
   def enable_preview
@@ -28,16 +28,6 @@ class CollectionsController < ApplicationController
     @q1 = @collection.items.ransack(params[:q1])
     @items = @q1.result.page(params[:page]).per(params[:per]).max_paginates_per(500)
     render :show
-  end
-
-  def add_item_to_checkout
-    @item = Item.find(params[:item_id])
-    render turbo_stream: turbo_stream.update("modal_content_frame") {
-      render_to_string(
-        partial: "items/preparations_form",
-        formats: [:html]
-      )
-    }
   end
 
   # GET /collections/new
