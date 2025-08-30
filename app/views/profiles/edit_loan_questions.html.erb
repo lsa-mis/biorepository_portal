@@ -3,12 +3,12 @@
 <h1 class="mb-3 text-center">Answer Loan Questions</h1>
 
 <%= form_with url: update_loan_questions_profile_path, method: :patch, multipart: true, local: true do %>
-  <div class="card p-4 shadow-sm">
+  <div class="card shadow-sm">
     <div class="card-body">
       <% @loan_questions.each do |loan_question| %>
         <% existing_answer = @loan_answers.find { |a| a.loan_question_id == loan_question.id } %>
 
-        <div class="mb-4 border rounded p-3 bg-light">
+        <div class="mb-4 p-3 bg-light">
           <label class="form-label"><%= loan_question.question %></label>
           <% if loan_question.required? %>
             <span class="text-danger">*</span>

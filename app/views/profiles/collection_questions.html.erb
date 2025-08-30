@@ -3,12 +3,12 @@
 <h1 class="mb-3 text-center">Answer <%= @collection.division %> Questions</h1>
 
 <%= form_with url: update_collection_questions_profile_path(@collection), method: :patch, multipart: true, local: true do %>
-  <div class="card p-4 shadow-sm">
+  <div class="card shadow-sm">
     <div class="card-body">
       <% @collection_questions.each do |question| %>
         <% existing_answer = @collection_answers.find { |a| a.collection_question_id == question.id } %>
 
-        <div class="mb-4 border rounded p-3 bg-light">
+        <div class="mb-4 p-3 bg-light">
           <label class="form-label"><%= question.question %></label>
           <% if question.required? %>
             <span class="text-danger">*</span>
