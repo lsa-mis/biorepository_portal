@@ -102,13 +102,33 @@ class LoanQuestionsController < ApplicationController
   def move_up
     @loan_question.move_higher
     authorize @loan_question
-    redirect_to loan_questions_path, notice: "Question moved up."
+    @loan_questions = LoanQuestion.order(:position)
+    
+    respond_to do |format|
+      format.turbo_stream { 
+        render turbo_stream: turbo_stream.update("loan_questions_list", 
+          partial: "loan_questions/loan_questions_list", 
+          locals: { loan_questions: @loan_questions }
+        )
+      }
+      format.html { redirect_to loan_questions_path, notice: "Question moved up." }
+    end
   end
 
   def move_down
     @loan_question.move_lower
     authorize @loan_question
-    redirect_to loan_questions_path, notice: "Question moved down."
+    @loan_questions = LoanQuestion.order(:position)
+    
+    respond_to do |format|
+      format.turbo_stream { 
+        render turbo_stream: turbo_stream.update("loan_questions_list", 
+          partial: "loan_questions/loan_questions_list", 
+          locals: { loan_questions: @loan_questions }
+        )
+      }
+      format.html { redirect_to loan_questions_path, notice: "Question moved down." }
+    end
   end
 
   private

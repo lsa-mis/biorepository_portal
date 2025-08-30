@@ -76,12 +76,32 @@ class Collections::CollectionQuestionsController < ApplicationController
 
   def move_up
     @collection_question.move_higher
-    redirect_to collection_collection_questions_path, notice: "Question moved up."
+    @collection_questions = @collection.collection_questions.order(:position)
+    
+    respond_to do |format|
+      format.turbo_stream { 
+        render turbo_stream: turbo_stream.update("collection_questions_list", 
+          partial: "collections/collection_questions/collection_questions_list", 
+          locals: { collection_questions: @collection_questions, collection: @collection }
+        )
+      }
+      format.html { redirect_to collection_collection_questions_path, notice: "Question moved up." }
+    end
   end
 
   def move_down
     @collection_question.move_lower
-    redirect_to collection_collection_questions_path, notice: "Question moved down."
+    @collection_questions = @collection.collection_questions.order(:position)
+    
+    respond_to do |format|
+      format.turbo_stream { 
+        render turbo_stream: turbo_stream.update("collection_questions_list", 
+          partial: "collections/collection_questions/collection_questions_list", 
+          locals: { collection_questions: @collection_questions, collection: @collection }
+        )
+      }
+      format.html { redirect_to collection_collection_questions_path, notice: "Question moved down." }
+    end
   end
   
   def destroy
