@@ -5,8 +5,12 @@
     </div>
   <% end %>
   <div class="md:d-flex justify-content-between align-items-center mb-3">
-    <h1><%= @collection.division %> Collection Questions</h1>
-
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+      <h1><%= @collection.division %> Collection Questions</h1>
+      <%= link_to collection_path(@collection), class: "btn btn-outline-secondary" do %>
+        <i class="bi bi-arrow-left me-2"></i> Back To Collection
+      <% end %>
+    </div>
     <% if policy(@collection).update? %>
       <div class="mt-4 text-end">
         <%= link_to preview_collection_collection_questions_path(@collection), class: "btn btn-outline-success me-2 shadow-sm" do %>

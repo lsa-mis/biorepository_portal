@@ -2,7 +2,7 @@
  <%= tag.meta name: "turbo-cache-control", content: "no-cache" %>
 <% end %>
 
-<div class="mx-2 mx-lg-9">
+<div class="">
   <% if (announcement = Announcement.find_by(location: "collection_show")) && announcement.displayed? %>
     <div class="announcement">
       <%= sanitize(announcement.content.to_s) %>

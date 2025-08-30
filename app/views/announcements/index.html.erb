@@ -1,54 +1,55 @@
 <h1>Manage Announcements</h1>
-
-<table class="table">
-  <thead>
-    <tr>
-      <th>Location</th>
-      <th>Displayed?</th>
-      <th>Actions</th>
-      <th>Preview</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @announcements.each do |announcement| %>
+<div class="table-responsive">
+  <table class="table">
+    <thead>
       <tr>
-        <td><%= announcement.location.humanize %></td>
-        <td><%= announcement.displayed? ? "Yes" : "No" %></td>
-        <td><%= link_to "Edit", edit_announcement_path(announcement) %></td>
-        <td>
-          <% case announcement.location %>
-          <% when "about" %>
-            <%= button_to "Preview", preview_about_access_path, method: :post, class: "btn btn-link" %>
-          <% when "app_preferences" %>
-            <%= link_to "Preview", app_prefs_path(preview: true), class: "btn btn-link" %>
-          <% when "checkout" %>
-            <%= button_to "Preview", preview_checkout_access_path, method: :post, class: "btn btn-link" %>
-          <% when "collections_index" %>
-            <%= button_to "Preview", preview_collections_access_path, method: :post, class: "btn btn-link" %>
-          <% when "faq" %>
-            <%= button_to "Preview", preview_faqs_access_path, method: :post, class: "btn btn-link" %>
-          <% when "loan_questions" %>
-            <%= button_to "Preview", preview_loan_questions_access_path, method: :post, class: "btn btn-link" %>
-          <% when "loan_request" %>
-            <%= link_to "Preview", new_loan_request_path(preview: true), class: "btn btn-link" %>
-          <% when "information_request" %>
-            <%= link_to "Preview", new_information_request_path(preview: true), class: "btn btn-link" %>
-          <% when "collection_questions" %>
-            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#collectionQuestionModal">
-              Preview
-            </button>
-          <% when "collection_show" %>
-            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#collectionShowModal">
-              Preview
-            </button>
-          <% else %>
-            N/A
-          <% end %>
-        </td>
+        <th>Location</th>
+        <th>Displayed?</th>
+        <th>Actions</th>
+        <th>Preview</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @announcements.each do |announcement| %>
+        <tr>
+          <td><%= announcement.location.humanize %></td>
+          <td><%= announcement.displayed? ? "Yes" : "No" %></td>
+          <td><%= link_to "Edit", edit_announcement_path(announcement) %></td>
+          <td>
+            <% case announcement.location %>
+            <% when "about" %>
+              <%= button_to "Preview", preview_about_access_path, method: :post, class: "btn btn-link" %>
+            <% when "app_preferences" %>
+              <%= link_to "Preview", app_prefs_path(preview: true), class: "btn btn-link" %>
+            <% when "checkout" %>
+              <%= button_to "Preview", preview_checkout_access_path, method: :post, class: "btn btn-link" %>
+            <% when "collections_index" %>
+              <%= button_to "Preview", preview_collections_access_path, method: :post, class: "btn btn-link" %>
+            <% when "faq" %>
+              <%= button_to "Preview", preview_faqs_access_path, method: :post, class: "btn btn-link" %>
+            <% when "loan_questions" %>
+              <%= button_to "Preview", preview_loan_questions_access_path, method: :post, class: "btn btn-link" %>
+            <% when "loan_request" %>
+              <%= link_to "Preview", new_loan_request_path(preview: true), class: "btn btn-link" %>
+            <% when "information_request" %>
+              <%= link_to "Preview", new_information_request_path(preview: true), class: "btn btn-link" %>
+            <% when "collection_questions" %>
+              <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#collectionQuestionModal">
+                Preview
+              </button>
+            <% when "collection_show" %>
+              <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#collectionShowModal">
+                Preview
+              </button>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
 
 <!-- Modals -->
 <!-- Collection Question Modal -->

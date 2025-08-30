@@ -1,4 +1,4 @@
-<div class="mx-2 mx-xl-9">
+<div class="">
   <div class="py-3 container-fluid">
     <%= search_form_for @q, url: search_items_path, html: { id: "search-form" }, method: :get, data: { controller: "search", action: "submit->search#submit", search_target: "form" } do |f| %>
 
@@ -20,7 +20,7 @@
               <%= render partial: 'layouts/current_filters', locals: { active_filters: @active_filters } %>
             <% end %>
           </div>
-          <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 mb-2">
             <div>
               <label for="switch_view" class="h5">Switch View</label>
               <%= select_tag "switch_view", options_for_select(item_views, selected: @view), :"data-action" => "search#submit" %>

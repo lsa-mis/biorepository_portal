@@ -60,7 +60,11 @@
 
   <div class="mt-3">
     <%= form.submit %>
-    <%= link_to "Cancel", collections_path, class: "link_to" %>
+    <% if collection.persisted? %>
+      <%= link_to "Cancel", collection_path(collection), class: "link_to" %>
+    <% else %>
+      <%= link_to "Cancel", collections_path, class: "link_to" %>
+    <% end %>
   </div>
 <% end %>
 

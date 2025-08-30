@@ -3,38 +3,40 @@
 <% end %>
 
 <% if @data.present? %>
-  <table class="table text-center table-striped mt-4">
-    <thead class="table-group-divider">
-    <tr>
-      <% @headers.each do |header| %>
-        <th scope="col"><%= header %></th>
-      <% end %>
-    </tr>
-    </thead>
-    <tbody class="table-group-divider">
-    <% @data.each do |row| %>
+  <div class="table-responsive">
+    <table class="table text-center table-striped mt-4">
+      <thead class="table-group-divider">
       <tr>
-        <% if @request_link %>
-          <% 
-            record = @model_class.find(row[0].to_i)
-            url_path = send(@url, record, return_to: request.fullpath)
-          %>
-          <td>
-            <%= link_to url_path do %>
-              <i class="bi bi-eye text-primary"></i>
-            <% end %>
-          </td>
-        <% else %>
-          <td><%= row[0] %></td>
-        <% end %>
-        <% row.shift(1) %>
-        <% row.each do |cell| %>
-          <td><%= cell %></td>
+        <% @headers.each do |header| %>
+          <th scope="col"><%= header %></th>
         <% end %>
       </tr>
-    <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody class="table-group-divider">
+      <% @data.each do |row| %>
+        <tr>
+          <% if @request_link %>
+            <% 
+              record = @model_class.find(row[0].to_i)
+              url_path = send(@url, record, return_to: request.fullpath)
+            %>
+            <td>
+              <%= link_to url_path do %>
+                <i class="bi bi-eye text-primary"></i>
+              <% end %>
+            </td>
+          <% else %>
+            <td><%= row[0] %></td>
+          <% end %>
+          <% row.shift(1) %>
+          <% row.each do |cell| %>
+            <td><%= cell %></td>
+          <% end %>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
 <% else %>
   <p>No data available for the selected filters.</p>
 <% end %>

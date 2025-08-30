@@ -1,7 +1,7 @@
 <!-- turning off turbo for the form is necessary - otherwise the browser doesn't download the csv properly -->
 <%= form_with url: report_url, method: :get, data: { turbo: false, controller: "dynamic-building-select" }, class: "mb-3" do |form| %>
   <div class="nowrap">
-    <div class="d-flex flex-row justify-content-start align-items-center gap-3" >
+    <div class="d-flex flex-column flex-md-row justify-content-start align-items-md-center gap-3" >
       <%= form.label :from, "From: "%>
       <%= form.date_field :from, value: params[:from] || 1.week.ago.to_date, max: Date.today, class: "form-control" %>
       <%= form.label :to, "To: "%>
