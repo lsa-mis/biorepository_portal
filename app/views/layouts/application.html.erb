@@ -28,7 +28,7 @@
       <div id="flash">
         <%= render "layouts/flash" %>
       </div>
-      <div class="mx-3 mx-lg-9">
+      <div class="<%= (controller.controller_name == 'home' && controller.action_name == 'about') ? '' : 'mx-3 mx-lg-9' %>">
         <%= yield %>
         <%= turbo_frame_tag "remote_modal", target: "_top" %>
       </div>
