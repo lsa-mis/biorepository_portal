@@ -34,7 +34,6 @@ class CheckoutController < ApplicationController
         render turbo_stream: [turbo_stream.replace('checkout',
                                                    partial: 'checkout/checkout',
                                                    locals: { checkout: @checkout }),
-                              turbo_stream.replace(@preparation),
                               turbo_stream.update('total', partial: 'checkout/total'),
                               turbo_stream.update('total1', partial: 'checkout/total'),
                               turbo_stream.update('flash', partial: 'layouts/flash'),
@@ -113,7 +112,6 @@ class CheckoutController < ApplicationController
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [
-                              turbo_stream.replace(@preparation),
                               turbo_stream.update('total', partial: 'checkout/total'),
                               turbo_stream.update('total1', partial: 'checkout/total'),
                               turbo_stream.update('flash', partial: 'layouts/flash'),
