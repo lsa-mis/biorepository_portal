@@ -137,7 +137,7 @@ class LoanRequestsController < ApplicationController
         ).deliver_now
 
         # Clean up checkout items
-        @checkout.requestables.active.delete_all
+        clean_up_checkout_items
 
         redirect_to checkout_path, notice: "Loan request sent with CSV and PDF attached."
       else
@@ -151,6 +151,7 @@ class LoanRequestsController < ApplicationController
       pdf_tempfile.close
       pdf_tempfile.unlink
     end
+
   end
 
   private
@@ -276,6 +277,16 @@ class LoanRequestsController < ApplicationController
           filename: custom_filename,
           content_type: original_blob.content_type
         )
+      end
+    end
+
+    def clean_up_checkout_items
+
+      @checkout.requestables.each do |requestable|
+        preparation = requestable.preparation
+        new_count = [preparation.count - requestable.count, 0].max
+        preparation.update(count: new_count)
+        requestable.destroy
       end
     end
 

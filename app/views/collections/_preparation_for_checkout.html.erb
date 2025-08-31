@@ -6,8 +6,14 @@
       <% in_checkout, available = preparation_checkout_counts(preparation, @checkout) %>
 
       <% checked_out = in_checkout > 0 %>
-
-      <% if checked_out %>
+      <% if available.zero? %>
+        <div class="text-muted">Temporary unavailable</div>
+        <div>
+          <div class="btn btn-sm btn-primary disabled d-flex align-items-center gap-1" style="cursor: not-allowed; opacity: 0.65;">
+            <%= preparation.display_name %>
+          </div>
+        </div>
+      <% elsif checked_out %>
         <div>
           <form action="<%= checkout_remove_preparation_path %>" method="post" data-turbo="true">
             <%= hidden_field_tag :id, preparation.id %>
