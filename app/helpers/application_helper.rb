@@ -86,10 +86,8 @@ module ApplicationHelper
     string
   end
 
-  def preparation_checkout_counts(preparation, checkout)
-    in_checkout = checkout.requestables.find_by(preparation_id: preparation.id)&.count.to_i
-    available = preparation.count
-    [in_checkout, available]
+  def preparation_in_checkout(preparation, checkout)
+    checkout.requestables.find_by(preparation_id: preparation.id)&.count.to_i > 0
   end
 
   def item_views
