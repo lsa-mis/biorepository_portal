@@ -281,11 +281,12 @@ class LoanRequestsController < ApplicationController
     end
 
     def clean_up_checkout_items
-
       @checkout.requestables.each do |requestable|
         preparation = requestable.preparation
-        new_count = [preparation.count - requestable.count, 0].max
-        preparation.update(count: new_count)
+        preparation.with_lock do
+          new_count = [preparation.count - requestable.count, 0].max
+          preparation.update(count: new_count)
+        end
         requestable.destroy
       end
     end
