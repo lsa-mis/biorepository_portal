@@ -287,8 +287,8 @@ class LoanRequestsController < ApplicationController
           new_count = [preparation.count - requestable.count, 0].max
           preparation.update(count: new_count)
         end
-        requestable.destroy
       end
+      @checkout.requestables.active.delete_all
     end
 
 end
