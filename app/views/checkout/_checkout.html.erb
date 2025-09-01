@@ -4,7 +4,7 @@
       <%= render "layouts/announcement", is_preview: is_preview, location: "checkout" %>
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
         <h1>Checkout</h1>
-        <% if @checkout.requestables.active.exists? %>
+        <% if @checkout.requestables.available.exists? %>
           <%= link_to new_loan_request_path, class: "btn btn-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
             <i class="bi bi-envelope"></i> Send Loan Request
           <% end %>

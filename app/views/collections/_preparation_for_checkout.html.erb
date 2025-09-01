@@ -6,7 +6,7 @@
       <% in_checkout, available = preparation_checkout_counts(preparation, @checkout) %>
 
       <% checked_out = in_checkout > 0 %>
-      <% if available.zero? %>
+      <% if preparation.unavailable? %>
         <div class="text-muted">Temporary unavailable</div>
         <div>
           <div class="btn btn-sm btn-primary disabled d-flex align-items-center gap-1" style="cursor: not-allowed; opacity: 0.65;">

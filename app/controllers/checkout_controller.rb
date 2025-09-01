@@ -9,6 +9,9 @@ class CheckoutController < ApplicationController
  
   def show
     @render_checkout = false
+    @checkout.requestables.each do |requestable|
+      requestable.update(count: requestable.preparation.count) if requestable.preparation.count < requestable.count
+    end
   end
 
   def add

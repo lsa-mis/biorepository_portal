@@ -25,6 +25,7 @@ class Requestable < ApplicationRecord
   belongs_to :checkout
 
   scope :saved_for_later, -> { where(saved_for_later: true) }
-  scope :active, -> { where(saved_for_later: false).where.not(count: 0) }
+  scope :active, -> { where(saved_for_later: false) }
+  scope :available, -> { active.joins(:preparation).where(preparations: { count: 1.. }) }
 
 end
