@@ -46,18 +46,18 @@
       <div class="step">
         <%= link_to step_four_path, class: "text-decoration-none text-dark step-link" do %>
           <div class="circle bg-secondary text-white step-circle">4</div>
-          <div>Loan Items</div>
+          <div>Shipment</div>
         <% end %>
       </div>
     <% else %>
       <div class="step">
         <div class="circle <%= step == 4 ? 'bg-primary' : 'bg-secondary' %> text-white">4</div>
-        <div>Loan Items</div>
+        <div>Shipment</div>
       </div>
     <% end %>
     <div class="step">
       <div class="circle <%= step == 5 ? 'bg-primary' : 'bg-secondary' %> text-white">5</div>
-      <div>Shipment</div>
+      <div>Loan Items</div>
     </div>
   </div>
 </div>

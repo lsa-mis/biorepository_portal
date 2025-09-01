@@ -32,6 +32,13 @@ class Preparation < ApplicationRecord
     display_name
   end
 
+  scope :unavailable, -> { where(count: 0) }
+  scope :available, -> { where('count > 0') }
+
+  def unavailable?
+    self.count == 0
+  end
+
   def self.ransackable_attributes(auth_object = nil)
     %w[description prep_type]
   end

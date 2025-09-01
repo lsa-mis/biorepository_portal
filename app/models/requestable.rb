@@ -26,5 +26,6 @@ class Requestable < ApplicationRecord
 
   scope :saved_for_later, -> { where(saved_for_later: true) }
   scope :active, -> { where(saved_for_later: false) }
-  
+  scope :available, -> { active.joins(:preparation).where('preparations.count > 0') }
+
 end
