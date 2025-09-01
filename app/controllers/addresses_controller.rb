@@ -13,7 +13,7 @@ class AddressesController < ApplicationController
     @address = current_user.addresses.new(address_params)
     if @address.save
       if params[:loan_request] == "true"
-        redirect_to step_five_path, notice: "New Address Added"
+        redirect_to step_four_path, notice: "New Address Added"
       else
         redirect_to addresses_path, notice: "Address saved."
       end
@@ -28,7 +28,7 @@ class AddressesController < ApplicationController
   def update
     if @address.update(address_params)
       if params[:loan_request] == "true"
-        redirect_to step_five_path, notice: "Address Updated"
+        redirect_to step_four_path, notice: "Address Updated"
       else
         redirect_to addresses_path, notice: "Address updated."
       end

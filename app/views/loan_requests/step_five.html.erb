@@ -1,16 +1,15 @@
 <%= render "loan_requests/steps", step: 5 %>
+<!-- Step 5: Items -->
 
-<!-- Step 5: Shipment -->
 <%= form_with(model: @loan_request, url: send_loan_request_path) do |form| %>
 
   <div>
-    <%= render "profiles/shipment_selection", addresses: @addresses %>
+    <%= render "profiles/user_loan_items" %>
   </div>
+  <%= hidden_field_tag :shipping_address_id, @shipping_address.id %>
 
   <div class="d-flex justify-content-between align-items-center my-4">
     <%= link_to "Previous", step_four_path, class: "btn btn-primary" %>
-    <%#= button_to "Send Loan Request", send_loan_request_path, class: "btn btn-primary" %>
     <%= form.submit "Send Loan Request", class: "btn btn-primary" %>
-
   </div>
 <% end %>

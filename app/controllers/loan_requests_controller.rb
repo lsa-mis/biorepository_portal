@@ -42,26 +42,28 @@ class LoanRequestsController < ApplicationController
   end
 
   def step_four
+    # @loan_request = LoanRequest.new
     @collection_answers = build_collection_answers(@checkout, current_user)
     missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data) }
     if missing_collection_answers
       flash[:alert] = "Please answer all collection questions."
       redirect_to step_three_path and return
     end
-    @checkout_items = get_checkout_items_with_ids
+    @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
   end
 
   def step_five
     @loan_request = LoanRequest.new
-    @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
-  end
-
-  def send_loan_request
     missing_shipping_address = check_shipping_address
     if missing_shipping_address
       flash[:alert] = @missing_fields_alert
-      redirect_to step_five_path and return
+      redirect_to step_four_path and return
     end
+    @checkout_items = get_checkout_items_with_ids
+  end
+
+  def send_loan_request
+    @shipping_address = Address.find(params[:shipping_address_id])
 
     if @checkout.nil? || @checkout.requestables.empty?
       flash[:alert] = "No items in checkout."
