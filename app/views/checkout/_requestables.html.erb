@@ -17,7 +17,7 @@
        
           <div class="col-md-4 text-start align-middle mb-2">
             <% if preparation.unavailable? %>
-              <div class="text-muted">Temporary unavailable</div>
+              <div class="text-muted">Temporarily unavailable</div>
             <% else %>
               <%= form_with url: checkout_change_path, 
                   data: { controller: "autosubmit",
