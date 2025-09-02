@@ -77,7 +77,7 @@ RSpec.describe LoanRequestsController, type: :request do
   describe 'GET #new when user has incomplete information' do
     before do
       mock_login(incomplete_user)
-      
+
     end
     it 'displays step two successfully' do
       get new_loan_request_path
