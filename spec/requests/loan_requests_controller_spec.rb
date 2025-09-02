@@ -74,21 +74,20 @@ RSpec.describe LoanRequestsController, type: :request do
     end
   end
 
-  describe 'GET #new' do
-    context 'when user has incomplete information' do
-      before do
-        mock_login(incomplete_user)
-      end
-      it 'displays step two successfully' do
-        get new_loan_request_path
-        expect(response).to have_http_status(:success)
-        expect(response.body).to include("User Information")
-        
-        # Try to proceed to step_two with incomplete user info
-        get step_two_path
-        expect(response).to redirect_to(new_loan_request_path)
-        expect(flash[:alert]).to eq("User information is incomplete.")
-      end
+  describe 'GET #new when user has incomplete information' do
+    before do
+      mock_login(incomplete_user)
+      
+    end
+    it 'displays step two successfully' do
+      get new_loan_request_path
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("User Information")
+      
+      # Try to proceed to step_two with incomplete user info
+      get step_two_path
+      expect(response).to redirect_to(new_loan_request_path)
+      expect(flash[:alert]).to eq("User information is incomplete.")
     end
   end
 
