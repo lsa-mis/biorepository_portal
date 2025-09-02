@@ -1,0 +1,48 @@
+<div id="collection_question_<%= question.id %>" class="border rounded p-3 mb-3">
+  <p>
+    <strong><%= question.position %>. <%= question.question %></strong>
+    <% if question.required? %>
+      <span class="text-danger">*</span>
+    <% end %>
+    <% if local_assigns[:disabled] %>
+      <button class="btn btn-sm btn-outline-secondary" disabled >Edit</button>
+    <% else %>
+      <%= link_to edit_collection_collection_answer_path(collection, question, format: :turbo_stream),
+                  data: {
+                    turbo_frame: "modal_content_frame",
+                    bs_toggle: "modal",
+                    bs_target: "#sharedModal"
+                  },aria: { label: "Edit #{question}" },
+                            title: "Edit #{question}" do %>
+        <i class="bi bi-pencil-square text-primary" aria-hidden="true"></i>
+      <% end %>
+    <% end %>
+  </p>
+  <% if question.question_type == "attachment" %>
+    <p>
+      <strong>Attachment:</strong>
+      <% if answer&.attachment&.attached? %>
+        <%= link_to answer.attachment.filename.to_s, rails_blob_path(answer.attachment, disposition: "attachment"), target: "_blank", rel: "noopener noreferrer" %>
+      <% else %>
+        <% if question.required? %>
+          <span class="text-danger">Warning: This question is required but not answered.</span>
+        <% else %>
+          <%= "No answer provided" %>
+        <% end %>
+      <% end %>
+    </p>
+  <% else %>
+    <p>
+      <% plain_answer = answer.present? ? answer.answer.to_plain_text.strip.presence : nil %>
+      <% if question.required? %>
+        <% if plain_answer %>
+          <%= plain_answer %>
+        <% else %>
+          <span class="text-danger">Warning: This question is required but not answered.</span>
+        <% end %>
+      <% else %>
+        <%= plain_answer || "No answer provided" %>
+      <% end %>
+    </p>
+  <% end %>
+</div>

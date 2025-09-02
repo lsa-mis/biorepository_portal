@@ -1,0 +1,20 @@
+<div class="container mt-5">
+  <h1 class="mb-4">Edit Announcement for <%= @announcement.location.humanize %></h1>
+
+  <%= form_with model: @announcement, class: "p-4 rounded shadow-sm bg-light" do |form| %>
+    <div class="mb-4">
+      <%= form.rich_text_area :content, class: "form-control rounded shadow-sm", placeholder: "Write your announcement here..." %>
+      <div class="form-text">This content will be shown on the selected page if visible is checked.</div>
+    </div>
+
+    <div class="form-check mb-4">
+      <%= form.check_box :displayed, class: "form-check-input" %>
+      <%= form.label :displayed, "Visible to users", class: "form-check-label" %>
+    </div>
+
+    <div class="">
+      <%= form.submit "Update", class: "btn btn-primary" %>
+      <%= link_to "Cancel", announcements_path, class: "link_to" %>
+    </div>
+  <% end %>
+</div>

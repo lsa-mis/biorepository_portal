@@ -1,0 +1,77 @@
+name: Run RSpec tests
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  run-rspec-tests:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with: # gets version from .ruby-version file
+          # runs 'bundle install' and caches installed gems automatically
+          bundler-cache: true
+
+      - name: Set up PostgreSQL client
+        run: sudo apt-get install -y postgresql-client
+
+      # - name: Install Node.js
+      #   with:
+      #     node-version-file: '.node-version'
+      #   uses: actions/setup-node@v3
+
+      # - name: Install Yarn
+      #   run: npm install -g yarn
+
+      # - name: Install Dependencies
+      #   run: |
+      #     bundle install
+      #     yarn install
+
+      - name: Precompile Assets
+        run: bundle exec rails assets:precompile
+
+      - name: Setup DB
+        run: bin/rails db:create db:migrate db:seed
+
+      - name: Run Model tests
+        run: bundle exec rspec spec/models/*
+
+      - name: Run System tests
+        run: bundle exec rspec spec/system/*
+
+      - name: Run Request tests
+        run: bundle exec rspec spec/requests/*
+
+      - name: Keep screenshots from failed system tests
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: screenshots
+          path: ${{ github.workspace }}/tmp/capybara
+          if-no-files-found: ignore

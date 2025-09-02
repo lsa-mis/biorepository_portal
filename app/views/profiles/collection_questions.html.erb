@@ -1,0 +1,63 @@
+<% content_for :title, "Answer #{@collection.division} Questions" %>
+
+<h1 class="mb-3 text-center">Answer <%= @collection.division %> Questions</h1>
+
+<%= form_with url: update_collection_questions_profile_path(@collection), method: :patch, multipart: true, local: true do %>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <% @collection_questions.each do |question| %>
+        <% existing_answer = @collection_answers.find { |a| a.collection_question_id == question.id } %>
+
+        <div class="mb-4 p-3 bg-light">
+          <label class="form-label"><%= question.question %></label>
+          <% if question.required? %>
+            <span class="text-danger">*</span>
+          <% end %>
+
+          <% case question.question_type %>
+          <% when "text" %>
+            <%= text_field_tag "collection_answers[#{question.id}]",
+                existing_answer&.answer&.to_plain_text&.strip || "",
+                class: "form-control ms-3" %>
+
+          <% when "checkbox" %>
+            <p>Pick one or more options below</p>
+            <% question.collection_options.each do |option| %>
+              <div class="form-check ms-3">
+                <%= check_box_tag "collection_answers[#{question.id}][]", option.value,
+                  (existing_answer&.answer&.to_plain_text&.strip || "").to_s.include?(option.value) %>
+                <%= label_tag nil, option.value, class: "form-check-label" %>
+              </div>
+            <% end %>
+
+          <% when "dropdown" %>
+            <%= select_tag "collection_answers[#{question.id}]",
+                options_for_select(question.collection_options.map(&:value), existing_answer&.answer&.to_plain_text&.strip || ""),
+                class: "form-select ms-3", prompt: "Select..." %>
+
+          <% when "attachment" %>
+            <p>Currently Attached:
+              <% if existing_answer&.attachment&.attached? %>
+                <%= link_to("#{existing_answer.attachment.filename.to_s}", existing_answer.attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %>
+              <% else %>
+                None
+              <% end %>
+            </p>
+            <div class="ms-3">
+              <%= file_field_tag "collection_answers[#{question.id}]", accept: ".pdf", class: "form-control ms-3" %>
+            </div>
+
+          <% else %>
+            <div class="alert alert-warning mt-3">
+              <strong>Unsupported question type:</strong> <%= question.question_type %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+      <div class="mb-3">
+        <%= submit_tag "Submit", class: "btn btn-primary" %>
+        <%= link_to "Cancel", profile_path, class: "link_to" %>
+      </div>
+    </div>
+  </div>
+<% end %>

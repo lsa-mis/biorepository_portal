@@ -1,0 +1,19 @@
+<div class="">
+  <% is_preview = params[:preview].present? %>
+  <%= render "layouts/announcement", is_preview: is_preview, location: "collections_index" %>
+
+  <h1 class="pt-5 text-center">Explore Collection Catalog</h1>
+  <%= render "layouts/number_of_items_for_loan" %>
+  <% if is_super_admin? %>
+    <div class="my-3 text-end">
+      <%= link_to "New Collection", new_collection_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+  <div class="row row-cols-1 row-cols-lg-2 g-5 mb-5">
+    <% @collections.each do |collection| %>
+      <div class="col">
+        <%= render partial: "collection_card", locals: { collection: collection } %>
+      </div>
+    <% end %>
+  </div>
+</div>

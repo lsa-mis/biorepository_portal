@@ -1,0 +1,78 @@
+<%= form_with model: address, local: true, data: { controller: "address-form", action: "submit->address-form#submitForm" } do |f| %>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :first_name, "First Name" %><span class="text-danger"> *</span>
+      <%= f.text_field :first_name, class: "form-control", required: true %>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :last_name, "Last Name" %><span class="text-danger"> *</span>
+      <%= f.text_field :last_name, class: "form-control", required: true %>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :email, "Email" %><span class="text-danger"> *</span>
+    <%= f.text_field :email, class: "form-control", required: true, 
+        data: { address_form_target: "email" } %>
+    <div class="invalid-feedback" data-address-form-target="emailError" style="display: none;"></div>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :address_line_1, "Address Line 1" %><span class="text-danger"> *</span>
+    <%= f.text_field :address_line_1, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :address_line_2, "Address Line 2", class: "form-label" %>
+    <%= f.text_field :address_line_2, class: "form-control" %>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :city, "City" %><span class="text-danger"> *</span>
+      <%= f.text_field :city, class: "form-control", required: true %>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :state, "State / Province" %><span class="text-danger"> *</span>
+      <%= f.select :state, Address::STATES, { prompt: 'Select State' }, { class: "form-select", required: true } %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :zip, "ZIP / Postal Code" %><span class="text-danger"> *</span>
+      <%= f.text_field :zip, class: "form-control", required: true %>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :country_code, "Country" %><span class="text-danger"> *</span>
+      <%= f.country_select :country_code, { priority_countries: ["United States"], prompt: 'Select Country' }, { class: "form-select", required: true } %>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :phone, "Phone" %><span class="text-danger"> *</span>
+    <%= f.text_field :phone, class: "form-control", required: true,
+        data: { address_form_target: "phone" } %>
+    <div class="invalid-feedback" data-address-form-target="phoneError" style="display: none;"></div>
+  </div>
+
+  <div class="form-check mb-4">
+    <%= f.check_box :primary, class: "form-check-input", id: "primary" %>
+    <%= f.label :primary, "Set as primary address", class: "form-check-label" %>
+  </div>
+
+  <%= hidden_field_tag :loan_request, params[:loan_request] %>
+  <%= hidden_field_tag :return_to, params[:return_to] %>
+
+  <div class="d-grid">
+    <% if params[:loan_request] %>
+      <%= f.submit "Update Shipping Address", class: "btn btn-primary", data: { address_form_target: "submitButton" } %>
+    <% else %>
+      <% if address.persisted? %> 
+        <%= f.submit "Update Address", class: "btn btn-primary", data: { address_form_target: "submitButton" } %>
+      <% else %>
+        <%= f.submit "Create Address", class: "btn btn-primary", data: { address_form_target: "submitButton" } %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

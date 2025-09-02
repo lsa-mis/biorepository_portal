@@ -1,0 +1,45 @@
+<div class="position-relative overflow-hidden" style="min-height: 800px;">
+
+  <% find_image = GlobalPreference.find_by(name: 'home_page_image') %>
+  <% home_page_image = find_image&.image&.attached? ? find_image.image : nil %>
+
+  <% if home_page_image.present? %>
+    <%= image_tag home_page_image, alt: "Home Page Image", class: "w-100", style: "height: 800px; object-fit: cover; object-position: center;" %>
+  <% else %>
+    <div class="w-100 bg-light" style="height: 800px;"></div>
+  <% end %>
+
+  <div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="z-index: 1;">
+    <div class="glass-box text-dark p-5 rounded-4 shadow-lg w-100" style="max-width: 900px;">
+      
+      <% if devise_mapping.omniauthable? %>
+        <h1 class="text-center mb-4">Log In or Create an Account</h1>
+        <hr>
+
+        <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-4 mt-4">
+          <!-- U-M Users -->
+          <div class="text-center">
+            <p class="text-dark fs-6 fw-bold mb-1">University of Michigan Community</p>
+            <p class="small">Students, Staff, Faculty & Alumni with a U-M uniqname can log in below.</p>
+            <%= button_to "Sign in with U-M account",
+                          omniauth_authorize_path(resource_name, 'saml'),
+                          class: "btn btn-warning btn-sm px-3 py-2 mt-2",
+                          data: { turbo: false } %>
+          </div>
+
+          <div class="vr d-none d-md-block text-dark"></div>
+
+
+          <div class="text-center">
+            <p class="text-dark fs-6 fw-bold mb-1">University of Michigan Guests</p>
+            <p class="small">If you do not have University of Michigan login credentials</p>
+            <%= link_to 'Create an Account',
+                        'https://friend.weblogin.umich.edu/friend/',
+                        class: "btn btn-primary btn-sm px-3 py-2 mt-2" %>
+          </div>
+        </div>
+      <% end %>
+      
+    </div>
+  </div>
+</div>

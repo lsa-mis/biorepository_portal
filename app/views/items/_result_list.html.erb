@@ -1,0 +1,11 @@
+<% if @total_items == 0 %>
+  <div class="alert alert-warning mt-3">
+    No items available for this search.
+  </div>
+<% else %>
+  <% if view == 'rows' %>
+    <%= render partial: 'result_rows', locals: { items: @items } %>
+  <% else %>
+    <%= render partial: 'result_cards', locals: { items: @items } %>
+  <% end %>
+<% end %>

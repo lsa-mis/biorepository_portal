@@ -1,0 +1,15 @@
+<div class="position-fixed end-0 px-3 py-6" style="top: 80px; z-index: 1050;">
+  <% flash.each do |type, message| %>
+    <% next if type.to_s.end_with?('_no_timeout') %> <%# Skip the flag keys %>
+    <% 
+      # Check if there's a no_timeout flag for this message type
+      no_timeout = flash["#{type}_no_timeout"]
+      data_attributes = { controller: "flash" }
+      data_attributes[:flash_auto_hide_value] = false if no_timeout
+    %>
+    <div <%= data_attributes.map { |k, v| "data-#{k.to_s.dasherize}=\"#{v}\"" }.join(' ').html_safe %> class="alert alert-dismissible fade show <%= css_class_for_flash(type) %> shadow-lg" role="alert" style="min-width: 300px;">
+      <%= message %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% end %>
+</div>

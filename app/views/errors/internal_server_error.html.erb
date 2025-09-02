@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>We're sorry, but something went wrong (500)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+
+<body class="rails-default-error-page">
+  <!-- This file lives in app/views/errors/internal_server_error.html.erb -->
+  <div class="dialog">
+    <div>
+      <h1>We're sorry, but something went wrong.</h1>
+    </div>
+    <p>Try using navigation to get back on track<br>
+      
+      or go to the <a href="/" class="link_to">homepage</a>
+      
+      or <a id="myCustomTrigger" class="link_to" href="#" data-email="<%= session[:user_email]%>">Report an Issue</a>
+      </p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<%= form_with(model: collection, data: { turbo: false }) do |form| %>
+  <% if collection.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(collection.errors.count, "error") %> prohibited this collection from being saved:</h2>
+
+      <ul>
+        <% collection.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :division, :division.to_s.titleize %><span class="text-danger"> *</span>
+    <%= form.text_field :division, required: true %>
+  </div>
+
+  <div class="mt-3">
+    <%= form.label :admin_group, :admin_group.to_s.titleize %><span class="text-danger"> *</span>
+    <%= form.text_field :admin_group, required: true %>
+  </div>
+
+  <div class="mt-3">
+    <%= form.label :short_description, "#{:short_description.to_s.titleize} (200 characters)" %><span class="text-danger"> *</span>
+    <%= form.text_area :short_description,
+          class: "w-100 mt-2",
+          required: true,
+          maxlength: 200,
+          id: "short_description_textarea" %>
+
+    <div class="text-muted mt-1" id="char_counter">0 / 200</div>
+  </div>
+
+  <div class="mt-3">
+    <%= form.label :long_description, :long_description.to_s.titleize %><span class="text-danger"> *</span>
+    <%= form.rich_text_area :long_description, required: true %>
+  </div>
+
+  <div class="mt-3">
+    <%= form.label :division_page_url, :division_page_url.to_s.titleize %><span class="text-danger"> *</span>
+    <%= form.text_field :division_page_url, required: true %>
+  </div>
+
+  <div class="mt-3">
+    <%= form.label :link_to_policies, :link_to_policies.to_s.titleize %><span class="text-danger"> *</span>
+    <%= form.text_field :link_to_policies, required: true %>
+  </div>
+
+  <div class="mt-3">
+    <p class="body-sm-text">
+      Collection Image:
+    </p>
+    <div class="ms-3">
+      <%= render partial: "collection_image", locals: { collection: collection } %>
+    </div>
+    <%= form.label :image, "Update the Image:", class: "w-100 mb-2" %>
+    <%= form.file_field :image, accept: ".jpg,.jpeg,.png" %>
+  </div>
+
+  <div class="mt-3">
+    <%= form.submit %>
+    <% if collection.persisted? %>
+      <%= link_to "Cancel", collection_path(collection), class: "link_to" %>
+    <% else %>
+      <%= link_to "Cancel", collections_path, class: "link_to" %>
+    <% end %>
+  </div>
+<% end %>
+
+<script>
+  document.addEventListener("turbo:load", function () {
+    const textarea = document.getElementById("short_description_textarea");
+    const counter = document.getElementById("char_counter");
+
+    if (textarea && counter) {
+      function updateCounter() {
+        const currentLength = textarea.value.length;
+        counter.textContent = `${currentLength} / ${textarea.maxLength}`;
+      }
+
+      updateCounter();
+      textarea.addEventListener("input", updateCounter);
+    }
+  });
+</script>

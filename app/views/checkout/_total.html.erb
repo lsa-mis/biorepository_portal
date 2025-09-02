@@ -1,0 +1,3 @@
+<% if @checkout.requestables.available.exists? %>
+    (<%= @checkout.requestables.available.count %>)
+<% end %>

@@ -1,0 +1,38 @@
+<%= turbo_frame_tag 'new_preference' do %>
+  <%= form_with(model: app_preference, class: "contents") do |form| %>
+    <% if app_preference.errors.any? %>
+      <div id="error_explanation" class="text-danger px-3 py-2 font-medium rounded-lg mt-3">
+        <h2><%= pluralize(app_preference.errors.count, "error") %> prohibited this app_preference from being saved:</h2>
+        <ul>
+          <% app_preference.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="my-3">
+      <%= check_box_tag :global_preference, '1', false, id: 'global_preference', class: "form-check-input" %>
+      <%= label_tag 'global_preference', 'Check for Global Preference', class: "form-check-label ms-2" %>
+    </div>
+
+    <div class="">
+      <%= form.label :name, "Name *" %>
+      <%= form.text_field :name, required: true %>
+    </div>
+
+    <div class="">
+      <%= form.label :description, "Description *" %>
+      <%= form.text_field :description, required: true %>
+    </div>
+
+    <div class="">
+      <%= form.label :pref_type, 'Type *' %>
+      <%= form.select :pref_type, @pref_types.map{ |key| [key.titleize, key] }, { include_blank: "Select ...", required: true } %>
+    </div>
+
+    <div class="inline">
+      <%= form.submit 'Create Preference', class: "secondary_blue_button" %>
+    </div>
+  <% end %>
+<% end %>

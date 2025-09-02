@@ -1,0 +1,38 @@
+<%= turbo_frame_tag 'app_preferences' do %>
+  <div class="table-responsive">
+    <table class="table">
+      <thead class="table-group-divider">
+        <tr>
+          <th scope="col" class="text-start">Name</th>
+          <th scope="col">Description</th>
+          <th scope="col" class="text-center">Type</th>
+          <th scope="col" class="text-center">Global</th>
+          <th scope="col" class="text-center">Delete</th>
+        </tr>
+      </thead>
+      <tbody class="table-group-divider" id="app_preferences">
+        <% @app_preferences.each do |name, descr, pref_type, global| %>
+          <tr>
+            <td class="text-start">
+              <%= name %>
+            </td>
+            <td class="text-start">
+              <%= descr %>
+            </td>
+            <td class="text-center">
+              <%= pref_type %>
+            </td>
+            <td class="text-center">
+              <%= global %>
+            </td>
+            <td class="text-center">
+              <%= link_to delete_preference_path(name, global), 'aria-label': "delete_#{name}", data: { turbo_confirm: "Are you sure you want to delete this preference?", turbo_method: :get } do %>
+                <i class="bi bi-trash-fill text-danger"></i>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

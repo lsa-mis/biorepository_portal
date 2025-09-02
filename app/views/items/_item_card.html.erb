@@ -1,0 +1,14 @@
+<div class="card h-100 shadow-sm" id="<%= dom_id item %>">
+  <div class="card-header">
+    <%= link_to "#{item.collection.division} - #{item.display_name}", item_path(item, return_to: request.fullpath), class: "link_to fw-bold", data: { turbo_frame: "_top" } %>
+    <p class="fw-normal lh-sm"><%= item.country&.titleize %>
+    <br><%= item.event_date_start %></p>
+  </div>
+  <div class="card-body">
+    <p class="fw-normal lh-sm"><%= show_state_province_county(item) %></p>
+    <p>
+      <%= item.coordinates %>
+    </p>
+    <%= render partial: "collections/preparation_for_checkout", locals: { item: item, checkout: @checkout } %>
+  </div>
+</div>

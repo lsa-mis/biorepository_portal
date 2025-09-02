@@ -1,0 +1,76 @@
+<%= form_with(model: loan_question, local: true, data: { controller: "edit-options" }) do |form| %>
+  <% if loan_question.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(loan_question.errors.count, "error") %> prohibited this loan question from being saved:</h2>
+      <ul>
+        <% loan_question.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.check_box :required, class: "form-check-input", id: "loan_question_required" %>
+    <%= form.label :required, "Required", class: "form-check-label", for: "loan_question_required" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :question, class: "form-label" %>
+    <%= form.rich_text_area :question, required: true %>
+  </div>
+  
+  <div class="mb-3">
+    <%= form.label :question_type, class: "form-label" %>
+    <%= text_field_tag :question_type_display, loan_question.question_type.humanize, disabled: true %>
+    <%= form.hidden_field :question_type %>
+  </div>
+
+  <% if loan_question.question_type.in?(%w[dropdown checkbox]) %>
+    <div class="mb-3">
+      <h5>Options</h5>
+
+      <div data-edit-options-target="fields">
+        <% loan_question.options.each_with_index do |option, index| %>
+            <div class="option-list-item mb-2">
+              <label class="form-label" name=<%= "option_attributes_#{index}" %> value=<%= option.value %> data-edit-options-target="option_label"><%= "Option #{index + 1}" %></label>
+              <%= text_field_tag("options_attributes[#{index+1}][value]", option.value, {required: true}) %>
+              <%= hidden_field_tag "options_attributes[#{index+1}][number]", index+1 %>
+              <%= check_box_tag :_destroy, 1, class: "d-none", data: { edit_options_target: "destroy_field" } %>
+              <button type="button"
+                      class="btn btn-sm btn-danger remove-option-button mt-1"
+                      data-edit-options-target="remove_button"
+                      data-action="edit-options#removeOption">
+                Remove
+              </button>
+            </div>
+        <% end %>
+      </div>
+
+      <button type="button" class="btn btn-sm btn-secondary mt-2"
+              data-action="edit-options#append"
+              data-edit-options-target="add_option_button">
+          Add Option
+      </button>
+    </div>
+  <% end %>
+
+  <div class="mt-3">
+    <%= form.submit "Update Loan Question", class: "btn btn-primary" %>
+    <%= link_to "Cancel", loan_questions_path, class: "link_to" %>
+  </div>
+
+  <template data-edit-options-target="template">
+    <div class="option-list-item mb-2">
+      <label class="form-label" data-edit-options-target="option_label">Option</label>
+      <input type="text" data-edit-options-target="option_value" required=true />
+      <input type="hidden" data-edit-options-target="option_number" />
+      <button type="button"
+              class="btn btn-sm btn-danger remove-option-button mt-1"
+              data-edit-options-target="remove_button"
+              data-action="edit-options#removeOption">
+        Remove
+      </button>
+    </div>
+  </template>
+<% end %>

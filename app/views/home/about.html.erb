@@ -1,0 +1,103 @@
+<div class="position-relative overflow-hidden" style="min-height: 800px;">
+  <!-- Background image using image_tag (no vh-100, image drives height) -->
+  <% if @home_page_image.present? %>
+    <%= image_tag @home_page_image, alt: "Home Page Image", class: "w-100", style: "height: 800px; object-fit: cover; object-position: center;" %>
+  <% end %>
+
+  <!-- Frosted glass overlay positioned over image -->
+  <div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="z-index: 1;">
+    <div class="glass-box text-dark p-5 rounded-4 shadow-lg w-100" style="max-width: 800px;">
+
+      <!-- Heading and About Text -->
+      <h1 class="text-start mb-4">About LSA BioRepository</h1>
+      <p class="text-start mb-4">
+      <% is_preview = params[:preview].present? %>
+        <% if is_preview %>
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <% if (announcement = Announcement.find_by(location: "about")) %>
+                <%= sanitize(announcement.content.to_s) %>
+            <% end %>
+            <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary", data: { turbo_frame: "_top" } %>
+          </div>
+        <% else %>
+          <% if (announcement = Announcement.find_by(location: "about")) && announcement.displayed? %>
+              <%= sanitize(announcement.content.to_s) %>
+          <% end %>
+        <% end %>
+      </p>
+
+      <!-- Search Form -->
+      <%= search_form_for @q, url: quick_search_items_path, method: :get, html: { class: "m-0" } do |f| %>
+        <div class="text-center mb-3">
+          <%= f.label :country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont,
+                      "What can we help you find?",
+                      class: "form-label fs-5 fw-bold text-dark" %>
+        </div>
+
+        <div class="d-flex justify-content-center mb-2">
+          <div class="input-group input-group-lg" style="max-width: 500px;">
+            <%= f.search_field :country_case_insensitive_or_state_province_case_insensitive_or_identifications_scientific_name_or_identifications_vernacular_name_cont,
+                  placeholder: "Search by Keyword...",
+                  class: "form-control search-input" %>
+
+            <button type="submit" class="btn btn-primary px-4">
+              Search
+            </button>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Sign In / Out -->
+      <div class="d-flex flex-column flex-md-row gap-2 w-100 mt-4 justify-content-center align-items-center">
+        <%= link_to "Advanced Search", search_items_path,
+              class: "btn btn-outline-secondary btn-sm px-3 py-2" %>
+        <% if current_user %>
+          <%= button_to destroy_user_session_path,
+                method: :delete,
+                data: { turbo: "false" },
+                class: "btn btn-warning btn-sm px-3 py-2" do %>
+            Log Out
+          <% end %>
+        <% else %>
+          <%= link_to "Sign In",
+                new_user_session_path,
+                data: { turbo: "false" },
+                class: "btn btn-warning btn-sm px-3 py-2" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Item Catalog Preview</h2>
+  <%= render "layouts/number_of_items_for_loan" %>
+  <p class="text-center text-muted mb-4">
+    Explore our collection of items available for research and loan requests.
+  </p>
+  <% if @items.empty? %>
+    <div class="alert alert-warning mt-3">
+      No items available in the system yet.
+    </div>
+  <% else %>
+      <%= render partial: 'items_preview', locals: { items: @items } %>
+  <% end %>
+  <div class="text-center">
+    <%= link_to "Browse All Collections", collections_path, class: "btn btn-outline-primary" %>
+  </div>
+</div>
+
+<div class="mt-5 bg-accordion py-5">
+  <div class="container">
+    <h2 class="text-center mb-4">Frequently Asked Questions</h2>
+    <p class="text-center" style="font-size: 1.1rem;">
+      For more information about Biorepository and how to use the portal, please visit our <%= link_to "FAQ page", faqs_path, class: "link_to" %>.
+    </p>
+  </div>
+</div>
+
+
+
+
+  
+

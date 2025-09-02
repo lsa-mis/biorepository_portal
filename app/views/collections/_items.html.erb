@@ -1,0 +1,23 @@
+<div class="mt-2">
+  <%= form_with url: collection_path(@collection), method: :get, turbo: true,
+    data: { controller: "autosubmit",
+            autosubmit_target: "form",
+            turbo_frame: "all_items"
+            } do %>
+    <label for="per">Items per page:</label>
+    <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "autosubmit#submit" %>
+  <% end %>
+  <div class="my-2">
+    <%= page_entries_info @items %>
+  </div>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
+    <% @items.each do |item| %>
+      <div class="col">
+        <%= turbo_frame_tag "checkout_item_in_collection#{item.id}" do %>
+          <%= render partial: "item_card", locals: { item: item } %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  <%= paginate @items %>
+</div>

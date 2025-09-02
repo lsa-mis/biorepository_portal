@@ -1,0 +1,74 @@
+# == Schema Information
+#
+# Table name: identifications
+#
+#  id                         :bigint           not null, primary key
+#  class_name                 :string
+#  current                    :boolean          default(FALSE), not null
+#  date_identified            :string
+#  family                     :string
+#  genus                      :string
+#  identification_remarks     :text
+#  identified_by              :string
+#  infraspecific_epithet      :string
+#  kingdom                    :string
+#  order_name                 :string
+#  phylum                     :string
+#  scientific_name            :string
+#  scientific_name_authorship :string
+#  specific_epithet           :string
+#  taxon_rank                 :string
+#  type_status                :string
+#  vernacular_name            :string
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  item_id                    :bigint           not null
+#
+# Indexes
+#
+#  index_identifications_on_item_id  (item_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (item_id => items.id) ON DELETE => cascade
+#
+class Identification < ApplicationRecord
+  belongs_to :item
+
+  ransacker :kingdom_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.kingdom)')
+  end
+
+  ransacker :phylum_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.phylum)')
+  end
+
+  ransacker :class_name_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.class_name)')
+  end
+
+  ransacker :order_name_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.order_name)')
+  end
+
+  ransacker :family_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.family)')
+  end
+
+  ransacker :genus_case_insensitive, type: :string do
+    Arel.sql('lower(identifications.genus)')
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    [
+      "class_name_case_insensitive", "date_identified", "family_case_insensitive", "genus_case_insensitive", "identification_remarks",
+      "identified_by", "infraspecific_epithet", "kingdom_case_insensitive", "order_name_case_insensitive",
+      "phylum_case_insensitive", "scientific_name", "scientific_name_authorship",
+      "specific_epithet", "taxon_rank", "type_status", "vernacular_name"
+    ]
+  end
+  
+  def self.ransackable_associations(auth_object = nil)
+    [ :item ]
+  end
+end

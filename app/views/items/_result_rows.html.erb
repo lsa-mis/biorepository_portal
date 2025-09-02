@@ -1,0 +1,9 @@
+<div class="my-2 ml-4">
+  <%= page_entries_info @items %> from <%= @collections %>
+</div>
+<div class="accordion" id="accordionPanelsStayOpenExample">
+  <% @items.each_with_index do |item, index| %>
+    <%= render partial: "item_row", locals: { item: item, index: index } %>
+  <% end %>
+</div>
+<%= paginate @items %>

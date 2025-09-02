@@ -1,25 +1,29 @@
-# README
+# LSA SpaceReady
+![](https://img.shields.io/badge/Ruby%20Version-3.3.6-red) ![](https://img.shields.io/badge/Rails%20Version-8.0.0-red) ![](https://img.shields.io/badge/Postgresql%20Version-14.10-red)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+The finished application allows researchers and public health professionals to search UMMZ collections and request biological specimens. 
 
-Things you may want to cover:
+## Getting Started (Mac)
 
-* Ruby version
+### Prerequisites
+- postgresql (correct version and running without errors)
+- This application uses University of Michigan Shibboleth + DUO authentication
 
-* System dependencies
+To get a local copy up and running clone the repo, navigate to the local instance and start the application
+```
+git clone git@github.com:lsa-mis/biorepository_portal.git
+cd biorepository_portal
+bundle
+bin/rails db:create
+bin/rails db:migrate
+bin/dev
+```
 
-* Configuration
+  ## Authentication
+  - Omniauth-SAML
+    - Shibboleth + DUO
+    - Devise
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-# biorepository_portal
+## Support / Questions
+  Please email the [LSA W&ADS Rails Team](mailto:lsa-was-rails-devs@umich.edu)

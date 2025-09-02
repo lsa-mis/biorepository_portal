@@ -1,0 +1,66 @@
+// app/assets/stylesheets/_custom.scss or app/javascript/stylesheets/_custom.scss
+// After editing this file:
+// run $ rails assets:clobber
+// restart the server
+
+// Define your custom colors
+$um_blue: #00274c;
+$um_maize: #ffcb05;
+$bone: #E4DCD3;
+$rigorous_red: #C61A1D;
+$michigan_summer_blue: #005499;
+$lsa_success: #00664D;
+$lsa_cyan: #00AEEF;
+$flash-notice-color: #DBFFDD;
+$flash-alert-color:  #FFE1DE;
+$accordion: #F2F2F2;
+
+// Import Bootstrap's functions and variables
+// @import "bootstrap/scss/functions";
+// @import "bootstrap/scss/variables";
+
+// Override Bootstrap's default variables
+$theme-colors: (
+  "um-blue":    $um_blue,
+  "bone":       $bone,
+  "primary":    $um_blue,
+  "secondary":  $michigan_summer_blue,
+  "success":    $lsa_success,
+  "info":       $lsa_cyan,
+  "warning":    $um_maize,
+  "danger":     $rigorous_red,
+  "accordion":  $accordion,
+   // Add more custom colors or override existing ones here
+);
+
+$pagination-color: $um_blue; // Text color
+$pagination-bg: $body-bg; // Background color
+$pagination-border-color: $border-color; // Slightly darker border color
+
+$pagination-hover-color: white;
+$pagination-hover-bg: $um_blue; 
+$pagination-hover-border-color: $border-color;
+
+$pagination-active-color:           white;
+$pagination-active-bg:              $um_blue;
+$pagination-active-border-color:    $border-color;
+
+// Optionally, override other Bootstrap variables here
+// Extend the $spacers map
+$spacers: map-merge(
+  (
+    "6": 4rem,
+    "7": 5rem,
+    "8": 6rem,
+    "9": 7rem,
+    // more custom spacers as needed
+  ),
+  $spacers
+);
+
+// Custom focus ring for accordion buttons
+.custom-focus-ring:focus, .custom-focus-ring:focus-visible {
+  outline: 2px solid #0d6efd !important;
+  outline-offset: 2px !important;
+  border-radius: 0.375rem !important;
+}

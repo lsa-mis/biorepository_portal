@@ -1,0 +1,49 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="mt-0 mb-0">Advanced Search</h1>
+
+  <%= link_to "Clear Filters", search_items_path(switch_view: @view), class: "btn btn-outline-secondary" %>
+</div>
+
+<div class="m-2">
+  <!-- Strings - use _i_cont (contains) or _eq (exact match) -->
+  <div class="mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h2>Select Collections:</h2>
+      <%= f.submit "Search", class: "btn btn-primary" %>
+    </div>
+    <div class="btn-group btn-group-toggle flex-wrap" data-toggle="buttons">
+      <% @all_collections.each do |collection| %>
+        <label class="btn btn-outline-primary m-1">
+          <%= f.check_box :collection_id_in, { multiple: true, id: "collection_#{collection.id}", autocomplete: "off", "data-action": "search#submit" }, collection.id, nil %>
+          <%= collection.division %>
+        </label>
+      <% end %>
+    </div>
+  </div>
+  <%= render partial: 'layouts/advance_filters', locals: { f: f } %>
+</div>
+
+<div>
+  <%= f.submit "Search", class: "btn btn-primary" %>
+</div>
+
+<%# JavaScript part %>
+<script>
+  function filterCheckboxes(containerId, filterText) {
+    const container = document.getElementById(containerId);
+    const checkboxes = container.querySelectorAll(".form-check");
+
+    const lowerFilter = filterText.toLowerCase();
+
+    checkboxes.forEach((checkbox) => {
+      const label = checkbox.textContent.toLowerCase();
+      if (label.includes(lowerFilter)) {
+        checkbox.style.display = "";
+      } else {
+        checkbox.style.display = "none";
+      }
+    });
+  }
+</script>
+
+

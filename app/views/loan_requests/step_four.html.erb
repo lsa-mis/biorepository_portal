@@ -1,0 +1,15 @@
+<%= render "loan_requests/steps", step: 4 %>
+
+<!-- Step 4: Shipment -->
+<%= form_with url: step_five_path, method: :get do |form| %>
+
+  <div>
+    <%= render "profiles/shipment_selection", addresses: @addresses %>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center my-4">
+    <%= link_to "Previous", step_three_path, class: "btn btn-primary" %>
+    <%= form.submit "Next", class: "btn btn-primary" %>
+
+  </div>
+<% end %>

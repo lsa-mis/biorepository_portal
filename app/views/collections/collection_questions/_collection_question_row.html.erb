@@ -1,0 +1,22 @@
+<tr id="<%= dom_id(collection_question) %>">
+  <td class="text-start align-middle">
+    <div class="d-flex gap-1 justify-content-start align-items-center">
+      <%= button_to "Up", move_up_collection_collection_question_path(@collection, collection_question), method: :patch, class: "btn btn-sm btn-outline-secondary me-1" %>
+      <%= button_to "Down", move_down_collection_collection_question_path(@collection, collection_question), method: :patch, class: "btn btn-sm btn-outline-secondary" %>
+    </div>
+  </td>
+  <td class="text-start align-middle"><%= collection_question.position %></td>
+  <td class="text-start align-middle"><%= link_to collection_question.question, collection_collection_question_path(@collection, collection_question), class: "link_to", 'aria-label': "view_#{collection_question.id}", data: { turbo_frame: "_top" } %></td>
+  <td class="text-start align-middle"><%= collection_question.question_type.titleize %></td>
+  <td class="text-start align-middle"><%= show_boolean(collection_question.required) %></td>
+  <td class="text-start align-middle">
+    <%= link_to edit_collection_collection_question_path(@collection, collection_question), 'aria-label': "edit_#{collection_question.id}", data: { turbo_frame: "_top" } do %>
+      <i class="bi bi-pencil-square text-primary"></i>
+    <% end %>
+  </td>
+  <td class="text-start align-middle">
+    <%= link_to collection_collection_question_path(@collection, collection_question), 'aria-label': "delete_#{collection_question.id}", data: { turbo_confirm: "Are you sure you want to delete this question?", turbo_method: :delete } do %>
+      <i class="bi bi-trash-fill text-danger"></i>
+    <% end %>
+  </td>
+</tr>

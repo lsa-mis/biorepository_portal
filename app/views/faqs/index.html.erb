@@ -1,0 +1,56 @@
+<% content_for :title, "FAQs" %>
+<% is_preview = params[:preview].present? %>
+<%= render "layouts/announcement", is_preview: is_preview, location: "faq" %>
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
+  <h1>Frequently Asked Questions</h1>
+
+  <% if is_admin? %>
+    <div class="mt-2 text-end">
+      <%= link_to "Reorder FAQ", reorder_faq_path, class: "btn btn-primary mb-3" %>
+      <%= link_to "New FAQ", new_faq_path, class: "btn btn-primary mb-3" %>
+    </div>
+  <% end %>
+</div>
+
+<div id="faqs">
+  <div class="py-2 accordion" id="faqAccordion">
+    <% @faqs.each do |faq| %>
+      <div class="accordion-item" id="<%= dom_id faq %>">
+        <h2 class="accordion-header" id="heading-<%= faq.id %>">
+          <button class="accordion-button collapsed custom-focus-ring"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapse-<%= faq.id %>"
+                  aria-expanded="false"
+                  aria-controls="collapse-<%= faq.id %>">
+            <%= faq.question %>
+          </button>
+        </h2>
+        <div id="collapse-<%= faq.id %>"
+            class="accordion-collapse collapse"
+            aria-labelledby="heading-<%= faq.id %>">
+          <div class="accordion-body">
+            <%= faq.answer %></p>
+            <% if is_admin? %>
+              <div class="mt-3 d-flex justify-content-end gap-2">
+                <%= link_to "Edit", edit_faq_path(faq), class: "btn btn-secondary btn-sm" %>
+                <%= button_to "Delete", faq,
+                              method: :delete,
+                              data: { turbo_confirm: "Are you sure?" },
+                              class: "btn btn-danger btn-sm" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+
+<div>
+  <div class="bg-warning p-4 rounded-3 shadow">
+    <%= render "layouts/info_request_bar" %>
+  </div>
+</div>
+</div>

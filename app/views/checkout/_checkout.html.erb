@@ -1,0 +1,26 @@
+<%= turbo_frame_tag "checkout" do %>
+  <div class="">
+    <% is_preview = params[:preview].present? %>
+      <%= render "layouts/announcement", is_preview: is_preview, location: "checkout" %>
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+        <h1>Checkout</h1>
+        <% if @checkout.requestables.available.exists? %>
+          <%= link_to new_loan_request_path, class: "btn btn-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
+            <i class="bi bi-envelope"></i> Send Loan Request
+          <% end %>
+        <% end %>
+      </div>
+      <% if @checkout.requestables.active.exists? %>
+        <%= render "checkout/requestables" %>
+      <% else %>
+        <p>Your checkout is empty</p>
+      <% end %>
+
+      <h2 class="py-2">Saved for Later</h2>
+      <% if @checkout.requestables.saved_for_later.exists? %>
+          <%= render "checkout/saved_list" %>
+      <% else %>
+        <p class="mb-4">You don't have any preparations saved for later.</p> 
+      <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,24 @@
+<div>
+  <%= form_with(model: user, url: profile_path, method: :patch) do |form| %>
+    <div class="mb-3">
+      <%= form.label :first_name, "First Name" %>
+      <%= form.text_field :first_name, class: "form-control", required: true %>
+    </div>
+    <div class="mb-3">
+      <%= form.label :last_name, "Last Name" %>
+      <%= form.text_field :last_name, class: "form-control", required: true %>
+    </div>
+    <div class="mb-3">
+      <%= form.label :affiliation, "Affiliation" %>
+      <%= form.text_field :affiliation, class: "form-control" %>
+    </div>
+    <div class="mb-3">
+      <%= form.label :orcid, "ORCID" %>
+      <%= form.text_field :orcid, class: "form-control" %>
+    </div>
+    <div class="mb-3">
+      <%= form.submit "Update Profile", class: "btn btn-primary" %>
+      <%= link_to "Cancel", profile_path, class: "link_to" %>
+    </div>
+  <% end %>
+</div>

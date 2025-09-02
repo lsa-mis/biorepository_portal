@@ -1,0 +1,16 @@
+<div class="col-12">
+  <%= link_to collection_path(collection), class: "text-decoration-none", data: { turbo_frame: "_top" } do %>
+
+    <div class="collection-card position-relative overflow-hidden rounded-3 text-white h-100 shadow-sm"
+         style="<%= "background-image: url('#{url_for(collection.image)}');" if collection.image.attached? %>">
+
+      <div class="collection-overlay">
+        <div class="w-100 h-100 d-flex flex-column justify-content-center align-items-center text-center p-4">
+          <h3 class="fw-bold mb-3"><%= collection.division %></h3>
+          <p class="fs-6 fw-bold text-white"><%= collection.short_description %></p>
+        </div>
+      </div>
+
+    </div>
+  <% end %>
+</div>

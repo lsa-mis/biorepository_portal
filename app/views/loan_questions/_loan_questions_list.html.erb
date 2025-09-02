@@ -1,0 +1,27 @@
+<%= turbo_frame_tag 'loan_questions_list' do %>
+  <div class="table-responsive">
+    <table class="table text-center mt-4">
+      <thead class="table-group-divider">
+      <tr>
+        <% if is_super_admin? %>
+          <th scope="col" class="text-start">Reorder</th>
+        <% end %>
+        <th scope="col" class="text-start">Position</th>
+        <th scope="col" class="text-start">Question</th>
+        <th scope="col" class="text-start">Question Type</th>
+        <th scope="col" class="text-start">Required</th>
+        <% if is_super_admin? %>
+          <th scope="col" class="text-start">Edit</th>
+          <th scope="col" class="text-start">Delete</th>
+        <% end %>
+      </tr>
+      </thead>
+      <tbody class="table-group-divider" id="loan_questions">
+      
+        <% @loan_questions.each do |loan_question| %>
+          <%= render 'loan_question_row', loan_question: loan_question %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

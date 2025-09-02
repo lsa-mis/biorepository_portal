@@ -1,0 +1,42 @@
+<%= form_with url: update_loan_answer_path(loan_question), method: :patch, multipart: true do %>
+  <div class="card p-3">
+    <div class="card-body">
+      <label class="form-label"><%= loan_question.question %></label>
+      <% if loan_question.required? %>
+        <span class="text-danger">*</span>
+      <% end %>
+
+      <% case loan_question.question_type %>
+      <% when "text" %>
+        <%= text_area_tag "loan_answers[#{loan_question.id}]", existing_answer&.answer&.to_plain_text&.strip, class: "form-control", rows: 3, style: "resize: vertical;" %>
+
+      <% when "checkbox" %>
+        <p>Pick one or more options below</p>
+        <% loan_question.options.each do |option| %>
+          <div class="form-check ms-3">
+            <%= check_box_tag "loan_answers[#{loan_question.id}][]",
+                              option.value,
+                              existing_answer&.answer&.to_plain_text&.include?(option.value) %>
+            <%= label_tag nil, option.value, class: "form-check-label" %>
+          </div>
+        <% end %>
+
+      <% when "dropdown" %>
+        <%= select_tag "loan_answers[#{loan_question.id}]",
+                       options_for_select(loan_question.options.map(&:value),
+                                          existing_answer&.answer&.to_plain_text&.strip),
+                       class: "form-select", prompt: "Select..." %>
+
+      <% when "attachment" %>
+        <%= file_field_tag "loan_answers[#{loan_question.id}]", accept: ".pdf", class: "form-control" %>
+
+      <% else %>
+        <div class="alert alert-warning mt-2">
+          Unsupported question type: <%= loan_question.question_type %>
+        </div>
+      <% end %>
+
+      <%= submit_tag "Save", class: "btn btn-primary mt-3" %>
+    </div>
+  </div>
+<% end %>

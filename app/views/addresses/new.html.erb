@@ -1,0 +1,21 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h1 class="card-title mb-4 text-center">New Address</h1>
+
+          <%= render 'form', address: @address %>
+        </div>
+      </div>
+
+      <div class="text-center mt-3">
+        <% if params[:loan_request] %>
+          <%= link_to "← Back to loan request", step_five_path, class: "text-decoration-none" %>
+        <% else %>
+          <%= link_to "← Back to addresses", addresses_path, class: "text-decoration-none" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

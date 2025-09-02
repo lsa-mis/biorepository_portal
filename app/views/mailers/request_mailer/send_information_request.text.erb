@@ -1,0 +1,9 @@
+BioRepository Information Request
+Submitted by <%= @user.name_with_email %>
+<%= strip_tags(@message) %>
+<% if @checkout_items.present? %>
+  Items from Checkout:
+  <% @checkout_items.each do |item| %>
+    <%= item %> <br>
+  <% end %>
+<% end %>

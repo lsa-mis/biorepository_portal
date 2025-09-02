@@ -1,0 +1,27 @@
+# == Schema Information
+#
+# Table name: collections
+#
+#  id                :bigint           not null, primary key
+#  admin_group       :string
+#  division          :string
+#  division_page_url :string
+#  link_to_policies  :string
+#  short_description :text
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#
+# Indexes
+#
+#  index_collections_on_division  (division)
+#
+FactoryBot.define do
+  factory :collection do
+    division { "MPABI" }
+    admin_group { "admin_group" }
+    short_description { "MyText" }
+    long_description { "MyText" }
+    division_page_url { "MyString" }
+    link_to_policies { "MyString" }
+  end
+end

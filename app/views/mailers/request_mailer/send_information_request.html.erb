@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <p>BioRepository Information Request</p>
+    <p>
+      Submitted by <%= @user.name_with_email %>
+    </p>
+    <p>
+      <%= raw(@message) %>
+    </p>
+    <% if @checkout_items.present? %>
+      <p>
+        <b>Checkout Items:</b>
+      </p>
+      <p>
+        <% @checkout_items.each do |item| %>
+          <%= item %> <br>
+        <% end %>
+      </p>
+    <% end %>
+  </body>
+</html>
