@@ -15,7 +15,7 @@
 #
 FactoryBot.define do
  factory :loan_question do
-   question { "How did you hear about us?" }
+   question { Faker::Lorem.question }
    question_type { :text }
 
 
