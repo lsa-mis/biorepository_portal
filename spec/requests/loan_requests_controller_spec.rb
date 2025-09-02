@@ -75,7 +75,7 @@ RSpec.describe LoanRequestsController, type: :request do
   end
 
   describe 'GET #new' do
-    context 'when user has complete information' do
+    context 'when user has incomplete information' do
       before do
         mock_login(incomplete_user)
       end
