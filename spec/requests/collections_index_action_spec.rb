@@ -1,7 +1,5 @@
 require 'rails_helper'
 
-SUPER_ADMIN_LDAP_GROUP = "lsa-biorepository-super-admins"
-
 RSpec.describe Collection, type: :request do
 
   context 'index action' do
@@ -26,7 +24,7 @@ RSpec.describe Collection, type: :request do
       before do
         uniqname = get_uniqname(user.email)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
-        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(false)
+        allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
         allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
         mock_login(user)
       end
