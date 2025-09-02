@@ -264,11 +264,6 @@ class LoanRequestsController < ApplicationController
         @missing_fields_alert = "Add a Shipping address."
         return true
       end
-
-      # unless current_user.addresses.present?
-      #   @missing_fields_alert = "Add a Shipping address."
-      #   return true
-      # end
     end
 
     def attach_attachments_from_answers(answers, prefix_resolver)

@@ -5,17 +5,10 @@ RSpec.describe LoanRequestsController, type: :request do
   let!(:collection) { FactoryBot.create(:collection) }
 
   let!(:incomplete_user) { FactoryBot.create(:user, first_name: nil, last_name: 'Doe', affiliation: 'Test University') }
-  # let(:loan_request) { FactoryBot.create(:loan_request, user: user) }
-  # let(:address) { FactoryBot.create(:address, user: user) }
   let!(:loan_question) { FactoryBot.create(:loan_question, required: true) }
   let!(:collection_question) { FactoryBot.create(:collection_question, collection: collection, required: true) }
   let!(:checkout) { FactoryBot.create(:checkout, user: user) }
   let!(:requestable) { FactoryBot.create(:requestable, checkout: checkout, preparation: FactoryBot.create(:preparation, item: FactoryBot.create(:item, collection: collection))) }
-
-
-  # before do
-  #   mock_login(user)
-  # end
 
   describe 'POST #enable' do
     let!(:admin_user) { FactoryBot.create(:user) }
@@ -291,8 +284,6 @@ RSpec.describe LoanRequestsController, type: :request do
       let!(:optional_question) { FactoryBot.create(:loan_question, required: false) }
 
       it 'prevents progression when required questions are not answered' do
-        # Create a required question but no answer
-        # required_question
 
         get step_three_path
         expect(response).to redirect_to(step_two_path)
@@ -301,7 +292,6 @@ RSpec.describe LoanRequestsController, type: :request do
 
       it 'allows progression when required questions are answered but optional ones are not' do
         FactoryBot.create(:loan_answer, user: user, loan_question: required_question, answer: 'Valid answer')
-        # optional_question # create but don't answer
         
         get step_three_path
         expect(response).to have_http_status(:success)
