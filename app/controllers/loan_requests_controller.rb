@@ -9,12 +9,14 @@ class LoanRequestsController < ApplicationController
 
   def show
     @loan_request = LoanRequest.find(params[:id])
+    authorize @loan_request
   end
 
   def new
     @loan_questions = LoanQuestion.all
     @loan_request = LoanRequest.new
     @user = current_user
+    authorize @loan_request
   end
 
   def step_two
@@ -28,17 +30,18 @@ class LoanRequestsController < ApplicationController
     end
 
     @loan_answers = get_loan_answers
+    authorize LoanRequest
   end
 
   def step_three
     @loan_answers = get_loan_answers
-
     missing_loan_answers = check_missing_answers(@loan_answers)
     if missing_loan_answers
       flash[:alert] = "Please answer all loan questions."
       redirect_to step_two_path and return
     end
     @collection_answers = build_collection_answers(@checkout, current_user)
+    authorize LoanRequest
   end
 
   def step_four
@@ -50,6 +53,7 @@ class LoanRequestsController < ApplicationController
       redirect_to step_three_path and return
     end
     @addresses = current_user.addresses.order(primary: :desc, created_at: :asc)
+    authorize LoanRequest
   end
 
   def step_five
@@ -60,6 +64,7 @@ class LoanRequestsController < ApplicationController
       redirect_to step_four_path and return
     end
     @checkout_items = get_checkout_items_with_ids
+    authorize LoanRequest
   end
 
   def send_loan_request
@@ -83,6 +88,7 @@ class LoanRequestsController < ApplicationController
     # Use default email from ApplicationMailer if no collection-specific emails found
     emails = [ApplicationMailer.default[:to]] unless emails.present?
     @loan_request = LoanRequest.new
+    authorize @loan_request
     @loan_request.user = current_user
     @loan_request.send_to = emails.join(', ')
     @loan_request.checkout_items = @checkout_items
@@ -251,15 +257,18 @@ class LoanRequestsController < ApplicationController
       if params[:shipping_address_id].present?
         @shipping_address = Address.find(params[:shipping_address_id])
         return false
-      else
+      elsif current_user.addresses.present?
         @missing_fields_alert = "Select an address to ship to."
         return true
-      end
-
-      unless current_user.addresses.present?
+      else
         @missing_fields_alert = "Add a Shipping address."
         return true
       end
+
+      # unless current_user.addresses.present?
+      #   @missing_fields_alert = "Add a Shipping address."
+      #   return true
+      # end
     end
 
     def attach_attachments_from_answers(answers, prefix_resolver)
