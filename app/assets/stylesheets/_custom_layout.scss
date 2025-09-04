@@ -208,6 +208,16 @@ svg.wh6 {
   height: 24px;
 }
 
+.btn-link {
+  color: $um_blue !important;
+  text-decoration: none !important; /* Ensures no underline by default */
+}
+
+.btn-link:hover {
+  text-decoration: underline !important; /* Adds underline on hover */
+  cursor: pointer;
+}
+
 .link_to {
   color: $um_blue;
   text-decoration: none; /* Ensures no underline by default */
