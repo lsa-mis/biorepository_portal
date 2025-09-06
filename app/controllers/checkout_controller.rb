@@ -13,7 +13,7 @@ class CheckoutController < ApplicationController
     @checkout.requestables.includes(:preparation).each do |requestable|
       preparation = requestable.preparation
       if preparation.count == 0
-        @checkout.unavailables << Unavailable.find_or_create_by(item: preparation.item, checkout: @checkout, preparation_type: preparation.prep_type)
+        @checkout.unavailables << Unavailable.create(item: preparation.item, checkout: @checkout, preparation_type: preparation.prep_type)
         requestable.destroy
         alert += "#{preparation.prep_type} "
       else
