@@ -15,10 +15,10 @@
     <% else %>
       <p>Your checkout is empty</p>
     <% end %>
-    <% if @checkout.unavalables.exists? %>
+    <% if @checkout.unavailables.exists? %>
       <h2 class="py-2">Temporarily unavailable</h2>
       <p class="mb-4 alert alert-warning">Preparations for the following items are temporarily unavailable. Please click on the item's name to check when preparations will be available.</p>
-      <%= render "checkout/unavalables" %>
+      <%= render "checkout/unavailables" %>
     <% end %>
 
     <h2 class="py-2">Saved for Later</h2>

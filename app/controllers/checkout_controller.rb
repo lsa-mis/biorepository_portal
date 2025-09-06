@@ -13,16 +13,16 @@ class CheckoutController < ApplicationController
     @checkout.requestables.includes(:preparation).each do |requestable|
       preparation = requestable.preparation
       if preparation.count == 0
-        @checkout.unavalables << Unavalable.find_or_create_by(item: preparation.item, checkout: @checkout, preparation_type: preparation.prep_type)
+        @checkout.unavailables << Unavailable.find_or_create_by(item: preparation.item, checkout: @checkout, preparation_type: preparation.prep_type)
         requestable.destroy
         alert += "#{preparation.prep_type} "
       else
         requestable.update(count: preparation.count) if preparation.count < requestable.count
       end
     end
-    @checkout.unavalables.each do |unavalable|
-      if Preparation.find_by(item: unavalable.item, prep_type: unavalable.preparation_type).count > 0
-        unavalable.destroy
+    @checkout.unavailables.each do |unavailable|
+      if Preparation.find_by(item: unavailable.item, prep_type: unavailable.preparation_type).count > 0
+        unavailable.destroy
       end
     end
     flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed." if alert.present?
@@ -194,7 +194,7 @@ class CheckoutController < ApplicationController
   end
 
   def remove_unavailable
-    Unavalable.find(params[:id])&.destroy
+    Unavailable.find(params[:id])&.destroy
     flash.now[:notice] = "Item removed from checkout."
     respond_to do |format|
       format.turbo_stream do
