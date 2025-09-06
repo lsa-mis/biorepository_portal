@@ -70,7 +70,7 @@ class LoanRequestsController < ApplicationController
   def send_loan_request
     @shipping_address = Address.find(params[:shipping_address_id])
 
-    if @checkout.nil? || @checkout.requestables.available.empty?
+    if @checkout.nil? || @checkout.requestables.active.empty?
       flash[:alert] = "No items in checkout."
       redirect_to root_path
       return

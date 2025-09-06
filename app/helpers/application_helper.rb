@@ -140,7 +140,7 @@ module ApplicationHelper
   def get_checkout_items
     checkout_items = []
     collection_ids = []
-    @checkout.requestables.available.each do |requestable|
+    @checkout.requestables.active.each do |requestable|
       preparation = requestable.preparation
       item = preparation.item
       checkout_item = ""
@@ -160,7 +160,7 @@ module ApplicationHelper
 
   def get_checkout_items_with_ids
     checkout_items = []
-    @checkout.requestables.available.each do |requestable|
+    @checkout.requestables.active.each do |requestable|
       preparation = requestable.preparation
       item = preparation.item
       checkout_item = ""
