@@ -58,7 +58,9 @@ class Item < ApplicationRecord
   has_many :preparations, dependent: :destroy
 
   def name
-    name = "#{current_identification&.scientific_name&.humanize}"
+    name = ""
+    name = self.catalog_number + " - " if self.catalog_number.present?
+    name += "#{current_identification&.scientific_name&.humanize}"
     if current_identification&.vernacular_name.present?
       name += " [#{current_identification&.vernacular_name.humanize}]"
     end
@@ -66,9 +68,7 @@ class Item < ApplicationRecord
   end
 
   def display_name
-    display_name = ""
-    display_name = self.catalog_number + " - " if self.catalog_number.present?
-    display_name += self.name
+    display_name = self.name
     display_name += " - " + self.preparations.map(&:prep_type).join(", ") if self.preparations.any?
     display_name
   end

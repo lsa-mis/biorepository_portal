@@ -9,9 +9,23 @@ class CheckoutController < ApplicationController
  
   def show
     @render_checkout = false
+    alert = ""
     @checkout.requestables.includes(:preparation).each do |requestable|
-      requestable.update(count: requestable.preparation.count) if requestable.preparation.count < requestable.count
+      preparation = requestable.preparation
+      if preparation.count == 0
+        @checkout.unavailables << Unavailable.find_or_create_by(item: preparation.item, checkout: @checkout, preparation_type: preparation.prep_type)
+        requestable.destroy
+        alert += "#{preparation.prep_type} "
+      else
+        requestable.update(count: preparation.count) if preparation.count < requestable.count
+      end
     end
+    @checkout.unavailables.each do |unavailable|
+      if Preparation.find_by(item: unavailable.item, prep_type: unavailable.preparation_type).count > 0
+        unavailable.destroy
+      end
+    end
+    flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed." if alert.present?
   end
 
   def add
@@ -172,6 +186,21 @@ class CheckoutController < ApplicationController
         render turbo_stream: [turbo_stream.replace('checkout',
                                                    partial: 'checkout/checkout',
                                                    locals: { checkout: @checkout }),
+                              turbo_stream.update('total', partial: 'checkout/total'),
+                              turbo_stream.update('total1', partial: 'checkout/total'),
+                              turbo_stream.update('flash', partial: 'layouts/flash')]
+      end
+    end
+  end
+
+  def remove_unavailable
+    Unavailable.find(params[:id])&.destroy
+    flash.now[:notice] = "Item removed from checkout."
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [turbo_stream.replace('checkout',
+                                                  partial: 'checkout/checkout',
+                                                  locals: { checkout: @checkout }),
                               turbo_stream.update('total', partial: 'checkout/total'),
                               turbo_stream.update('total1', partial: 'checkout/total'),
                               turbo_stream.update('flash', partial: 'layouts/flash')]
