@@ -1,0 +1,25 @@
+<% @checkout.unavalables.each do |unavalable| %>
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4 text-start align-middle">
+          <strong>Collection:</strong> <%= unavalable.item.collection.division %>
+        </div>
+        <div class="col-md-4 text-start align-middle">
+          <%= link_to unavalable.item.name, item_path(unavalable.item), class: "link_to", data: { turbo_frame: "_top" } %>
+        </div>
+        <div class="col-md-4 text-start align-middle">
+          <%= unavalable.preparation_type %>
+        </div>
+        <div class="col-md-4 text-start align-middle">
+          <%= form_with url: checkout_remove_unavailable_path do |form| %>
+            <%= form.hidden_field :id, value: unavalable.id %>
+            <button type="submit" class="btn btn-link">
+              <i class="bi bi-trash-fill text-danger"></i> Remove
+            </button>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

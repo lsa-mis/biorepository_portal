@@ -18,6 +18,8 @@
 class Checkout < ApplicationRecord
   has_many :requestables, dependent: :destroy
   has_many :preparations, through: :requestables
+  has_many :unavalables, dependent: :destroy
+  has_many :items, through: :unavalables
 
   belongs_to :user, optional: true
 
