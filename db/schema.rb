@@ -318,16 +318,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_06_202027) do
     t.index ["item_id"], name: "index_unavailables_on_item_id"
   end
 
-  create_table "unavalables", force: :cascade do |t|
-    t.bigint "item_id", null: false
-    t.bigint "checkout_id", null: false
-    t.string "preparation_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["checkout_id"], name: "index_unavalables_on_checkout_id"
-    t.index ["item_id"], name: "index_unavalables_on_item_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -374,6 +364,4 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_06_202027) do
   add_foreign_key "requestables", "preparations", on_delete: :cascade
   add_foreign_key "unavailables", "checkouts"
   add_foreign_key "unavailables", "items", on_delete: :cascade
-  add_foreign_key "unavalables", "checkouts"
-  add_foreign_key "unavalables", "items"
 end
