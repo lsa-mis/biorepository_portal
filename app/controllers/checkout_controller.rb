@@ -21,7 +21,7 @@ class CheckoutController < ApplicationController
       end
     end
     @checkout.unavailables.each do |unavailable|
-      if Preparation.find_by(item: unavailable.item, prep_type: unavailable.preparation_type).count > 0
+      if Preparation.find_by(item: unavailable.item, prep_type: unavailable.preparation_type)&.count > 0
         unavailable.destroy
       end
     end
