@@ -195,7 +195,7 @@ class CheckoutController < ApplicationController
   end
 
   def remove_unavailable
-    autorize @checkout
+    authorize @checkout
     Unavailable.find(params[:id])&.destroy
     flash.now[:notice] = "Item removed from checkout."
     respond_to do |format|
