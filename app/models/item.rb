@@ -56,6 +56,8 @@ class Item < ApplicationRecord
   has_many :identifications, dependent: :destroy
   has_one :current_identification, -> { where(current: true) }, class_name: 'Identification', foreign_key: 'item_id'
   has_many :preparations, dependent: :destroy
+  has_many :unavailables
+  has_many :checkouts, through: :unavailables
 
   def name
     name = ""
