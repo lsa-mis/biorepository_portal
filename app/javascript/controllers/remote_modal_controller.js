@@ -5,6 +5,22 @@ export default class extends Controller {
     console.log("RemoteModalController connected")
     // Use global bootstrap object loaded via CDN
     this.modal = new window.bootstrap.Modal(this.element)
+    
+    // Add event listener for before the modal is hidden to handle focus
+    this.element.addEventListener('hide.bs.modal', this.onModalHiding.bind(this))
+  }
+
+  disconnect() {
+    this.element.removeEventListener('hide.bs.modal', this.onModalHiding.bind(this))
+  }
+
+  onModalHiding(event) {
+    // If the close button or any element inside the modal has focus, 
+    // blur it to prevent aria-hidden accessibility violation
+    const activeElement = document.activeElement
+    if (activeElement && this.element.contains(activeElement)) {
+      activeElement.blur()
+    }
   }
 
   hideBeforeRender(event) {
@@ -34,16 +50,6 @@ export default class extends Controller {
   }
 
   manualHide() {
-    // const modalEl = this.element
-    // modalEl.classList.remove("show")
-    // modalEl.setAttribute("aria-hidden", "true")
-    // modalEl.style.display = "none"
-
-    // const backdrop = document.querySelector(".modal-backdrop")
-    // if (backdrop) backdrop.remove()
-
-    // document.body.classList.remove("modal-open")
-    // document.body.style = ""
     this.modal.hide()
   }
 }
