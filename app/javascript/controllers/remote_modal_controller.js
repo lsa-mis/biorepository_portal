@@ -34,16 +34,6 @@ export default class extends Controller {
   }
 
   manualHide() {
-    // const modalEl = this.element
-    // modalEl.classList.remove("show")
-    // modalEl.setAttribute("aria-hidden", "true")
-    // modalEl.style.display = "none"
-
-    // const backdrop = document.querySelector(".modal-backdrop")
-    // if (backdrop) backdrop.remove()
-
-    // document.body.classList.remove("modal-open")
-    // document.body.style = ""
     this.modal.hide()
   }
 }
