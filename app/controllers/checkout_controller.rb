@@ -103,7 +103,7 @@ class CheckoutController < ApplicationController
   end
 
   def remove
-    authorize @checkout
+    authorize @checkout if current_user
     Requestable.find(params[:id])&.destroy
     flash.now[:notice] = "Preparation removed from checkout."
     respond_to do |format|
@@ -195,7 +195,7 @@ class CheckoutController < ApplicationController
   end
 
   def remove_unavailable
-    authorize @checkout
+    authorize @checkout if current_user
     Unavailable.find(params[:id])&.destroy
     flash.now[:notice] = "Item removed from checkout."
     respond_to do |format|
