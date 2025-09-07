@@ -14,11 +14,18 @@
             <% else %>
               <%= link_to edit_loan_answer_path(question, format: :turbo_stream),
                           data: {
+                            controller: "modal-link",
                             turbo_frame: "modal_content_frame",
                             bs_toggle: "modal",
-                            bs_target: "#sharedModal"
-                          },aria: { label: "Edit #{question}" },
-                            title: "Edit #{question}" do %>
+                            bs_target: "#sharedModal",
+                            action: "click->modal-link#click keydown->modal-link#keydown",
+                            modal_link_turbo_frame_value: "modal_content_frame",
+                            modal_link_modal_target_value: "#sharedModal"
+                          },
+                          aria: { label: "Edit #{question}" },
+                          title: "Edit #{question}",
+                          role: "button",
+                          tabindex: "0" do %>
                   <i class="bi bi-pencil-square text-primary" aria-hidden="true"></i>
               <% end %>
             <% end %>
