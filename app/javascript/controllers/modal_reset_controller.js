@@ -5,7 +5,9 @@ export default class extends Controller {
     // Hide the modal on connect (page load or Turbo render)
     if (this.element && window.bootstrap) {
       const modal = window.bootstrap.Modal.getInstance(this.element)
-      modal.hide()
+      if (modal) {
+        modal.hide()
+      }
     } else if (this.element) {
       // Fallback: force hide via class removal
       if (document.activeElement) {
