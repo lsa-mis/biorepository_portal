@@ -16,8 +16,8 @@ class CheckoutController < ApplicationController
       if preparation.present?
         if preparation.count == 0
           @checkout.unavailables << Unavailable.create(item: item, checkout: @checkout, preparation_type: requestable.preparation_type)
-          requestable.destroy
           alert += "#{requestable.preparation_type} "
+          requestable.destroy
         else
           requestable.update(count: preparation.count) if preparation.count < requestable.count
         end
