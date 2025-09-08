@@ -13,11 +13,6 @@
         <div class="col-md-4 text-start align-middle">
           <strong>Preparation Type:</strong> <%= preparation.display_name %>
         </div>
-        <% if preparation.unavailable? %>
-        <div class="col-md-4 text-start align-middle mb-2">
-          <div class="text-muted">Temporarily unavailable</div>
-        </div>
-        <% end %>
         <div class="col-md-4 text-start align-middle">
           <%= form_with url: checkout_remove_path do |form| %>
             <%= form.hidden_field :id, value: requestable.id %>

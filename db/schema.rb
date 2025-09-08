@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_06_202027) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_08_171713) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -298,13 +298,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_06_202027) do
   end
 
   create_table "requestables", force: :cascade do |t|
-    t.bigint "preparation_id", null: false
+    t.bigint "preparation_id"
     t.bigint "checkout_id", null: false
     t.integer "count"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "saved_for_later", default: false, null: false
+    t.bigint "item_id"
+    t.string "preparation_type"
     t.index ["checkout_id"], name: "index_requestables_on_checkout_id"
+    t.index ["item_id"], name: "index_requestables_on_item_id"
     t.index ["preparation_id"], name: "index_requestables_on_preparation_id"
   end
 
@@ -361,7 +364,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_06_202027) do
   add_foreign_key "options", "loan_questions"
   add_foreign_key "preparations", "items", on_delete: :cascade
   add_foreign_key "requestables", "checkouts"
-  add_foreign_key "requestables", "preparations", on_delete: :cascade
+  add_foreign_key "requestables", "items", on_delete: :cascade
+  add_foreign_key "requestables", "preparations", on_delete: :nullify
   add_foreign_key "unavailables", "checkouts"
   add_foreign_key "unavailables", "items", on_delete: :cascade
 end
