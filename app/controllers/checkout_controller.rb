@@ -10,19 +10,29 @@ class CheckoutController < ApplicationController
   def show
     @render_checkout = false
     alert = ""
-    @checkout.requestables.includes(:preparation).each do |requestable|
+    @checkout.requestables.includes(:item).each do |requestable|
       preparation = requestable.preparation
-      if preparation.count == 0
-        @checkout.unavailables << Unavailable.create(item: preparation.item, checkout: @checkout, preparation_type: preparation.prep_type)
-        requestable.destroy
-        alert += "#{preparation.prep_type} "
+      item = requestable.item
+      if preparation.present?
+        if preparation.count == 0
+          @checkout.unavailables << Unavailable.create(item: item, checkout: @checkout, preparation_type: requestable.preparation_type)
+          requestable.destroy
+          alert += "#{requestable.preparation_type} "
+        else
+          requestable.update(count: preparation.count) if preparation.count < requestable.count
+        end
       else
-        requestable.update(count: preparation.count) if preparation.count < requestable.count
+        @checkout.unavailables << Unavailable.create(item: item, checkout: @checkout, preparation_type: requestable.preparation_type)
+        alert += "#{requestable.preparation_type} "
+        requestable.destroy
       end
     end
     @checkout.unavailables.each do |unavailable|
-      if Preparation.find_by(item: unavailable.item, prep_type: unavailable.preparation_type)&.count > 0
-        unavailable.destroy
+      preparation = Preparation.find_by(item: unavailable.item, prep_type: unavailable.preparation_type)
+      if preparation.present?
+        if preparation.count > 0 && @checkout.requestables.find_by(preparation_id: preparation.id)
+          unavailable.destroy
+        end
       end
     end
     flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed." if alert.present?
@@ -30,20 +40,7 @@ class CheckoutController < ApplicationController
 
   def add
     @preparation = Preparation.find(params[:id])
-    in_checkout = @checkout.requestables.find_by(preparation_id: @preparation.id)&.count.to_i
-    available = [@preparation.count - in_checkout, 0].max
-    if available <= 0
-      flash.now[:alert] = "No available preparations to add to checkout."
-      count = 0
-    else
-      count = 1
-    end
-    current_requestable = @checkout.requestables.find_by(preparation_id: @preparation.id)
-    if !current_requestable
-      @checkout.requestables.create(preparation: @preparation, count: count)
-    else
-        current_requestable.update(count: current_requestable.count + count)
-    end
+    @checkout.requestables.create(preparation: @preparation, count: 1, item_id: @preparation.item_id, preparation_type: @preparation.prep_type)
 
     respond_to do |format|
       format.turbo_stream do

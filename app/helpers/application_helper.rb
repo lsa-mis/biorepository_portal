@@ -185,4 +185,12 @@ module ApplicationHelper
     number_with_delimiter(number)
   end
 
+  def show_preparation(requestable)
+    if requestable.preparation.present?
+      requestable.preparation.display_name
+    else
+      requestable.preparation_type
+    end
+  end
+
 end
