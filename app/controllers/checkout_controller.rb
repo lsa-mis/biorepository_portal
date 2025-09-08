@@ -30,7 +30,7 @@ class CheckoutController < ApplicationController
     @checkout.unavailables.each do |unavailable|
       preparation = Preparation.find_by(item: unavailable.item, prep_type: unavailable.preparation_type)
       if preparation.present?
-        if preparation.count > 0 && @checkout.requestables.find_by(preparation_id: preparation.id)
+        if preparation.count > 0 && @checkout.requestables.find_by(preparation_id: preparation.id).present?
           unavailable.destroy
         end
       end
