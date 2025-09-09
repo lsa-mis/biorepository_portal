@@ -9,38 +9,7 @@ class CheckoutController < ApplicationController
  
   def show
     @render_checkout = false
-    alert = ""
-    @checkout.requestables.includes(:item).each do |requestable|
-      preparation = requestable.preparation
-      item = requestable.item
-      if item.present?
-        if preparation.present?
-          if preparation.count == 0
-            @checkout.unavailables.create(item: item, preparation_type: requestable.preparation_type)
-            alert += "#{requestable.preparation_type} "
-            requestable.destroy
-          else
-            requestable.update(count: preparation.count) if preparation.count < requestable.count
-          end
-        else
-          @checkout.unavailables.create(item: item, preparation_type: requestable.preparation_type)
-          alert += "#{requestable.preparation_type} "
-          requestable.destroy
-        end
-      else
-        @checkout.no_longer_availables.create(item_name: requestable.item_name, preparation_type: requestable.preparation_type, collection: requestable.collection)
-        alert += "#{requestable.preparation_type} "
-        requestable.destroy
-      end
-    end
-    @checkout.unavailables.each do |unavailable|
-      preparation = Preparation.find_by(item: unavailable.item, prep_type: unavailable.preparation_type)
-      if preparation.present?
-        if preparation.count > 0 && @checkout.requestables.find_by(preparation_id: preparation.id).present?
-          unavailable.destroy
-        end
-      end
-    end
+    alert = checkout_availability
     @checkout.reload
     flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed." if alert.present?
   end

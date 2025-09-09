@@ -45,7 +45,6 @@ class LoanRequestsController < ApplicationController
   end
 
   def step_four
-    # @loan_request = LoanRequest.new
     @collection_answers = build_collection_answers(@checkout, current_user)
     missing_collection_answers = @collection_answers.any? { |_, qa_data| check_missing_answers(qa_data) }
     if missing_collection_answers
@@ -63,8 +62,10 @@ class LoanRequestsController < ApplicationController
       flash[:alert] = @missing_fields_alert
       redirect_to step_four_path and return
     end
+    alert = checkout_availability
     @checkout_items = get_checkout_items_with_ids
     authorize LoanRequest
+    flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed." if alert.present?
   end
 
   def send_loan_request
