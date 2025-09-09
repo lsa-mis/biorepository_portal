@@ -41,6 +41,7 @@ class CheckoutController < ApplicationController
         end
       end
     end
+    @checkout.reload
     flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed." if alert.present?
   end
 
@@ -201,6 +202,7 @@ class CheckoutController < ApplicationController
   def remove_unavailable
     authorize @checkout if current_user
     Unavailable.find(params[:id])&.destroy
+    @checkout.unavailables.reload  # Reload the association to reflect the destroyed record
     flash.now[:notice] = "Item removed from checkout."
     respond_to do |format|
       format.turbo_stream do
@@ -215,6 +217,7 @@ class CheckoutController < ApplicationController
   def remove_no_longer_available
     authorize @checkout if current_user
     NoLongerAvailable.find(params[:id])&.destroy
+    @checkout.no_longer_availables.reload  # Reload the association to reflect the destroyed record
     flash.now[:notice] = "Item removed from checkout."
     respond_to do |format|
       format.turbo_stream do
