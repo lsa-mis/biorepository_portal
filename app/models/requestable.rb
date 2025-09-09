@@ -32,6 +32,6 @@ class Requestable < ApplicationRecord
   belongs_to :checkout
 
   scope :saved_for_later, -> { where(saved_for_later: true) }
-  scope :active, -> { where(saved_for_later: false) }
+  scope :active, -> { where(saved_for_later: false).where.not(preparation_id: nil).where.not(item_id: nil) }
 
 end
