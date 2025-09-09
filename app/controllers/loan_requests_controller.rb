@@ -224,7 +224,7 @@ class LoanRequestsController < ApplicationController
 
     def build_collection_answers(checkout, user)
       collections = Collection
-                .where(id: checkout.requestables.map { |requestable| requestable.preparation.item.collection_id }.uniq)
+                .where(id: checkout.requestables.active.map { |requestable| requestable.preparation.item.collection_id }.uniq)
                 .includes(collection_questions: :collection_answers)
       collection_answers = {}
 
@@ -287,7 +287,7 @@ class LoanRequestsController < ApplicationController
     end
 
     def clean_up_checkout_items
-      @checkout.requestables.each do |requestable|
+      @checkout.requestables.active.each do |requestable|
         preparation = requestable.preparation
         preparation.with_lock do
           new_count = [preparation.count - requestable.count, 0].max
