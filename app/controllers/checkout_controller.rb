@@ -28,7 +28,7 @@ class CheckoutController < ApplicationController
           requestable.destroy
         end
       else
-        @checkout.no_longer_availables.create(checkout: @checkout, item_name: requestable.item_name, preparation_type: requestable.preparation_type, collection: requestable.collection)
+        @checkout.no_longer_availables.create(item_name: requestable.item_name, preparation_type: requestable.preparation_type, collection: requestable.collection)
         alert += "#{requestable.preparation_type} "
         requestable.destroy
       end
