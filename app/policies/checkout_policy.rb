@@ -8,4 +8,8 @@ class CheckoutPolicy < ApplicationPolicy
     user.checkout == record
   end
 
+  def remove_no_longer_available?
+    user.checkout == record
+  end
+
 end

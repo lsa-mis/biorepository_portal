@@ -3,7 +3,9 @@
 # Table name: requestables
 #
 #  id               :bigint           not null, primary key
+#  collection       :string
 #  count            :integer
+#  item_name        :string
 #  preparation_type :string
 #  saved_for_later  :boolean          default(FALSE), not null
 #  created_at       :datetime         not null
@@ -21,12 +23,12 @@
 # Foreign Keys
 #
 #  fk_rails_...  (checkout_id => checkouts.id)
-#  fk_rails_...  (item_id => items.id) ON DELETE => cascade
+#  fk_rails_...  (item_id => items.id) ON DELETE => nullify
 #  fk_rails_...  (preparation_id => preparations.id) ON DELETE => nullify
 #
 class Requestable < ApplicationRecord
   belongs_to :preparation, optional: true
-  belongs_to :item
+  belongs_to :item, optional: true
   belongs_to :checkout
 
   scope :saved_for_later, -> { where(saved_for_later: true) }
