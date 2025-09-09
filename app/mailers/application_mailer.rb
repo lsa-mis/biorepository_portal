@@ -1,7 +1,7 @@
 class ApplicationMailer < ActionMailer::Base
   prepend_view_path "app/views/mailers"
   default from: "no-reply@biorepository.lsa.umich.edu",
-          reply_to: reply_to_email,
+          reply_to: -> { reply_to_email },
           to: "lsa-biorepository-super-admins@umich.edu"
   layout "mailer"
 
@@ -14,5 +14,5 @@ class ApplicationMailer < ActionMailer::Base
       'lsa-biorepository-super-admins@umich.edu'
     end
   end
-  
+
 end
