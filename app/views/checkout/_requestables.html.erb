@@ -31,7 +31,7 @@
         </div>
         
         <div class="col-md-4 text-start align-middle">
-          <%= form_with url: checkout_remove_path do |form| %>
+          <%= form_with url: checkout_remove_path, data: { turbo_confirm: "Are you sure you want to remove this item?" } do |form| %>
             <%= form.hidden_field :id, value: requestable.id %>
             <button type="submit" class="btn btn-link">
               <i class="bi bi-trash-fill text-danger"></i> Remove

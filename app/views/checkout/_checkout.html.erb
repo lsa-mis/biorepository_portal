@@ -20,6 +20,11 @@
       <p class="mb-4 alert alert-warning">Preparations for the following items are temporarily unavailable. Please click on the item's name to check when preparations will be available.</p>
       <%= render "checkout/unavailables" %>
     <% end %>
+    <% if @checkout.no_longer_availables.exists? %>
+      <h2 class="py-2">No Longer Available</h2>
+      <p class="mb-4 alert alert-warning">The following items are no longer available. You can remove them from your checkout.</p>
+      <%= render "checkout/no_longer_availables" %>
+    <% end %>
 
     <h2 class="py-2">Saved for Later</h2>
     <% if @checkout.requestables.saved_for_later.exists? %>

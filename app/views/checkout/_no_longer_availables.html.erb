@@ -1,18 +1,18 @@
-<% @checkout.unavailables.each do |unavailable| %>
+<% @checkout.no_longer_availables.each do |unavailable| %>
   <div class="card mb-3">
     <div class="card-body">
       <div class="row">
         <div class="col-md-4 text-start align-middle">
-          <strong>Collection:</strong> <%= unavailable.item.collection.division %>
+          <strong>Collection:</strong> <%= unavailable.collection %>
         </div>
         <div class="col-md-4 text-start align-middle">
-          <%= link_to unavailable.item.name, item_path(unavailable.item), class: "link_to", data: { turbo_frame: "_top" } %>
+          <%= unavailable.item_name %>
         </div>
         <div class="col-md-4 text-start align-middle">
           <%= unavailable.preparation_type %>
         </div>
         <div class="col-md-4 text-start align-middle">
-          <%= form_with url: checkout_remove_unavailable_path, data: { turbo_confirm: "Are you sure you want to remove this item?" } do |form| %>
+          <%= form_with url: checkout_remove_no_longer_available_path, data: { turbo_confirm: "Are you sure you want to remove this item?" } do |form| %>
             <%= form.hidden_field :id, value: unavailable.id %>
             <button type="submit" class="btn btn-link">
               <i class="bi bi-trash-fill text-danger"></i> Remove

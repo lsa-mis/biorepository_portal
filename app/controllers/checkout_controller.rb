@@ -13,16 +13,22 @@ class CheckoutController < ApplicationController
     @checkout.requestables.includes(:item).each do |requestable|
       preparation = requestable.preparation
       item = requestable.item
-      if preparation.present?
-        if preparation.count == 0
-          @checkout.unavailables << Unavailable.create(item: item, checkout: @checkout, preparation_type: requestable.preparation_type)
+      if item.present?
+        if preparation.present?
+          if preparation.count == 0
+            @checkout.unavailables.create(item: item, checkout: @checkout, preparation_type: requestable.preparation_type)
+            alert += "#{requestable.preparation_type} "
+            requestable.destroy
+          else
+            requestable.update(count: preparation.count) if preparation.count < requestable.count
+          end
+        else
+          @checkout.unavailables.create(item: item, checkout: @checkout, preparation_type: requestable.preparation_type)
           alert += "#{requestable.preparation_type} "
           requestable.destroy
-        else
-          requestable.update(count: preparation.count) if preparation.count < requestable.count
         end
       else
-        @checkout.unavailables << Unavailable.create(item: item, checkout: @checkout, preparation_type: requestable.preparation_type)
+        @checkout.no_longer_availables.create(checkout: @checkout, item_name: requestable.item_name, preparation_type: requestable.preparation_type, collection: requestable.collection)
         alert += "#{requestable.preparation_type} "
         requestable.destroy
       end
@@ -40,7 +46,8 @@ class CheckoutController < ApplicationController
 
   def add
     @preparation = Preparation.find(params[:id])
-    @checkout.requestables.create(preparation: @preparation, count: 1, item_id: @preparation.item_id, preparation_type: @preparation.prep_type)
+    @checkout.requestables.create(preparation: @preparation, count: 1, item_id: @preparation.item_id, preparation_type: 
+      @preparation.prep_type, item_name: @preparation.item.name, collection: @preparation.item.collection.division)
 
     respond_to do |format|
       format.turbo_stream do
@@ -200,10 +207,23 @@ class CheckoutController < ApplicationController
         render turbo_stream: [turbo_stream.replace('checkout',
                                                   partial: 'checkout/checkout',
                                                   locals: { checkout: @checkout }),
-                              turbo_stream.update('total', partial: 'checkout/total'),
-                              turbo_stream.update('total1', partial: 'checkout/total'),
                               turbo_stream.update('flash', partial: 'layouts/flash')]
       end
     end
   end
+
+  def remove_no_longer_available
+    authorize @checkout if current_user
+    NoLongerAvailable.find(params[:id])&.destroy
+    flash.now[:notice] = "Item removed from checkout."
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [turbo_stream.replace('checkout',
+                                                  partial: 'checkout/checkout',
+                                                  locals: { checkout: @checkout }),
+                              turbo_stream.update('flash', partial: 'layouts/flash')]
+      end
+    end
+  end
+
 end
