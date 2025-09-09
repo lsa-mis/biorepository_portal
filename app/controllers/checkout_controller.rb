@@ -16,14 +16,14 @@ class CheckoutController < ApplicationController
       if item.present?
         if preparation.present?
           if preparation.count == 0
-            @checkout.unavailables.create(item: item, checkout: @checkout, preparation_type: requestable.preparation_type)
+            @checkout.unavailables.create(item: item, preparation_type: requestable.preparation_type)
             alert += "#{requestable.preparation_type} "
             requestable.destroy
           else
             requestable.update(count: preparation.count) if preparation.count < requestable.count
           end
         else
-          @checkout.unavailables.create(item: item, checkout: @checkout, preparation_type: requestable.preparation_type)
+          @checkout.unavailables.create(item: item, preparation_type: requestable.preparation_type)
           alert += "#{requestable.preparation_type} "
           requestable.destroy
         end
