@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_09_024742) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_09_141329) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -377,7 +377,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_09_024742) do
   add_foreign_key "options", "loan_questions"
   add_foreign_key "preparations", "items", on_delete: :cascade
   add_foreign_key "requestables", "checkouts"
-  add_foreign_key "requestables", "items", on_delete: :nullify
+  add_foreign_key "requestables", "items", name: "fk_rails_requestables_item_id", on_delete: :nullify
   add_foreign_key "requestables", "preparations", on_delete: :nullify
   add_foreign_key "unavailables", "checkouts"
   add_foreign_key "unavailables", "items", on_delete: :cascade

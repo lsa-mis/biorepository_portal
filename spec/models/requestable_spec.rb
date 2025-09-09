@@ -22,9 +22,9 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (checkout_id => checkouts.id)
-#  fk_rails_...  (item_id => items.id) ON DELETE => nullify
-#  fk_rails_...  (preparation_id => preparations.id) ON DELETE => nullify
+#  fk_rails_...                   (checkout_id => checkouts.id)
+#  fk_rails_...                   (preparation_id => preparations.id) ON DELETE => nullify
+#  fk_rails_requestables_item_id  (item_id => items.id) ON DELETE => nullify
 #
 require 'rails_helper'
 
