@@ -23,10 +23,10 @@ body {
 
 .footer-text-bold {
   font-weight: 700;
-  color: $um_blue;
+  color: white;
 }
 .footer-text {
-  color: #212529;
+  color: white;
   font-family: Noto Sans;
   font-size: 14px;
   font-weight: 400;
@@ -36,6 +36,11 @@ body {
 
 .footer-link {
   text-decoration: none;
+}
+
+.footer-link:hover {
+  text-decoration: underline; /* Adds underline on hover */
+  cursor: pointer;
 }
 
 .bold-label {
