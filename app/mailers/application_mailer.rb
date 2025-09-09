@@ -9,7 +9,7 @@ class ApplicationMailer < ActionMailer::Base
 
   def reply_to_email
     email = GlobalPreference.find_by(name: "generic_contact_email")&.value
-    if email.present? 
+    if email.present?
       email
     else
       'lsa-biorepository-super-admins@umich.edu'
