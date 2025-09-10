@@ -1,28 +1,41 @@
-<footer class="footer mx-5 mt-auto py-3 bg-white">
-  <div class="d-flex flex-lg-row justify-content-between flex-column">
+<footer class="footer mt-auto py-3 bg-um-blue">
+  <div class="d-flex flex-lg-row justify-content-between flex-column mx-5">
+    <%= link_to 'https://lsa.umich.edu/' do %>
+      <%= image_tag 'en-logo.png', alt: 'LSA Logo', class: 'logo_image' %>
+    <% end %>
     <div class="center text-center">
-      <p class="d-none d-md-block">
-        <%= image_tag 'LSA_Technology_logo.svg', alt: 'LSA Technology Logo', class: "img-fluid" %>
-      </p>
-      <p class="text-center footer-bold d-md-none">
-        LSA Technology Services
+      <p class="text-center footer-text-bold">
+        Museum of Zoology
       </p><!-- Left column content for small viewports -->
+    </div>
+    <div class="footer-text">
+        <a href="https://campusinfo.umich.edu/campusmap" class="footer-text footer-link d-flex align-items-start" target="_blank">
+          <i class="bi bi-geo-alt me-2"></i>
+          <div>
+            Research Museum Center (RMC)<br>
+            3600 Varsity Drive<br>
+            Ann Arbor, MI 48108
+          </div>
+        </a>
+    </div>
+    <div class="footer-text">
+      <i class="bi bi-telephone"></i> 734.764.0476<br>
+      <i class="bi bi-printer"></i> 734.998.0038
     </div>
     <div>
       <p class="text-center mb-0 small">
-        <a href="https://umich.edu/about/privacy/" class="footer-text footer-link" >Privacy Notice</a> |
-        <a id="myCustomTrigger" class="footer-text footer-link" href="#" data-email="<%= session[:user_email]%>">Report an Issue</a> |
-        <span class="footer-text">734.615.0100</span>
+        <a id="myCustomTrigger" class="footer-text footer-link" href="#" data-email="<%= session[:user_email]%>">Report an Issue</a><br>
+        <span class="footer-text">
+          <i class="bi bi-telephone"></i>734.615.0100
+        </span>
       </p>
     </div>
     <div>
       <p class="d-none d-md-block text-center footer-text">
         ©<%= Time.now.year %>
-        <a href="https://regents.umich.edu/" class="footer-text footer-link">|The Regents of the University of Michigan</a>
       </p>
       <p class="d-md-none text-center mb-0 footer-text">
-        <a href="https://regents.umich.edu/" class="footer-text footer-link" >The Regents of the University of Michigan</a>
-        <br>©<%= Time.now.year %>
+        ©<%= Time.now.year %>
       </p><!-- Right column content -->
     </div>
   </div>
