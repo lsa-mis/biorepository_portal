@@ -1,8 +1,8 @@
 class ApplicationController < ActionController::Base
   include ApplicationHelper
   include Pundit::Authorization
-  # rescue_from StandardError, with: :render_500
-  # rescue_from ActiveRecord::RecordNotFound, with: :render_404
+  rescue_from StandardError, with: :render_500
+  rescue_from ActiveRecord::RecordNotFound, with: :render_404
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
@@ -55,6 +55,7 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
+    session[:merge_checkouts] = true
     if $baseURL.present?
       $baseURL
     else
@@ -91,9 +92,12 @@ class ApplicationController < ActionController::Base
       
       if user_checkout.present?
         # User has an existing checkout, use it
-        # unless @checkout.id == current_user.checkout.id
-        #   merge_checkouts(@checkout, current_user.checkout)
-        # end
+        Rails.logger.info "************************************ session[:merge_checkouts]: #{session[:merge_checkouts]}"
+        Rails.logger.info "************************************ User has existing checkout with ID: #{user_checkout.id}"
+        if session[:merge_checkouts] && @checkout.id != current_user.checkout.id
+          merge_checkouts(@checkout, current_user.checkout)
+          session.delete(:merge_checkouts)
+        end
         @checkout = user_checkout
         session[:checkout_id] = @checkout.id
       elsif @checkout.user_id != current_user.id
@@ -139,17 +143,17 @@ class ApplicationController < ActionController::Base
     alert
   end
 
-  def merge_checkouts(old_checkout, new_checkout)
-    new_checkout_preparations_id = new_checkout.requestables.pluck(:preparation_id).compact
+  def merge_checkouts(session_checkout, user_checkout)
+    user_checkout_preparations_id = user_checkout.requestables.pluck(:preparation_id).compact
     
     requestables_to_create = []
-    old_checkout.requestables.each do |requestable|
+    session_checkout.requestables.each do |requestable|
       next unless requestable.preparation_id.present?
       
-      unless new_checkout_preparations_id.include?(requestable.preparation_id)
+      unless user_checkout_preparations_id.include?(requestable.preparation_id)
         # Collect data to create new requestables
         requestables_to_create << {
-          checkout_id: new_checkout.id,
+          checkout_id: user_checkout.id,
           preparation_id: requestable.preparation_id,
           saved_for_later: requestable.saved_for_later,
           count: requestable.count,
@@ -167,8 +171,8 @@ class ApplicationController < ActionController::Base
     Requestable.insert_all(requestables_to_create) if requestables_to_create.any?
     
     # IMPORTANT: Delete all requestables first, then destroy the checkout
-    old_checkout.requestables.delete_all
-    old_checkout.destroy
+    session_checkout.requestables.delete_all
+    session_checkout.destroy
   end
   
   def make_q
