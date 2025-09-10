@@ -55,8 +55,9 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-    # Handle checkout merging when user signs in
-    handle_checkout_on_signin(resource)
+    # Handle checkout merging when user signs in and update session
+    checkout = handle_checkout_on_signin(resource)
+    session[:checkout_id] = checkout.id if checkout
     
     if $baseURL.present?
       $baseURL
@@ -96,18 +97,19 @@ class ApplicationController < ActionController::Base
         unless session_checkout.id == user.checkout.id
           merge_checkouts(session_checkout, user.checkout)
         end
-        @checkout = user.checkout
+        return user.checkout
       else
         # User has no checkout, assign session checkout to user
         session_checkout.update(user_id: user.id)
-        @checkout = session_checkout
+        return session_checkout
       end
-      session[:checkout_id] = @checkout.id
     elsif user.checkout.present?
       # No session checkout, use user's existing checkout
-      @checkout = user.checkout
-      session[:checkout_id] = @checkout.id
+      return user.checkout
     end
+    
+    # Return nil if no checkout is available (shouldn't happen normally)
+    nil
   end
 
   def checkout_availability
