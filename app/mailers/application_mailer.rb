@@ -1,9 +1,15 @@
 class ApplicationMailer < ActionMailer::Base
   prepend_view_path "app/views/mailers"
   default from: "no-reply@biorepository.lsa.umich.edu",
-          reply_to: -> { reply_to_email },
           to: "lsa-biorepository-super-admins@umich.edu"
   layout "mailer"
+
+  protected
+
+  def mail(headers = {})
+    headers[:reply_to] ||= reply_to_email
+    super(headers)
+  end
 
   private
 
