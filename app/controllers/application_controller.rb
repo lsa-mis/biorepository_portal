@@ -1,8 +1,8 @@
 class ApplicationController < ActionController::Base
   include ApplicationHelper
   include Pundit::Authorization
-  # rescue_from StandardError, with: :render_500
-  # rescue_from ActiveRecord::RecordNotFound, with: :render_404
+  rescue_from StandardError, with: :render_500
+  rescue_from ActiveRecord::RecordNotFound, with: :render_404
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
@@ -55,6 +55,9 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
+    # Handle checkout merging when user signs in
+    handle_checkout_on_signin(resource)
+    
     if $baseURL.present?
       $baseURL
     else
@@ -67,24 +70,43 @@ class ApplicationController < ActionController::Base
   end
 
   def initialize_checkout
-    @checkout ||= Checkout.find_by(id: session[:checkout_id])
-
-    if @checkout.nil?
-      @checkout = Checkout.create
+    # For signed-in users, use their existing checkout if available
+    if user_signed_in? && current_user.checkout.present?
+      @checkout = current_user.checkout
       session[:checkout_id] = @checkout.id
+    else
+      # Use existing checkout from session or create new one
+      @checkout = session[:checkout_id].present? ? Checkout.find_by(id: session[:checkout_id]) : nil
+
+      if @checkout.nil?
+        @checkout = Checkout.create
+        session[:checkout_id] = @checkout.id
+      end
     end
 
-    if user_signed_in?
-      if current_user.checkout.present?
-        unless @checkout.id == current_user.checkout.id
-          merge_checkouts(@checkout, current_user.checkout)
+  end
+
+  def handle_checkout_on_signin(user)
+    # Get the session checkout that was created before signin
+    session_checkout = session[:checkout_id].present? ? Checkout.find_by(id: session[:checkout_id]) : nil
+    
+    if session_checkout.present?
+      if user.checkout.present?
+        # User has existing checkout, merge session checkout into it
+        unless session_checkout.id == user.checkout.id
+          merge_checkouts(session_checkout, user.checkout)
         end
-        @checkout = current_user.checkout
-        session[:checkout_id] = @checkout.id
+        @checkout = user.checkout
       else
-        @checkout.user = current_user
-        @checkout.save
+        # User has no checkout, assign session checkout to user
+        session_checkout.update_column(:user_id, user.id)
+        @checkout = session_checkout
       end
+      session[:checkout_id] = @checkout.id
+    elsif user.checkout.present?
+      # No session checkout, use user's existing checkout
+      @checkout = user.checkout
+      session[:checkout_id] = @checkout.id
     end
   end
 
@@ -125,14 +147,35 @@ class ApplicationController < ActionController::Base
   end
 
   def merge_checkouts(old_checkout, new_checkout)
-    new_checkout_preparations_id = new_checkout.requestables.pluck(:preparation_id)
-    old_checkout.requestables.each do |requestable|
-      preparation_id = requestable.preparation.id
-      unless new_checkout_preparations_id.include?(preparation_id)
-        # If it doesn't exist, create a new requestable in the new checkout
-        new_checkout.requestables.create(preparation: requestable.preparation, saved_for_later: requestable.saved_for_later, count: requestable.count)
+    # Get all preparation IDs in one query to avoid N+1
+    new_checkout_preparation_ids = new_checkout.requestables.pluck(:preparation_id).compact
+    
+    # Use includes to preload preparations and avoid N+1 queries
+    old_requestables = old_checkout.requestables.includes(:preparation)
+    
+    requestables_to_create = []
+    old_requestables.each do |requestable|
+      next unless requestable.preparation_id.present?
+      
+      unless new_checkout_preparation_ids.include?(requestable.preparation_id)
+        requestables_to_create << {
+          checkout_id: new_checkout.id,
+          preparation_id: requestable.preparation_id,
+          saved_for_later: requestable.saved_for_later,
+          count: requestable.count,
+          item_id: requestable.item_id,
+          preparation_type: requestable.preparation_type,
+          item_name: requestable.item_name,
+          collection: requestable.collection,
+          created_at: Time.current,
+          updated_at: Time.current
+        }
       end
     end
+    
+    # Bulk insert to reduce database calls
+    Requestable.insert_all(requestables_to_create) if requestables_to_create.any?
+    
     old_checkout.destroy
   end
   
