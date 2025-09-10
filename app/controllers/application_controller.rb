@@ -121,7 +121,7 @@ class ApplicationController < ActionController::Base
         end
       end
     end
-    return alert
+    alert
   end
 
   def merge_checkouts(old_checkout, new_checkout)
