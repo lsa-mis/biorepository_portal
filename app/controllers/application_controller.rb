@@ -133,6 +133,7 @@ class ApplicationController < ActionController::Base
         new_checkout.requestables.create(preparation: requestable.preparation, saved_for_later: requestable.saved_for_later, count: requestable.count)
       end
     end
+    old_checkout.requestables.delete_all
     old_checkout.destroy
   end
   
