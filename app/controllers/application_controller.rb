@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   # allow_browser versions: :modern
   before_action :authenticate_user!
   before_action :set_render_checkout
-  before_action :initialize_checkout
+  before_action :initialize_checkout, unless: :skip_checkout_initialization?
   before_action :make_q
 
   def pundit_user
@@ -66,24 +66,39 @@ class ApplicationController < ActionController::Base
     @render_checkout = true
   end
 
-  def initialize_checkout
-    @checkout ||= Checkout.find_by(id: session[:checkout_id])
+  def skip_checkout_initialization?
+    # Skip checkout initialization for API endpoints, static pages, etc.
+    request.format.json? || 
+    params[:controller] == 'errors' ||
+    params[:action] == 'health_check'
+  end
 
+  def initialize_checkout
+    # Only query database if we don't have a checkout ID in session
+    if session[:checkout_id].present?
+      @checkout = Checkout.find_by(id: session[:checkout_id]) unless @checkout
+    end
+
+    # Create checkout only if we still don't have one
     if @checkout.nil?
       @checkout = Checkout.create
       session[:checkout_id] = @checkout.id
     end
 
+    # Handle user assignment efficiently
     if user_signed_in?
-      if current_user.checkout.present?
+      user_checkout = current_user.checkout
+      
+      if user_checkout.present?
+        # User has an existing checkout, use it
         # unless @checkout.id == current_user.checkout.id
         #   merge_checkouts(@checkout, current_user.checkout)
         # end
-        @checkout = current_user.checkout
+        @checkout = user_checkout
         session[:checkout_id] = @checkout.id
-      else
-        @checkout.user = current_user
-        @checkout.save
+      elsif @checkout.user_id != current_user.id
+        # Assign current checkout to user using update for efficiency
+        @checkout.update(user_id: current_user.id)
       end
     end
   end
@@ -125,14 +140,33 @@ class ApplicationController < ActionController::Base
   end
 
   def merge_checkouts(old_checkout, new_checkout)
-    new_checkout_preparations_id = new_checkout.requestables.pluck(:preparation_id)
+    new_checkout_preparations_id = new_checkout.requestables.pluck(:preparation_id).compact
+    
+    requestables_to_create = []
     old_checkout.requestables.each do |requestable|
-      preparation_id = requestable.preparation.id
-      unless new_checkout_preparations_id.include?(preparation_id)
-        # If it doesn't exist, create a new requestable in the new checkout
-        new_checkout.requestables.create(preparation: requestable.preparation, saved_for_later: requestable.saved_for_later, count: requestable.count)
+      next unless requestable.preparation_id.present?
+      
+      unless new_checkout_preparations_id.include?(requestable.preparation_id)
+        # Collect data to create new requestables
+        requestables_to_create << {
+          checkout_id: new_checkout.id,
+          preparation_id: requestable.preparation_id,
+          saved_for_later: requestable.saved_for_later,
+          count: requestable.count,
+          item_id: requestable.item_id,
+          preparation_type: requestable.preparation_type,
+          item_name: requestable.item_name,
+          collection: requestable.collection,
+          created_at: Time.current,
+          updated_at: Time.current
+        }
       end
     end
+    
+    # Create new requestables in bulk
+    Requestable.insert_all(requestables_to_create) if requestables_to_create.any?
+    
+    # IMPORTANT: Delete all requestables first, then destroy the checkout
     old_checkout.requestables.delete_all
     old_checkout.destroy
   end
