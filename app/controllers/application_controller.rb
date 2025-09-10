@@ -171,8 +171,20 @@ class ApplicationController < ActionController::Base
     Requestable.insert_all(requestables_to_create) if requestables_to_create.any?
     
     # IMPORTANT: Delete all requestables first, then destroy the checkout
-    Requestable.where(checkout_id: session_checkout.id).delete_all
-    session_checkout.destroy
+    begin
+      ActiveRecord::Base.transaction do
+        Requestable.where(checkout_id: session_checkout.id).delete_all
+        session_checkout.destroy
+      end
+      Rails.logger.info "***************************** Successfully merged and deleted session checkout #{session_checkout.id}"
+    rescue ActiveRecord::ActiveRecordError => e
+      # Database error during transaction
+      Rails.logger.error "**************************** Failed to delete session checkout #{session_checkout.id}: #{e.message}"
+    rescue => e
+      # Any other unexpected error
+      Rails.logger.error "**************************** Unexpected error during checkout merge: #{e.class} - #{e.message}"
+      Rails.logger.error e.backtrace.join("\n") if e.backtrace
+    end
   end
   
   def make_q
