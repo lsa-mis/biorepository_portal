@@ -171,7 +171,7 @@ class ApplicationController < ActionController::Base
     Requestable.insert_all(requestables_to_create) if requestables_to_create.any?
     
     # IMPORTANT: Delete all requestables first, then destroy the checkout
-    session_checkout.requestables.delete_all
+    Requestable.where(checkout_id: session_checkout.id).delete_all
     session_checkout.destroy
   end
   
