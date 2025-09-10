@@ -55,10 +55,9 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-    # Handle checkout merging when user signs in and update session
-    checkout = handle_checkout_on_signin(resource)
-    session[:checkout_id] = checkout&.id if checkout
-
+    # Set flag to trigger checkout merging on next request (not during SAML callback)
+    session[:needs_checkout_merge] = true
+    
     if $baseURL.present?
       $baseURL
     else
@@ -71,45 +70,85 @@ class ApplicationController < ActionController::Base
   end
 
   def initialize_checkout
-    # For signed-in users, use their existing checkout if available
-    if user_signed_in? && current_user.checkout.present?
+    # Simple approach: just ensure a checkout exists
+    @checkout = session[:checkout_id].present? ? Checkout.find_by(id: session[:checkout_id]) : nil
+
+    if @checkout.nil?
+      @checkout = Checkout.create
+      session[:checkout_id] = @checkout.id
+    end
+
+    # For signed-in users, handle checkout merging only once after sign-in
+    if user_signed_in? && session[:needs_checkout_merge]
+      handle_user_checkout_merging
+      session.delete(:needs_checkout_merge)
+    elsif user_signed_in? && current_user.checkout.present?
+      # User already has a checkout, use it
       @checkout = current_user.checkout
       session[:checkout_id] = @checkout.id
-    else
-      # Use existing checkout from session or create new one
-      @checkout = session[:checkout_id].present? ? Checkout.find_by(id: session[:checkout_id]) : nil
-
-      if @checkout.nil?
-        @checkout = Checkout.create
-        session[:checkout_id] = @checkout.id
-      end
+    elsif user_signed_in? && @checkout.user_id.nil?
+      # Assign current session checkout to user (simple case)
+      @checkout.update_column(:user_id, current_user.id)
     end
-
   end
 
-  def handle_checkout_on_signin(user)
-    # Get the session checkout that was created before signin
-    session_checkout = session[:checkout_id].present? ? Checkout.find_by(id: session[:checkout_id]) : nil
+  def handle_user_checkout_merging
+    user_checkout = current_user.checkout
+    session_checkout = @checkout
     
-    if session_checkout.present?
-      if user.checkout.present?
-        # User has existing checkout, merge session checkout into it
-        unless session_checkout.id == user.checkout.id
-          merge_checkouts(session_checkout, user.checkout)
-        end
-        return user.checkout
+    if user_checkout.present? && session_checkout.present? && user_checkout.id != session_checkout.id
+      # Both checkouts exist and are different - merge session into user's checkout
+      if session_checkout.requestables.any?
+        merge_checkouts(session_checkout, user_checkout)
       else
-        # User has no checkout, assign session checkout to user
-        session_checkout.update(user_id: user.id)
-        return session_checkout
+        # Session checkout is empty, just destroy it
+        session_checkout.destroy
       end
-    elsif user.checkout.present?
-      # No session checkout, use user's existing checkout
-      return user.checkout
+      @checkout = user_checkout
+      session[:checkout_id] = user_checkout.id
+    elsif user_checkout.present?
+      # User has checkout, use it
+      @checkout = user_checkout
+      session[:checkout_id] = user_checkout.id
+    elsif session_checkout.user_id.nil?
+      # Assign current session checkout to user
+      session_checkout.update_column(:user_id, current_user.id)
+    end
+  end
+
+  def merge_checkouts(session_checkout, user_checkout)
+    # Get all preparation IDs in one query to avoid N+1
+    user_checkout_preparation_ids = user_checkout.requestables.pluck(:preparation_id).compact
+    
+    # Use includes to preload preparations and avoid N+1 queries
+    session_requestables = session_checkout.requestables.includes(:preparation)
+
+    requestables_to_create = []
+    session_requestables.each do |requestable|
+      next unless requestable.preparation_id.present?
+      
+      unless user_checkout_preparation_ids.include?(requestable.preparation_id)
+        requestables_to_create << {
+          checkout_id: user_checkout.id,
+          preparation_id: requestable.preparation_id,
+          saved_for_later: requestable.saved_for_later,
+          count: requestable.count,
+          item_id: requestable.item_id,
+          preparation_type: requestable.preparation_type,
+          item_name: requestable.item_name,
+          collection: requestable.collection,
+          created_at: Time.current,
+          updated_at: Time.current
+        }
+      end
     end
     
-    # Return nil if no checkout is available (shouldn't happen normally)
-    nil
+    # Bulk insert to reduce database calls
+    Requestable.insert_all(requestables_to_create) if requestables_to_create.any?
+    
+    # Delete all requestables first, then destroy the checkout
+    session_checkout.requestables.delete_all
+    session_checkout.destroy
   end
 
   def checkout_availability
@@ -148,41 +187,6 @@ class ApplicationController < ActionController::Base
     alert
   end
 
-  def merge_checkouts(session_checkout, user_checkout)
-    # Get all preparation IDs in one query to avoid N+1
-    user_checkout_preparation_ids = user_checkout.requestables.pluck(:preparation_id).compact
-    
-    # Use includes to preload preparations and avoid N+1 queries
-    session_requestables = session_checkout.requestables.includes(:preparation)
-
-    requestables_to_create = []
-    session_requestables.each do |requestable|
-      next unless requestable.preparation_id.present?
-      
-      unless user_checkout_preparation_ids.include?(requestable.preparation_id)
-        requestables_to_create << {
-          checkout_id: user_checkout.id,
-          preparation_id: requestable.preparation_id,
-          saved_for_later: requestable.saved_for_later,
-          count: requestable.count,
-          item_id: requestable.item_id,
-          preparation_type: requestable.preparation_type,
-          item_name: requestable.item_name,
-          collection: requestable.collection,
-          created_at: Time.current,
-          updated_at: Time.current
-        }
-      end
-    end
-    
-    # Bulk insert to reduce database calls
-    Requestable.insert_all(requestables_to_create) if requestables_to_create.any?
-    
-    # Delete all requestables first, then destroy the checkout
-    session_checkout.requestables.delete_all
-    session_checkout.destroy
-  end
-  
   def make_q
     @q = Item.ransack(params[:q])
   end
