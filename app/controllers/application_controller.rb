@@ -148,20 +148,20 @@ class ApplicationController < ActionController::Base
     alert
   end
 
-  def merge_checkouts(session_checkout, user_checkout)
+  def merge_checkouts(old_checkout, new_checkout)
     # Get all preparation IDs in one query to avoid N+1
-    user_checkout_preparation_ids = user_checkout.requestables.pluck(:preparation_id).compact
+    new_checkout_preparation_ids = new_checkout.requestables.pluck(:preparation_id).compact
     
     # Use includes to preload preparations and avoid N+1 queries
-    session_requestables = session_checkout.requestables.includes(:preparation)
-
+    old_requestables = old_checkout.requestables.includes(:preparation)
+    
     requestables_to_create = []
-    session_requestables.each do |requestable|
+    old_requestables.each do |requestable|
       next unless requestable.preparation_id.present?
       
-      unless user_checkout_preparation_ids.include?(requestable.preparation_id)
+      unless new_checkout_preparation_ids.include?(requestable.preparation_id)
         requestables_to_create << {
-          checkout_id: user_checkout.id,
+          checkout_id: new_checkout.id,
           preparation_id: requestable.preparation_id,
           saved_for_later: requestable.saved_for_later,
           count: requestable.count,
@@ -178,9 +178,7 @@ class ApplicationController < ActionController::Base
     # Bulk insert to reduce database calls
     Requestable.insert_all(requestables_to_create) if requestables_to_create.any?
     
-    # Delete all requestables first, then destroy the checkout
-    session_checkout.requestables.delete_all
-    session_checkout.destroy
+    old_checkout.destroy
   end
   
   def make_q
