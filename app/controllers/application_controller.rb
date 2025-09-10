@@ -99,7 +99,7 @@ class ApplicationController < ActionController::Base
         @checkout = user.checkout
       else
         # User has no checkout, assign session checkout to user
-        session_checkout.update(:user_id: user.id)
+        session_checkout.update(user_id: user.id)
         @checkout = session_checkout
       end
       session[:checkout_id] = @checkout.id
