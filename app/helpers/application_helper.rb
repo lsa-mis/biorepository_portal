@@ -87,7 +87,7 @@ module ApplicationHelper
   end
 
   def preparation_in_checkout(preparation, checkout)
-    checkout.requestables.find_by(preparation_id: preparation.id)&.count.to_i > 0
+    checkout.requestables.active.find_by(preparation_id: preparation.id)&.count.to_i > 0
   end
 
   def item_views
@@ -140,7 +140,7 @@ module ApplicationHelper
   def get_checkout_items
     checkout_items = []
     collection_ids = []
-    @checkout.requestables.available.each do |requestable|
+    @checkout.requestables.active.each do |requestable|
       preparation = requestable.preparation
       item = preparation.item
       checkout_item = ""
@@ -160,7 +160,7 @@ module ApplicationHelper
 
   def get_checkout_items_with_ids
     checkout_items = []
-    @checkout.requestables.available.each do |requestable|
+    @checkout.requestables.active.each do |requestable|
       preparation = requestable.preparation
       item = preparation.item
       checkout_item = ""
@@ -183,6 +183,14 @@ module ApplicationHelper
       Item.count
     end
     number_with_delimiter(number)
+  end
+
+  def show_preparation(requestable)
+    if requestable.preparation.present?
+      requestable.preparation.display_name
+    else
+      requestable.preparation_type
+    end
   end
 
 end

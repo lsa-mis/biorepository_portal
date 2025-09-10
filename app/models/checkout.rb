@@ -16,8 +16,11 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Checkout < ApplicationRecord
-  has_many :requestables, dependent: :destroy
+  has_many :requestables
   has_many :preparations, through: :requestables
+  has_many :unavailables
+  has_many :items, through: :unavailables
+  has_many :no_longer_availables
 
   belongs_to :user, optional: true
 

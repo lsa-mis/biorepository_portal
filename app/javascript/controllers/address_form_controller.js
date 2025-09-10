@@ -51,7 +51,16 @@ export default class extends Controller {
     if (this.hasEmailErrorTarget) {
       this.emailErrorTarget.textContent = message
       this.emailErrorTarget.style.display = "block"
+      
+      // Scroll to the error message
+      setTimeout(() => {
+      this.emailErrorTarget.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center'
+        })
+      }, 50)
     }
+
     this.emailTarget.classList.add("is-invalid")
   }
 

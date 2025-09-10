@@ -13,13 +13,9 @@
         <div class="col-md-4 text-start align-middle">
           <strong>Preparation Type:</strong> <%= preparation.display_name %>
         </div>
-        <% if preparation.unavailable? %>
-        <div class="col-md-4 text-start align-middle mb-2">
-          <div class="text-muted">Temporarily unavailable</div>
-        </div>
-        <% end %>
+        <div>&nbsp;</div>
         <div class="col-md-4 text-start align-middle">
-          <%= form_with url: checkout_remove_path do |form| %>
+          <%= form_with url: checkout_remove_path, data: { turbo_confirm: "Are you sure you want to remove this item?" } do |form| %>
             <%= form.hidden_field :id, value: requestable.id %>
             <button type="submit" class="btn btn-link">
               <i class="bi bi-trash-fill text-danger"></i> Remove

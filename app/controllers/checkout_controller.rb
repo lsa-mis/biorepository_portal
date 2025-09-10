@@ -9,27 +9,15 @@ class CheckoutController < ApplicationController
  
   def show
     @render_checkout = false
-    @checkout.requestables.includes(:preparation).each do |requestable|
-      requestable.update(count: requestable.preparation.count) if requestable.preparation.count < requestable.count
-    end
+    alert = checkout_availability
+    @checkout.reload
+    flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed." if alert.present?
   end
 
   def add
     @preparation = Preparation.find(params[:id])
-    in_checkout = @checkout.requestables.find_by(preparation_id: @preparation.id)&.count.to_i
-    available = [@preparation.count - in_checkout, 0].max
-    if available <= 0
-      flash.now[:alert] = "No available preparations to add to checkout."
-      count = 0
-    else
-      count = 1
-    end
-    current_requestable = @checkout.requestables.find_by(preparation_id: @preparation.id)
-    if !current_requestable
-      @checkout.requestables.create(preparation: @preparation, count: count)
-    else
-        current_requestable.update(count: current_requestable.count + count)
-    end
+    @checkout.requestables.create(preparation: @preparation, count: 1, item_id: @preparation.item_id, preparation_type: 
+      @preparation.prep_type, item_name: @preparation.item.name, collection: @preparation.item.collection.division)
 
     respond_to do |format|
       format.turbo_stream do
@@ -89,6 +77,7 @@ class CheckoutController < ApplicationController
   end
 
   def remove
+    authorize @checkout if current_user
     Requestable.find(params[:id])&.destroy
     flash.now[:notice] = "Preparation removed from checkout."
     respond_to do |format|
@@ -178,4 +167,35 @@ class CheckoutController < ApplicationController
       end
     end
   end
+
+  def remove_unavailable
+    authorize @checkout if current_user
+    Unavailable.find(params[:id])&.destroy
+    @checkout.unavailables.reload  # Reload the association to reflect the destroyed record
+    flash.now[:notice] = "Item removed from checkout."
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [turbo_stream.replace('checkout',
+                                                  partial: 'checkout/checkout',
+                                                  locals: { checkout: @checkout }),
+                              turbo_stream.update('flash', partial: 'layouts/flash')]
+      end
+    end
+  end
+
+  def remove_no_longer_available
+    authorize @checkout if current_user
+    NoLongerAvailable.find(params[:id])&.destroy
+    @checkout.no_longer_availables.reload  # Reload the association to reflect the destroyed record
+    flash.now[:notice] = "Item removed from checkout."
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [turbo_stream.replace('checkout',
+                                                  partial: 'checkout/checkout',
+                                                  locals: { checkout: @checkout }),
+                              turbo_stream.update('flash', partial: 'layouts/flash')]
+      end
+    end
+  end
+
 end

@@ -80,6 +80,8 @@ Rails.application.routes.draw do
   post "checkout/remove_preparation"
   post "checkout/save_for_later"
   post "checkout/move_back"
+  post "checkout/remove_unavailable"
+  post "checkout/remove_no_longer_available"
 
   get 'export_to_csv', to: 'items#export_to_csv', as: :export_to_csv
   resources :items, only: [ :index, :show ] do

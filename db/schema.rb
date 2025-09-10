@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_26_183043) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_09_141329) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -278,6 +278,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_183043) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "no_longer_availables", force: :cascade do |t|
+    t.bigint "checkout_id", null: false
+    t.string "preparation_type"
+    t.string "item_name"
+    t.string "collection"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["checkout_id"], name: "index_no_longer_availables_on_checkout_id"
+  end
+
   create_table "options", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -298,14 +308,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_183043) do
   end
 
   create_table "requestables", force: :cascade do |t|
-    t.bigint "preparation_id", null: false
+    t.bigint "preparation_id"
     t.bigint "checkout_id", null: false
     t.integer "count"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "saved_for_later", default: false, null: false
+    t.bigint "item_id"
+    t.string "preparation_type"
+    t.string "item_name"
+    t.string "collection"
     t.index ["checkout_id"], name: "index_requestables_on_checkout_id"
+    t.index ["item_id"], name: "index_requestables_on_item_id"
     t.index ["preparation_id"], name: "index_requestables_on_preparation_id"
+  end
+
+  create_table "unavailables", force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.bigint "checkout_id", null: false
+    t.string "preparation_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["checkout_id"], name: "index_unavailables_on_checkout_id"
+    t.index ["item_id"], name: "index_unavailables_on_item_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -348,8 +373,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_183043) do
   add_foreign_key "loan_answers", "loan_questions"
   add_foreign_key "loan_answers", "users"
   add_foreign_key "loan_requests", "users"
+  add_foreign_key "no_longer_availables", "checkouts"
   add_foreign_key "options", "loan_questions"
   add_foreign_key "preparations", "items", on_delete: :cascade
   add_foreign_key "requestables", "checkouts"
-  add_foreign_key "requestables", "preparations", on_delete: :cascade
+  add_foreign_key "requestables", "items", name: "fk_rails_requestables_item_id", on_delete: :nullify
+  add_foreign_key "requestables", "preparations", on_delete: :nullify
+  add_foreign_key "unavailables", "checkouts"
+  add_foreign_key "unavailables", "items", on_delete: :cascade
 end

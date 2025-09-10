@@ -18,6 +18,7 @@
 class Collection < ApplicationRecord
   has_many :items, dependent: :destroy
   has_many :collection_questions, dependent: :destroy
+  has_many :app_preferences, dependent: :destroy
   has_rich_text :long_description
   has_one_attached :image
 
@@ -32,4 +33,3 @@ class Collection < ApplicationRecord
     ["admin_group", "created_at", "description", "division", "division_page_url", "id", "id_value", "link_to_policies", "updated_at"]
   end
 end
-
