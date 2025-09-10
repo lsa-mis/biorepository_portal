@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   # allow_browser versions: :modern
   before_action :authenticate_user!
   before_action :set_render_checkout
-  before_action :initialize_checkout
+  before_action :initialize_checkout, unless: :skip_checkout_initialization?
   before_action :make_q
 
   def pundit_user
@@ -66,24 +66,39 @@ class ApplicationController < ActionController::Base
     @render_checkout = true
   end
 
-  def initialize_checkout
-    @checkout ||= Checkout.find_by(id: session[:checkout_id])
+  def skip_checkout_initialization?
+    # Skip checkout initialization for API endpoints, static pages, etc.
+    request.format.json? || 
+    params[:controller] == 'errors' ||
+    params[:action] == 'health_check'
+  end
 
+  def initialize_checkout
+    # Only query database if we don't have a checkout ID in session
+    if session[:checkout_id].present?
+      @checkout = Checkout.find_by(id: session[:checkout_id]) unless @checkout
+    end
+
+    # Create checkout only if we still don't have one
     if @checkout.nil?
       @checkout = Checkout.create
       session[:checkout_id] = @checkout.id
     end
 
+    # Handle user assignment efficiently
     if user_signed_in?
-      if current_user.checkout.present?
+      user_checkout = current_user.checkout
+      
+      if user_checkout.present?
+        # User has an existing checkout, use it
         # unless @checkout.id == current_user.checkout.id
         #   merge_checkouts(@checkout, current_user.checkout)
         # end
-        @checkout = current_user.checkout
+        @checkout = user_checkout
         session[:checkout_id] = @checkout.id
-      else
-        @checkout.user = current_user
-        @checkout.save
+      elsif @checkout.user_id != current_user.id
+        # Assign current checkout to user using update for efficiency
+        @checkout.update(user_id: current_user.id)
       end
     end
   end
