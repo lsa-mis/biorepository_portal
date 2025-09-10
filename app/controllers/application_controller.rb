@@ -125,13 +125,15 @@ class ApplicationController < ActionController::Base
   end
 
   def merge_checkouts(old_checkout, new_checkout)
-    new_checkout_preparations_id = new_checkout.requestables.pluck(:preparation_id)
+    new_checkout_preparations_id = new_checkout.requestables.pluck(:preparation_id).compact
+    
+    requestables_to_create = []
     old_checkout.requestables.each do |requestable|
       next unless requestable.preparation_id.present?
       
       unless new_checkout_preparations_id.include?(requestable.preparation_id)
-        # If it doesn't exist, create a new requestable in the new checkout
-        Requestable.create(
+        # Collect data to create new requestables
+        requestables_to_create << {
           checkout_id: new_checkout.id,
           preparation_id: requestable.preparation_id,
           saved_for_later: requestable.saved_for_later,
@@ -139,10 +141,17 @@ class ApplicationController < ActionController::Base
           item_id: requestable.item_id,
           preparation_type: requestable.preparation_type,
           item_name: requestable.item_name,
-          collection: requestable.collection
-        )
+          collection: requestable.collection,
+          created_at: Time.current,
+          updated_at: Time.current
+        }
       end
     end
+    
+    # Create new requestables in bulk
+    Requestable.insert_all(requestables_to_create) if requestables_to_create.any?
+    
+    # IMPORTANT: Delete all requestables first, then destroy the checkout
     old_checkout.requestables.delete_all
     old_checkout.destroy
   end
