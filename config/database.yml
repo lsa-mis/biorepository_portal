@@ -10,6 +10,7 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
 
 development:
   <<: *default
@@ -22,5 +23,11 @@ test:
   <<: *default
   database: biorepository_portal_test
 
+staging:
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>
+
 production:
   url: <%= ENV["DATABASE_URL"] %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
+  timeout: 10000
