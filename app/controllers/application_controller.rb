@@ -57,8 +57,8 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource)
     # Handle checkout merging when user signs in and update session
     checkout = handle_checkout_on_signin(resource)
-    session[:checkout_id] = checkout.id if checkout
-    
+    session[:checkout_id] = checkout&.id if checkout
+
     if $baseURL.present?
       $baseURL
     else
