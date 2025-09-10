@@ -55,11 +55,10 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-    # Store checkout merging info in session to handle after redirect
-    if session[:checkout_id].present?
-      session[:pending_checkout_merge] = session[:checkout_id]
-    end
-    
+    # Handle checkout merging when user signs in and update session
+    checkout = handle_checkout_on_signin(resource)
+    session[:checkout_id] = checkout&.id if checkout
+
     if $baseURL.present?
       $baseURL
     else
@@ -72,12 +71,6 @@ class ApplicationController < ActionController::Base
   end
 
   def initialize_checkout
-    # Handle pending checkout merge from sign-in
-    if user_signed_in? && session[:pending_checkout_merge].present?
-      handle_pending_checkout_merge
-      session.delete(:pending_checkout_merge)
-    end
-
     # For signed-in users, use their existing checkout if available
     if user_signed_in? && current_user.checkout.present?
       @checkout = current_user.checkout
@@ -91,25 +84,32 @@ class ApplicationController < ActionController::Base
         session[:checkout_id] = @checkout.id
       end
     end
+
   end
 
-  def handle_pending_checkout_merge
-    session_checkout_id = session[:pending_checkout_merge]
-    session_checkout = Checkout.find_by(id: session_checkout_id)
+  def handle_checkout_on_signin(user)
+    # Get the session checkout that was created before signin
+    session_checkout = session[:checkout_id].present? ? Checkout.find_by(id: session[:checkout_id]) : nil
     
-    return unless session_checkout.present?
-    
-    if current_user.checkout.present?
-      # User has existing checkout, merge session checkout into it
-      unless session_checkout.id == current_user.checkout.id
-        merge_checkouts(session_checkout, current_user.checkout)
+    if session_checkout.present?
+      if user.checkout.present?
+        # User has existing checkout, merge session checkout into it
+        unless session_checkout.id == user.checkout.id
+          merge_checkouts(session_checkout, user.checkout)
+        end
+        return user.checkout
+      else
+        # User has no checkout, assign session checkout to user
+        session_checkout.update(user_id: user.id)
+        return session_checkout
       end
-      session[:checkout_id] = current_user.checkout.id
-    else
-      # User has no checkout, assign session checkout to user
-      session_checkout.update(user_id: current_user.id)
-      session[:checkout_id] = session_checkout.id
+    elsif user.checkout.present?
+      # No session checkout, use user's existing checkout
+      return user.checkout
     end
+    
+    # Return nil if no checkout is available (shouldn't happen normally)
+    nil
   end
 
   def checkout_availability
