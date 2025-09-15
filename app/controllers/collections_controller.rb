@@ -15,7 +15,7 @@ class CollectionsController < ApplicationController
 
   # GET /collections/1 or /collections/1.json
   def show
-    @q1 = @collection.items.includes(preparations: :requestables).ransack(params[:q1])
+    @q1 = @collection.items.includes(:current_identification, preparations: :requestables).ransack(params[:q1])
     @items = @q1.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @collection_questions = @collection.collection_questions.includes(:collection_options)
     respond_to do |format|
