@@ -8,7 +8,10 @@ RSpec.describe LoanRequestsController, type: :request do
   let!(:loan_question) { FactoryBot.create(:loan_question, required: true) }
   let!(:collection_question) { FactoryBot.create(:collection_question, collection: collection, required: true) }
   let!(:checkout) { FactoryBot.create(:checkout, user: user) }
-  let!(:requestable) { FactoryBot.create(:requestable, checkout: checkout, preparation: FactoryBot.create(:preparation, item: FactoryBot.create(:item, collection: collection))) }
+  let!(:item) { FactoryBot.create(:item, collection: collection) }
+  let!(:preparation) { FactoryBot.create(:preparation, item: item) }
+  let!(:requestable) { FactoryBot.create(:requestable, checkout: checkout, preparation: preparation,
+    item_id: item.id, collection: collection.division, preparation_type: preparation.prep_type, item_name: item.name, count: 1 ) }
 
   describe 'POST #enable' do
     let!(:admin_user) { FactoryBot.create(:user) }
@@ -77,9 +80,9 @@ RSpec.describe LoanRequestsController, type: :request do
   describe 'GET #new when user has incomplete information' do
     before do
       mock_login(incomplete_user)
-
     end
-    it 'displays step two successfully' do
+
+    it 'displays alert message for incomplete user info' do
       get new_loan_request_path
       expect(response).to have_http_status(:success)
       expect(response.body).to include("User Information")
