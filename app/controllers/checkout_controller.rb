@@ -11,7 +11,7 @@ class CheckoutController < ApplicationController
     @render_checkout = false
     alert = checkout_availability
     @checkout.reload
-    flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed." if alert.present?
+    flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed from Checkout." if alert.present?
   end
 
   def add

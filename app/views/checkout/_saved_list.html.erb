@@ -26,7 +26,7 @@
           <%= form_with url: checkout_move_back_path, data: { turbo_frame: "checkout" } do |form| %>
             <%= form.hidden_field :id, value: preparation.id %>
             <button type="submit" class="btn btn-link">
-              <i class="bi bi-back"></i> Move to Checkout
+              <i class="bi bi-cart3"></i> Move to Checkout
             </button>
           <% end %>
         </div>
