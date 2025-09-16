@@ -1,7 +1,7 @@
 <div class="position-relative overflow-hidden" style="min-height: 800px;">
   <!-- Background image using image_tag (no vh-100, image drives height) -->
   <% if @home_page_image.present? %>
-    <%= image_tag @home_page_image, alt: "Home Page Image", class: "w-100", style: "height: 800px; object-fit: cover; object-position: center;" %>
+    <%= image_tag @home_page_image, alt: "", class: "w-100", style: "height: 800px; object-fit: cover; object-position: center;" %>
   <% end %>
 
   <!-- Frosted glass overlay positioned over image -->
