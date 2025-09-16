@@ -65,7 +65,7 @@ class LoanRequestsController < ApplicationController
     alert = checkout_availability
     @checkout_items = get_checkout_items_with_ids
     authorize LoanRequest
-    flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed." if alert.present?
+    flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed from Checkout." if alert.present?
   end
 
   def send_loan_request
