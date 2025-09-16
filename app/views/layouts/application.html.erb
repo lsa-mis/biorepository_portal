@@ -2,13 +2,13 @@
 <html lang="en">
   <head>
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8DQ65SPNG9"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ENV['GOOGLE_ANALYTICS_TRACKING_ID'] %>"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'G-8DQ65SPNG9');
+      gtag('config', '<%= ENV['GOOGLE_ANALYTICS_TRACKING_ID'] %>','G-8DQ65SPNG9');
     </script>
 
     <title>BiorepositoryPortal</title>
