@@ -77,8 +77,16 @@
     return btn.hasAttribute('disabled') || btn.getAttribute('aria-disabled') === 'true';
   }
 
+  function isVisibleAndEnabled(button) {
+    const style = window.getComputedStyle(button);
+    const notDisplayed = style.display === 'none' || style.visibility === 'hidden';
+    const isDisabled = button.disabled || button.getAttribute('aria-disabled') === 'true';
+    return !notDisplayed && !isDisabled;
+  }
+
   function getButtons(toolbar){
-    return Array.from(toolbar.querySelectorAll('.trix-button, .trix-button--dialog, input.trix-button'));
+    // Only return visible and enabled buttons
+    return Array.from(toolbar.querySelectorAll('.trix-button, .trix-button--dialog, input.trix-button')).filter(isVisibleAndEnabled);
   }
 
   function firstEnabledIndex(buttons){
