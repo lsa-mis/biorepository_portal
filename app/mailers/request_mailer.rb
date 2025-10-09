@@ -5,7 +5,7 @@ class RequestMailer < ApplicationMailer
     send_to = params[:send_to]
     @user = params[:user]
     @checkout_items = params[:checkout_items] if params[:checkout_items].present?
-    subject = "BioRepository Portal Information Request - #{Date.today}"
+    subject = "Biorepository Portal Information Request - #{Date.today}"
     mail(to: send_to, subject: subject)
   end
 
@@ -28,7 +28,7 @@ class RequestMailer < ApplicationMailer
         content: file.open { |f| f.read }
       }
     end
-    subject = "BioRepository Loan Request from #{user.first_name} - #{Date.today}"
+    subject = "Biorepository Loan Request from #{user.first_name} - #{Date.today}"
     mail(to: send_to, subject: subject)
   end
 
