@@ -27,7 +27,7 @@ class Preparation < ApplicationRecord
   def display_name
     display_name = "#{self.prep_type}"
     if self.description.present?
-      display_name += " - #{self.description}"
+      display_name += " - #{self.description.split('|').first}"
     end
     display_name
   end
