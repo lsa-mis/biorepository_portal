@@ -95,7 +95,7 @@ class ItemsController < ApplicationController
     @total_items = filtered_items.count
     @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @collections = Item.joins(:collection).where(id: filtered_items.select(:id)).distinct.pluck('collections.division').join(', ')
-    @all_collections = Collection.all
+    @all_collections = Collection.order(:division)
     
     @dynamic_fields = []
     # Reprocessing params to ensure dynamic fields are included
