@@ -83,10 +83,15 @@ class ItemsController < ApplicationController
         transform_search_groupings
       end
       @quick_search_filters = false
-      @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
+      @q = Item.joins(:identifications, :collection, :preparations).ransack(params[:q])
     end
 
-    filtered_items = @q.result(:distinct => true)
+    if params[:sort].present?
+      @sort = params[:sort]
+      @q.sorts = @sort
+    end
+
+    filtered_items = @q.result.group('items.id, identifications.scientific_name')
     @total_items = filtered_items.count
     @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @collections = Item.joins(:collection).where(id: filtered_items.select(:id)).distinct.pluck('collections.division').join(', ')
