@@ -71,7 +71,7 @@ class Item < ApplicationRecord
 
   def display_name
     display_name = self.name
-    display_name += " - " + self.preparations.map(&:prep_type).join(", ") if self.preparations.any?
+    display_name += " - " + self.preparations.map(&:display_name).join(", ") if self.preparations.any?
     display_name
   end
 
