@@ -40,6 +40,7 @@ module ActiveFiltersHelper
     "country_case_insensitive_in" => "Country or Region",
     "state_province_case_insensitive_in" => "State/Province",
     "sex_case_insensitive_in" => "Sex",
+    "preparations_prep_type_case_insensitive_in"  => "Preparation Type",
     "identifications_kingdom_case_insensitive_in" => "Kingdom",
     "identifications_phylum_case_insensitive_in" => "Phylum",
     "identifications_class_name_case_insensitive_in" => "Class",
