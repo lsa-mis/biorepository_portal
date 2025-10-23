@@ -97,14 +97,21 @@ class ItemsController < ApplicationController
         transform_search_groupings
       end
       @quick_search_filters = false
-      @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
+      @q = Item.left_outer_joins(:identifications, :collection, :preparations)
+              .select('items.*, identifications.scientific_name, collections.division, preparations.prep_type')
+              .ransack(params[:q])
     end
 
-    filtered_items = @q.result(:distinct => true)
-    @total_items = filtered_items.count
+    if params[:sort].present?
+      @sort = params[:sort]
+      @q.sorts = @sort
+    end
+
+    filtered_items = @q.result.distinct
+    @total_items = filtered_items.count('DISTINCT items.id')
     @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
-    @collections = Item.joins(:collection).where(id: filtered_items.select(:id)).distinct.pluck('collections.division').join(', ')
-    @all_collections = Collection.all
+    @collections = filtered_items.pluck(:division).uniq.join(', ')
+    @all_collections = Collection.order(:division)
     
     @dynamic_fields = []
     # Reprocessing params to ensure dynamic fields are included

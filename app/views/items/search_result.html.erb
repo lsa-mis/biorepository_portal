@@ -22,6 +22,10 @@
           </div>
           <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 mb-2">
             <div>
+              <label for="switch_view" class="h5">Sort</label>
+              <%= select_tag "sort", options_for_select(fields_to_sort_items, selected: @sort), :"data-action" => "search#submit" %>
+            </div>
+            <div>
               <label for="switch_view" class="h5">Switch View</label>
               <%= select_tag "switch_view", options_for_select(item_views, selected: @view), :"data-action" => "search#submit" %>
             </div>
@@ -30,7 +34,7 @@
               <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "search#submit" %>
             </div>
             <div class="mt-4">
-              <%= link_to export_to_csv_path(request.parameters.slice(:q).merge(format: 'csv')), class: "link_to", data: { turbo: false } do %>
+              <%= link_to export_to_csv_path(request.parameters.slice(:q).merge(format: 'csv')), class: "text-nowrap btn btn-primary", data: { turbo: false } do %>
                 Export to CSV
               <% end %>
             </div>
