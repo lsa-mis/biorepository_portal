@@ -83,7 +83,9 @@ class ItemsController < ApplicationController
         transform_search_groupings
       end
       @quick_search_filters = false
-      @q = Item.joins(:identifications, :collection, :preparations).ransack(params[:q])
+      @q = Item.joins(:identifications, :collection, :preparations)
+              .select('items.*, identifications.scientific_name, collections.division, preparations.prep_type')
+              .ransack(params[:q])
     end
 
     if params[:sort].present?
@@ -91,10 +93,10 @@ class ItemsController < ApplicationController
       @q.sorts = @sort
     end
 
-    filtered_items = @q.result.group('items.id, identifications.scientific_name')
-    @total_items = filtered_items.count
+    filtered_items = @q.result.distinct
+    @total_items = filtered_items.select('items.id').count
     @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
-    @collections = Item.joins(:collection).where(id: filtered_items.select(:id)).distinct.pluck('collections.division').join(', ')
+    @collections = @items.map(&:division).uniq.join(', ')
     @all_collections = Collection.order(:division)
     
     @dynamic_fields = []
