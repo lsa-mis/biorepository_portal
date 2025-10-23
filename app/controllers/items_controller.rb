@@ -73,6 +73,20 @@ class ItemsController < ApplicationController
         end
       end
 
+    @prep_types = 
+      Rails.cache.fetch("prep_types_filters_#{collection_ids.sort.join('_')}", expires_in: 12.hours) do
+        prep_types = included_items.joins(:preparations)
+          .pluck('preparations.prep_type')
+
+        prep_types_set = Set.new
+
+        prep_types.each do |prep_type|
+          prep_types_set.add([prep_type&.titleize, prep_type&.downcase]) if prep_type.present?
+        end
+
+        prep_types_set.sort_by(&:first)
+      end
+
     if session[:quick_search_q].present?
       @q = Item.ransack(session[:quick_search_q])
       transform_quick_search_params
