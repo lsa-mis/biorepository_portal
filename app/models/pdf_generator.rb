@@ -120,7 +120,11 @@ class PdfGenerator
       additional_address_line += @shipping_address.address_line_3
     end
     if @shipping_address.address_line_4.present?
-      additional_address_line += ", " + @shipping_address.address_line_4
+      if additional_address_line.present?
+        additional_address_line += ", " + @shipping_address.address_line_4
+      else
+        additional_address_line += @shipping_address.address_line_4
+      end
     end
     city = @shipping_address.city + ", " + @shipping_address.state + " " + @shipping_address.zip + ", " + @shipping_address.country
 
