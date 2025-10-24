@@ -10,7 +10,6 @@
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
       <% @addresses.each do |address| %>
         <div class="col">
-          <%= link_to edit_address_path(address), class: "text-decoration-none text-reset" do %>
             <div class="card h-100 shadow-sm <%= 'border-primary' if address.primary %>">
               <div class="card-body <%= 'bg-light border border-primary' if address.primary %>">
                 <% if address.primary %>
@@ -18,13 +17,16 @@
                 <% else %>
                   <div class="mb-2">&nbsp;</div>
                 <% end %>
-                <% unless address.address_line_2.present? %>
-                  <div class="mb-2">&nbsp;</div>
-                <% end %>
                 <p class="card-title fw-bold mb-1"><%= address.first_name %> <%= address.last_name %></p>
                 <p class="card-text mb-1"><%= address.address_line_1 %></p>
                 <% if address.address_line_2.present? %>
                   <p class="card-text mb-1"><%= address.address_line_2 %></p>
+                <% end %>
+                <% if address.address_line_3.present? %>
+                  <p class="card-text mb-1"><%= address.address_line_3 %></p>
+                <% end %>
+                <% if address.address_line_4.present? %>
+                  <p class="card-text mb-1"><%= address.address_line_4 %></p>
                 <% end %>
                 <p class="card-text mb-1"><%= "#{address.city}, #{address.state} #{address.zip}" %></p>
                 <p class="card-text mb-1"><%= address.country %></p>
@@ -36,7 +38,6 @@
                 <%= link_to "Edit", edit_address_path(address), class: "btn btn-sm btn-outline-secondary ms-auto" %>
               </div>
             </div>
-          <% end %>
         </div>
       <% end %>
     </div>

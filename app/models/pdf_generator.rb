@@ -111,9 +111,20 @@ class PdfGenerator
   end
 
   def render_user_information(pdf, user)
-    street = @shipping_address.address_line_1
+    address_line = @shipping_address.address_line_1
+    additional_address_line = ""
     if @shipping_address.address_line_2.present?
-      street += ", " + @shipping_address.address_line_2
+      address_line += ", " + @shipping_address.address_line_2
+    end
+    if @shipping_address.address_line_3.present?
+      additional_address_line += @shipping_address.address_line_3
+    end
+    if @shipping_address.address_line_4.present?
+      if additional_address_line.present?
+        additional_address_line += ", " + @shipping_address.address_line_4
+      else
+        additional_address_line += @shipping_address.address_line_4
+      end
     end
     city = @shipping_address.city + ", " + @shipping_address.state + " " + @shipping_address.zip + ", " + @shipping_address.country
 
@@ -126,7 +137,10 @@ class PdfGenerator
     # Use indent method to add spacing to the beginning of lines
     pdf.indent(40) do
       pdf.text "#{@shipping_address.full_name}, #{@shipping_address.phone}, #{@shipping_address.email}", size: 12
-      pdf.text street, size: 12
+      pdf.text address_line, size: 12
+      if additional_address_line.present?
+        pdf.text additional_address_line, size: 12
+      end
       pdf.text city, size: 12
     end
 
