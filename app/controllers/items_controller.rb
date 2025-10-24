@@ -102,15 +102,17 @@ class ItemsController < ApplicationController
               .ransack(params[:q])
     end
 
+    filtered_items = @q.result.distinct
+    @total_items = filtered_items.count('DISTINCT items.id')
+    @collections = filtered_items.joins(:collection).distinct.pluck('collections.division').join(', ')
+
     if params[:sort].present?
       @sort = params[:sort]
       @q.sorts = @sort
+      filtered_items = @q.result.distinct
     end
 
-    filtered_items = @q.result.distinct
-    @total_items = filtered_items.count('DISTINCT items.id')
     @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
-    @collections = filtered_items.pluck(:division).uniq.join(', ')
     @all_collections = Collection.order(:division)
     
     @dynamic_fields = []
