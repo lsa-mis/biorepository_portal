@@ -5,6 +5,8 @@
 #  id             :bigint           not null, primary key
 #  address_line_1 :string
 #  address_line_2 :string
+#  address_line_3 :string
+#  address_line_4 :string
 #  city           :string
 #  country_code   :string
 #  email          :string

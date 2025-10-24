@@ -5,6 +5,8 @@
 #  id             :bigint           not null, primary key
 #  address_line_1 :string
 #  address_line_2 :string
+#  address_line_3 :string
+#  address_line_4 :string
 #  city           :string
 #  country_code   :string
 #  email          :string
@@ -50,6 +52,12 @@ class Address < ApplicationRecord
     string += "#{self.address_line_1}"
     if self.address_line_2.present?
       string += ", #{self.address_line_2}"
+    end
+    if self.address_line_3.present?
+      string += ", #{self.address_line_3}"
+    end
+    if self.address_line_4.present?
+      string += ", #{self.address_line_4}"
     end
     string += ", #{self.city}, #{self.state} #{self.zip}, #{self.country}"
     string
