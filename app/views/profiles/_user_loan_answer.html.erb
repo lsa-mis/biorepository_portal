@@ -1,0 +1,57 @@
+<div id="loan_answer_<%= question.id %>" class="border rounded p-3">
+  <p>
+    <strong><%= question.position %>. <%= question.question %></strong>
+    <% if question.required? %>
+      <span class="text-danger">*</span>
+    <% end %>
+    <% if local_assigns[:disabled] %>
+      <button class="btn btn-sm btn-outline-secondary" disabled >Edit</button>
+    <% else %>
+      <%= link_to edit_loan_answer_path(question, format: :turbo_stream),
+                  data: {
+                    controller: "modal-link",
+                    turbo_frame: "modal_content_frame",
+                    bs_toggle: "modal",
+                    bs_target: "#sharedModal",
+                    action: "click->modal-link#click keydown->modal-link#keydown",
+                    modal_link_turbo_frame_value: "modal_content_frame",
+                    modal_link_modal_target_value: "#sharedModal"
+                  },
+                  aria: { label: "Edit #{question}" },
+                  title: "Edit #{question}",
+                  role: "button",
+                  tabindex: "0" do %>
+          <i class="bi bi-pencil-square text-primary" aria-hidden="true"></i>
+      <% end %>
+    <% end %>
+  </p>
+  <% if question.question_type == "attachments" %>
+    <p>
+      <strong>Attachments:</strong>
+      <% if answer&.attachments&.attached? %>
+        <% answer.attachments.each do |attachment| %>
+          <%= link_to attachment.filename.to_s, rails_blob_path(attachment, disposition: "attachment"), target: "_blank", rel: "noopener noreferrer" %><br>
+        <% end %>
+      <% else %>
+        <% if question.required? %>
+          <span class="text-danger">Warning: This question is required but not answered.</span>
+        <% else %>
+          <%= "No answer provided" %>
+        <% end %>
+      <% end %>
+    </p>
+  <% else %>
+    <p>
+      <% plain_answer = answer.present? ? answer.answer.to_plain_text.strip.presence : nil %>
+      <% if question.required? %>
+        <% if plain_answer %>
+          <%= plain_answer %>
+        <% else %>
+          <span class="text-danger">Warning: This question is required but not answered.</span>
+        <% end %>
+      <% else %>
+        <%= plain_answer || "No answer provided" %>
+      <% end %>
+    </p>
+  <% end %>
+</div>
