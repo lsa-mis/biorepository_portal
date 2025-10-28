@@ -18,11 +18,13 @@
       <% end %>
     <% end %>
   </p>
-  <% if question.question_type == "attachment" %>
+  <% if question.question_type == "attachments" %>
     <p>
-      <strong>Attachment:</strong>
-      <% if answer&.attachment&.attached? %>
-        <%= link_to answer.attachment.filename.to_s, rails_blob_path(answer.attachment, disposition: "attachment"), target: "_blank", rel: "noopener noreferrer" %>
+      <strong>Attachments:</strong>
+      <% if answer&.attachments&.attached? %>
+        <% answer.attachments.each do |attachment| %>
+          <%= link_to attachment.filename.to_s, rails_blob_path(attachment, disposition: "attachment"), target: "_blank", rel: "noopener noreferrer" %><br>
+        <% end %>
       <% else %>
         <% if question.required? %>
           <span class="text-danger">Warning: This question is required but not answered.</span>

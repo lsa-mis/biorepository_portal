@@ -19,7 +19,7 @@ class LoanQuestion < ApplicationRecord
   has_many :loan_answers, dependent: :destroy
   has_rich_text :question
   accepts_nested_attributes_for :options, allow_destroy: true
-  enum :question_type, [:text, :dropdown, :checkbox, :attachment], prefix: true
+  enum :question_type, [:text, :dropdown, :checkbox, :attachments], prefix: true
 
   validates_presence_of :question, message: "can't be blank"
   validate :question_content_uniqueness
