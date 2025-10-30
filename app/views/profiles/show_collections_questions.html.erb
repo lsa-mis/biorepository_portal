@@ -33,7 +33,9 @@
                     <% answer.attachments.each do |attachment| %>
                       <div class="d-flex gap-2 align-items-center">
                         <%= link_to("#{attachment.filename.to_s}", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %><br>
-                        <%= link_to "Remove", delete_attachment_path(attachment), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "link_to" %>
+                        <%= link_to delete_attachment_path(attachment), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "link_to" do %>
+                          <i class="bi bi-trash-fill text-danger"></i> Remove
+                        <% end %>
                       </div>
                     <% end %>
                   <% else %>
