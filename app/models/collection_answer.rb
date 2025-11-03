@@ -22,7 +22,7 @@ class CollectionAnswer < ApplicationRecord
   belongs_to :user
   belongs_to :collection_question
   has_rich_text :answer
-  has_one_attached :attachment
+  has_many_attached :attachments
   # validate :response_file_presence_for_attachment
 
   # private

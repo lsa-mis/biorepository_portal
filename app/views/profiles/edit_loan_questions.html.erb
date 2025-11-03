@@ -36,17 +36,21 @@
                 class: "form-select ms-3", prompt: "Select..." %>
           
           <% when "attachments" %>
-            <p>Currently Attached:
+            <div>
+              <span class="body-text">Currently Attached:</span>
               <% if existing_answer&.attachments&.attached? %>
                 <% existing_answer.attachments.each do |attachment| %>
-                  <%= link_to("#{attachment.filename.to_s}", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %><br>
+                  <div class="ms-3">
+                    <%= link_to("#{attachment.filename.to_s}", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %><br>
+                  </div>
                 <% end %>
               <% else %>
                 None
               <% end %>
-            </p>
-            <div class="ms-3">
-              <%= file_field_tag "loan_answers[#{loan_question.id}][]", accept: ".pdf", class: "form-control ms-3", multiple: true %>
+            </div>
+            <div>
+              <span class="body-text">Upload New Attachments (PDF only):</span>
+              <%= file_field_tag "loan_answers[#{loan_question.id}][]", accept: ".pdf", class: "form-control ms-3 mt-2", multiple: true %>
             </div>
 
           <% else %>

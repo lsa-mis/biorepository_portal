@@ -27,8 +27,8 @@
                                           existing_answer&.answer&.to_plain_text&.strip),
                        class: "form-select", prompt: "Select..." %>
 
-      <% when "attachment" %>
-        <%= file_field_tag "collection_answers[#{collection_question.id}]", accept: ".pdf", class: "form-control" %>
+      <% when "attachments" %>
+        <%= file_field_tag "collection_answers[#{collection_question.id}]", accept: ".pdf", class: "form-control", multiple: true %>
 
       <% else %>
         <div class="alert alert-warning mt-2">

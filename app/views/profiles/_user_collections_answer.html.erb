@@ -1,6 +1,11 @@
-<div id="loan_answer_<%= question.id %>" class="border rounded p-3">
+<div id="collection_question_<%= question.id %>" class="border rounded p-3">
   <p>
     <strong><%= question.position %>. <%= strip_tags(question.question) %></strong><% if question.required? %> <span class="text-danger">*</span><% end %>
+    <% if local_assigns[:disabled] %>
+      <button class="btn btn-sm btn-outline-secondary" disabled >Edit</button>
+    <% else %>
+      
+    <% end %>
   </p>
   <% if question.question_type == "attachments" %>
     <p>
@@ -34,7 +39,7 @@
       <% end %>
     </p>
   <% end %>
-  <%= link_to edit_loan_answer_path(question, format: :turbo_stream),
+  <%= link_to edit_collection_collection_answer_path(collection, question, format: :turbo_stream),
               data: {
                 controller: "modal-link",
                 turbo_frame: "modal_content_frame",
@@ -48,6 +53,6 @@
               title: "Edit #{question}",
               role: "button",
               tabindex: "0" do %>
-      <i class="bi bi-pencil-square text-primary" aria-hidden="true"></i>
+    <i class="bi bi-pencil-square text-primary" aria-hidden="true"></i>
   <% end %>
 </div>
