@@ -16,6 +16,12 @@ class ApplicationController < ActionController::Base
     whitelisted_params = params.permit(:id, :collection_id, :preview)
     { user: current_user, role: session[:role], collection_ids: session[:collection_ids], params: whitelisted_params }
   end
+
+  def delete_attachment
+    delete_file = ActiveStorage::Attachment.find(params[:id])
+    delete_file.purge
+    redirect_back(fallback_location: request.referer)
+  end
   
   private
 
