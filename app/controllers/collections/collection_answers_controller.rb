@@ -25,7 +25,6 @@ class Collections::CollectionAnswersController < ApplicationController
         raw_answer.each do |uploaded_file|
           if uploaded_file.is_a?(ActionDispatch::Http::UploadedFile)
             @answer.attachments.attach(uploaded_file) # Attach the uploaded file
-            @answer.answer = uploaded_file.original_filename # Optionally store filename or info
           end
         end
       end
