@@ -25,7 +25,6 @@ class LoanAnswersController < ApplicationController
         raw_answer.each do |file|
           if file.is_a?(ActionDispatch::Http::UploadedFile)
             @answer.attachments.attach(file) # Attach the uploaded file
-            @answer.answer = file.original_filename # Optionally store filename or info
           end
         end
       end
