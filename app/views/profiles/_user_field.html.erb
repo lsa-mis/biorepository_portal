@@ -16,26 +16,25 @@
         <span class="text-danger">Warning: This question is required but not answered.</span>
       <% end %>
     <% end %>
-
-    <% if local_assigns[:disabled] %>
-      <button class="btn btn-sm btn-outline-secondary" disabled >Edit</button>
-    <% else %>
-      <%= link_to edit_user_field_path(field_name, format: :turbo_stream),
-                  data: {
-                    controller: "modal-link",
-                    turbo_frame: "modal_content_frame",
-                    bs_toggle: "modal",
-                    bs_target: "#sharedModal",
-                    action: "click->modal-link#click keydown->modal-link#keydown",
-                    modal_link_turbo_frame_value: "modal_content_frame",
-                    modal_link_modal_target_value: "#sharedModal"
-                  },
-                  aria: { label: "Edit #{label}" },
-                  title: "Edit #{label}",
-                  role: "button",
-                  tabindex: "0" do %>
-        <i class="bi bi-pencil-square text-primary" aria-hidden="true"></i>
-      <% end %>
-    <% end %>
   </p>
+  <% if local_assigns[:disabled] %>
+    <button class="btn btn-sm btn-outline-secondary" disabled >Edit</button>
+  <% else %>
+    <%= link_to edit_user_field_path(field_name, format: :turbo_stream), class: "link_to",
+                data: {
+                  controller: "modal-link",
+                  turbo_frame: "modal_content_frame",
+                  bs_toggle: "modal",
+                  bs_target: "#sharedModal",
+                  action: "click->modal-link#click keydown->modal-link#keydown",
+                  modal_link_turbo_frame_value: "modal_content_frame",
+                  modal_link_modal_target_value: "#sharedModal"
+                },
+                aria: { label: "Edit #{label}" },
+                title: "Edit #{label}",
+                role: "button",
+                tabindex: "0" do %>
+      <i class="bi bi-pencil-square text-primary"></i> <span class="body-sm-text">Edit</span>
+    <% end %>
+  <% end %>
 </div>

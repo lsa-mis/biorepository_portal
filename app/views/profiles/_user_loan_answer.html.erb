@@ -37,7 +37,7 @@
   <% if local_assigns[:disabled] %>
       <button class="btn btn-sm btn-outline-secondary" disabled >Edit</button>
   <% else %>
-    <%= link_to edit_loan_answer_path(question, format: :turbo_stream),
+    <%= link_to edit_loan_answer_path(question, format: :turbo_stream), class: "link_to",
                 data: {
                   controller: "modal-link",
                   turbo_frame: "modal_content_frame",
@@ -48,10 +48,10 @@
                   modal_link_modal_target_value: "#sharedModal"
                 },
                 aria: { label: "Edit #{question}" },
-                title: "Edit Question#{question}",
+                title: "Edit Question #{question.position}",
                 role: "button",
                 tabindex: "0" do %>
-        <i class="bi bi-pencil-square text-primary" aria-hidden="true"></i>
+      <i class="bi bi-pencil-square text-primary"></i> <span class="body-sm-text">Edit</span>
     <% end %>
   <% end %>
 </div>
