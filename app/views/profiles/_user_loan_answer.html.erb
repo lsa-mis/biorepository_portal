@@ -8,8 +8,8 @@
       <% if answer&.attachments&.attached? %>
         <% answer.attachments.each do |attachment| %>
           <%= link_to attachment.filename.to_s, rails_blob_path(attachment, disposition: "attachment"), target: "_blank", rel: "noopener noreferrer" %>
-          <%= link_to delete_attachment_path(attachment), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "link_to" do %>
-            <i class="bi bi-trash-fill text-danger"></i>
+          <%= link_to delete_attachment_path(attachment), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "link_to", "aria-label": "Delete #{attachment.filename}" do %>
+            <i class="bi bi-trash-fill text-danger"></i> <span class="visually-hidden">Delete</span>
           <% end %><br>
         <% end %>
       <% else %>
