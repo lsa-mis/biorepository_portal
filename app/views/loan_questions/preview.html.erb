@@ -41,9 +41,9 @@
                 <% end %>
               </select>
             </div>
-          <% elsif loan_question.question_type == "attachment" %>
+          <% elsif loan_question.question_type == "attachments" %>
             <div class="ms-3">
-              <input type="file" class="form-control">
+              <input type="file" class="form-control" multiple>
             </div>
           <% else %>
             <div class="alert alert-warning mt-3">

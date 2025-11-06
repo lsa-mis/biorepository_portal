@@ -22,7 +22,7 @@ class LoanAnswer < ApplicationRecord
   belongs_to :user
   belongs_to :loan_question
   has_rich_text :answer
-  has_one_attached :attachment
+  has_many_attached :attachments
   # validate :response_file_presence_for_attachment
   # validate :validate_answer_presence
 

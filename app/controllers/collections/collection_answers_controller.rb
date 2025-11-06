@@ -20,13 +20,13 @@ class Collections::CollectionAnswersController < ApplicationController
 
     @answer = @question.collection_answers.find_or_initialize_by(user: current_user)
 
-    if @question.question_type == "attachment"
-      if raw_answer.present? && raw_answer.is_a?(ActionDispatch::Http::UploadedFile)
-        @answer.attachment.attach(raw_answer) # Attach the uploaded file
-        @answer.answer = raw_answer.original_filename # Optionally store filename or info
-      else
-        @answer.attachment.purge if @answer.attachment.attached?
-        @answer.answer = nil
+    if @question.question_type == "attachments"
+      if raw_answer.present? && raw_answer.is_a?(Array)
+        raw_answer.each do |uploaded_file|
+          if uploaded_file.is_a?(ActionDispatch::Http::UploadedFile)
+            @answer.attachments.attach(uploaded_file) # Attach the uploaded file
+          end
+        end
       end
     else
       answer_value = raw_answer.is_a?(Array) ? raw_answer.reject(&:blank?).join(", ") : strip_tags(raw_answer.to_s.strip)
