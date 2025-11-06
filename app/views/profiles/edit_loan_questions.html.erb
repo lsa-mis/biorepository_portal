@@ -9,39 +9,46 @@
         <% existing_answer = @loan_answers.find { |a| a.loan_question_id == loan_question.id } %>
 
         <div class="mb-4 p-3 bg-light">
-          <label for=<%= "loan_answers_#{loan_question.id}" %> class="form-label"><%= loan_question.question %></label>
-          <% if loan_question.required? %>
-            <span class="text-danger">*</span>
-          <% end %>
-
           <% case loan_question.question_type %>
           <% when "text" %>
+            <label for=<%= "loan_answers_#{loan_question.id}" %> class="form-label"><%= strip_tags(loan_question.question) %></label>
+            <%= content_tag(:span, "*", class: "text-danger") if loan_question.required? %>
             <%= text_field_tag "loan_answers[#{loan_question.id}]",
                 existing_answer&.answer&.to_plain_text&.strip || "",
                 class: "form-control ms-3" %>
 
           <% when "checkbox" %>
+            <p>
+              <%= strip_tags(loan_question.question) %>
+              <%= content_tag(:span, "*", class: "text-danger") if loan_question.required? %>
+            </p>
             <p>Pick one or more options below</p>
             <% loan_question.options.each do |option| %>
               <div class="form-check ms-3">
-                <%= check_box_tag "loan_answers[#{loan_question.id}][]", option.value,
+                <%= check_box_tag "loan_answers[#{loan_question.id}_#{option.id}][]", option.value,
                   (existing_answer&.answer&.to_plain_text&.strip || "").to_s.include?(option.value) %>
-                <%= label_tag nil, option.value, class: "form-check-label" %>
+                <%= label_tag "loan_answers_#{loan_question.id}_#{option.id}_", option.value, class: "form-check-label" %>
               </div>
             <% end %>
 
           <% when "dropdown" %>
+            <label for=<%= "loan_answers_#{loan_question.id}" %> class="form-label"><%= strip_tags(loan_question.question) %></label>
+            <%= content_tag(:span, "*", class: "text-danger") if loan_question.required? %>
             <%= select_tag "loan_answers[#{loan_question.id}]",
                 options_for_select(loan_question.options.map(&:value), existing_answer&.answer&.to_plain_text&.strip || ""),
                 class: "form-select ms-3", prompt: "Select..." %>
           
           <% when "attachments" %>
+            <p>
+              <%= strip_tags(loan_question.question) %>
+              <%= content_tag(:span, "*", class: "text-danger") if loan_question.required? %>
+            </p>
             <div>
               <span class="body-text">Currently Attached:</span>
               <% if existing_answer&.attachments&.attached? %>
                 <% existing_answer.attachments.each do |attachment| %>
                   <div class="ms-3">
-                    <%= link_to("#{attachment.filename.to_s}", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %><br>
+                    <%= link_to("#{attachment.filename.to_s} (PDF)", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", title: "Opens PDF document in new tab", "aria-label": "Open #{attachment.filename.to_s} PDF document in new tab") %><br>
                   </div>
                 <% end %>
               <% else %>
@@ -50,7 +57,7 @@
             </div>
             <div>
               <span class="body-text">Upload New Attachments (PDF only):</span>
-              <%= file_field_tag "loan_answers[#{loan_question.id}][]", accept: ".pdf", class: "form-control ms-3 mt-2", multiple: true %>
+              <%= file_field_tag "loan_answers[#{loan_question.id}][]", accept: ".pdf", class: "form-control ms-3 mt-2", multiple: true, "aria-label": "Upload new attachments for #{loan_question.question}" %>
             </div>
 
           <% else %>

@@ -9,18 +9,19 @@
         <% existing_answer = @collection_answers.find { |a| a.collection_question_id == question.id } %>
 
         <div class="mb-4 p-3 bg-light">
-          <label class="form-label"><%= question.question %></label>
-          <% if question.required? %>
-            <span class="text-danger">*</span>
-          <% end %>
-
           <% case question.question_type %>
           <% when "text" %>
+            <label for=<%= "collection_answers_#{question.id}" %> class="form-label"><%= strip_tags(question.question) %></label>
+            <%= content_tag(:span, "*", class: "text-danger") if question.required? %>
             <%= text_field_tag "collection_answers[#{question.id}]",
                 existing_answer&.answer&.to_plain_text&.strip || "",
                 class: "form-control ms-3" %>
 
           <% when "checkbox" %>
+            <p>
+              <%= strip_tags(question.question) %>
+              <%= content_tag(:span, "*", class: "text-danger") if question.required? %>
+            </p>
             <p>Pick one or more options below</p>
             <% question.collection_options.each do |option| %>
               <div class="form-check ms-3">
@@ -31,11 +32,17 @@
             <% end %>
 
           <% when "dropdown" %>
+            <label for=<%= "collection_answers_#{question.id}" %> class="form-label"><%= strip_tags(question.question) %></label>
+            <%= content_tag(:span, "*", class: "text-danger") if question.required? %>
             <%= select_tag "collection_answers[#{question.id}]",
                 options_for_select(question.collection_options.map(&:value), existing_answer&.answer&.to_plain_text&.strip || ""),
                 class: "form-select ms-3", prompt: "Select..." %>
 
           <% when "attachments" %>
+            <p>
+              <%= strip_tags(question.question) %>
+              <%= content_tag(:span, "*", class: "text-danger") if question.required? %>
+            </p>
             <div>
               <span class="body-text">Currently Attached:</span>
               <% if existing_answer&.attachments&.attached? %>
