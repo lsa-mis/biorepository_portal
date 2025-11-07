@@ -32,8 +32,8 @@
                   <% if answer&.attachments&.attached? %>
                     <% answer.attachments.each do |attachment| %>
                       <div class="d-flex gap-2 align-items-center">
-                        <%= link_to("#{attachment.filename.to_s} (PDF)", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", title: "Opens PDF document in new tab", "aria-label": "Open #{attachment.filename.to_s} PDF document in new tab") %><br>
-                        <%= link_to delete_attachment_path(attachment), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "link_to", "aria-label": "Delete #{attachment.filename}" do %>
+                        <%= link_to("#{h(attachment.filename.to_s)} (PDF)", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", title: "Opens PDF document in new tab", "aria-label": "Open #{h(attachment.filename.to_s)} PDF document in new tab") %><br>
+                        <%= link_to delete_attachment_path(attachment), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "link_to", "aria-label": "Delete #{h(attachment.filename.to_s)}" do %>
                           <i class="bi bi-trash-fill text-danger"></i> <span class="visually-hidden">Delete</span>
                         <% end %>
                       </div>
@@ -87,8 +87,8 @@
                     <% if answer&.attachments&.attached? %>
                       <% answer.attachments.each do |attachment| %>
                         <div class="d-flex gap-2 align-items-center">
-                          <%= link_to("#{attachment.filename.to_s}", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %><br>
-                          <%= link_to delete_attachment_path(attachment), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "link_to", "aria-label": "Delete #{attachment.filename}" do %>
+                          <%= link_to("#{h(attachment.filename.to_s)} (PDF)", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", title: "Opens PDF document in new tab", "aria-label": "Open #{h(attachment.filename.to_s)} PDF document in new tab") %><br>
+                          <%= link_to delete_attachment_path(attachment), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "link_to", "aria-label": "Delete #{h(attachment.filename.to_s)}" do %>
                             <i class="bi bi-trash-fill text-danger"></i> <span class="visually-hidden">Delete</span>
                           <% end %>
                         </div>

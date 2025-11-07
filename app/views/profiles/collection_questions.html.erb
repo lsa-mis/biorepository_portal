@@ -48,9 +48,11 @@
               <% if existing_answer&.attachments&.attached? %>
                 <div class="ms-3">
                   <% existing_answer.attachments.each do |attachment| %>
-                    <%= link_to("#{attachment.filename.to_s}", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %><br>
+                    <%= link_to("#{h(attachment.filename.to_s)} (PDF)", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", title: "Opens PDF document in new tab", "aria-label": "Open #{h(attachment.filename.to_s)} PDF document in new tab") %>
+                    <%= link_to delete_attachment_path(attachment), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "link_to", "aria-label": "Delete #{h(attachment.filename.to_s)}" do %>
+                      <i class="bi bi-trash-fill text-danger"></i> <span class="visually-hidden">Delete</span>
+                    <% end %><br>
                   <% end %>
-                </div>
               <% else %>
                 None
               <% end %>
@@ -66,7 +68,7 @@
           <% end %>
         </div>
       <% end %>
-      <div class="mb-3">
+      <div class="mt-3">
         <%= submit_tag "Submit", class: "btn btn-primary" %>
         <%= link_to "Cancel", profile_path, class: "link_to" %>
       </div>
