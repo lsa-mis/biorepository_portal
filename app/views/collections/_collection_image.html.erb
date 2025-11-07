@@ -3,7 +3,7 @@
     <% if collection.image.attached? %>
       <div class="d-flex align-items-center gap-3">
         <span class="body-sm-text">Currently Attached:</span>        
-        <%= link_to("#{collection.image.filename.to_s} (#{collection.image.filename.extension})", collection.image, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", title: "Opens image in new tab", "aria-label": "Open #{collection.image.filename.to_s} image in new tab") %><br>
+        <%= link_to("#{h(collection.image.filename.to_s)} (#{collection.image.filename.extension})", collection.image, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", title: "Opens image in new tab", "aria-label": "Open #{h(collection.image.filename.to_s)} image in new tab") %><br>
         <%= link_to "Delete", collection_delete_image_path(collection.id), 
             data: { 
               turbo_method: :get,
