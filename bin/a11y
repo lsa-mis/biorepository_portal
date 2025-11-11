@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Quick script to run accessibility tests
+
+set -e
+
+case "$1" in
+  watch)
+    echo "Running accessibility tests in watch mode..."
+    bundle exec rspec spec/system/ --watch
+    ;;
+  all)
+    echo "Running all system tests (includes accessibility)..."
+    bundle exec rspec spec/system/
+    ;;
+  rte)
+    echo "Running RTE accessibility tests..."
+    bundle exec rspec spec/system/rte_loaded_spec.rb
+    ;;
+  *)
+    echo "Running accessibility tests..."
+    bundle exec rspec spec/system/
+    ;;
+esac
+
