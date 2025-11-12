@@ -90,5 +90,3 @@ end
 group :development, :staging do
   gem "letter_opener_web"
 end
-
-gem "yard", "~> 0.9.37", :group => :development
