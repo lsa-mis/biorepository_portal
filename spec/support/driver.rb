@@ -6,6 +6,14 @@ webdriver_options = {
   options: browser_options
 }
 
+# Enable capturing browser console logs so system specs can assert on JS console output.
+# Add Chrome logging preferences directly to the Options (preferred over deprecated Remote::Capabilities).
+begin
+  browser_options.add_option('goog:loggingPrefs', { browser: 'ALL' })
+rescue => e
+  puts "Could not set chrome logging prefs for selenium driver: #{e.message}"
+end
+
 unless ENV['SHOW_TEST_BROWSER'].present?
   browser_options.add_argument('--headless')
 end

@@ -2,6 +2,13 @@
 
 module RailsAccessibilityTesting
   # Configuration for the accessibility testing gem
+  #
+  # @example
+  #   RailsAccessibilityTesting.configure do |config|
+  #     config.auto_run_checks = true
+  #   end
+  #
+  # @attr [Boolean] auto_run_checks Whether to automatically run checks after system specs
   class Configuration
     attr_accessor :auto_run_checks
 

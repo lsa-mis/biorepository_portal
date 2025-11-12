@@ -135,3 +135,10 @@ Rails.application.routes.draw do
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development? || Rails.env.staging?
 
 end
+
+# Test-only helper route to sign in a user for system specs (bypass SSO)
+if Rails.env.test?
+  Rails.application.routes.draw do
+    match '/test_sign_in', to: 'test_sessions#create', via: [:get, :post], as: :test_sign_in
+  end
+end

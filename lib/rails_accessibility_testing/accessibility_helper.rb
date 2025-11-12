@@ -1,7 +1,22 @@
 # frozen_string_literal: true
 
 # Accessibility helper methods for system specs
-# Provides comprehensive accessibility checks with detailed error messages
+#
+# Provides comprehensive accessibility checks with detailed error messages.
+# This module is automatically included in all system specs when the gem is required.
+#
+# @example Using in a system spec
+#   it 'has no accessibility issues' do
+#     visit root_path
+#     check_comprehensive_accessibility
+#   end
+#
+# @example Individual checks
+#   check_image_alt_text
+#   check_form_labels
+#   check_interactive_elements_have_names
+#
+# @see RailsAccessibilityTesting::ErrorMessageBuilder For error message formatting
 module AccessibilityHelper
   # Get current page context for error messages
   # @param element_context [Hash] Optional element context to help determine exact view file

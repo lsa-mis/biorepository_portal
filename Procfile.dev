@@ -1,2 +1,3 @@
-web: bin/rails server
+web: bin/rails_server_safe
 css: bin/rails dartsass:watch
+a11y: while true; do bundle exec ruby lib/rails_accessibility_testing/dev_checker.rb; sleep 60; done

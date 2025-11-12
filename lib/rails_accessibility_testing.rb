@@ -1,19 +1,34 @@
 # frozen_string_literal: true
 
 # Rails Accessibility Testing Gem
-# Automatically configures accessibility testing for Rails system specs
+#
+# Automatically configures accessibility testing for Rails system specs with
+# comprehensive checks and detailed error messages.
+#
+# @version 1.0.0
+# @author Regan Maharjan
 #
 # @example Basic usage
 #   # In spec/rails_helper.rb
 #   require 'rails_accessibility_testing'
 #
-#   # That's it! Checks run automatically on system specs
+#   # That's it! Comprehensive accessibility checks run automatically
+#   # after each system spec that visits a page
 #
-# @example Custom configuration
-#   RailsAccessibilityTesting.configure do |config|
-#     config.use_basic_checks  # Only run basic checks
-#     config.change_window_seconds = 600  # 10 minutes
+# @example Manual checks in specs
+#   it 'has no accessibility issues' do
+#     visit root_path
+#     check_comprehensive_accessibility  # All 11 checks
 #   end
+#
+# @example Skip checks for specific tests
+#   it 'does something', skip_a11y: true do
+#     # This test won't run accessibility checks
+#   end
+#
+# @see RailsAccessibilityTesting::AccessibilityHelper
+# @see RailsAccessibilityTesting::ErrorMessageBuilder
+# @see RailsAccessibilityTesting::RSpecIntegration
 
 require 'axe-capybara'
 require 'axe/matchers/be_axe_clean'

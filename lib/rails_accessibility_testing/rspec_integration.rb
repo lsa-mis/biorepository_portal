@@ -16,7 +16,8 @@ module RailsAccessibilityTesting
 
       # Enable automatic spec type inference from file location
       def enable_spec_type_inference(config)
-        config.infer_spec_type_from_file_location!
+        # Only call if the method exists (requires rspec-rails to be loaded)
+        config.infer_spec_type_from_file_location! if config.respond_to?(:infer_spec_type_from_file_location!)
       end
 
       # Include Axe matchers for system specs

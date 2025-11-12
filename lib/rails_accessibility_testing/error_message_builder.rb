@@ -2,6 +2,22 @@
 
 module RailsAccessibilityTesting
   # Builds formatted error messages for accessibility issues
+  #
+  # Formats comprehensive error messages with:
+  # - Error type and header
+  # - Page context (URL, path, view file)
+  # - Element details (tag, id, classes, etc.)
+  # - Specific remediation steps
+  # - WCAG references
+  #
+  # @example
+  #   ErrorMessageBuilder.build(
+  #     error_type: "Image missing alt attribute",
+  #     element_context: { tag: "img", src: "logo.png" },
+  #     page_context: { url: "http://example.com", path: "/" }
+  #   )
+  #
+  # @api private
   class ErrorMessageBuilder
     SEPARATOR = '=' * 70
     WCAG_REFERENCE = 'https://www.w3.org/WAI/WCAG21/Understanding/'

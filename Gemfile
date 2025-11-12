@@ -74,6 +74,7 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'capybara', '~> 3.40'
   gem 'webdrivers', '= 5.3.0'
+  gem 'axe-core-capybara'
   gem 'faker'
   gem 'pry'
   gem 'pundit-matchers', '~> 3.1', '>= 3.1.2'
@@ -89,3 +90,5 @@ end
 group :development, :staging do
   gem "letter_opener_web"
 end
+
+gem "yard", "~> 0.9.37", :group => :development

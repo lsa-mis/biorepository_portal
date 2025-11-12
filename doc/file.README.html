@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Rails Accessibility Testing - API Documentation
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-Rails+Accessibility+Testing+Gem">Rails Accessibility Testing Gem</h1>
+
+<p><strong>Automatic accessibility testing for Rails system specs - zero configuration, zero code changes needed!</strong></p>
+<hr>
+
+<h2 id="label-F0-9F-9A-80+Quick+Start+-282+Steps-29">🚀 Quick Start (2 Steps)</h2>
+
+<h3 id="label-Step+1-3A+Add+Gem+Dependency">Step 1: Add Gem Dependency</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Gemfile
+</span><span class='id identifier rubyid_group'>group</span> <span class='symbol'>:development</span><span class='comma'>,</span> <span class='symbol'>:test</span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_gem'>gem</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>axe-core-capybara</span><span class='tstring_end'>&#39;</span></span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>Run: <code>bundle install</code></p>
+
+<h3 id="label-Step+2-3A+Require+the+Gem">Step 2: Require the Gem</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># spec/rails_helper.rb (after require &#39;rspec/rails&#39;)
+</span><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>rails_accessibility_testing</span><span class='tstring_end'>&#39;</span></span>
+</code></pre>
+
+<p><strong>That’s it!</strong> Accessibility checks now run automatically on all system specs.</p>
+<hr>
+
+<h2 id="label-F0-9F-93-9A+Complete+Documentation">📚 Complete Documentation</h2>
+
+<p><strong>For full setup, dependencies, and configuration:</strong></p>
+
+<p>👉 <strong>SETUP_GUIDE.md[SETUP_GUIDE.md]</strong> - Complete setup and configuration guide<br>👉 <strong>DEPENDENCIES.md[DEPENDENCIES.md]</strong> - Detailed dependencies and requirements</p>
+<hr>
+
+<h2 id="label-E2-9C-A8+How+It+Works">✨ How It Works</h2>
+
+<p><strong>No code changes needed!</strong> Just put specs in <code>spec/system/</code> and they’re automatically system specs:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># spec/system/my_page_spec.rb
+</span><span class='comment'># No type: :system needed - detected automatically from file location!
+</span><span class='const'>RSpec</span><span class='period'>.</span><span class='id identifier rubyid_describe'>describe</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>My Page</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_before'>before</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_visit'>visit</span> <span class='id identifier rubyid_some_path'>some_path</span> <span class='rbrace'>}</span>
+  
+  <span class='id identifier rubyid_it'>it</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>does something</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_expect'>expect</span><span class='lparen'>(</span><span class='id identifier rubyid_page'>page</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to'>to</span> <span class='id identifier rubyid_have_content'>have_content</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>something</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='comment'># ✅ Accessibility checks run automatically (only when code changes!)
+</span>  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p><strong>Automatic detection:</strong> The gem automatically: - ✅ Detects system specs by file location (<code>spec/system/</code>) - ✅ Applies accessibility checks to all system specs - ✅ No <code>type: :system</code> needed (but works if you add it) - ✅ No <code>include_examples</code> needed - ✅ No manual check calls needed</p>
+
+<p><strong>Smart change detection:</strong> Checks only run when relevant code has changed (views, controllers, helpers). This makes tests faster!</p>
+
+<p>After each system spec that visits a page, if code changed, <strong>comprehensive accessibility checks</strong> run automatically (all 11 checks): - ✅ Form labels - ✅ Image alt text - ✅ Interactive element names - ✅ Heading hierarchy - ✅ Keyboard accessibility - ✅ ARIA landmarks - ✅ Form error associations - ✅ Table structure - ✅ Custom element labels - ✅ Duplicate IDs - ✅ Skip links</p>
+
+<p>If issues are found, the test fails with detailed error messages showing: - 📄 Which file to fix - 📍 Element details - 🔧 Step-by-step remediation</p>
+<hr>
+
+<h2 id="label-F0-9F-8E-AF+Features">🎯 Features</h2>
+<ul><li>
+<p>✅ <strong>Fully automatic</strong> - No code changes needed in specs</p>
+</li><li>
+<p>✅ <strong>Auto-detects system specs</strong> - By file location (<code>spec/system/</code>)</p>
+</li><li>
+<p>✅ <strong>11 comprehensive checks</strong> with detailed errors</p>
+</li><li>
+<p>✅ <strong>File location hints</strong> - Know exactly which view to fix</p>
+</li><li>
+<p>✅ <strong>Remediation steps</strong> - Code examples showing how to fix</p>
+</li><li>
+<p>✅ <strong>Smart change detection</strong> - Only runs when code changes</p>
+</li><li>
+<p>✅ <strong>Zero configuration</strong> - Just require and it works</p>
+</li></ul>
+<hr>
+
+<h2 id="label-F0-9F-94-8D+Error+Messages">🔍 Error Messages</h2>
+
+<p>Every error includes: - 📄 Page URL and view file location - 📍 Element details (tag, ID, classes, parent) - 🔧 Step-by-step fix instructions with code - 💡 Best practices</p>
+<hr>
+
+<h2 id="label-F0-9F-8F-83+Running+Tests">🏃 Running Tests</h2>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># Run all system tests (accessibility checks run automatically)
+</span><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_rspec'>rspec</span> <span class='id identifier rubyid_spec'>spec</span><span class='op'>/</span><span class='id identifier rubyid_system'>system</span><span class='op'>/</span>
+
+<span class='comment'># Auto-runs in dev (every 30s)
+</span><span class='id identifier rubyid_bin'>bin</span><span class='op'>/</span><span class='id identifier rubyid_dev'>dev</span>
+
+<span class='comment'># Manual check
+</span><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_ruby'>ruby</span> <span class='id identifier rubyid_lib'>lib</span><span class='op'>/</span><span class='id identifier rubyid_rails_accessibility_testing'>rails_accessibility_testing</span><span class='op'>/</span><span class='id identifier rubyid_dev_checker'>dev_checker</span><span class='period'>.</span><span class='id identifier rubyid_rb'>rb</span>
+</code></pre>
+<hr>
+
+<h2 id="label-E2-9A-99-EF-B8-8F+Advanced+Usage">⚙️ Advanced Usage</h2>
+
+<h3 id="label-Skip+Checks+for+Specific+Tests">Skip Checks for Specific Tests</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_it'>it</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>does something</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>skip_a11y:</span> <span class='kw'>true</span> <span class='kw'>do</span>
+  <span class='comment'># Accessibility checks won&#39;t run
+</span><span class='kw'>end</span>
+</code></pre>
+
+<h3 id="label-Manual+Comprehensive+Checks">Manual Comprehensive Checks</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_it'>it</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>meets all standards</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_check_comprehensive_accessibility'>check_comprehensive_accessibility</span>  <span class='comment'># All 11 checks
+</span><span class='kw'>end</span>
+</code></pre>
+<hr>
+
+<h2 id="label-F0-9F-93-A6+What-27s+Included">📦 What’s Included</h2>
+<ul><li>
+<p><code>accessibility_helper.rb</code> - All 11 check functions</p>
+</li><li>
+<p><code>shared_examples.rb</code> - Reusable test patterns (optional)</p>
+</li><li>
+<p><code>dev_checker.rb</code> - Dev console checker</p>
+</li><li>
+<p>Complete documentation</p>
+</li></ul>
+
+<p><strong>Everything in one gem - automatic and zero configuration!</strong></p>
+<hr>
+
+<h2 id="label-F0-9F-93-96+Next+Steps">📖 Next Steps</h2>
+<ol><li>
+<p>Read <strong>SETUP_GUIDE.md[SETUP_GUIDE.md]</strong> for complete setup instructions</p>
+</li><li>
+<p>Check <strong>DEPENDENCIES.md[DEPENDENCIES.md]</strong> for dependency details</p>
+</li><li>
+<p>Write your specs in <code>spec/system/</code> - checks run automatically!</p>
+</li></ol>
+<hr>
+
+<h2 id="label-Requirements+Summary">Requirements Summary</h2>
+
+<p><strong>Required Gems:</strong> - <code>axe-core-capybara</code> - Automated WCAG checks - <code>rspec-rails</code> - Testing framework - <code>capybara</code> - Browser automation - <code>webdrivers</code> - Browser driver management</p>
+
+<p><strong>System Requirements:</strong> - Ruby 3.0+ (3.1+ recommended) - Rails 6.0+ (7.1+ recommended) - Chrome/Chromium browser</p>
+
+<p>See <strong>DEPENDENCIES.md[DEPENDENCIES.md]</strong> for complete details.</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Wed Nov 12 09:38:25 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.37 (ruby-3.3.6).
+</div>
+
+    </div>
+  </body>
+</html>
