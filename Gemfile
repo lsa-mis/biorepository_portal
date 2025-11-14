@@ -79,6 +79,9 @@ group :development, :test do
   gem 'pry'
   gem 'pundit-matchers', '~> 3.1', '>= 3.1.2'
   gem 'brakeman', require: false
+  
+  # Rails Accessibility Testing Gem
+  gem 'rails_accessibility_testing', git: 'https://github.com/rayraycodes/rails-accessibility-testing.git'
 end
 
 group :development do

@@ -1,3 +1,3 @@
-web: bin/rails_server_safe
+web: $(bundle show rails_accessibility_testing)/exe/rails_server_safe
 css: bin/rails dartsass:watch
-a11y: while true; do bundle exec ruby lib/rails_accessibility_testing/dev_checker.rb; sleep 60; done
+a11y: while true; do bundle exec ruby -I $(bundle show rails_accessibility_testing)/lib $(bundle show rails_accessibility_testing)/lib/rails_accessibility_testing/dev_checker.rb; sleep 60; done
