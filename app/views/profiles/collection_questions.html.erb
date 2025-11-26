@@ -23,7 +23,7 @@
               <%= content_tag(:span, "*", class: "text-danger") if question.required? %>
             </p>
             <fieldset>
-              <legend>Pick one or more options below test</legend>
+              <legend>Pick one or more options below</legend>
               <% question.collection_options.each do |option| %>
                 <div class="form-check ms-3">
                   <input type="checkbox" name="collection_answers[<%= question.id %>][]" value="<%= option.value %>" id="collection_answers_<%= question.id %>_<%= option.id %>_"
