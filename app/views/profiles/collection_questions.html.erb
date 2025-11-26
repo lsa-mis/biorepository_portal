@@ -22,12 +22,12 @@
               <%= strip_tags(question.question) %>
               <%= content_tag(:span, "*", class: "text-danger") if question.required? %>
             </p>
-            <p>Pick one or more options below</p>
+            <p>Pick one or more options below test</p>
             <% question.collection_options.each do |option| %>
               <div class="form-check ms-3">
-                <%= check_box_tag "collection_answers[#{question.id}][]", option.value,
-                  (existing_answer&.answer&.to_plain_text&.strip || "").to_s.include?(option.value) %>
-                <%= label_tag nil, option.value, class: "form-check-label" %>
+                <input type="checkbox" name="collection_answers[<%= question.id %>][]" value="<%= option.value %>" id="collection_answers_<%= question.id %>_<%= option.id %>_"
+                  <%= 'checked' if (existing_answer&.answer&.to_plain_text&.strip || "").to_s.include?(option.value) %> />
+                <%= label_tag "collection_answers_#{question.id}_#{option.id}_", option.value, class: "form-check-label" %>
               </div>
             <% end %>
 
