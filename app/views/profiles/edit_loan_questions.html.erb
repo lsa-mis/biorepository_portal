@@ -25,8 +25,8 @@
             <p>Pick one or more options below</p>
             <% loan_question.options.each do |option| %>
               <div class="form-check ms-3">
-                <%= check_box_tag "loan_answers[#{loan_question.id}_#{option.id}][]", option.value,
-                  (existing_answer&.answer&.to_plain_text&.strip || "").to_s.include?(option.value) %>
+                <input type="checkbox" name="loan_answers[<%= loan_question.id %>][]" value="<%= option.value %>" id="loan_answers_<%= loan_question.id %>_<%= option.id %>_"
+                  <%= 'checked' if (existing_answer&.answer&.to_plain_text&.strip || "").to_s.include?(option.value) %> />
                 <%= label_tag "loan_answers_#{loan_question.id}_#{option.id}_", option.value, class: "form-check-label" %>
               </div>
             <% end %>

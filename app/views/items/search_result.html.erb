@@ -22,7 +22,7 @@
           </div>
           <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 mb-2">
             <div>
-              <label for="switch_view" class="h5">Sort</label>
+              <label for="sort" class="h5">Sort</label>
               <%= select_tag "sort", options_for_select(fields_to_sort_items, selected: @sort), :"data-action" => "search#submit" %>
             </div>
             <div>
