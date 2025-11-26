@@ -39,8 +39,12 @@ class Preparation < ApplicationRecord
     self.count == 0
   end
 
+  ransacker :prep_type_case_insensitive, type: :string do
+    Arel.sql('lower(preparations.prep_type)')
+  end
+
   def self.ransackable_attributes(auth_object = nil)
-    %w[description prep_type]
+    %w[description prep_type prep_type_case_insensitive]
   end
 
   def self.ransackable_associations(auth_object = nil)

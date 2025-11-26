@@ -28,7 +28,7 @@ class CollectionQuestion < ApplicationRecord
 
   accepts_nested_attributes_for :collection_options, allow_destroy: true
 
-  enum :question_type, [:text, :dropdown, :checkbox, :attachment], prefix: true
+  enum :question_type, [:text, :dropdown, :checkbox, :attachments], prefix: true
   validates_presence_of :question, message: "can't be blank"
   validate :question_content_uniqueness_in_collection
   validates :question_type, presence: true

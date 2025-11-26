@@ -20,11 +20,11 @@
   </p>
   <p>
     <strong>PDF:</strong>
-    <%= @loan_request.pdf_file.attached? ? link_to('View PDF', rails_blob_url(@loan_request.pdf_file, disposition: "inline"), target: "_blank") : "No PDF" %>
+    <%= @loan_request.pdf_file.attached? ? link_to('View PDF in a new tab', rails_blob_url(@loan_request.pdf_file, disposition: "inline"), target: "_blank", class: "text-decoration-none") : "No PDF" %>
   </p>
   <p>
     <strong>CSV:</strong>
-    <%= @loan_request.csv_file.attached? ? link_to('Download CSV', rails_blob_url(@loan_request.csv_file, disposition: "attachment"), target: "_blank") : "No CSV" %>
+    <%= @loan_request.csv_file.attached? ? link_to('Download CSV', rails_blob_url(@loan_request.csv_file, disposition: "attachment"), target: "_blank", class: "text-decoration-none") : "No CSV" %>
   </p>
 
   <% if @loan_request.attachment_files.attached? %>
@@ -34,7 +34,7 @@
     <ul>
       <% @loan_request.attachment_files.each do |file| %>
         <li class="list-group-item">
-          <%= link_to file.filename.to_s, rails_blob_url(file, disposition: "inline"), target: "_blank", rel: "noopener noreferrer" %>
+          <%= link_to("#{h(file.filename.to_s)} (PDF)", file, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", title: "Opens PDF document in new tab", "aria-label": "Open #{h(file.filename.to_s)} PDF document in new tab") %>
         </li>
       <% end %>
     </ul>

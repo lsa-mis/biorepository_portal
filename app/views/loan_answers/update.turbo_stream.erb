@@ -1,5 +1,5 @@
 <turbo-stream action="replace" target="loan_answer_<%= @question.id %>">
   <template>
-    <%= render partial: "loan_answers/loan_answer", formats: [:html], locals: { answer: @answer, question: @question } %>
+    <%= render partial: "profiles/user_loan_answer", formats: [:html], locals: { answer: @answer, question: @question } %>
   </template>
 </turbo-stream>

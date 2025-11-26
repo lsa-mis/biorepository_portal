@@ -187,6 +187,8 @@ class LoanRequestsController < ApplicationController
           "Barcode",
           "Address Line 1",
           "Address Line 2",
+          "Address Line 3",
+          "Address Line 4",
           "City",
           "State",
           "Country",
@@ -208,6 +210,8 @@ class LoanRequestsController < ApplicationController
             requestable.preparation.barcode,
             @shipping_address&.address_line_1,
             @shipping_address&.address_line_2,
+            @shipping_address&.address_line_3,
+            @shipping_address&.address_line_4,
             @shipping_address&.city,
             @shipping_address&.state,
             @shipping_address&.country,
@@ -269,21 +273,23 @@ class LoanRequestsController < ApplicationController
 
     def attach_attachments_from_answers(answers, prefix_resolver)
       answers.each do |question, answer|
-        next unless question.question_type == "attachment"
-        next unless answer&.attachment&.attached?
+        next unless question.question_type == "attachments"
+        next unless answer&.attachments&.attached?
 
-        original_blob = answer.attachment.blob
+        answer.attachments.each_with_index do |attachment, attachment_index|
+          original_blob = attachment.blob
 
-        prefix = prefix_resolver.call(question)
-        index = question.position || "0"
-        ext = File.extname(original_blob.filename.to_s)
-        custom_filename = "#{prefix}-#{index}#{ext}"
+          prefix = prefix_resolver.call(question)
+          index = question.position || "0"
+          ext = File.extname(original_blob.filename.to_s)
+          custom_filename = "#{prefix}-#{attachment_index + 1}#{ext}"
 
-        @loan_request.attachment_files.attach(
-          io: StringIO.new(original_blob.download),
-          filename: custom_filename,
-          content_type: original_blob.content_type
-        )
+          @loan_request.attachment_files.attach(
+            io: StringIO.new(original_blob.download),
+            filename: custom_filename,
+            content_type: original_blob.content_type
+          )
+        end
       end
     end
 

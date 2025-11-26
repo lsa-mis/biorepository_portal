@@ -73,6 +73,20 @@ class ItemsController < ApplicationController
         end
       end
 
+    @prep_types = 
+      Rails.cache.fetch("prep_types_filters_#{collection_ids.sort.join('_')}", expires_in: 12.hours) do
+        prep_types = included_items.joins(:preparations)
+          .pluck('preparations.prep_type')
+
+        prep_types_set = Set.new
+
+        prep_types.each do |prep_type|
+          prep_types_set.add([prep_type&.titleize, prep_type&.downcase]) if prep_type.present?
+        end
+
+        prep_types_set.sort_by(&:first)
+      end
+
     if session[:quick_search_q].present?
       @q = Item.ransack(session[:quick_search_q])
       transform_quick_search_params
@@ -83,14 +97,23 @@ class ItemsController < ApplicationController
         transform_search_groupings
       end
       @quick_search_filters = false
-      @q = Item.includes(:collection, :identifications, :preparations).ransack(params[:q])
+      @q = Item.left_outer_joins(:identifications, :collection, :preparations)
+              .select('items.*, identifications.scientific_name, collections.division, preparations.prep_type')
+              .ransack(params[:q])
     end
 
-    filtered_items = @q.result(:distinct => true)
-    @total_items = filtered_items.count
+    filtered_items = @q.result.distinct
+    @total_items = filtered_items.count('DISTINCT items.id')
+    @collections = filtered_items.joins(:collection).distinct.pluck('collections.division').join(', ')
+
+    if params[:sort].present?
+      @sort = params[:sort]
+      @q.sorts = @sort
+      filtered_items = @q.result.distinct
+    end
+
     @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
-    @collections = Item.joins(:collection).where(id: filtered_items.select(:id)).distinct.pluck('collections.division').join(', ')
-    @all_collections = Collection.all
+    @all_collections = Collection.order(:division)
     
     @dynamic_fields = []
     # Reprocessing params to ensure dynamic fields are included

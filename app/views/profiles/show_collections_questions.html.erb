@@ -27,7 +27,24 @@
               <% end %>
             </dt>
             <dd class="col-sm-8 mb-3">
-              <%= answer&.present? ? answer.answer : content_tag(:em, "No answer provided") %>
+              <% if question.question_type == "attachments" %>
+                <p>
+                  <% if answer&.attachments&.attached? %>
+                    <% answer.attachments.each do |attachment| %>
+                      <div class="d-flex gap-2 align-items-center">
+                        <%= link_to("#{h(attachment.filename.to_s)} (PDF)", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", title: "Opens PDF document in new tab", "aria-label": "Open #{h(attachment.filename.to_s)} PDF document in new tab") %><br>
+                        <%= link_to delete_attachment_path(attachment), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "link_to", "aria-label": "Delete #{h(attachment.filename.to_s)}" do %>
+                          <i class="bi bi-trash-fill text-danger"></i> <span class="visually-hidden">Delete</span>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  <% else %>
+                    None
+                  <% end %>
+                </p>
+              <% else %>
+                <%= answer&.present? ? answer.answer : content_tag(:em, "No answer provided") %>
+              <% end %>
             </dd>
           <% end %>
         </dl>
@@ -40,7 +57,7 @@
   <% end %>
 
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">Collection-specific Questions and Answers</h1>
+    <h2 class="h3 mb-0">Collection-specific Questions and Answers</h2>
   </div>
 
   <% if @collection_answers.present? %>
@@ -48,7 +65,7 @@
       <!-- Each collection in its own card -->
       <div class="card mb-4 shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h2 class="h5 mb-0"><%= collection.division %></h2>
+          <h3 class="h5 mb-0"><%= collection.division %></h3>
           <%= link_to collection_questions_profile_path(collection),
                       class: "btn btn-sm btn-primary" do %>
             <i class="bi bi-pencil"></i> Edit
@@ -65,7 +82,24 @@
                 <% end %>
               </dt>
               <dd class="col-sm-8 mb-3">
-                <%= answer&.present? ? answer.answer : content_tag(:em, "No answer provided") %>
+                <% if question.question_type == "attachments" %>
+                  <p>
+                    <% if answer&.attachments&.attached? %>
+                      <% answer.attachments.each do |attachment| %>
+                        <div class="d-flex gap-2 align-items-center">
+                          <%= link_to("#{h(attachment.filename.to_s)} (PDF)", attachment, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", title: "Opens PDF document in new tab", "aria-label": "Open #{h(attachment.filename.to_s)} PDF document in new tab") %><br>
+                          <%= link_to delete_attachment_path(attachment), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "link_to", "aria-label": "Delete #{h(attachment.filename.to_s)}" do %>
+                            <i class="bi bi-trash-fill text-danger"></i> <span class="visually-hidden">Delete</span>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    <% else %>
+                      None
+                    <% end %>
+                  </p>
+                <% else %>
+                  <%= answer&.present? ? answer.answer : content_tag(:em, "No answer provided") %>
+                <% end %>
               </dd>
             <% end %>
           </dl>

@@ -97,6 +97,16 @@ module ApplicationHelper
     ]
   end
 
+  def fields_to_sort_items
+    [
+      [ 'Select ...', nil ],
+      [ 'Catalog Number (ascending)', 'catalog_number asc' ],
+      [ 'Catalog Number (descending)', 'catalog_number desc' ],
+      [ 'Scientific Name (A-Z)', 'identifications_scientific_name asc' ],
+      [ 'Scientific Name (Z-A)', 'identifications_scientific_name desc' ]
+    ]
+  end
+
   ITEM_FIELDS = Item.column_names.select { |name| !%w[id created_at updated_at collection_id].include?(name) }
 
   PREPARATIONS_FIELDS = Preparation.column_names.select { |name| !%w[id item_id created_at updated_at barcode count].include?(name) }

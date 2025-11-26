@@ -59,6 +59,8 @@ class Item < ApplicationRecord
   has_many :unavailables
   has_many :checkouts, through: :unavailables
 
+  default_scope { left_joins(:current_identification) }
+
   def name
     name = ""
     name = self.catalog_number + " - " if self.catalog_number.present?
@@ -71,7 +73,7 @@ class Item < ApplicationRecord
 
   def display_name
     display_name = self.name
-    display_name += " - " + self.preparations.map(&:prep_type).join(", ") if self.preparations.any?
+    display_name += " - " + self.preparations.map(&:display_name).join(", ") if self.preparations.any?
     display_name
   end
 

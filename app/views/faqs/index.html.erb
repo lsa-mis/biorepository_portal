@@ -24,7 +24,7 @@
                   data-bs-target="#collapse-<%= faq.id %>"
                   aria-expanded="false"
                   aria-controls="collapse-<%= faq.id %>">
-            <%= faq.question %>
+            <%= faq.question.to_plain_text %>
           </button>
         </h2>
         <div id="collapse-<%= faq.id %>"

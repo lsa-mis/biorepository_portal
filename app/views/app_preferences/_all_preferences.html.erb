@@ -19,15 +19,12 @@
               <%= number_field_tag("global_prefs[#{pref.name}]", pref.value, disabled: !is_super_admin?) %>
             <% elsif pref.pref_type == "image" %>
               <p><%= pref.description %></p>
-
               <p>Currently Attached:
                 <% if pref.image.attached? %>
                   <div class="d-flex align-items-center gap-3">
-                    <%= link_to("#{pref.image.filename.to_s}", pref.image, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none") %>
+                    <%= link_to("#{h(pref.image.filename.to_s)} (#{pref.image.filename.extension})", pref.image, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", title: "Opens image in new tab", "aria-label": "Open #{h(pref.image.filename.to_s)} image in new tab") %><br>
                     <% if is_super_admin? %>
-                      
                       <%= link_to "Delete", delete_image_app_prefs_path(pref.id), data: { turbo_method: :get, turbo_confirm: 'Are you sure?', turbo_frame: "_top" }, class: "btn btn-danger btn-sm" %>
-
                     <% end %>
                   </div>
                 <% else %>

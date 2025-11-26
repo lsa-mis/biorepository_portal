@@ -82,30 +82,29 @@ class ProfilesController < ApplicationController
     return redirect_to profile_path, alert: "No answers submitted." if params[:loan_answers].blank?
 
     @loan_questions = LoanQuestion.all
-
     @loan_questions.each do |question|
       raw_answer = params[:loan_answers][question.id.to_s]
-
+      answer = question.loan_answers.find_or_initialize_by(user: current_user)
       # Skip if nothing submitted for this question
       next if raw_answer.nil?
 
-      if question.question_type == "attachment"
-        if raw_answer.present? && raw_answer.is_a?(ActionDispatch::Http::UploadedFile)
-          answer = question.loan_answers.find_or_initialize_by(user: current_user)
-          answer.attachment.attach(raw_answer) # Attach the uploaded file
-          answer.answer = raw_answer.original_filename # Optionally store filename or info
-          answer.save
+      if question.question_type == "attachments"
+        if raw_answer.present? && raw_answer.is_a?(Array)
+          raw_answer.each do |uploaded_file|
+            if uploaded_file.is_a?(ActionDispatch::Http::UploadedFile)
+              answer.attachments.attach(uploaded_file) # Attach the uploaded file
+            end
+          end
         end
       else
         answer_value = raw_answer.is_a?(Array) ? raw_answer.join(", ") : strip_tags(raw_answer.strip)
-        answer = question.loan_answers.find_or_initialize_by(user: current_user)
         answer.answer = answer_value
         answer.save
       end
     end
 
-    redirect_to profile_path, notice: "Loan questions updated successfully."
-  end
+    redirect_to show_collections_questions_profile_path, notice: "Loan questions updated successfully."
+  end    
 
   def show_collections_questions
     @collections = Collection.joins(:collection_questions).distinct
@@ -145,12 +144,13 @@ class ProfilesController < ApplicationController
         answer = current_user.collection_answers.find_or_initialize_by(collection_question: question)
         # cleaned_answer = raw_answer.is_a?(Array) ? raw_answer.join(", ") : strip_tags(raw_answer.to_s.strip)
 
-        if question.question_type == "attachment"
-          if raw_answer.present? && raw_answer.is_a?(ActionDispatch::Http::UploadedFile)
-            # answer = question.loan_answers.find_or_initialize_by(user: current_user)
-            answer.attachment.attach(raw_answer) # Attach the uploaded file
-            answer.answer = raw_answer.original_filename # Optionally store filename or info
-            answer.save
+        if question.question_type == "attachments"
+          if raw_answer.present? && raw_answer.is_a?(Array)
+            raw_answer.each do |uploaded_file|
+              if uploaded_file.is_a?(ActionDispatch::Http::UploadedFile)
+                answer.attachments.attach(uploaded_file) # Attach the uploaded file
+              end
+            end
           end
         else
           answer_value = raw_answer.is_a?(Array) ? raw_answer.join(", ") : strip_tags(raw_answer.strip)
@@ -161,7 +161,7 @@ class ProfilesController < ApplicationController
       end
     end
 
-    redirect_to profile_path, notice: "Your answers have been saved."
+    redirect_to show_collections_questions_profile_path, notice: "Your answers have been saved."
   end
 
   private
