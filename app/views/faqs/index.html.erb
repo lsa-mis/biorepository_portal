@@ -17,16 +17,16 @@
   <div class="py-2 accordion" id="faqAccordion">
     <% @faqs.each do |faq| %>
       <div class="accordion-item" id="<%= dom_id faq %>">
-        <h2 class="accordion-header" id="heading-<%= faq.id %>">
+        <div class="accordion-header" id="heading-<%= faq.id %>">
           <button class="accordion-button collapsed custom-focus-ring"
                   type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#collapse-<%= faq.id %>"
                   aria-expanded="false"
                   aria-controls="collapse-<%= faq.id %>">
-            <%= faq.question %>
+            <%= faq.question.to_plain_text %>
           </button>
-        </h2>
+        </div>
         <div id="collapse-<%= faq.id %>"
             class="accordion-collapse collapse"
             aria-labelledby="heading-<%= faq.id %>">
