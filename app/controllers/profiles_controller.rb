@@ -128,7 +128,7 @@ class ProfilesController < ApplicationController
 
   def collection_questions
     @collection = Collection.find(params[:id])
-    @collection_questions = @collection.collection_questions
+    @collection_questions = @collection.collection_questions.order(:position)
     @collection_answers = current_user.collection_answers.where(collection_question: @collection_questions)
   end
 
