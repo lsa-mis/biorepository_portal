@@ -11,7 +11,7 @@
         <div class="mb-4 p-3 bg-light">
           <% case loan_question.question_type %>
           <% when "text" %>
-            <label for=<%= "loan_answers_#{loan_question.id}" %> class="form-label"><%= strip_tags(loan_question.question) %></label>
+            <label for=<%= "loan_answers_#{loan_question.id}" %> class="form-label"><%= "#{loan_question.position}. #{strip_tags(loan_question.question)}" %></label>
             <%= content_tag(:span, "*", class: "text-danger") if loan_question.required? %>
             <%= text_field_tag "loan_answers[#{loan_question.id}]",
                 existing_answer&.answer&.to_plain_text&.strip || "",
@@ -19,7 +19,7 @@
 
           <% when "checkbox" %>
             <p>
-              <%= strip_tags(loan_question.question) %>
+              <%= "#{loan_question.position}. #{strip_tags(loan_question.question)}" %>
               <%= content_tag(:span, "*", class: "text-danger") if loan_question.required? %>
             </p>
             <p>Pick one or more options below</p>
@@ -32,7 +32,7 @@
             <% end %>
 
           <% when "dropdown" %>
-            <label for=<%= "loan_answers_#{loan_question.id}" %> class="form-label"><%= strip_tags(loan_question.question) %></label>
+            <label for=<%= "loan_answers_#{loan_question.id}" %> class="form-label"><%= "#{loan_question.position}. #{strip_tags(loan_question.question)}" %></label>
             <%= content_tag(:span, "*", class: "text-danger") if loan_question.required? %>
             <%= select_tag "loan_answers[#{loan_question.id}]",
                 options_for_select(loan_question.options.map(&:value), existing_answer&.answer&.to_plain_text&.strip || ""),
@@ -40,7 +40,7 @@
           
           <% when "attachments" %>
             <p>
-              <%= strip_tags(loan_question.question) %>
+              <%= "#{loan_question.position}. #{strip_tags(loan_question.question)}" %>
               <%= content_tag(:span, "*", class: "text-danger") if loan_question.required? %>
             </p>
             <div>
