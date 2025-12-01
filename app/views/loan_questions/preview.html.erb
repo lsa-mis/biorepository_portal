@@ -12,7 +12,8 @@
     <%= form_with url: "#", local: true, html: { onsubmit: "return false;" } do |f| %>
       <% @loan_questions.each do |loan_question| %>
         <div class="mb-4 p-3 bg-light">
-          <label class="form-label"><%= loan_question.position %>. <%= loan_question.question %>
+          <label for=<%= "loan_questions_#{loan_question.id}" %> class="form-label">
+            <%= loan_question.position %>. <%= strip_tags(loan_question.question) %>
             <% if loan_question.required? %>
               <span class="text-danger">*</span>
             <% end %>

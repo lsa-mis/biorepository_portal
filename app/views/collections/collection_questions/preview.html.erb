@@ -12,12 +12,12 @@
     <%= form_with url: "#", local: true, html: { onsubmit: "return false;" } do |f| %>
       <% @collection_questions.each do |collection_question| %>
         <div class="mb-4 p-3 bg-light">
-          <label class="form-label"><%= collection_question.position %>. <%= collection_question.question %>
+          <label for=<%= "collection_questions_#{collection_question.id}" %> class="form-label">
+            <%= collection_question.position %>. <%= strip_tags(collection_question.question) %>
             <% if collection_question.required? %>
               <span class="text-danger">*</span>
             <% end %>
           </label>
-          
           <% case collection_question.question_type %>
           <% when "text" %>
             <div class="ms-3">
