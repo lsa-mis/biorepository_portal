@@ -251,11 +251,17 @@ class LoanRequestsController < ApplicationController
 
     def check_missing_answers(answers_hash)
       answers_hash.each do |question, answer|
-        if question.required? && (answer.blank? || answer.answer.blank?)
-          return true
+        if question.question_type == "attachments"
+          if question.required? && (answer.blank? || !answer.attachments.attached?)
+            return true
+          end
+        else
+          if question.required? && (answer.blank? || answer.answer.blank?)
+            return true
+          end
         end
       end
-      return false
+      false
     end
 
     def check_shipping_address
