@@ -29,7 +29,7 @@
 
   <% if @collection_question.question_type.in?(%w[dropdown checkbox]) %>
     <div class="mb-3">
-      <h5>Options</h5>
+      <p class="fs-4">Options</p>
 
       <div data-edit-options-target="fields">
         <% @collection_question.collection_options.each_with_index do |option, index| %>
