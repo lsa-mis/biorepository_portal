@@ -36,7 +36,6 @@
               <label class="form-label" for=<%= "options_attributes_#{index+1}_value" %> data-edit-options-target="option_label"><%= "Option #{index + 1}" %></label>
               <%= text_field_tag("options_attributes[#{index+1}][value]", option.value, {required: true}) %>
               <%= hidden_field_tag "options_attributes[#{index+1}][number]", index+1 %>
-              <%= check_box_tag :_destroy, 1, class: "d-none", data: { edit_options_target: "destroy_field" }, aria: { hidden: true }, id: "_destroy_#{index+1}" %>
               <button type="button"
                       class="btn btn-sm btn-danger remove-option-button mt-1"
                       data-edit-options-target="remove_button"
