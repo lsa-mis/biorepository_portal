@@ -123,6 +123,9 @@ RSpec.describe 'All Pages Accessibility', type: :system do
         else
           puts "✅ #{view_file}: No errors found"
         end
+        
+        # Assert that no accessibility errors were found
+        expect(errors).to be_empty
       end
     end
   end

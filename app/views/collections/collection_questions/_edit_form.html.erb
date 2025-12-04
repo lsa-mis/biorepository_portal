@@ -40,7 +40,6 @@
             <%= text_field_tag("options_attributes[#{index + 1}][value]", option.value, required: true, class: "form-control") %>
             <%= hidden_field_tag "options_attributes[#{index + 1}][number]", index + 1 %>
             <%= check_box_tag "options_attributes_destroy[#{index + 1}]", "1", false, class: "d-none", data: { edit_options_target: "destroy_field" } %>
-            <%= label_tag "options_attributes_destroy[#{index + 1}]", "Mark for deletion", class: "d-none", aria: { hidden: true } %>
             <button type="button"
                     class="btn btn-sm btn-danger remove-option-button mt-1"
                     data-edit-options-target="remove_button"
