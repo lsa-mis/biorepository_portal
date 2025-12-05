@@ -37,6 +37,8 @@ class InformationRequestsController < ApplicationController
     if params[:include_items_from_checkout] == "1"
       # Assuming you have a method to get items from checkout
       checkout_items, collection_ids = get_checkout_items
+    else
+      collection_ids = get_collection_ids_from_emails(send_to)
     end
     @information_request = InformationRequest.new(
       question: message,
@@ -57,7 +59,8 @@ class InformationRequestsController < ApplicationController
         information_request: @information_request,
         user: current_user,
         message: message,
-        checkout_items: checkout_items
+        checkout_items: checkout_items,
+        collection_ids: collection_ids
       ).confirmation_information_request.deliver_now
       redirect_to faqs_path, notice: "Information request sent successfully."
     else
