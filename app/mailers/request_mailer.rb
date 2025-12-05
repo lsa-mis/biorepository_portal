@@ -52,7 +52,9 @@ class RequestMailer < ApplicationMailer
       custom_email_messages = {}
       if collection_ids.present?
         collection_ids.each do |collection_id|
-          collection_name = Collection.find_by(id: collection_id).division
+          collection = Collection.find_by(id: collection_id)
+          next unless collection
+          collection_name = collection.division
           collection_email_message = AppPreference.find_by(name: message_type, collection_id: collection_id)&.value
           custom_email_messages[collection_name] = collection_email_message if collection_email_message.present?
         end
