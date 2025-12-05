@@ -168,6 +168,10 @@ module ApplicationHelper
     [checkout_items, collection_ids.uniq]
   end
 
+  def get_collection_ids_from_emails(send_to)
+    AppPreference.where(name: "collection_email_to_send_requests", value: send_to).pluck(:collection_id)
+  end
+
   def get_checkout_items_with_ids
     checkout_items = []
     @checkout.requestables.active.each do |requestable|
