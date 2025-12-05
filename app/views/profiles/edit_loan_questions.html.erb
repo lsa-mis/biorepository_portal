@@ -22,16 +22,14 @@
               <%= "#{loan_question.position}. #{strip_tags(loan_question.question)}" %>
               <%= content_tag(:span, "*", class: "text-danger") if loan_question.required? %>
             </p>
-            <fieldset>
-              <legend class="fs-6">Pick one or more options below</legend>
-              <% loan_question.options.each do |option| %>
-                <div class="form-check ms-3">
-                  <input type="checkbox" name="loan_answers[<%= loan_question.id %>][]" value="<%= option.value %>" id="loan_answers_<%= loan_question.id %>_<%= option.id %>_"
-                    <%= 'checked' if (existing_answer&.answer&.to_plain_text&.strip || "").to_s.include?(option.value) %> />
-                  <%= label_tag "loan_answers_#{loan_question.id}_#{option.id}_", option.value, class: "form-check-label" %>
-                </div>
-              <% end %>
-            </fieldset>
+            <p>Pick one or more options below</p>
+            <% loan_question.options.each do |option| %>
+              <div class="form-check ms-3">
+                <input type="checkbox" name="loan_answers[<%= loan_question.id %>][]" value="<%= option.value %>" id="loan_answers_<%= loan_question.id %>_<%= option.id %>_"
+                  <%= 'checked' if (existing_answer&.answer&.to_plain_text&.strip || "").to_s.include?(option.value) %> />
+                <%= label_tag "loan_answers_#{loan_question.id}_#{option.id}_", option.value, class: "form-check-label" %>
+              </div>
+            <% end %>
 
           <% when "dropdown" %>
             <label for=<%= "loan_answers_#{loan_question.id}" %> class="form-label"><%= "#{loan_question.position}. #{strip_tags(loan_question.question)}" %></label>
