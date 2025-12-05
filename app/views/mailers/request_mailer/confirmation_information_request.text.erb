@@ -11,6 +11,13 @@ with the following question:
   <% end %>
 <% end %>
 
+<% if @custom_email_message.present? %>
+  <% @custom_email_message.each do |collection_name, message| %>
+    <%= sanitize(collection_name) %>:
+    <%= sanitize(message) %>
+  <% end %>
+<% end %>
+
 Thank you for using our system. We'll reach out to you if we need more information.
 
 The Collections Team
