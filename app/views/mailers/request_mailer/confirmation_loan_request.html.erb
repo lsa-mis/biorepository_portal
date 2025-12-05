@@ -6,8 +6,8 @@
 
 <% if @custom_email_message.present? %>
   <% @custom_email_message.each do |collection_name, message| %>
-    <p><b><%= collection_name %>:</b>
-      <br><%= message %>
+    <p><b><%= sanitize(collection_name) %>:</b>
+      <br><%= sanitize(message) %>
     </p>
   <% end %>
 <% end %>

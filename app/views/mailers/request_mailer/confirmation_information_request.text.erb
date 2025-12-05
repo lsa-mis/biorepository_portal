@@ -13,8 +13,8 @@ with the following question:
 
 <% if @custom_email_message.present? %>
   <% @custom_email_message.each do |collection_name, message| %>
-    <%= collection_name %>:
-    <%= message %>
+    <%= sanitize(collection_name) %>:
+    <%= sanitize(message) %>
   <% end %>
 <% end %>
 
