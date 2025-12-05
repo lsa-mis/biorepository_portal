@@ -6,9 +6,8 @@ Attached to this email, you'll find a copy of your request in both PDF and CSV f
 
 <% if @custom_email_message.present? %>
   <% @custom_email_message.each do |collection_name, message| %>
-    <p><b><%= collection_name %>:</b>
-      <br><%= message %>
-    </p>
+    <%= collection_name %>:
+    <%= message %>
   <% end %>
 <% end %>
 
