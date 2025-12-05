@@ -15,7 +15,7 @@ class RequestMailer < ApplicationMailer
     @message = params[:message]
     @checkout_items = params[:checkout_items] if params[:checkout_items].present?
     collection_ids = params[:collection_ids] if params[:collection_ids].present?
-    @custom_email_message = get_custom_email_messages(collection_ids, "custom_message_information_request")  
+    @custom_email_message = get_custom_email_messages(collection_ids, "custom_message_information_request")
     subject = "Confirmation: Your Information Request Has Been Sent"
     mail(to: @user.email, subject: subject)
   end
@@ -37,7 +37,7 @@ class RequestMailer < ApplicationMailer
   def confirmation_loan_request(user, loan_request, collection_ids, csv_file:, pdf_file:)
     @user = user
     @loan_request = loan_request
-    @custom_email_message = get_custom_email_messages(collection_ids, "custom_message_loan_request")  
+    @custom_email_message = get_custom_email_messages(collection_ids, "custom_message_loan_request")
     attachments["loan_request.csv"] = { content: File.read(csv_file), content_type: "text/csv" } if csv_file.present?
     attachments["loan_request.pdf"] = { content: File.read(pdf_file), content_type: "application/pdf" } if pdf_file.present?
     mail(
