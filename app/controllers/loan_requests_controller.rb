@@ -141,6 +141,7 @@ class LoanRequestsController < ApplicationController
         RequestMailer.confirmation_loan_request(
           current_user,
           @loan_request,
+          @collection_ids,
           csv_file: csv_tempfile,
           pdf_file: pdf_tempfile
         ).deliver_now

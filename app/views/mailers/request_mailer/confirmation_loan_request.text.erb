@@ -4,6 +4,14 @@ We've received your loan request submitted on <%= @loan_request.created_at.strft
 
 Attached to this email, you'll find a copy of your request in both PDF and CSV formats.
 
+<% if @custom_email_message.present? %>
+  <% @custom_email_message.each do |collection_name, message| %>
+    <p><b><%= collection_name %>:</b>
+      <br><%= message %>
+    </p>
+  <% end %>
+<% end %>
+
 Thank you for using our system. We'll reach out to you if we need more information.
 
 The Collections Team
