@@ -78,6 +78,8 @@ group :development, :test do
   gem 'pry'
   gem 'pundit-matchers', '~> 3.1', '>= 3.1.2'
   gem 'brakeman', require: false
+  gem 'rails_accessibility_testing', '~> 1.5', '>= 1.5.10'
+  gem 'axe-core-capybara', '~> 4.0'
 end
 
 group :development do

@@ -1,0 +1,110 @@
+# Rails A11y Configuration
+#
+# This file configures accessibility checks for your Rails application.
+# See https://github.com/your-org/rails-a11y for full documentation.
+
+# Global enable/disable flag for all accessibility checks
+# Set to false to completely disable all accessibility checks (manual and automatic)
+# When false, check_comprehensive_accessibility and automatic checks will be skipped
+# Default: true
+accessibility_enabled: true
+
+# WCAG compliance level (A, AA, AAA)
+wcag_level: AA
+
+# Summary configuration
+# Control how accessibility test summaries are displayed
+summary:
+  # Show summary at end of test suite (true/false)
+  show_summary: true
+  
+  # Show only errors in summary, hide warnings (true/false)
+  errors_only: false
+  
+  # Show fix suggestions in error messages (true/false)
+  # When false, only shows error type and location
+  show_fixes: true
+  
+  # Ignore warnings completely - only show errors (true/false)
+  # When true, warnings are filtered out and not displayed or counted
+  ignore_warnings: false
+
+# Scanning strategy
+# 'paths' - Scan by visiting routes/paths (default)
+# 'view_files' - Scan by finding view files and visiting their routes
+scan_strategy: 'view_files'
+
+# Static scanner configuration
+# Controls behavior of the static file scanner (a11y_static_scanner)
+static_scanner:
+  # Only scan files that have changed since last scan (true/false)
+  # When true, uses file modification times to track changes
+  # When false, scans all files on every run
+  scan_changed_only: true
+  
+  # Check interval in seconds when running continuously
+  # Scanner checks for file changes every N seconds
+  check_interval: 3
+  
+  # Force full scan on startup (true/false)
+  # When true, scans all files on first run regardless of changes
+  # When false, only scans changed files from the start
+  full_scan_on_startup: true
+
+# System specs configuration
+# Controls behavior of accessibility checks in RSpec system specs
+system_specs:
+  # Automatically run accessibility checks after each system spec (true/false)
+  # When true, checks run automatically after each `visit` in system specs
+  # When false, checks only run when explicitly called (e.g., check_comprehensive_accessibility)
+  # Default: false (set to true if you want automatic checks)
+  # Can be overridden per-profile (see profile sections below)
+  auto_run: false
+
+# Global check configuration
+# Set to false to disable a check globally
+checks:
+  form_labels: true
+  image_alt_text: true
+  interactive_elements: true
+  heading_hierarchy: true
+  keyboard_accessibility: true
+  aria_landmarks: true
+  form_errors: true
+  table_structure: true
+  duplicate_ids: true
+  skip_links: true
+  color_contrast: false  # Disabled by default (requires JS evaluation)
+
+# Profile-specific configurations
+# Override global settings for different environments
+
+development:
+  checks:
+    color_contrast: false  # Skip in dev for speed
+    # Add other dev-specific overrides here
+  # system_specs:
+  #   auto_run: true  # Override global system_specs.auto_run for development
+
+test:
+  checks:
+    # Test environment uses global settings by default
+    # Add test-specific overrides here
+  # system_specs:
+  #   auto_run: true  # Override global system_specs.auto_run for test
+
+ci:
+  checks:
+    color_contrast: true   # Full checks in CI
+    # Add CI-specific overrides here
+  # system_specs:
+  #   auto_run: true  # Override global system_specs.auto_run for CI
+
+# Ignored rules with reasons
+# Use this to temporarily ignore specific rules while fixing issues
+# Always include a reason and plan to fix
+ignored_rules:
+  # - rule: form_labels
+  #   reason: "Legacy form, scheduled for refactor in Q2"
+  #   comment: "Will be fixed in PR #123"
+
