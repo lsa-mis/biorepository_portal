@@ -35,89 +35,65 @@ RSpec.describe 'All Pages Accessibility', type: :system do
     
     output = []
     
-    # Group errors by file
+    # Group errors and warnings by file
     errors_by_file = errors.group_by { |e| e[:file] }
     warnings_by_file = warnings.group_by { |w| w[:file] }
     
     # Show errors first
     if errors.any?
-      output << "\n" + "="*70
-      output << "❌ #{errors.length} error#{'s' if errors.length != 1} found"
-      output << "="*70
-      output << ""
-      
-      errors_by_file.each_with_index do |(file_path, file_errors), file_index|
-        output << "" if file_index > 0
-        
-        output << "📝 #{file_path} (#{file_errors.length} error#{'s' if file_errors.length != 1})"
-        
-        file_errors.each do |error|
-          error_line = "   • #{error[:type]}"
-          
-          # Add line number if available
-          if error[:line]
-            error_line += " [Line #{error[:line]}]"
-          end
-          
-          # Add element identifier
-          if error[:element][:id].present?
-            error_line += " [id: #{error[:element][:id]}]"
-          elsif error[:element][:href].present?
-            href_display = error[:element][:href].length > 30 ? "#{error[:element][:href][0..27]}..." : error[:element][:href]
-            error_line += " [href: #{href_display}]"
-          elsif error[:element][:src].present?
-            src_display = error[:element][:src].length > 30 ? "#{error[:element][:src][0..27]}..." : error[:element][:src]
-            error_line += " [src: #{src_display}]"
-          end
-          
-          output << error_line
-        end
-      end
-      
-      output << ""
-      output << "="*70
+      output.concat(format_issues_section(errors_by_file, "❌", "error"))
     end
     
     # Show warnings if any
     if warnings.any?
-      output << "\n" + "="*70
-      output << "⚠️  #{warnings.length} warning#{'s' if warnings.length != 1} found"
-      output << "="*70
-      output << ""
-      
-      warnings_by_file.each_with_index do |(file_path, file_warnings), file_index|
-        output << "" if file_index > 0
-        
-        output << "📝 #{file_path} (#{file_warnings.length} warning#{'s' if file_warnings.length != 1})"
-        
-        file_warnings.each do |warning|
-          warning_line = "   • #{warning[:type]}"
-          
-          # Add line number if available
-          if warning[:line]
-            warning_line += " [Line #{warning[:line]}]"
-          end
-          
-          # Add element identifier
-          if warning[:element][:id].present?
-            warning_line += " [id: #{warning[:element][:id]}]"
-          elsif warning[:element][:href].present?
-            href_display = warning[:element][:href].length > 30 ? "#{warning[:element][:href][0..27]}..." : warning[:element][:href]
-            warning_line += " [href: #{href_display}]"
-          elsif warning[:element][:src].present?
-            src_display = warning[:element][:src].length > 30 ? "#{warning[:element][:src][0..27]}..." : warning[:element][:src]
-            warning_line += " [src: #{src_display}]"
-          end
-          
-          output << warning_line
-        end
-      end
-      
-      output << ""
-      output << "="*70
+      output.concat(format_issues_section(warnings_by_file, "⚠️", "warning"))
     end
     
     output.join("\n")
+  end
+  
+  # Helper method to format a section of issues (errors or warnings)
+  def format_issues_section(issues_by_file, emoji, type)
+    output = []
+    total_count = issues_by_file.values.flatten.length
+    
+    output << "\n" + "="*70
+    output << "#{emoji} #{total_count} #{type}#{'s' if total_count != 1} found"
+    output << "="*70
+    output << ""
+    
+    issues_by_file.each_with_index do |(file_path, file_issues), file_index|
+      output << "" if file_index > 0
+      
+      output << "📝 #{file_path} (#{file_issues.length} #{type}#{'s' if file_issues.length != 1})"
+      
+      file_issues.each do |issue|
+        issue_line = "   • #{issue[:type]}"
+        
+        # Add line number if available
+        if issue[:line]
+          issue_line += " [Line #{issue[:line]}]"
+        end
+        
+        # Add element identifier
+        if issue[:element][:id].present?
+          issue_line += " [id: #{issue[:element][:id]}]"
+        elsif issue[:element][:href].present?
+          href_display = issue[:element][:href].length > 30 ? "#{issue[:element][:href][0..27]}..." : issue[:element][:href]
+          issue_line += " [href: #{href_display}]"
+        elsif issue[:element][:src].present?
+          src_display = issue[:element][:src].length > 30 ? "#{issue[:element][:src][0..27]}..." : issue[:element][:src]
+          issue_line += " [src: #{src_display}]"
+        end
+        
+        output << issue_line
+      end
+    end
+    
+    output << ""
+    output << "="*70
+    
+    output
   end
   
   # Scan all view files statically
@@ -147,6 +123,7 @@ RSpec.describe 'All Pages Accessibility', type: :system do
         else
           puts "✅ #{view_file}: No errors found"
         end
+        
         # Assert that no accessibility errors were found
         expect(errors).to be_empty
       end
