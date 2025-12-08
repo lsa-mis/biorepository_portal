@@ -13,20 +13,25 @@ threads min_threads_count, max_threads_count
 
 rails_env = ENV.fetch("RAILS_ENV") { "development" }
 
-if rails_env == "production"
-  # If you are running more than 1 thread per process, the workers count
-  # should be equal to the number of processors (CPU cores) in production.
-  #
-  # It defaults to 1 because it's impossible to reliably detect how many
-  # CPU cores are available. Make sure to set the `WEB_CONCURRENCY` environment
-  # variable to match the number of processors.
-  worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { 1 })
-  if worker_count > 1
-    workers worker_count
-  else
-    preload_app!
-  end
-end
+# if rails_env == "production"
+#   # If you are running more than 1 thread per process, the workers count
+#   # should be equal to the number of processors (CPU cores) in production.
+#   #
+#   # It defaults to 1 because it's impossible to reliably detect how many
+#   # CPU cores are available. Make sure to set the `WEB_CONCURRENCY` environment
+#   # variable to match the number of processors.
+#   worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { 1 })
+#   if worker_count > 1
+#     workers worker_count
+#   else
+#     preload_app!
+#   end
+# end
+
+workers Integer(ENV.fetch("WEB_CONCURRENCY", 2))
+preload_app!
+
+
 # Specifies the `worker_timeout` threshold that Puma will use to wait before
 # terminating a worker in development environments.
 worker_timeout 3600 if ENV.fetch("RAILS_ENV", "development") == "development"
@@ -42,3 +47,13 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
+
+# Optional: Log to STDOUT in production for easier debugging
+stdout_redirect 'log/puma.stdout.log', 'log/puma.stderr.log', true
+
+# On worker boot, re-connect to the database and other shared resources
+on_worker_boot do
+  require "active_record"
+  ActiveRecord::Base.connection_pool.disconnect! rescue ActiveRecord::ConnectionNotEstablished
+  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+end
