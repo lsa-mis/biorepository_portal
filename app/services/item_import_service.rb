@@ -200,44 +200,45 @@ class ItemImportService
   end
 
   def handle_event_date(item, value)
-    date = parse_flexible_date(value)
-    if date
-      item.event_date_start = date
+    if value.include?('/')
+      start_str, end_str = value.split('/', 2).map(&:strip)
+      start_date = parse_flexible_date(start_str)
+      if start_date
+        item.event_date_start = start_date
+      else
+        @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+        @errors += 1
+        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
+      end
+      end_date = parse_flexible_date(end_str)
+      if end_date
+        item.event_date_end = end_date
+      else
+        @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+        @errors += 1
+        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
+      end
     else
-      @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
-      @errors += 1
-      @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
-      item.verbatim_event_date = value.strip
+      date = parse_flexible_date(value)
+      if date
+        item.event_date_start = date
+        # item.event_date_end   = date
+      else
+        @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+        @errors += 1
+        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
+      end 
     end
-  rescue ArgumentError => e
+    rescue ArgumentError => e
     @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
     @errors += 1
     @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
 
-  # def handle_event_date(item, value)
-  #   if is_date?(value)
-  #     if value.include?('/')
-  #       start_str, end_str = value.split('/', 2).map(&:strip)
-  #       item.event_date_start = Date.parse(start_str)
-  #       item.event_date_end   = Date.parse(end_str)
-  #     else
-  #       date = Date.parse(value.strip)
-  #       item.event_date_start = date
-  #       item.event_date_end   = date
-  #     end
-  #   else
-  #     @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
-  #     item.verbatim_event_date = value.strip
-  #   end
-  # # rescue ArgumentError => e
-  # #   @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
-  # end
-
   def parse_flexible_date(string)
     return nil if string.blank?
     formats = [
-      '%m/%d/%Y', '%-m/%-d/%Y', '%Y', '%d-%m-%Y', '%-d-%-m-%Y', '%m/%d/%y', '%-m/%-d/%y', '%d-%m-%y', '%-d-%-m-%y', '%Y-%m-%d'
+      '%Y-%m-%d', '%m/%d/%Y', '%-m/%-d/%Y', '%m-%d-%Y', '%-m-%-d-%Y', '%d/%m/%y', '%-d/%-m/%y', '%d-%m-%y', '%-d-%-m-%y', '%Y'
     ]
     formats.each do |fmt|
       begin
