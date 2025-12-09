@@ -229,8 +229,7 @@ class ItemsController < ApplicationController
     end
 
     def setup_search_query
-
-      @sort = params[:sort].presence || 'items.catalog_number asc'
+      @sort = sanitize_sort_parameter(params[:sort])
       
       if session[:quick_search_q].present?
         @q = Item.ransack(session[:quick_search_q])
@@ -245,6 +244,30 @@ class ItemsController < ApplicationController
                 .select('items.*, identifications.scientific_name, collections.division')
                 .order(@sort)
                 .ransack(params[:q])
+      end
+    end
+    
+    # Sanitize sort parameters to prevent SQL injection
+    def sanitize_sort_parameter(sort_param)
+      # Get whitelisted sort options from helper
+      allowed_sorts = ApplicationController.helpers.fields_to_sort_items
+                                                  .map(&:second)
+                                                  .compact
+                                                  .to_set
+      
+      # Default fallback
+      default_sort = 'items.catalog_number asc'
+      
+      # Return default if no sort provided
+      return default_sort if sort_param.blank?
+      
+      # Check if provided sort is in whitelist
+      if allowed_sorts.include?(sort_param.strip)
+        sort_param.strip
+      else
+        # Log potential security attempt
+        Rails.logger.warn "Invalid sort parameter attempted: #{sort_param}"
+        default_sort
       end
     end
 
