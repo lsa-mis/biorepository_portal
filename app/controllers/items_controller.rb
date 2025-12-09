@@ -17,121 +17,14 @@ class ItemsController < ApplicationController
   end
 
   def search
-    if params[:switch_view] == 'rows'
-      @view = 'rows'
-    elsif params[:switch_view] == 'cards'
-      @view = 'cards'
-    else
-      @view = @view.present? ? @view : 'rows'
-    end
+    @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
 
-    if params[:q]&.dig(:collection_id_in).present?
-      collection_ids = params[:q][:collection_id_in]
-    elsif params[:collection_id].present?
-      collection_ids = [params[:collection_id].to_i]
-      params[:q] = ActionController::Parameters.new("collection_id_in" => [collection_ids.first])
-    else
-      collection_ids = Collection.all.pluck(:id)
-    end
-
+    collection_ids = extract_collection_ids
     included_items = Item.where(collection: collection_ids)
 
-    @continents, @countries, @states, @sexs =
-      Rails.cache.fetch("geo_filters_#{collection_ids.sort.join('_')}", expires_in: 12.hours) do
-        plucked_items = included_items.pluck(:continent, :country, :state_province, :sex)
-        continents, countries, states, sexs = Array.new(4) { Set.new }
-
-        plucked_items.each do |continent, country, state_province, sex|
-          continents.add([continent&.titleize, continent&.downcase]) if continent.present?
-          countries.add([country&.titleize, country&.downcase]) if country.present?
-          states.add([state_province&.titleize, state_province&.downcase]) if state_province.present?
-          sexs.add([sex&.titleize, sex&.downcase]) if sex.present?
-        end
-
-        [continents, countries, states, sexs].map { |set| set.sort_by(&:first) }
-      end
-
-    @kingdoms, @phylums, @classes, @orders, @families, @genuses = 
-      Rails.cache.fetch("taxonomy_filters_#{collection_ids.sort.join('_')}", expires_in: 12.hours) do
-        taxonomies = included_items.joins(:current_identification)
-          .pluck('identifications.kingdom', 'identifications.phylum', 'identifications.class_name', 
-                 'identifications.order_name', 'identifications.family', 'identifications.genus')
-
-        kingdoms, phylums, classes, orders, families, genuses = Array.new(6) { Set.new }
-
-        taxonomies.each do |kingdom, phylum, class_name, order_name, family, genus|
-          kingdoms.add([kingdom&.titleize, kingdom&.downcase]) if kingdom.present?
-          phylums.add([phylum&.titleize, phylum&.downcase]) if phylum.present?
-          classes.add([class_name&.titleize, class_name&.downcase]) if class_name.present?
-          orders.add([order_name&.titleize, order_name&.downcase]) if order_name.present?
-          families.add([family&.titleize, family&.downcase]) if family.present?
-          genuses.add([genus&.titleize, genus&.downcase]) if genus.present?
-        end
-
-        [kingdoms, phylums, classes, orders, families, genuses].map do |set|
-          set.sort_by(&:first)
-        end
-      end
-
-    @prep_types = 
-      Rails.cache.fetch("prep_types_filters_#{collection_ids.sort.join('_')}", expires_in: 12.hours) do
-        prep_types = included_items.joins(:preparations)
-          .pluck('preparations.prep_type')
-
-        prep_types_set = Set.new
-
-        prep_types.each do |prep_type|
-          prep_types_set.add([prep_type&.titleize, prep_type&.downcase]) if prep_type.present?
-        end
-
-        prep_types_set.sort_by(&:first)
-      end
-
-    if session[:quick_search_q].present?
-      @q = Item.ransack(session[:quick_search_q])
-      transform_quick_search_params
-      session.delete(:quick_search_q)
-      @quick_search_filters = true
-    else
-      unless params[:page].present?
-        transform_search_groupings
-      end
-      @quick_search_filters = false
-      @q = Item.left_outer_joins(:identifications, :collection, :preparations)
-              .select('items.*, identifications.scientific_name, collections.division, preparations.prep_type')
-              .ransack(params[:q])
-    end
-
-    filtered_items = @q.result.distinct
-    @total_items = filtered_items.count('DISTINCT items.id')
-    @collections = filtered_items.joins(:collection).distinct.pluck('collections.division').join(', ')
-
-    if params[:sort].present?
-      @sort = params[:sort]
-      @q.sorts = @sort
-      filtered_items = @q.result.distinct
-    end
-
-    @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
-    @all_collections = Collection.order(:division)
-    
-    @dynamic_fields = []
-    # Reprocessing params to ensure dynamic fields are included
-    if params.dig(:q, :groupings).present?
-      
-      params.dig(:q, :groupings).each do |group_num, values|
-        group_pairs = []
-        values.each do |field, val|
-          
-          next if field == "m" || val.blank?
-          group_pairs << { field: field, value: val }
-        end
-        @dynamic_fields << group_pairs unless group_pairs.empty?
-        
-      end
-    end
-
-    @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+    setup_filter_data(collection_ids)
+    setup_search_query
+    execute_search_and_paginate
 
     respond_to do |format|
       format.html { render :search_result }
@@ -271,4 +164,143 @@ class ItemsController < ApplicationController
       end
       row_with_prep
     end
+
+    def extract_collection_ids
+      if params[:q]&.dig(:collection_id_in).present?
+        params[:q][:collection_id_in]
+      elsif params[:collection_id].present?
+        collection_ids = [params[:collection_id].to_i]
+        params[:q] = ActionController::Parameters.new("collection_id_in" => [collection_ids.first])
+        collection_ids
+      else
+        Collection.pluck(:id)
+      end
+    end
+
+    def setup_filter_data(collection_ids)
+
+      cache_key = "filters_#{collection_ids.sort.join('_')}"
+      filter_data = Rails.cache.fetch(cache_key, expires_in: 12.hours) do
+        build_filter_data(collection_ids)
+      end
+      
+      @continents, @countries, @states, @sexs = filter_data[:geo]
+      @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
+      @prep_types = filter_data[:prep_types]
+    end
+
+    def build_filter_data(collection_ids)
+      # Single query to get all needed data
+      items_data = Item.where(collection_id: collection_ids)
+                      .left_joins(:current_identification, :preparations)
+                      .pluck(:continent, :country, :state_province, :sex,
+                            'identifications.kingdom', 'identifications.phylum', 'identifications.class_name',
+                            'identifications.order_name', 'identifications.family', 'identifications.genus',
+                            'preparations.prep_type')
+      
+      geo_sets = Array.new(4) { Set.new }
+      taxonomy_sets = Array.new(6) { Set.new }
+      prep_types_set = Set.new
+      
+      items_data.each do |continent, country, state_province, sex, kingdom, phylum, class_name, order_name, family, genus, prep_type|
+        # Geographic data
+        geo_sets[0].add([continent&.titleize, continent&.downcase]) if continent.present?
+        geo_sets[1].add([country&.titleize, country&.downcase]) if country.present?
+        geo_sets[2].add([state_province&.titleize, state_province&.downcase]) if state_province.present?
+        geo_sets[3].add([sex&.titleize, sex&.downcase]) if sex.present?
+        
+        # Taxonomy data
+        taxonomy_sets[0].add([kingdom&.titleize, kingdom&.downcase]) if kingdom.present?
+        taxonomy_sets[1].add([phylum&.titleize, phylum&.downcase]) if phylum.present?
+        taxonomy_sets[2].add([class_name&.titleize, class_name&.downcase]) if class_name.present?
+        taxonomy_sets[3].add([order_name&.titleize, order_name&.downcase]) if order_name.present?
+        taxonomy_sets[4].add([family&.titleize, family&.downcase]) if family.present?
+        taxonomy_sets[5].add([genus&.titleize, genus&.downcase]) if genus.present?
+        
+        # Prep types
+        prep_types_set.add([prep_type&.titleize, prep_type&.downcase]) if prep_type.present?
+      end
+      
+      {
+        geo: geo_sets.map { |set| set.sort_by(&:first) },
+        taxonomy: taxonomy_sets.map { |set| set.sort_by(&:first) },
+        prep_types: prep_types_set.sort_by(&:first)
+      }
+    end
+
+    def setup_search_query
+      @sort = sanitize_sort_parameter(params[:sort])
+      
+      if session[:quick_search_q].present?
+        @q = Item.ransack(session[:quick_search_q])
+        transform_quick_search_params
+        session.delete(:quick_search_q)
+        @quick_search_filters = true
+      else
+        transform_search_groupings unless params[:page].present?
+        @quick_search_filters = false
+        
+        @q = Item.left_outer_joins(:identifications, :collection)
+                .select('items.*, identifications.scientific_name, collections.division')
+                .order(@sort)
+                .ransack(params[:q])
+      end
+    end
+    
+    # Sanitize sort parameters to prevent SQL injection
+    def sanitize_sort_parameter(sort_param)
+      # Get whitelisted sort options from helper
+      allowed_sorts = ApplicationController.helpers.fields_to_sort_items
+                                                  .map(&:second)
+                                                  .compact
+                                                  .to_set
+      
+      # Default fallback
+      default_sort = 'items.catalog_number asc'
+      
+      # Return default if no sort provided
+      return default_sort if sort_param.blank?
+      
+      # Check if provided sort is in whitelist
+      if allowed_sorts.include?(sort_param.strip)
+        sort_param.strip
+      else
+        # Log potential security attempt
+        Rails.logger.warn "Invalid sort parameter attempted: #{sort_param}"
+        default_sort
+      end
+    end
+
+    def execute_search_and_paginate
+      # Get base results
+      filtered_items = @q.result.distinct
+      
+      # Count only distinct item IDs to avoid PostgreSQL error
+      @total_items = @q.result.distinct.count('items.id')
+      collection_ids = @q.result.distinct.reorder('').pluck('items.collection_id')
+      @collections = Collection.where(id: collection_ids).pluck(:division).uniq.join(', ')
+      
+      # Paginated items with includes for efficiency
+      @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
+
+      @all_collections = Collection.order(:division)
+      setup_dynamic_fields
+    end
+    
+    def setup_dynamic_fields
+      @dynamic_fields = []
+      return unless params.dig(:q, :groupings).present?
+      
+      params.dig(:q, :groupings).each do |group_num, values|
+        group_pairs = []
+        values.each do |field, val|
+          
+          next if field == "m" || val.blank?
+          group_pairs << { field: field, value: val }
+        end
+        @dynamic_fields << group_pairs unless group_pairs.empty?
+      end
+      @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+    end
+
 end
