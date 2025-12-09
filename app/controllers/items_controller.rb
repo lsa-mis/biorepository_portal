@@ -275,8 +275,8 @@ class ItemsController < ApplicationController
       # Get base results
       filtered_items = @q.result.distinct
       
-      # Count and collections data
-      @total_items = filtered_items.size
+      # Count only distinct item IDs to avoid PostgreSQL error
+      @total_items = @q.result.distinct.count('items.id')
       collection_ids = @q.result.distinct.reorder('').pluck('items.collection_id')
       @collections = Collection.where(id: collection_ids).pluck(:division).uniq.join(', ')
       
