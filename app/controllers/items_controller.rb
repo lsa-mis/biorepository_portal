@@ -240,7 +240,7 @@ class ItemsController < ApplicationController
         transform_search_groupings unless params[:page].present?
         @quick_search_filters = false
         
-        @q = Item.left_outer_joins(:current_identification, :collection)
+        @q = Item.left_outer_joins(:identifications, :collection)
                 .select('items.*, identifications.scientific_name, collections.division')
                 .order(@sort)
                 .ransack(params[:q])
