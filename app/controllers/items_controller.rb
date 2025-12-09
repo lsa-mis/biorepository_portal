@@ -87,6 +87,12 @@ class ItemsController < ApplicationController
         prep_types_set.sort_by(&:first)
       end
 
+    if params[:sort].present?
+        @sort = params[:sort]
+    else
+      @sort = 'items.catalog_number asc'
+    end
+    
     if session[:quick_search_q].present?
       @q = Item.ransack(session[:quick_search_q])
       transform_quick_search_params
@@ -97,20 +103,17 @@ class ItemsController < ApplicationController
         transform_search_groupings
       end
       @quick_search_filters = false
-      @q = Item.left_outer_joins(:identifications, :collection, :preparations)
-              .select('items.*, identifications.scientific_name, collections.division, preparations.prep_type')
+
+      @q = Item.left_outer_joins(:identifications, :collection)
+              .select('items.*, identifications.scientific_name, collections.division').order(@sort)
               .ransack(params[:q])
     end
 
     filtered_items = @q.result.distinct
     @total_items = filtered_items.count('DISTINCT items.id')
-    @collections = filtered_items.joins(:collection).distinct.pluck('collections.division').join(', ')
-
-    if params[:sort].present?
-      @sort = params[:sort]
-      @q.sorts = @sort
-      filtered_items = @q.result.distinct
-    end
+    # Get collection IDs without ORDER BY to avoid PostgreSQL DISTINCT/ORDER BY conflict
+    collection_ids = @q.result.distinct.reorder('').pluck('items.collection_id')
+    @collections = Collection.where(id: collection_ids).distinct.pluck(:division).join(', ')
 
     @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @all_collections = Collection.order(:division)
