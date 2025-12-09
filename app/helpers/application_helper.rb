@@ -100,10 +100,10 @@ module ApplicationHelper
   def fields_to_sort_items
     [
       [ 'Select ...', nil ],
-      [ 'Catalog Number (ascending)', 'catalog_number asc' ],
-      [ 'Catalog Number (descending)', 'catalog_number desc' ],
-      [ 'Scientific Name (A-Z)', 'identifications_scientific_name asc' ],
-      [ 'Scientific Name (Z-A)', 'identifications_scientific_name desc' ]
+      [ 'Catalog Number (ascending)', 'items.catalog_number asc' ],
+      [ 'Catalog Number (descending)', 'items.catalog_number desc' ],
+      [ 'Scientific Name (A-Z)', 'identifications.scientific_name asc' ],
+      [ 'Scientific Name (Z-A)', 'identifications.scientific_name desc' ]
     ]
   end
 
