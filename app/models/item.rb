@@ -59,9 +59,6 @@ class Item < ApplicationRecord
   has_many :unavailables
   has_many :checkouts, through: :unavailables
 
-  # Removed default_scope to ensure all items are included in searches
-  # Use includes(:current_identification) in controllers when needed
-
   def name
     name = ""
     name = self.catalog_number + " - " if self.catalog_number.present?
