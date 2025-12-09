@@ -59,8 +59,6 @@ class Item < ApplicationRecord
   has_many :unavailables
   has_many :checkouts, through: :unavailables
 
-  default_scope { left_joins(:current_identification) }
-
   def name
     name = ""
     name = self.catalog_number + " - " if self.catalog_number.present?
@@ -111,7 +109,7 @@ class Item < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    [ "collection", "identifications", "preparations" ]
+    [ "collection", "current_identification", "identifications", "preparations" ]
   end
 
 end
