@@ -21,14 +21,12 @@ if rails_env == "production"
   # CPU cores are available. Make sure to set the `WEB_CONCURRENCY` environment
   # variable to match the number of processors.
   worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { 2 })
-  workers worker_count
   
-  # Preload the application code when using multiple workers
-  preload_app!
-else
-  # In development, use preload_app for consistency
-  preload_app!
-end
+  if worker_count > 1
+    workers worker_count
+  else
+    preload_app!
+  end
 
 # Specifies the `worker_timeout` threshold that Puma will use to wait before
 # terminating a worker in development environments.
