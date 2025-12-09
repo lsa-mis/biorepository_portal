@@ -59,7 +59,8 @@ class Item < ApplicationRecord
   has_many :unavailables
   has_many :checkouts, through: :unavailables
 
-  default_scope { left_joins(:current_identification) }
+  # Removed default_scope to ensure all items are included in searches
+  # Use includes(:current_identification) in controllers when needed
 
   def name
     name = ""
@@ -111,7 +112,7 @@ class Item < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    [ "collection", "identifications", "preparations" ]
+    [ "collection", "current_identification", "identifications", "preparations" ]
   end
 
 end
