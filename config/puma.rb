@@ -27,6 +27,7 @@ if rails_env == "production"
   else
     preload_app!
   end
+end
 
 # Specifies the `worker_timeout` threshold that Puma will use to wait before
 # terminating a worker in development environments.
