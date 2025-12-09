@@ -20,7 +20,8 @@ if rails_env == "production"
   # It defaults to 1 because it's impossible to reliably detect how many
   # CPU cores are available. Make sure to set the `WEB_CONCURRENCY` environment
   # variable to match the number of processors.
-  worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { 1 })
+  worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { 2 })
+  
   if worker_count > 1
     workers worker_count
   else
@@ -44,12 +45,20 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
-# Optional: Log to STDOUT in production for easier debugging
-stdout_redirect 'log/puma.stdout.log', 'log/puma.stderr.log', true
+# Optional: Log to files only in production for easier debugging
+if rails_env == "production"
+  stdout_redirect 'log/puma.stdout.log', 'log/puma.stderr.log', true
+end
 
 # On worker boot, re-connect to the database and other shared resources
+# This block runs when workers > 0 (cluster mode)
 on_worker_boot do
   require "active_record"
   ActiveRecord::Base.connection_pool.disconnect! rescue ActiveRecord::ConnectionNotEstablished
   ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
 end
+
+# Alternative: Use after_worker_boot for additional setup if needed
+# after_worker_boot do
+#   # Additional worker setup code
+# end
