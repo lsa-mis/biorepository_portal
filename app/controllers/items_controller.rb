@@ -37,13 +37,13 @@ class ItemsController < ApplicationController
     else
       Rails.logger.info "Collection IDs unchanged, using cached filter data"
       # Load cached filter data or rebuild if cache is stale
-      filter_cache_key = "filters_#{collection_ids.sort.join('_')}"
+      filter_cache_key = filter_cache_key(collection_ids)
       if Rails.cache.exist?(filter_cache_key)
         load_cached_filter_data(collection_ids)
       else
         Rails.logger.info "Filter data cache missing, rebuilding"
-        setup_filter_data(collection_ids)
-        Rails.cache.write(cache_key, collection_ids, expires_in: 1.hour)
+        filter_data = setup_filter_data(collection_ids)
+        Rails.cache.write(filter_cache_key, filter_data, expires_in: 1.hour)
       end
     end
     
@@ -237,7 +237,7 @@ class ItemsController < ApplicationController
     end
 
     def load_cached_filter_data(collection_ids)
-      cache_key = "filters_#{collection_ids.sort.join('_')}"
+      cache_key = filter_cache_key(collection_ids)
       filter_data = Rails.cache.read(cache_key)
       
       if filter_data
@@ -248,6 +248,10 @@ class ItemsController < ApplicationController
         # Fallback: rebuild if cache is missing
         setup_filter_data(collection_ids)
       end
+    end
+
+    def filter_cache_key(collection_ids)
+      "filters_#{collection_ids.sort.join('_')}"
     end
 
     def build_filter_data(collection_ids)
