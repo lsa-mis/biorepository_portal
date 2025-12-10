@@ -198,22 +198,27 @@ class ItemsController < ApplicationController
     end
 
     def setup_filter_data(collection_ids)
-
-      begin
-        ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = 10000") # 10 seconds in ms
-        cache_key = "filters_#{collection_ids.sort.join('_')}"
-        filter_data = Rails.cache.fetch(cache_key, expires_in: 12.hours) do
-          build_filter_data(collection_ids)
-        end
+      ActiveRecord::Base.transaction do
+        # Get the current timeout setting
+        original_timeout = ActiveRecord::Base.connection.execute("SHOW statement_timeout").first['statement_timeout']
         
-        @continents, @countries, @states, @sexs = filter_data[:geo]
-        @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
-        @prep_types = filter_data[:prep_types]
-      rescue ActiveRecord::QueryCanceled
-        Rails.logger.error "Search timeout - filter data took too long"
-        raise SearchTimeoutError, "Filter data query timed out"
-      ensure
-        ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = 0") # reset to default (no timeout)
+        begin
+          ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = '10s'")
+          cache_key = "filters_#{collection_ids.sort.join('_')}"
+          filter_data = Rails.cache.fetch(cache_key, expires_in: 12.hours) do
+            build_filter_data(collection_ids)
+          end
+          
+          @continents, @countries, @states, @sexs = filter_data[:geo]
+          @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
+          @prep_types = filter_data[:prep_types]
+        rescue ActiveRecord::QueryCanceled
+          Rails.logger.error "Search timeout - filter data took too long"
+          raise SearchTimeoutError, "Filter data query timed out"
+        ensure
+          # Reset to original timeout (SET LOCAL is automatically reset at transaction end)
+          # This ensure block is for any other cleanup if needed
+        end
       end
     end
 
