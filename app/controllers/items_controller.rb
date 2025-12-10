@@ -37,7 +37,6 @@ class ItemsController < ApplicationController
       format.html { render :search_result }
     end
   rescue SearchTimeoutError
-    Rails.logger.error "Search timeout - filter data took too long"
     respond_to do |format|
       format.html { render plain: "Search is taking too long. Please try with fewer filters.", status: 504 }
       format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 504 }
