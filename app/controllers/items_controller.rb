@@ -199,7 +199,8 @@ class ItemsController < ApplicationController
     def setup_filter_data(collection_ids)
       ActiveRecord::Base.transaction do
         # Get the current timeout setting
-        original_timeout = ActiveRecord::Base.connection.execute("SHOW statement_timeout").first['statement_timeout']
+        # Reset to original timeout (SET LOCAL is automatically reset at transaction end)
+        ActiveRecord::Base.connection.execute("SHOW statement_timeout").first['statement_timeout']
         
         begin
           ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = '10s'")
@@ -214,9 +215,6 @@ class ItemsController < ApplicationController
         rescue ActiveRecord::QueryCanceled
           Rails.logger.error "Search timeout - filter data took too long"
           raise SearchTimeoutError, "Filter data query timed out"
-        ensure
-          # Reset to original timeout (SET LOCAL is automatically reset at transaction end)
-          # This ensure block is for any other cleanup if needed
         end
       end
     end
