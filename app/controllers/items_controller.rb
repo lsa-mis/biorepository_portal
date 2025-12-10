@@ -222,7 +222,7 @@ class ItemsController < ApplicationController
         begin
           ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = '10s'")
           cache_key = "filters_#{collection_ids.sort.join('_')}"
-          filter_data = Rails.cache.fetch(cache_key, expires_in: 12.hours) do
+          filter_data = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
             build_filter_data(collection_ids)
           end
           
@@ -243,7 +243,7 @@ class ItemsController < ApplicationController
       unless filter_data
         # Fallback: rebuild if cache is missing
         filter_data = build_filter_data(collection_ids)
-        Rails.cache.write(cache_key, filter_data, expires_in: 12.hours)
+        Rails.cache.write(cache_key, filter_data, expires_in: 1.hour)
       end
       
       # Assign filter data to instance variables
