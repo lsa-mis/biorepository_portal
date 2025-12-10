@@ -26,7 +26,26 @@ class ItemsController < ApplicationController
 
     collection_ids = extract_collection_ids
     
-    setup_filter_data(collection_ids)
+    # Cache collection_ids and only rebuild filter data if they changed
+    cache_key = "collection_ids_#{session.id}"
+    cached_collection_ids = Rails.cache.read(cache_key)
+    
+    if cached_collection_ids != collection_ids
+      Rails.logger.info "Collection IDs changed, rebuilding filter data"
+      setup_filter_data(collection_ids)
+      Rails.cache.write(cache_key, collection_ids, expires_in: 1.hour)
+    else
+      Rails.logger.info "Collection IDs unchanged, using cached filter data"
+      # Load cached filter data or rebuild if cache is stale
+      filter_cache_key = "filters_#{collection_ids.sort.join('_')}"
+      if Rails.cache.exist?(filter_cache_key)
+        load_cached_filter_data(collection_ids)
+      else
+        Rails.logger.info "Filter data cache missing, rebuilding"
+        setup_filter_data(collection_ids)
+        Rails.cache.write(cache_key, collection_ids, expires_in: 1.hour)
+      end
+    end
     
     setup_search_query
     execute_search_and_paginate
@@ -214,6 +233,20 @@ class ItemsController < ApplicationController
           Rails.logger.error "Search timeout - filter data took too long"
           raise SearchTimeoutError, "Filter data query timed out"
         end
+      end
+    end
+
+    def load_cached_filter_data(collection_ids)
+      cache_key = "filters_#{collection_ids.sort.join('_')}"
+      filter_data = Rails.cache.read(cache_key)
+      
+      if filter_data
+        @continents, @countries, @states, @sexs = filter_data[:geo]
+        @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
+        @prep_types = filter_data[:prep_types]
+      else
+        # Fallback: rebuild if cache is missing
+        setup_filter_data(collection_ids)
       end
     end
 
