@@ -1,4 +1,7 @@
 require 'csv'
+
+class SearchTimeoutError < StandardError; end
+
 class ItemsController < ApplicationController
   include ActiveFiltersHelper
   skip_before_action :authenticate_user!, only: [ :show, :search, :quick_search, :export_to_csv ]
@@ -32,6 +35,12 @@ class ItemsController < ApplicationController
     
     respond_to do |format|
       format.html { render :search_result }
+    end
+  rescue SearchTimeoutError
+    Rails.logger.error "Search timeout - filter data took too long"
+    respond_to do |format|
+      format.html { render plain: "Search is taking too long. Please try with fewer filters.", status: 504 }
+      format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 504 }
     end
   rescue => e
     Rails.logger.error "Search error: #{e.message}"
@@ -202,10 +211,7 @@ class ItemsController < ApplicationController
         @prep_types = filter_data[:prep_types]
       rescue ActiveRecord::QueryCanceled
         Rails.logger.error "Search timeout - filter data took too long"
-        respond_to do |format|
-          format.html { render plain: "Search is taking too long. Please try with fewer filters.", status: 504 }
-          format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 504 }
-        end
+        raise SearchTimeoutError, "Filter data query timed out"
       ensure
         ActiveRecord::Base.connection.execute("SET statement_timeout = 0") # reset to default (no timeout)
       end
