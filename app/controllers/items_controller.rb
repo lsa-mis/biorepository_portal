@@ -240,14 +240,16 @@ class ItemsController < ApplicationController
       cache_key = filter_cache_key(collection_ids)
       filter_data = Rails.cache.read(cache_key)
       
-      if filter_data
-        @continents, @countries, @states, @sexs = filter_data[:geo]
-        @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
-        @prep_types = filter_data[:prep_types]
-      else
+      unless filter_data
         # Fallback: rebuild if cache is missing
-        setup_filter_data(collection_ids)
+        filter_data = build_filter_data(collection_ids)
+        Rails.cache.write(cache_key, filter_data, expires_in: 12.hours)
       end
+      
+      # Assign filter data to instance variables
+      @continents, @countries, @states, @sexs = filter_data[:geo]
+      @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
+      @prep_types = filter_data[:prep_types]
     end
 
     def filter_cache_key(collection_ids)
