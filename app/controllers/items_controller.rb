@@ -1,4 +1,7 @@
 require 'csv'
+
+class SearchTimeoutError < StandardError; end
+
 class ItemsController < ApplicationController
   include ActiveFiltersHelper
   skip_before_action :authenticate_user!, only: [ :show, :search, :quick_search, :export_to_csv ]
@@ -22,15 +25,28 @@ class ItemsController < ApplicationController
     @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
 
     collection_ids = extract_collection_ids
-    included_items = Item.where(collection: collection_ids)
-
+    
     setup_filter_data(collection_ids)
+    
     setup_search_query
     execute_search_and_paginate
 
+    Rails.logger.info "========================= hell"
+    
     respond_to do |format|
       format.html { render :search_result }
-      Rails.logger.info "========================= hell"
+    end
+  rescue SearchTimeoutError
+    respond_to do |format|
+      format.html { render plain: "Search is taking too long. Please try with fewer filters.", status: 504 }
+      format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 504 }
+    end
+  rescue => e
+    Rails.logger.error "Search error: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
+    respond_to do |format|
+      format.html { render plain: "An error occurred during search", status: 500 }
+      format.json { render json: { error: "An error occurred during search" }, status: 500 }
     end
   end
 
@@ -181,15 +197,24 @@ class ItemsController < ApplicationController
     end
 
     def setup_filter_data(collection_ids)
-
-      cache_key = "filters_#{collection_ids.sort.join('_')}"
-      filter_data = Rails.cache.fetch(cache_key, expires_in: 12.hours) do
-        build_filter_data(collection_ids)
+      ActiveRecord::Base.transaction do
+        # Set the current timeout setting
+        # Reset to original timeout (SET LOCAL is automatically reset at transaction end)        
+        begin
+          ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = '10s'")
+          cache_key = "filters_#{collection_ids.sort.join('_')}"
+          filter_data = Rails.cache.fetch(cache_key, expires_in: 12.hours) do
+            build_filter_data(collection_ids)
+          end
+          
+          @continents, @countries, @states, @sexs = filter_data[:geo]
+          @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
+          @prep_types = filter_data[:prep_types]
+        rescue ActiveRecord::QueryCanceled
+          Rails.logger.error "Search timeout - filter data took too long"
+          raise SearchTimeoutError, "Filter data query timed out"
+        end
       end
-      
-      @continents, @countries, @states, @sexs = filter_data[:geo]
-      @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
-      @prep_types = filter_data[:prep_types]
     end
 
     def build_filter_data(collection_ids)
