@@ -200,14 +200,14 @@ class ItemsController < ApplicationController
         @continents, @countries, @states, @sexs = filter_data[:geo]
         @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
         @prep_types = filter_data[:prep_types]
-      rescue Timeout::Error
+      rescue ActiveRecord::QueryCanceled
         Rails.logger.error "Search timeout - filter data took too long"
         respond_to do |format|
           format.html { render plain: "Search is taking too long. Please try with fewer filters.", status: 504 }
           format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 504 }
         end
       ensure
-      ActiveRecord::Base.connection.execute("SET statement_timeout = 0") # reset to default (no timeout)
+        ActiveRecord::Base.connection.execute("SET statement_timeout = 0") # reset to default (no timeout)
       end
     end
 
