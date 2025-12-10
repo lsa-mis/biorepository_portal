@@ -76,14 +76,12 @@ module ActiveFiltersHelper
     if params[:q].present?
       params[:q].each do |key, value|
         next if value.blank? || key == "groupings" # Skip empty values and the "groupings" key
-        if key == "collection_id_in"
-          collection_names = Collection.where(id: value).pluck(:division)
-          
+        if key == "collection_id_in"          
           # Create nested hash structure for all collections
           collection_hashes = {}
           Array.wrap(value).each_with_index do |collection_id, index|
             collection_key = "collection_#{collection_id}"
-            collection_name = collection_names[index] || "Unknown Collection"
+            collection_name = Collection.find(collection_id).division || "Unknown Collection"
             collection_hashes[collection_key] = collection_name
           end
           filters_array << {key => collection_hashes}
