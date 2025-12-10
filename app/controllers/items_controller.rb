@@ -198,10 +198,8 @@ class ItemsController < ApplicationController
 
     def setup_filter_data(collection_ids)
       ActiveRecord::Base.transaction do
-        # Get the current timeout setting
-        # Reset to original timeout (SET LOCAL is automatically reset at transaction end)
-        ActiveRecord::Base.connection.execute("SHOW statement_timeout").first['statement_timeout']
-        
+        # Set the current timeout setting
+        # Reset to original timeout (SET LOCAL is automatically reset at transaction end)        
         begin
           ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = '10s'")
           cache_key = "filters_#{collection_ids.sort.join('_')}"
