@@ -23,10 +23,7 @@ class ItemsController < ApplicationController
 
     collection_ids = extract_collection_ids
     
-    # Add timeout protection for filter data
-    Timeout::timeout(10) do
-      setup_filter_data(collection_ids)
-    end
+    setup_filter_data(collection_ids)
     
     setup_search_query
     execute_search_and_paginate
@@ -36,12 +33,6 @@ class ItemsController < ApplicationController
     respond_to do |format|
       format.html { render :search_result }
     end
-    rescue Timeout::Error
-      Rails.logger.error "Search timeout - filter data took too long"
-      respond_to do |format|
-        format.html { render plain: "Search is taking too long. Please try with fewer filters.", status: 408 }
-        format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 408 }
-      end
     rescue => e
       Rails.logger.error "Search error: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
@@ -199,14 +190,25 @@ class ItemsController < ApplicationController
 
     def setup_filter_data(collection_ids)
 
-      cache_key = "filters_#{collection_ids.sort.join('_')}"
-      filter_data = Rails.cache.fetch(cache_key, expires_in: 12.hours) do
-        build_filter_data(collection_ids)
+      begin
+        ActiveRecord::Base.connection.execute("SET statement_timeout = 10000") # 10 seconds in ms
+        cache_key = "filters_#{collection_ids.sort.join('_')}"
+        filter_data = Rails.cache.fetch(cache_key, expires_in: 12.hours) do
+          build_filter_data(collection_ids)
+        end
+        
+        @continents, @countries, @states, @sexs = filter_data[:geo]
+        @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
+        @prep_types = filter_data[:prep_types]
+      rescue Timeout::Error
+        Rails.logger.error "Search timeout - filter data took too long"
+        respond_to do |format|
+          format.html { render plain: "Search is taking too long. Please try with fewer filters.", status: 408 }
+          format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 408 }
+        end
+      ensure
+      ActiveRecord::Base.connection.execute("SET statement_timeout = 0") # reset to default (no timeout)
       end
-      
-      @continents, @countries, @states, @sexs = filter_data[:geo]
-      @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
-      @prep_types = filter_data[:prep_types]
     end
 
     def build_filter_data(collection_ids)
