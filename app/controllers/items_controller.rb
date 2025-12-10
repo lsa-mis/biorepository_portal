@@ -200,7 +200,7 @@ class ItemsController < ApplicationController
     def setup_filter_data(collection_ids)
 
       begin
-        ActiveRecord::Base.connection.execute("SET statement_timeout = 10000") # 10 seconds in ms
+        ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = 10000") # 10 seconds in ms
         cache_key = "filters_#{collection_ids.sort.join('_')}"
         filter_data = Rails.cache.fetch(cache_key, expires_in: 12.hours) do
           build_filter_data(collection_ids)
@@ -213,7 +213,7 @@ class ItemsController < ApplicationController
         Rails.logger.error "Search timeout - filter data took too long"
         raise SearchTimeoutError, "Filter data query timed out"
       ensure
-        ActiveRecord::Base.connection.execute("SET statement_timeout = 0") # reset to default (no timeout)
+        ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = 0") # reset to default (no timeout)
       end
     end
 
