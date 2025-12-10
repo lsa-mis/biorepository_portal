@@ -26,7 +26,26 @@ class ItemsController < ApplicationController
 
     collection_ids = extract_collection_ids
     
-    setup_filter_data(collection_ids)
+    # Cache collection_ids and only rebuild filter data if they changed
+    cache_key = "collection_ids_#{session.id}"
+    cached_collection_ids = Rails.cache.read(cache_key)
+    
+    if cached_collection_ids != collection_ids
+      Rails.logger.info "Collection IDs changed, rebuilding filter data"
+      setup_filter_data(collection_ids)
+      Rails.cache.write(cache_key, collection_ids, expires_in: 1.hour)
+    else
+      Rails.logger.info "Collection IDs unchanged, using cached filter data"
+      # Load cached filter data or rebuild if cache is stale
+      filter_cache_key = filter_cache_key(collection_ids)
+      if Rails.cache.exist?(filter_cache_key)
+        load_cached_filter_data(collection_ids)
+      else
+        Rails.logger.info "Filter data cache missing, rebuilding"
+        filter_data = setup_filter_data(collection_ids)
+        Rails.cache.write(filter_cache_key, filter_data, expires_in: 1.hour)
+      end
+    end
     
     setup_search_query
     execute_search_and_paginate
@@ -203,7 +222,7 @@ class ItemsController < ApplicationController
         begin
           ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = '10s'")
           cache_key = "filters_#{collection_ids.sort.join('_')}"
-          filter_data = Rails.cache.fetch(cache_key, expires_in: 12.hours) do
+          filter_data = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
             build_filter_data(collection_ids)
           end
           
@@ -215,6 +234,26 @@ class ItemsController < ApplicationController
           raise SearchTimeoutError, "Filter data query timed out"
         end
       end
+    end
+
+    def load_cached_filter_data(collection_ids)
+      cache_key = filter_cache_key(collection_ids)
+      filter_data = Rails.cache.read(cache_key)
+      
+      unless filter_data
+        # Fallback: rebuild if cache is missing
+        filter_data = build_filter_data(collection_ids)
+        Rails.cache.write(cache_key, filter_data, expires_in: 1.hour)
+      end
+      
+      # Assign filter data to instance variables
+      @continents, @countries, @states, @sexs = filter_data[:geo]
+      @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
+      @prep_types = filter_data[:prep_types]
+    end
+
+    def filter_cache_key(collection_ids)
+      "filters_#{collection_ids.sort.join('_')}"
     end
 
     def build_filter_data(collection_ids)
