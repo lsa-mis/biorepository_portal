@@ -22,16 +22,27 @@ class ItemsController < ApplicationController
     @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
 
     collection_ids = extract_collection_ids
-    included_items = Item.where(collection: collection_ids)
-
-    setup_filter_data(collection_ids)
+    
+    # Add timeout protection for filter data
+    Timeout::timeout(10) do
+      setup_filter_data(collection_ids)
+    end
+    
     setup_search_query
     execute_search_and_paginate
 
+    Rails.logger.info "========================= hell"
+    
     respond_to do |format|
       format.html { render :search_result }
-      Rails.logger.info "========================= hell"
     end
+  rescue Timeout::Error
+    Rails.logger.error "Search timeout - filter data took too long"
+    render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 408
+  rescue => e
+    Rails.logger.error "Search error: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
+    render json: { error: "An error occurred during search" }, status: 500
   end
 
   include ActionController::Live
