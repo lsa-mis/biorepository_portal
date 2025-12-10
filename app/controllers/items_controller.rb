@@ -36,14 +36,20 @@ class ItemsController < ApplicationController
     respond_to do |format|
       format.html { render :search_result }
     end
-  rescue Timeout::Error
-    Rails.logger.error "Search timeout - filter data took too long"
-    render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 408
-  rescue => e
-    Rails.logger.error "Search error: #{e.message}"
-    Rails.logger.error e.backtrace.join("\n")
-    render json: { error: "An error occurred during search" }, status: 500
-  end
+    rescue Timeout::Error
+      Rails.logger.error "Search timeout - filter data took too long"
+      respond_to do |format|
+        format.html { render plain: "Search is taking too long. Please try with fewer filters.", status: 408 }
+        format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 408 }
+      end
+    rescue => e
+      Rails.logger.error "Search error: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      respond_to do |format|
+        format.html { render plain: "An error occurred during search", status: 500 }
+        format.json { render json: { error: "An error occurred during search" }, status: 500 }
+      end
+    end
 
   include ActionController::Live
 
