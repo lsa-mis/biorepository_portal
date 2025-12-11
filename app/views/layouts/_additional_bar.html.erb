@@ -22,7 +22,7 @@
     </div>
     <% unless Rails.env.production? %>
       <div class="text-center text-white">
-        <%= Rails.env.capitalize %> Environment
+        <span role="status" aria-label="Current environment"><%= Rails.env.capitalize %> Environment</span>
       </div>
     <% end %>
   </div>
