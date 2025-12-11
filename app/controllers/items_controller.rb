@@ -31,17 +31,17 @@ class ItemsController < ApplicationController
     cached_collection_ids = Rails.cache.read(cache_key)
     
     if cached_collection_ids != collection_ids
-      Rails.logger.info "Collection IDs changed, rebuilding filter data"
+      Rails.logger.info "******************************* Collection IDs changed, rebuilding filter data"
       setup_filter_data(collection_ids)
       Rails.cache.write(cache_key, collection_ids, expires_in: 1.hour)
     else
-      Rails.logger.info "Collection IDs unchanged, using cached filter data"
+      Rails.logger.info "******************************* Collection IDs unchanged, using cached filter data"
       # Load cached filter data or rebuild if cache is stale
       filter_cache_key = filter_cache_key(collection_ids)
       if Rails.cache.exist?(filter_cache_key)
         load_cached_filter_data(collection_ids)
       else
-        Rails.logger.info "Filter data cache missing, rebuilding"
+        Rails.logger.info "******************************* Filter data cache missing, rebuilding"
         filter_data = setup_filter_data(collection_ids)
         Rails.cache.write(filter_cache_key, filter_data, expires_in: 1.hour)
       end
@@ -61,7 +61,7 @@ class ItemsController < ApplicationController
       format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 504 }
     end
   rescue => e
-    Rails.logger.error "Search error: #{e.message}"
+    Rails.logger.error "******************************* Search error: #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
     respond_to do |format|
       format.html { render plain: "An error occurred during search", status: 500 }
@@ -230,7 +230,7 @@ class ItemsController < ApplicationController
           @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
           @prep_types = filter_data[:prep_types]
         rescue ActiveRecord::QueryCanceled
-          Rails.logger.error "Search timeout - filter data took too long"
+          Rails.logger.error "******************************* Search timeout - filter data took too long"
           raise SearchTimeoutError, "Filter data query timed out"
         end
       end
@@ -333,7 +333,7 @@ class ItemsController < ApplicationController
         sort_param.strip
       else
         # Log potential security attempt
-        Rails.logger.warn "Invalid sort parameter attempted: #{sort_param}"
+        Rails.logger.warn "******************************* Invalid sort parameter attempted: #{sort_param}"
         default_sort
       end
     end
