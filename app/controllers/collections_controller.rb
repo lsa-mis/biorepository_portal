@@ -49,7 +49,7 @@ class CollectionsController < ApplicationController
       if @collection.save
         # create preferences for the collection
         # intentionally use all distinct AppPreferences as template/default preferences to copy into this new collection
-        app_prefs = AppPreference.distinct.pluck(:name, :description, :pref_type)
+        app_prefs = AppPreference.distinct(:name).pluck(:name, :description, :pref_type)
         pref_errors = false
         error_messages = []
         app_prefs.each do |name, description, pref_type|
