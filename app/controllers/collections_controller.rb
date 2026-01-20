@@ -48,21 +48,9 @@ class CollectionsController < ApplicationController
     respond_to do |format|
       if @collection.save
         # create preferences for the collection
-        # intentionally use all distinct AppPreferences as template/default preferences to copy into this new collection
-        app_prefs = AppPreference.distinct(:name).pluck(:name, :description, :pref_type)
-        pref_errors = false
-        error_messages = []
-        app_prefs.each do |name, description, pref_type|
-          app_pref = AppPreference.create(collection: @collection, name: name, description: description, pref_type: pref_type, value: nil)
-          unless app_pref.persisted?
-            error_details = app_pref.errors.full_messages.join(', ')
-            Rails.logger.error "Failed to create AppPreference: #{error_details}"
-            error_messages << "#{name}: #{error_details}"
-            pref_errors = true
-          end
-        end
+        pref_errors = create_app_preferences(@collection)
         notice_message = if pref_errors
-          "Collection was successfully created, but there were errors creating App Preferences. Errors: #{error_messages.join('; ')}"
+          "Collection was successfully created, but there were errors creating App Preferences. Please contact support."
         else
           "Collection was successfully created. Set up App Preferences for the collection."
         end
@@ -173,6 +161,20 @@ class CollectionsController < ApplicationController
         note = ["#{import_type} import completed successfully."]
       end
       ItemImportLog.create(date: DateTime.now, user: current_user.name_with_email, collection_id: collection_id, status: status, note: note)
+    end
+
+    def create_app_preferences(collection)
+      # intentionally use all distinct AppPreferences as template/default preferences to copy into this new collection
+      app_prefs = AppPreference.distinct(:name).pluck(:name, :description, :pref_type)
+      pref_errors = false
+      app_prefs.each do |name, description, pref_type|
+        app_pref = AppPreference.create(collection: collection, name: name, description: description, pref_type: pref_type, value: nil)
+        unless app_pref.persisted?
+          Rails.logger.error "Failed to create AppPreference: #{app_pref.errors.full_messages.join(', ')}"
+          pref_errors = true
+        end
+      end
+      pref_errors
     end
 
     # Only allow a list of trusted parameters through.
