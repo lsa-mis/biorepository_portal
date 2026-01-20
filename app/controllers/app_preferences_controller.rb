@@ -15,7 +15,7 @@ class AppPreferencesController < ApplicationController
   end
 
   def app_prefs
-    if session[:role] = "developer" || session[:role] == "super_admin"
+    if session[:role] == "developer" || session[:role] == "super_admin"
       @collections = Collection.all
       @app_prefs = AppPreference.all.order(:pref_type, :description)
     else
