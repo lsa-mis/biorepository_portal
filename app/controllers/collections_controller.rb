@@ -66,7 +66,6 @@ class CollectionsController < ApplicationController
         else
           "Collection was successfully created. Set up App Preferences for the collection."
         end
-        
         format.html { redirect_to @collection, notice: notice_message }
         format.json { render :show, status: :created, location: @collection }
       else
