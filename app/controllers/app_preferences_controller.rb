@@ -15,8 +15,13 @@ class AppPreferencesController < ApplicationController
   end
 
   def app_prefs
-    @collections = Collection.where(id: session[:collection_ids])
-    @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
+    if session[:role] = "developer" || session[:role] == "super_admin"
+      @collections = Collection.all
+      @app_prefs = AppPreference.all.order(:pref_type, :description)
+    else
+      @collections = Collection.where(id: session[:collection_ids])
+      @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
+    end
     @global_prefs = GlobalPreference.all.order(:pref_type, :description)
     authorize @app_prefs
     authorize @global_prefs

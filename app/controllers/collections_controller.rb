@@ -47,7 +47,26 @@ class CollectionsController < ApplicationController
 
     respond_to do |format|
       if @collection.save
-        format.html { redirect_to @collection, notice: "Collection was successfully created." }
+        # create preferences for the collection
+        app_prefs = AppPreference.distinct.pluck(:name, :description, :pref_type)
+        pref_errors = false
+        error_messages = []
+        app_prefs.each do |name, description, pref_type|
+          app_pref = AppPreference.create(collection: @collection, name: name, description: description, pref_type: pref_type, value: nil)
+          unless app_pref.persisted?
+            error_details = app_pref.errors.full_messages.join(', ')
+            Rails.logger.error "Failed to create AppPreference: #{error_details}"
+            error_messages << "#{name}: #{error_details}"
+            pref_errors = true
+          end
+        end
+        notice_message = if pref_errors
+          "Collection was successfully created, but there were errors creating App Preferences. Errors: #{error_messages.join('; ')}"
+        else
+          "Collection was successfully created. Set up App Preferences for the collection."
+        end
+        
+        format.html { redirect_to @collection, notice: notice_message }
         format.json { render :show, status: :created, location: @collection }
       else
         format.html { render :new, status: :unprocessable_entity }
