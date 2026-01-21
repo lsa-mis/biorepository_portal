@@ -47,7 +47,14 @@ class CollectionsController < ApplicationController
 
     respond_to do |format|
       if @collection.save
-        format.html { redirect_to @collection, notice: "Collection was successfully created." }
+        # create preferences for the collection
+        pref_errors = create_app_preferences(@collection)
+        notice_message = if pref_errors
+          "Collection was successfully created, but there were errors creating App Preferences. Please contact support."
+        else
+          "Collection was successfully created. Set up App Preferences for the collection."
+        end
+        format.html { redirect_to @collection, notice: notice_message }
         format.json { render :show, status: :created, location: @collection }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -154,6 +161,20 @@ class CollectionsController < ApplicationController
         note = ["#{import_type} import completed successfully."]
       end
       ItemImportLog.create(date: DateTime.now, user: current_user.name_with_email, collection_id: collection_id, status: status, note: note)
+    end
+
+    def create_app_preferences(collection)
+      # intentionally use all distinct AppPreferences as template/default preferences to copy into this new collection
+      app_prefs = AppPreference.distinct(:name).pluck(:name, :description, :pref_type)
+      pref_errors = false
+      app_prefs.each do |name, description, pref_type|
+        app_pref = AppPreference.create(collection: collection, name: name, description: description, pref_type: pref_type, value: nil)
+        unless app_pref.persisted?
+          Rails.logger.error "Failed to create AppPreference: #{app_pref.errors.full_messages.join(', ')}"
+          pref_errors = true
+        end
+      end
+      pref_errors
     end
 
     # Only allow a list of trusted parameters through.
