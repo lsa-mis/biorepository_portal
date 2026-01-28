@@ -71,6 +71,7 @@ gem 'concurrent-ruby', '~> 1.3', '>= 1.3.5'
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
+  gem 'dotenv-rails'
   gem 'rspec-rails', '~> 8.0.0'
   gem 'factory_bot_rails'
   gem 'capybara', '~> 3.40'
