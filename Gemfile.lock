@@ -123,6 +123,10 @@ GEM
       responders
       warden (~> 1.2.3)
     diff-lcs (1.6.1)
+    dotenv (3.2.0)
+    dotenv-rails (3.2.0)
+      dotenv (= 3.2.0)
+      railties (>= 6.1)
     drb (2.2.3)
     erubi (1.13.1)
     factory_bot (6.5.1)
@@ -460,6 +464,7 @@ DEPENDENCIES
   dartsass-rails
   debug
   devise (~> 4.9.4)
+  dotenv-rails
   factory_bot_rails
   faker
   image_processing (~> 1.2)
