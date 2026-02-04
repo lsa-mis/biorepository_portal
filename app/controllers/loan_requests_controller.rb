@@ -205,6 +205,8 @@ class LoanRequestsController < ApplicationController
           question.question.to_plain_text.strip.downcase.include?("primary position") 
         end&.last
         answer_text = primary_position_answer&.answer&.to_plain_text.presence || "Not Provided"
+        # Organism remarks can contain multiple semicolon-delimited segments;
+        # for this CSV export we only include the first segment
         @checkout.requestables.active.each do |requestable|
           csv << [
             [user.first_name, user.last_name].compact.join(" "),
