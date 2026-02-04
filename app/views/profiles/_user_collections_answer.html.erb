@@ -1,6 +1,6 @@
 <div id="collection_question_<%= question.id %>" class="border rounded p-3">
   <p>
-    <strong><%= question.position %>. <%= strip_tags(question.question) %></strong><% if question.required? %> <span class="text-danger">*</span><% end %>
+    <strong><%= question.position %>. <%= question.question %></strong><% if question.required? %> <span class="text-danger">*</span><% end %>
   </p>
   <% if question.question_type == "attachments" %>
     <p>
