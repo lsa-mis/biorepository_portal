@@ -181,11 +181,14 @@ class LoanRequestsController < ApplicationController
           "Requester Name",
           "Requester Institution",
           "Requester Email",
+          "Primary Position/Role",
+          "ORCID ID",
           "Division",
           "Catalog Number",
           "Prep Type",
           "Count",
           "Barcode",
+          "Organism Remarks",
           "Address Line 1",
           "Address Line 2",
           "Address Line 3",
@@ -198,17 +201,26 @@ class LoanRequestsController < ApplicationController
           "Shipping Name",
           "Shipping Email"
         ]
-
+        primary_position_answer = @loan_answers.find do |question, answer| 
+          question.question.to_plain_text.strip == "Your Primary position" 
+        end&.last
+        answer_text = primary_position_answer&.answer&.to_plain_text
+        if answer_text.blank?
+          answer_text = "Not Provided"
+        end
         @checkout.requestables.active.each do |requestable|
           csv << [
             [user.first_name, user.last_name].compact.join(" "),
             user.affiliation,
             user.email,
+            answer_text,
+            user.orcid,
             requestable.preparation.item.collection.division,
             requestable.preparation.item.catalog_number,
             requestable.preparation.prep_type,
             requestable.count,
             requestable.preparation.barcode,
+            requestable.preparation.item.organism_remarks&.split(';')&.first,
             @shipping_address&.address_line_1,
             @shipping_address&.address_line_2,
             @shipping_address&.address_line_3,
