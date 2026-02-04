@@ -202,12 +202,9 @@ class LoanRequestsController < ApplicationController
           "Shipping Email"
         ]
         primary_position_answer = @loan_answers.find do |question, answer| 
-          question.question.to_plain_text.strip == "Your Primary position" 
+          question.question.to_plain_text.strip.downcase.include?("primary position") 
         end&.last
-        answer_text = primary_position_answer&.answer&.to_plain_text
-        if answer_text.blank?
-          answer_text = "Not Provided"
-        end
+        answer_text = primary_position_answer&.answer&.to_plain_text.presence || "Not Provided"
         @checkout.requestables.active.each do |requestable|
           csv << [
             [user.first_name, user.last_name].compact.join(" "),
