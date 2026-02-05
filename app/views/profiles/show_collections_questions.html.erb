@@ -21,7 +21,7 @@
         <dl class="row mb-0">
           <% @loan_answers.each do |question, answer| %>
             <dt class="col-sm-4 fw-semibold mb-2">
-              <%= "#{question.position}. " %><%= question.question.to_plain_text %>
+              <%= display_question_with_position(question) %>
               <% if question.required? %>
                 <span class="text-danger"> *</span>
               <% end %>
@@ -76,7 +76,7 @@
           <dl class="row mb-0">
             <% qa_data.each do |question, answer| %>
               <dt class="col-sm-4 fw-semibold">
-                <%= "#{question.position}. #{question.question.to_plain_text}" %>
+                <%= display_question_with_position(question) %>
                 <% if question.required? %>
                   <span class="text-danger"> *</span>
                 <% end %>
