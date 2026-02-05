@@ -1,6 +1,6 @@
 <div id="collection_question_<%= question.id %>" class="border rounded p-3">
   <p>
-    <strong><%= question.position %>. <%= question.question %></strong><% if question.required? %> <span class="text-danger">*</span><% end %>
+    <strong><%= display_question_with_position(question) %></strong><% if question.required? %> <span class="text-danger">*</span><% end %>
   </p>
   <% if question.question_type == "attachments" %>
     <p>
@@ -47,7 +47,7 @@
                   modal_link_turbo_frame_value: "modal_content_frame",
                   modal_link_modal_target_value: "#sharedModal"
                 },
-                aria: { label: "Edit #{question}" },
+                aria: { label: "Edit #{sanitize(question.question.to_s)}" },
                 title: "Edit Question #{question.position}",
                 role: "button",
                 tabindex: "0" do %>

@@ -50,6 +50,11 @@ module ApplicationHelper
     email.split("@").first
   end
 
+  def display_question_with_position(question)
+    content_tag(:span, "#{question.position}. ", style: "display: inline;") +
+    content_tag(:span, sanitize(question.question.to_s).gsub(/<(p|div|br)\b[^>]*>/i, '').gsub(/<\/(p|div)>/i, ' ').html_safe, style: "display: inline;")
+  end
+
   def show_current(identification)
     if identification.current
       "Current Identification:"
