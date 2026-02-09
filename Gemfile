@@ -82,6 +82,7 @@ group :development, :test do
   gem 'brakeman', require: false
   gem 'rails_accessibility_testing', '~> 1.6'
   gem 'axe-core-capybara', '~> 4.0'
+  gem 'bullet', '~> 8.1'
 end
 
 group :development do
