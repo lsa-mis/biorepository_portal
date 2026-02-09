@@ -10,15 +10,17 @@ class CollectionsController < ApplicationController
 
   # GET /collections or /collections.json
   def index
-    @collections = Collection.order(:division)
+    @collections = Collection.includes(:image_attachment).order(:division)
     authorize @collections
   end
 
   # GET /collections/1 or /collections/1.json
   def show
-    @q1 = @collection.items.includes(:current_identification, preparations: :requestables).ransack(params[:q1])
+    @q1 = @collection.items.includes(:current_identification, :preparations).ransack(params[:q1])
     @items = @q1.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
     @collection_questions = @collection.collection_questions.includes(:collection_options)
+    # Preload checkout's requestables to avoid N+1 queries in the preparation_in_checkout helper
+    @checkout&.requestables&.load
     respond_to do |format|
       format.html # normal full page
       format.turbo_stream
@@ -26,8 +28,10 @@ class CollectionsController < ApplicationController
   end
 
   def search
-    @q1 = @collection.items.ransack(params[:q1])
+    @q1 = @collection.items.includes(:current_identification, :preparations).ransack(params[:q1])
     @items = @q1.result.page(params[:page]).per(params[:per]).max_paginates_per(500)
+    # Preload checkout's requestables to avoid N+1 queries in the preparation_in_checkout helper
+    @checkout&.requestables&.load
     render :show
   end
 

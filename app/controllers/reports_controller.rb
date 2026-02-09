@@ -33,7 +33,7 @@ class ReportsController < ApplicationController
     authorize :report, :information_requests_report?
     if params[:commit]
       start_time, end_time, collection_id = collect_form_params
-      information_requests = InformationRequest.where(created_at: start_time..end_time).order(created_at: :desc)
+      information_requests = InformationRequest.includes(:rich_text_question).where(created_at: start_time..end_time).order(created_at: :desc)
       information_requests = information_requests.where("collection_ids @> ARRAY[?]::integer[]", collection_id) if collection_id.present?
 
       if information_requests.any?
