@@ -31,7 +31,7 @@ class CollectionsController < ApplicationController
     @q1 = @collection.items.includes(:current_identification, :preparations).ransack(params[:q1])
     @items = @q1.result.page(params[:page]).per(params[:per]).max_paginates_per(500)
     # Preload checkout's requestables to avoid N+1 queries in the preparation_in_checkout helper
-    @checkout&.requestables&.load
+    @checkout&.requestables&.includes(:item, :preparation)&.load
     render :show
   end
 
