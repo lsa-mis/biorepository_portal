@@ -10,7 +10,7 @@ class LoanQuestionsController < ApplicationController
 
   # GET /loan_questions or /loan_questions.json
   def index
-    @loan_questions = LoanQuestion.order(:position)
+    @loan_questions = LoanQuestion.includes(:rich_text_question).order(:position)
     authorize @loan_questions
     @new_loan_question = LoanQuestion.new
   end

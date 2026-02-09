@@ -15,9 +15,12 @@ class HomeController < ApplicationController
     if total_count > 6
       # Generate 6 random IDs and fetch those specific items
       item_ids = Item.pluck(:id).sample(6)
-      @items = Item.where(id: item_ids)
+      @items = Item.includes(:collection, :current_identification, :preparations).where(id: item_ids)
     else
-      @items = Item.limit(6)
+      @items = Item.includes(:collection, :current_identification, :preparations).limit(6)
     end
+    
+    # Preload checkout's requestables to avoid N+1 queries in the preparation_in_checkout helper
+    @checkout&.requestables&.load
   end
 end

@@ -115,7 +115,7 @@ class ApplicationController < ActionController::Base
 
   def checkout_availability
     alert = ""
-    @checkout.requestables.includes(:item).each do |requestable|
+    @checkout.requestables.includes(:item, :preparation).each do |requestable|
       preparation = requestable.preparation
       item = requestable.item
       if item.present?
