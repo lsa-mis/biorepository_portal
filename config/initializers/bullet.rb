@@ -3,7 +3,6 @@ if defined?(Bullet)
   Bullet.enable        = true
   Bullet.alert         = true
   # Bullet.alert = false # Disable browser alerts (can be annoying)
-  Bullet.bullet_logger = true # Log to bullet.log file
   Bullet.console = true # Print in server console
   Bullet.rails_logger = true # Add to Rails.logger
   Bullet.bullet_logger = true # Log to bullet.log file
