@@ -70,13 +70,9 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def preview
-    # Only include collection_options if there are questions that need them
-    includes_array = [:rich_text_question]
-    if @collection.collection_questions.where(question_type: ['checkbox', 'dropdown']).exists?
-      includes_array << :collection_options
-    end
-    
-    @collection_questions = @collection.collection_questions.includes(includes_array).order(:position)
+    @collection_questions = @collection.collection_questions
+                                      .includes(:rich_text_question, :collection_options)
+                                      .order(:position)
     authorize([@collection, @collection_questions])
   end
 
