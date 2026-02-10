@@ -107,8 +107,13 @@ class ItemsController < ApplicationController
               row << sanitize_csv_value(nil)
             end
           end
-          item.preparations.each do |prep|
-            csv << generate_row_with_preparation(row, prep)
+          if item.preparations.any?
+            item.preparations.each do |prep|
+              csv << generate_row_with_preparation(row, prep)
+            end
+          else
+            # If no preparations, still output a row with empty preparation data
+            csv << generate_row_with_preparation(row, nil)
           end
         end
       end
@@ -198,7 +203,11 @@ class ItemsController < ApplicationController
     def generate_row_with_preparation(row, prep)
       row_with_prep = row.dup
       PREPARATIONS_FIELDS.each do |prep_key|
-        row_with_prep << sanitize_csv_value(prep.attributes[prep_key])
+        if prep
+          row_with_prep << sanitize_csv_value(prep.attributes[prep_key])
+        else
+          row_with_prep << sanitize_csv_value(nil)
+        end
       end
       row_with_prep
     end
@@ -348,7 +357,7 @@ class ItemsController < ApplicationController
       @collections = Collection.where(id: collection_ids).pluck(:division).uniq.join(', ')
       
       # Paginated items with includes for efficiency
-      @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
+      @items = filtered_items.includes(:collection, :current_identification, :preparations).page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
 
       @all_collections = Collection.order(:division)
       setup_dynamic_fields

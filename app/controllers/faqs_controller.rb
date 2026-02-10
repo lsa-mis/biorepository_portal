@@ -67,7 +67,7 @@ class FaqsController < ApplicationController
   end
 
   def reorder
-    @faqs = Faq.order(:position)
+    @faqs = Faq.includes(:rich_text_question).order(:position)
     authorize @faqs
   end
 

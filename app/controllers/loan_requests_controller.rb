@@ -167,7 +167,7 @@ class LoanRequestsController < ApplicationController
   private
 
     def get_loan_answers
-      loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
+      loan_questions = LoanQuestion.includes(:loan_answers, :rich_text_question).order(:position)
       loan_questions.each_with_object({}) do |question, hash|
         hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
       end
@@ -242,7 +242,6 @@ class LoanRequestsController < ApplicationController
     def build_collection_answers(checkout, user)
       collections = Collection
                 .where(id: checkout.requestables.active.map { |requestable| requestable.preparation.item.collection_id }.uniq)
-                .includes(collection_questions: :collection_answers)
       collection_answers = {}
 
       collections.each do |collection|

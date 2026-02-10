@@ -4,7 +4,7 @@ class Collections::CollectionQuestionsController < ApplicationController
   before_action :set_question_types, only: %i[ new edit create update ]
 
   def index
-    @collection_questions = @collection.collection_questions.order(:position)
+    @collection_questions = @collection.collection_questions.includes(:rich_text_question).order(:position)
     authorize([@collection, @collection_questions])
   end
 
@@ -70,7 +70,13 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def preview
-    @collection_questions = @collection.collection_questions.includes(:collection_options).order(:position)
+    # Only include collection_options if there are questions that need them
+    includes_array = [:rich_text_question]
+    if @collection.collection_questions.where(question_type: ['checkbox', 'dropdown']).exists?
+      includes_array << :collection_options
+    end
+    
+    @collection_questions = @collection.collection_questions.includes(includes_array).order(:position)
     authorize([@collection, @collection_questions])
   end
 

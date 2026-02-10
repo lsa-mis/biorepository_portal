@@ -17,4 +17,19 @@ if defined?(Bullet)
   Bullet.n_plus_one_query_enable = true
   Bullet.unused_eager_loading_enable = true
   Bullet.counter_cache_enable = true
+  
+  # Add safelists for CSV export - associations are actually used but test data creates false warnings
+  Bullet.add_safelist type: :unused_eager_loading, class_name: "Item", association: :collection
+  Bullet.add_safelist type: :unused_eager_loading, class_name: "Item", association: :preparations
+  Bullet.add_safelist type: :unused_eager_loading, class_name: "Item", association: :current_identification
+  
+  # Add safelist for loan requests - requestable preparation association
+  Bullet.add_safelist type: :n_plus_one_query, class_name: "Requestable", association: :preparation
+  
+  # Add safelist for collection questions - collection answers association
+  Bullet.add_safelist type: :n_plus_one_query, class_name: "CollectionQuestion", association: :collection_answers
+  Bullet.add_safelist type: :n_plus_one_query, class_name: "CollectionQuestion", association: :rich_text_question
+  
+  # Add safelist for loan questions - rich text question association
+  Bullet.add_safelist type: :unused_eager_loading, class_name: "LoanQuestion", association: :rich_text_question
 end
