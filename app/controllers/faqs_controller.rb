@@ -11,7 +11,7 @@ class FaqsController < ApplicationController
 
   # GET /faqs or /faqs.json
   def index
-    @faqs = Faq.order(:position)
+    @faqs = Faq.includes(:rich_text_question, :rich_text_answer).order(:position)
     authorize @faqs
   end
 
@@ -67,7 +67,7 @@ class FaqsController < ApplicationController
   end
 
   def reorder
-    @faqs = Faq.order(:position)
+    @faqs = Faq.includes(:rich_text_question).order(:position)
     authorize @faqs
   end
 

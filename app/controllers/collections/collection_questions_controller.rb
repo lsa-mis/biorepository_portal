@@ -4,7 +4,7 @@ class Collections::CollectionQuestionsController < ApplicationController
   before_action :set_question_types, only: %i[ new edit create update ]
 
   def index
-    @collection_questions = @collection.collection_questions.order(:position)
+    @collection_questions = @collection.collection_questions.includes(:rich_text_question).order(:position)
     authorize([@collection, @collection_questions])
   end
 
@@ -70,7 +70,9 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
 
   def preview
-    @collection_questions = @collection.collection_questions.includes(:collection_options).order(:position)
+    @collection_questions = @collection.collection_questions
+                                      .includes(:rich_text_question, :collection_options)
+                                      .order(:position)
     authorize([@collection, @collection_questions])
   end
 

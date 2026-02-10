@@ -73,18 +73,19 @@ class ItemsController < ApplicationController
 
   def export_to_csv
     transform_search_groupings
+    items = if params[:q].present?
+      @q = Item.left_outer_joins(:current_identification, :collection)
+              .ransack(params[:q])
+      @q.result.distinct
+    else
+      Item.all
+    end
     response.headers['Content-Type'] = 'text/csv'
     response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today}.csv"
     response.headers['Last-Modified'] = Time.now.httpdate
     begin
       csv = CSV.new(response.stream)
       csv << TITLEIZED_HEADERS
-      items = if params[:q].present?
-        @q = Item.ransack(params[:q])
-        @q.result
-      else
-        Item.all
-      end
       items.in_batches(of: 1000) do |batch|
         batch = batch.includes(:collection, :current_identification, :preparations)
         batch.each do |item|
@@ -107,8 +108,13 @@ class ItemsController < ApplicationController
               row << sanitize_csv_value(nil)
             end
           end
-          item.preparations.each do |prep|
-            csv << generate_row_with_preparation(row, prep)
+          if item.preparations.any?
+            item.preparations.each do |prep|
+              csv << generate_row_with_preparation(row, prep)
+            end
+          else
+            # If no preparations, still output a row with empty preparation data
+            csv << generate_row_with_preparation(row, nil)
           end
         end
       end
@@ -197,8 +203,15 @@ class ItemsController < ApplicationController
 
     def generate_row_with_preparation(row, prep)
       row_with_prep = row.dup
-      PREPARATIONS_FIELDS.each do |prep_key|
-        row_with_prep << sanitize_csv_value(prep.attributes[prep_key])
+      if prep
+        attributes = prep.attributes
+        PREPARATIONS_FIELDS.each do |prep_key|
+          row_with_prep << sanitize_csv_value(attributes[prep_key])
+        end
+      else
+        PREPARATIONS_FIELDS.each do |prep_key|
+          row_with_prep << sanitize_csv_value(nil)
+        end
       end
       row_with_prep
     end
@@ -348,7 +361,7 @@ class ItemsController < ApplicationController
       @collections = Collection.where(id: collection_ids).pluck(:division).uniq.join(', ')
       
       # Paginated items with includes for efficiency
-      @items = filtered_items.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
+      @items = filtered_items.includes(:collection, :current_identification, :preparations).page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
 
       @all_collections = Collection.order(:division)
       setup_dynamic_fields
