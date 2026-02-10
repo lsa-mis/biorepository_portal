@@ -32,4 +32,7 @@ if defined?(Bullet)
   
   # Add safelist for loan questions - rich text question association
   Bullet.add_safelist type: :unused_eager_loading, class_name: "LoanQuestion", association: :rich_text_question
+  
+  # Add safelist for ActiveStorage attachment - record association
+  Bullet.add_safelist type: :unused_eager_loading, class_name: "ActiveStorage::Attachment", association: :record
 end
