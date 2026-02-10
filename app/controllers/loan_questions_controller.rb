@@ -95,7 +95,7 @@ class LoanQuestionsController < ApplicationController
 
   # GET /loan_questions/preview
   def preview
-    @loan_questions = LoanQuestion.all.order(:position)
+    @loan_questions = LoanQuestion.all.includes(:rich_text_question, :options).order(:position)
     authorize @loan_questions
   end
 
