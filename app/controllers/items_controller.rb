@@ -73,18 +73,19 @@ class ItemsController < ApplicationController
 
   def export_to_csv
     transform_search_groupings
+    items = if params[:q].present?
+      @q = Item.left_outer_joins(:current_identification, :collection)
+              .ransack(params[:q])
+      @q.result.distinct
+    else
+      Item.all
+    end
     response.headers['Content-Type'] = 'text/csv'
     response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today}.csv"
     response.headers['Last-Modified'] = Time.now.httpdate
     begin
       csv = CSV.new(response.stream)
       csv << TITLEIZED_HEADERS
-      items = if params[:q].present?
-        @q = Item.ransack(params[:q])
-        @q.result
-      else
-        Item.all
-      end
       items.in_batches(of: 1000) do |batch|
         batch = batch.includes(:collection, :current_identification, :preparations)
         batch.each do |item|
