@@ -203,10 +203,13 @@ class ItemsController < ApplicationController
 
     def generate_row_with_preparation(row, prep)
       row_with_prep = row.dup
-      PREPARATIONS_FIELDS.each do |prep_key|
-        if prep
-          row_with_prep << sanitize_csv_value(prep.attributes[prep_key])
-        else
+      if prep
+        attributes = prep.attributes
+        PREPARATIONS_FIELDS.each do |prep_key|
+          row_with_prep << sanitize_csv_value(attributes[prep_key])
+        end
+      else
+        PREPARATIONS_FIELDS.each do |prep_key|
           row_with_prep << sanitize_csv_value(nil)
         end
       end
