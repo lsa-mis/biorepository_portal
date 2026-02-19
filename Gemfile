@@ -1,9 +1,9 @@
 source "https://rubygems.org"
 
-ruby "3.3.6"
+ruby "4.0.1"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0.0"
+gem "rails", "~> 8.1.2"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
@@ -67,6 +67,7 @@ gem 'sentry-ruby'
 gem 'sentry-rails'
 gem 'country_select'
 gem 'concurrent-ruby', '~> 1.3', '>= 1.3.5'
+gem 'csv', '~> 3.3', '>= 3.3.5'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
