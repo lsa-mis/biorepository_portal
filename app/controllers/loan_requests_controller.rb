@@ -199,7 +199,16 @@ class LoanRequestsController < ApplicationController
           "ZIP Code",
           "Phone Number",
           "Shipping Name",
-          "Shipping Email"
+          "Shipping Email",
+          "Quantity Resolved",
+          "Loan Number",
+          "Original Due Date",
+          "Current Due Date",
+          "Loan Agents Role",
+          "Loan Remarks",
+          "Loan Contents",
+          "Loan Date",
+          "Quantity Returned"
         ]
         primary_position_answer = @loan_answers.find do |question, answer| 
           question.question.to_plain_text.strip.downcase.include?("primary position") 
@@ -230,7 +239,8 @@ class LoanRequestsController < ApplicationController
             @shipping_address&.zip,
             @shipping_address&.phone,
             [@shipping_address&.first_name, @shipping_address&.last_name].compact.join(" "),
-            @shipping_address&.email
+            @shipping_address&.email,
+            0, "", "", "", "", "", "", "", 0
           ]
         end
       end
