@@ -381,7 +381,7 @@ class ItemsController < ApplicationController
         if field == 'event_date_start'
           specify_field = 'eventDate'
         else
-          specify_field = map_field_mappings[field]
+          specify_field = map_field_mappings[field] || field.titleize
         end
         headers << specify_field
       end
