@@ -108,9 +108,6 @@ class LoanRequestsController < ApplicationController
         question.collection&.division&.parameterize || "NA"
       })
     end
-
-    # pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
-    # csv_tempfile = create_csv_file(current_user)
     
     begin
       if @loan_request.save
