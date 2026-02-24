@@ -395,12 +395,12 @@ class ItemsController < ApplicationController
     def get_csv_value_for_event_date_start(item)
       if item.event_date_start.present? && item.event_date_end.present?
         if item.event_date_start == item.event_date_end
-          item.event_date_start.to_s
+          sanitize_csv_value(item.event_date_start.to_s)
         else
-          "#{item.event_date_start}/#{item.event_date_end}"
+          sanitize_csv_value("#{item.event_date_start}/#{item.event_date_end}")
         end
       else
-        item.event_date_start.to_s
+        sanitize_csv_value(item.event_date_start.to_s)
       end
     end
 
