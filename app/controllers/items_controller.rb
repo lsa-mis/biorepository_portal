@@ -378,11 +378,8 @@ class ItemsController < ApplicationController
       headers = ['Collection']
 
       all_fields.each do |field|
-        case field
-        when 'event_date_start'
+        if field == 'event_date_start'
           specify_field = 'eventDate'
-        when 'event_date_end'
-          next
         else
           specify_field = map_field_mappings[field]
         end
