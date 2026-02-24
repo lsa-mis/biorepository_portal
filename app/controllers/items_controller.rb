@@ -80,18 +80,21 @@ class ItemsController < ApplicationController
     else
       Item.all
     end
+    item_fields = Item.column_names.select { |name| !%w[id created_at updated_at collection_id event_date_end].include?(name) }
+    identification_fields = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
+    all_fields = item_fields + identification_fields
     response.headers['Content-Type'] = 'text/csv'
-    response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today.strftime('%B %d, %Y')}.csv"
+    response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today}.csv"
     response.headers['Last-Modified'] = Time.now.httpdate
     begin
       csv = CSV.new(response.stream)
       csv << ["When using this dataset please use the following citation: #{request.base_url} (#{Date.today.strftime('%B %d, %Y')}) UofM Biorepository Web Portal"]
-      csv << csv_headers
+      csv << csv_headers(all_fields)
       items.in_batches(of: 1000) do |batch|
         batch = batch.includes(:collection, :current_identification, :preparations)
         batch.each do |item|
           row = [sanitize_csv_value(item.collection.division)]
-          @item_fields.each do |key|
+          item_fields.each do |key|
             if key == "event_date_start"
               row << get_csv_value_for_event_date_start(item)
             else
@@ -100,11 +103,11 @@ class ItemsController < ApplicationController
           end
           identification = item.current_identification
           if identification
-            @identification_fields.each do |id_key|
+            identification_fields.each do |id_key|
               row << sanitize_csv_value(identification.attributes[id_key])
             end
           else
-            @identification_fields.each do |id_key|
+            identification_fields.each do |id_key|
               row << sanitize_csv_value(nil)
             end
           end
@@ -368,10 +371,7 @@ class ItemsController < ApplicationController
       @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
     end
 
-    def csv_headers
-      @item_fields = Item.column_names.select { |name| !%w[id created_at updated_at collection_id event_date_end].include?(name) }
-      @identification_fields = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
-      all_fields = @item_fields + @identification_fields
+    def csv_headers(all_fields)
       # Preload all MapField mappings in a single query to avoid N+1
       map_field_mappings = MapField.where(rails_field: all_fields).pluck(:rails_field, :specify_field).to_h
       
