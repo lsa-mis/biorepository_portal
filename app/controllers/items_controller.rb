@@ -391,6 +391,10 @@ class ItemsController < ApplicationController
       item_fields = Item.column_names.select { |name| !%w[id created_at updated_at collection_id].include?(name) }
       identification_fields = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
       headers = item_fields + identification_fields
+      
+      # Preload all MapField mappings in a single query to avoid N+1
+      map_field_mappings = MapField.where(rails_field: headers).pluck(:rails_field, :specify_field).to_h
+      
       csv_headers= []
       headers.each do |field|
         case field
@@ -399,7 +403,7 @@ class ItemsController < ApplicationController
         when 'event_date_end'
           next
         else
-          specify_field = MapField.find_by(rails_field: field)&.specify_field
+          specify_field = map_field_mappings[field]
         end
         csv_headers << specify_field
       end
