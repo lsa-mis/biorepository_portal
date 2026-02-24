@@ -81,11 +81,11 @@ class ItemsController < ApplicationController
       Item.all
     end
     response.headers['Content-Type'] = 'text/csv'
-    response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today}.csv"
+    response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today.strftime('%B %d, %Y')}.csv"
     response.headers['Last-Modified'] = Time.now.httpdate
     begin
       csv = CSV.new(response.stream)
-      csv << ["When using this dataset please use the following citation: #{request.base_url} (#{Date.today.to_s}) UofM Biorepository Web Portal"]
+      csv << ["When using this dataset please use the following citation: #{request.base_url} (#{Date.today.strftime('%B %d, %Y')}) UofM Biorepository Web Portal"]
       csv << csv_headers
       items.in_batches(of: 1000) do |batch|
         batch = batch.includes(:collection, :current_identification, :preparations)
