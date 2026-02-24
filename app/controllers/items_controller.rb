@@ -80,42 +80,46 @@ class ItemsController < ApplicationController
     else
       Item.all
     end
+    item_fields = Item.column_names.select { |name| !%w[id created_at updated_at collection_id event_date_end].include?(name) }
+    identification_fields = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
     response.headers['Content-Type'] = 'text/csv'
     response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today}.csv"
     response.headers['Last-Modified'] = Time.now.httpdate
     begin
       csv = CSV.new(response.stream)
-      csv << TITLEIZED_HEADERS
+      csv << ["When using this dataset please use the following citation: #{request.base_url} (#{Date.today.to_s}) UofM Biorepository Web Portal"]
+      csv << csv_headers
       items.in_batches(of: 1000) do |batch|
         batch = batch.includes(:collection, :current_identification, :preparations)
         batch.each do |item|
           row = []
-          ITEM_FIELDS.each do |key|
+          item_fields.each do |key|
             if key == "collection_id"
               row << sanitize_csv_value(item.collection.division)
+            elsif key == "event_date_start"
+              row << get_csv_value_for_event_date_start(item)
             else
               row << sanitize_csv_value(item.attributes[key])
             end
           end
-
           identification = item.current_identification
           if identification
-            IDENTIFICATIONS_FIELDS.each do |id_key|
+            identification_fields.each do |id_key|
               row << sanitize_csv_value(identification.attributes[id_key])
             end
           else
-            IDENTIFICATIONS_FIELDS.each do |id_key|
+            identification_fields.each do |id_key|
               row << sanitize_csv_value(nil)
             end
           end
-          if item.preparations.any?
-            item.preparations.each do |prep|
-              csv << generate_row_with_preparation(row, prep)
-            end
+          preparations = item.preparations
+          if preparations.any?
+            row << generate_column_with_preparation(preparations)
           else
             # If no preparations, still output a row with empty preparation data
-            csv << generate_row_with_preparation(row, nil)
+            row << ""
           end
+          csv << row
         end
       end
     ensure
@@ -381,6 +385,50 @@ class ItemsController < ApplicationController
         @dynamic_fields << group_pairs unless group_pairs.empty?
       end
       @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+    end
+
+    def csv_headers
+      item_fields = Item.column_names.select { |name| !%w[id created_at updated_at collection_id].include?(name) }
+      identification_fields = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
+      headers = item_fields + identification_fields
+      csv_headers= []
+      headers.each do |field|
+        case field
+        when 'event_date_start'
+          specify_field = 'eventDate'
+        when 'event_date_end'
+          next
+        else
+          specify_field = MapField.find_by(rails_field: field)&.specify_field
+        end
+        csv_headers << specify_field
+      end
+      csv_headers << 'preparations'
+      csv_headers
+    end
+
+    def get_csv_value_for_event_date_start(item)
+      if item.event_date_start.present? && item.event_date_end.present?
+        if item.event_date_start == item.event_date_end
+          item.event_date_start.to_s
+        else
+          "#{item.event_date_start}/#{item.event_date_end}"
+        end
+      else
+        item.event_date_start.to_s
+      end
+    end
+
+    def generate_column_with_preparation(preparations)
+      column = ""
+      preparations.each do |preparation|
+        column += "#{preparation.prep_type} - #{preparation.count}: #{preparation.barcode}: #{preparation.description}; "
+      end
+      column
+    end
+
+    def sanitize_csv_value(value)
+      value.to_s.start_with?('=', '+', '-', '@') ? "'#{value}'" : value.to_s
     end
 
 end
