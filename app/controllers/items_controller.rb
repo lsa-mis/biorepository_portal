@@ -409,7 +409,7 @@ class ItemsController < ApplicationController
       preparations.each do |preparation|
         column += "#{preparation.prep_type} - #{preparation.count}: #{preparation.barcode}: #{preparation.description}; "
       end
-      column
+      sanitize_csv_value(column)
     end
 
     def sanitize_csv_value(value)
