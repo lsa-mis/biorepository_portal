@@ -171,6 +171,7 @@ class LoanRequestsController < ApplicationController
         @pdf_tempfile.close
         @pdf_tempfile.unlink
       end
+    end
   end
 
   private
