@@ -20,7 +20,7 @@ class RequestMailer < ApplicationMailer
     mail(to: @user.email, subject: subject)
   end
 
-  def send_loan_request(send_to:, user:, loan_request:, csv_file: nil, pdf_file: nil, file_name:)
+  def send_loan_request(send_to:, user:, loan_request:, csv_file: nil, pdf_file: nil, file_name: nil)
     @user = user
     effective_file_name = file_name.presence || "loan_request_#{loan_request&.id}"
     attachments["#{effective_file_name}.csv"] = { content: File.read(csv_file), content_type: "text/csv" } if csv_file.present?
@@ -35,7 +35,7 @@ class RequestMailer < ApplicationMailer
     mail(to: send_to, subject: subject)
   end
 
-  def confirmation_loan_request(user, loan_request, collection_ids, csv_file:, pdf_file:, file_name:)
+  def confirmation_loan_request(user, loan_request, collection_ids, csv_file: nil, pdf_file: nil, file_name: nil)
     @user = user
     @loan_request = loan_request
     effective_file_name = file_name.presence || "loan_request_#{loan_request&.id}"
