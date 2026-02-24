@@ -20,11 +20,10 @@ class RequestMailer < ApplicationMailer
     mail(to: @user.email, subject: subject)
   end
 
-  def send_loan_request(send_to:, user:, loan_request:, csv_file: nil, pdf_file: nil, file_name: nil)
+  def send_loan_request(send_to:, user:, loan_request:, csv_file: nil, pdf_file: nil, file_name:)
     @user = user
-    effective_file_name = file_name.presence || "loan_request_#{loan_request&.id}"
-    attachments["#{effective_file_name}.csv"] = { content: File.read(csv_file), content_type: "text/csv" } if csv_file.present?
-    attachments["#{effective_file_name}.pdf"] = { content: File.read(pdf_file), content_type: "application/pdf" } if pdf_file.present?
+    attachments["#{file_name}.csv"] = { content: File.read(csv_file), content_type: "text/csv" } if csv_file.present?
+    attachments["#{file_name}.pdf"] = { content: File.read(pdf_file), content_type: "application/pdf" } if pdf_file.present?
     loan_request.attachment_files.each do |file|
       attachments[file.filename.to_s] = {
         mime_type: file.content_type,
