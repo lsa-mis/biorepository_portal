@@ -371,13 +371,13 @@ class ItemsController < ApplicationController
     def csv_headers
       @item_fields = Item.column_names.select { |name| !%w[id created_at updated_at collection_id event_date_end].include?(name) }
       @identification_fields = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
-      headers = @item_fields + @identification_fields
+      all_fields = @item_fields + @identification_fields
       # Preload all MapField mappings in a single query to avoid N+1
-      map_field_mappings = MapField.where(rails_field: headers).pluck(:rails_field, :specify_field).to_h
+      map_field_mappings = MapField.where(rails_field: all_fields).pluck(:rails_field, :specify_field).to_h
       
-      csv_headers= ['Collection']
+      headers = ['Collection']
 
-      headers.each do |field|
+      all_fields.each do |field|
         case field
         when 'event_date_start'
           specify_field = 'eventDate'
@@ -386,10 +386,10 @@ class ItemsController < ApplicationController
         else
           specify_field = map_field_mappings[field]
         end
-        csv_headers << specify_field
+        headers << specify_field
       end
-      csv_headers << 'preparations'
-      csv_headers
+      headers << 'preparations'
+      headers
     end
 
     def get_csv_value_for_event_date_start(item)
