@@ -80,8 +80,6 @@ class ItemsController < ApplicationController
     else
       Item.all
     end
-    item_fields = Item.column_names.select { |name| !%w[id created_at updated_at collection_id event_date_end].include?(name) }
-    identification_fields = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
     response.headers['Content-Type'] = 'text/csv'
     response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today}.csv"
     response.headers['Last-Modified'] = Time.now.httpdate
@@ -92,11 +90,9 @@ class ItemsController < ApplicationController
       items.in_batches(of: 1000) do |batch|
         batch = batch.includes(:collection, :current_identification, :preparations)
         batch.each do |item|
-          row = []
-          item_fields.each do |key|
-            if key == "collection_id"
-              row << sanitize_csv_value(item.collection.division)
-            elsif key == "event_date_start"
+          row = [sanitize_csv_value(item.collection.division)]
+          @item_fields.each do |key|
+            if key == "event_date_start"
               row << get_csv_value_for_event_date_start(item)
             else
               row << sanitize_csv_value(item.attributes[key])
@@ -104,11 +100,11 @@ class ItemsController < ApplicationController
           end
           identification = item.current_identification
           if identification
-            identification_fields.each do |id_key|
+            @identification_fields.each do |id_key|
               row << sanitize_csv_value(identification.attributes[id_key])
             end
           else
-            identification_fields.each do |id_key|
+            @identification_fields.each do |id_key|
               row << sanitize_csv_value(nil)
             end
           end
@@ -388,14 +384,14 @@ class ItemsController < ApplicationController
     end
 
     def csv_headers
-      item_fields = Item.column_names.select { |name| !%w[id created_at updated_at collection_id].include?(name) }
-      identification_fields = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
-      headers = item_fields + identification_fields
-      
+      @item_fields = Item.column_names.select { |name| !%w[id created_at updated_at collection_id event_date_end].include?(name) }
+      @identification_fields = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
+      headers = @item_fields + @identification_fields
       # Preload all MapField mappings in a single query to avoid N+1
       map_field_mappings = MapField.where(rails_field: headers).pluck(:rails_field, :specify_field).to_h
       
-      csv_headers= []
+      csv_headers= ['Collection']
+
       headers.each do |field|
         case field
         when 'event_date_start'
