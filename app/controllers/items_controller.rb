@@ -403,8 +403,8 @@ class ItemsController < ApplicationController
 
     def generate_column_with_preparation(preparations)
       column = preparations.map do |preparation|
-        "#{preparation.prep_type} - #{preparation.count}: #{preparation.barcode}: #{preparation.description}; "
-      end.join
+        "#{preparation.prep_type} - #{preparation.count}: #{preparation.barcode}: #{preparation.description}"
+      end.join('; ')
       sanitize_csv_value(column)
     end
 
