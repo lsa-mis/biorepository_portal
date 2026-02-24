@@ -201,21 +201,6 @@ class ItemsController < ApplicationController
       end
     end
 
-    def generate_row_with_preparation(row, prep)
-      row_with_prep = row.dup
-      if prep
-        attributes = prep.attributes
-        PREPARATIONS_FIELDS.each do |prep_key|
-          row_with_prep << sanitize_csv_value(attributes[prep_key])
-        end
-      else
-        PREPARATIONS_FIELDS.each do |prep_key|
-          row_with_prep << sanitize_csv_value(nil)
-        end
-      end
-      row_with_prep
-    end
-
     def extract_collection_ids
       if params[:q]&.dig(:collection_id_in).present?
         params[:q][:collection_id_in]
