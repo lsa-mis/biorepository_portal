@@ -108,42 +108,46 @@ class LoanRequestsController < ApplicationController
         question.collection&.division&.parameterize || "NA"
       })
     end
-
-    pdf_tempfile = Tempfile.new(["loan_request", ".pdf"])
-    csv_tempfile = create_csv_file(current_user)
     
     begin
       if @loan_request.save
-        File.open(pdf_tempfile, "wb") do |file|
+        if Rails.env.production?
+          file_name = "loan_request_#{@loan_request.id}"
+        else 
+          file_name = "loan_request_staging_#{@loan_request.id}"
+        end
+        @pdf_tempfile = Tempfile.new([file_name, ".pdf"])
+        File.open(@pdf_tempfile, "wb") do |file|
           file.write(PdfGenerator.new(current_user, @shipping_address, @loan_answers, @checkout_items, @collection_answers).generate_pdf_content)
         end
-        pdf_tempfile.rewind
-
+        @pdf_tempfile.rewind
         @loan_request.pdf_file.attach(
-          io: pdf_tempfile,
-          filename: "loan_request_#{@loan_request.id}.pdf",
+          io: @pdf_tempfile,
+          filename: "#{file_name}.pdf",
           content_type: "application/pdf"
         )
-
+        @csv_tempfile = create_csv_file(file_name, current_user)
         @loan_request.csv_file.attach(
-          io: csv_tempfile,
-          filename: "loan_request_#{@loan_request.id}.csv",
+          io: @csv_tempfile,
+          filename: "#{file_name}.csv",
           content_type: "text/csv"
         )
         RequestMailer.send_loan_request(
           send_to: emails,
           user: current_user,
           loan_request: @loan_request,
-          csv_file: csv_tempfile,
-          pdf_file: pdf_tempfile
+          csv_file: @csv_tempfile,
+          pdf_file: @pdf_tempfile,
+          file_name: file_name
         ).deliver_now
 
         RequestMailer.confirmation_loan_request(
           current_user,
           @loan_request,
           @collection_ids,
-          csv_file: csv_tempfile,
-          pdf_file: pdf_tempfile
+          csv_file: @csv_tempfile,
+          pdf_file: @pdf_tempfile,
+          file_name: file_name
         ).deliver_now
 
         # Clean up checkout items
@@ -156,12 +160,15 @@ class LoanRequestsController < ApplicationController
       end
     
     ensure
-      csv_tempfile.close
-      csv_tempfile.unlink
-      pdf_tempfile.close
-      pdf_tempfile.unlink
+      if @csv_tempfile.present?
+        @csv_tempfile.close
+        @csv_tempfile.unlink
+      end
+      if @pdf_tempfile.present?
+        @pdf_tempfile.close
+        @pdf_tempfile.unlink
+      end
     end
-
   end
 
   private
@@ -173,8 +180,8 @@ class LoanRequestsController < ApplicationController
       end
     end
 
-    def create_csv_file(user)
-      tempfile = Tempfile.new(["loan_request", ".csv"])
+    def create_csv_file(file_name, user)
+      tempfile = Tempfile.new([file_name, ".csv"])
 
       CSV.open(tempfile.path, "w") do |csv|
         csv << [
@@ -199,7 +206,16 @@ class LoanRequestsController < ApplicationController
           "ZIP Code",
           "Phone Number",
           "Shipping Name",
-          "Shipping Email"
+          "Shipping Email",
+          "Quantity Resolved",
+          "Loan Number",
+          "Original Due Date",
+          "Current Due Date",
+          "Loan Agents Role",
+          "Loan Remarks",
+          "Loan Contents",
+          "Loan Date",
+          "Quantity Returned"
         ]
         primary_position_answer = @loan_answers.find do |question, answer| 
           question.question.to_plain_text.strip.downcase.include?("primary position") 
@@ -230,7 +246,8 @@ class LoanRequestsController < ApplicationController
             @shipping_address&.zip,
             @shipping_address&.phone,
             [@shipping_address&.first_name, @shipping_address&.last_name].compact.join(" "),
-            @shipping_address&.email
+            @shipping_address&.email,
+            0, "", "", "", "", "", "", "", 0
           ]
         end
       end
