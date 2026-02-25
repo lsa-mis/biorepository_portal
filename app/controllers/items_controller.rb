@@ -88,7 +88,8 @@ class ItemsController < ApplicationController
     response.headers['Last-Modified'] = Time.now.httpdate
     begin
       csv = CSV.new(response.stream)
-      csv << ["When using this dataset please use the following citation: #{request.base_url} (#{Date.today.strftime('%B %d, %Y')}) UofM Biorepository Web Portal"]
+      citation_text = "When using this dataset please use the following citation: #{request.base_url} (#{Date.today.to_s}) UofM Biorepository Web Portal"
+      csv << ([citation_text] + Array.new(headers.length - 1, nil))
       csv << csv_headers(all_fields)
       items.in_batches(of: 1000) do |batch|
         batch = batch.includes(:collection, :current_identification, :preparations)
