@@ -80,42 +80,47 @@ class ItemsController < ApplicationController
     else
       Item.all
     end
+    item_fields = Item.column_names.select { |name| !%w[id created_at updated_at collection_id event_date_end].include?(name) }
+    identification_fields = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
+    all_fields = item_fields + identification_fields
     response.headers['Content-Type'] = 'text/csv'
     response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today}.csv"
     response.headers['Last-Modified'] = Time.now.httpdate
     begin
       csv = CSV.new(response.stream)
-      csv << TITLEIZED_HEADERS
+      citation_text = "When using this dataset please use the following citation: #{request.base_url} (#{Date.today.to_s}) UofM Biorepository Web Portal"
+      headers = csv_headers(all_fields)
+      csv << ([citation_text] + Array.new(headers.length - 1, nil))
+      csv << headers
       items.in_batches(of: 1000) do |batch|
         batch = batch.includes(:collection, :current_identification, :preparations)
         batch.each do |item|
-          row = []
-          ITEM_FIELDS.each do |key|
-            if key == "collection_id"
-              row << sanitize_csv_value(item.collection.division)
+          row = [sanitize_csv_value(item.collection.division)]
+          item_fields.each do |key|
+            if key == "event_date_start"
+              row << get_csv_value_for_event_date_start(item)
             else
               row << sanitize_csv_value(item.attributes[key])
             end
           end
-
           identification = item.current_identification
           if identification
-            IDENTIFICATIONS_FIELDS.each do |id_key|
+            identification_fields.each do |id_key|
               row << sanitize_csv_value(identification.attributes[id_key])
             end
           else
-            IDENTIFICATIONS_FIELDS.each do |id_key|
+            identification_fields.each do |id_key|
               row << sanitize_csv_value(nil)
             end
           end
-          if item.preparations.any?
-            item.preparations.each do |prep|
-              csv << generate_row_with_preparation(row, prep)
-            end
+          preparations = item.preparations
+          if preparations.any?
+            row << generate_column_with_preparation(preparations)
           else
             # If no preparations, still output a row with empty preparation data
-            csv << generate_row_with_preparation(row, nil)
+            row << ""
           end
+          csv << row
         end
       end
     ensure
@@ -199,21 +204,6 @@ class ItemsController < ApplicationController
         end
         params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
       end
-    end
-
-    def generate_row_with_preparation(row, prep)
-      row_with_prep = row.dup
-      if prep
-        attributes = prep.attributes
-        PREPARATIONS_FIELDS.each do |prep_key|
-          row_with_prep << sanitize_csv_value(attributes[prep_key])
-        end
-      else
-        PREPARATIONS_FIELDS.each do |prep_key|
-          row_with_prep << sanitize_csv_value(nil)
-        end
-      end
-      row_with_prep
     end
 
     def extract_collection_ids
@@ -381,6 +371,47 @@ class ItemsController < ApplicationController
         @dynamic_fields << group_pairs unless group_pairs.empty?
       end
       @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+    end
+
+    def csv_headers(all_fields)
+      # Preload all MapField mappings in a single query to avoid N+1
+      map_field_mappings = MapField.where(rails_field: all_fields).pluck(:rails_field, :specify_field).to_h
+      
+      headers = ['Collection']
+
+      all_fields.each do |field|
+        if field == 'event_date_start'
+          specify_field = 'eventDate'
+        else
+          specify_field = map_field_mappings[field] || field.titleize
+        end
+        headers << specify_field
+      end
+      headers << 'preparations'
+      headers
+    end
+
+    def get_csv_value_for_event_date_start(item)
+      if item.event_date_start.present? && item.event_date_end.present?
+        if item.event_date_start == item.event_date_end
+          sanitize_csv_value(item.event_date_start.to_s)
+        else
+          sanitize_csv_value("#{item.event_date_start}/#{item.event_date_end}")
+        end
+      else
+        sanitize_csv_value(item.event_date_start.to_s)
+      end
+    end
+
+    def generate_column_with_preparation(preparations)
+      column = preparations.map do |preparation|
+        "#{preparation.prep_type} - #{preparation.count}: #{preparation.barcode}: #{preparation.description}"
+      end.join('; ')
+      sanitize_csv_value(column)
+    end
+
+    def sanitize_csv_value(value)
+      value.to_s.start_with?('=', '+', '-', '@') ? "'#{value}'" : value.to_s
     end
 
 end
