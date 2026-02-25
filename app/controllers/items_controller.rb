@@ -89,8 +89,9 @@ class ItemsController < ApplicationController
     begin
       csv = CSV.new(response.stream)
       citation_text = "When using this dataset please use the following citation: #{request.base_url} (#{Date.today.to_s}) UofM Biorepository Web Portal"
+      headers = csv_headers(all_fields)
       csv << ([citation_text] + Array.new(headers.length - 1, nil))
-      csv << csv_headers(all_fields)
+      csv << headers
       items.in_batches(of: 1000) do |batch|
         batch = batch.includes(:collection, :current_identification, :preparations)
         batch.each do |item|
