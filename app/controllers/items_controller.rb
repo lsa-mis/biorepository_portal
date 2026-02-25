@@ -1,5 +1,3 @@
-require 'csv'
-
 class SearchTimeoutError < StandardError; end
 
 class ItemsController < ApplicationController

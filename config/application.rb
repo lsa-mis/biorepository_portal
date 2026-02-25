@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 module BiorepositoryPortal
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.1
+    config.load_defaults 8.1
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -25,5 +25,8 @@ module BiorepositoryPortal
     config.time_zone = 'Eastern Time (US & Canada)'
     # config.eager_load_paths << Rails.root.join("extras")
     config.active_support.to_time_preserves_timezone = :zone
+    
+    # Configure deprecation behavior for Rails 8.1 transitional warnings
+    config.active_support.deprecation = :log
   end
 end

@@ -24,6 +24,13 @@ if rails_env == "production"
   
   if worker_count > 1
     workers worker_count
+    
+    # Set up worker boot process for cluster mode
+    after_worker_boot do
+      require "active_record"
+      ActiveRecord::Base.connection_pool.disconnect! rescue ActiveRecord::ConnectionNotEstablished
+      ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+    end
   else
     preload_app!
   end
@@ -49,16 +56,3 @@ plugin :tmp_restart
 if rails_env == "production"
   stdout_redirect 'log/puma.stdout.log', 'log/puma.stderr.log', true
 end
-
-# On worker boot, re-connect to the database and other shared resources
-# This block runs when workers > 0 (cluster mode)
-on_worker_boot do
-  require "active_record"
-  ActiveRecord::Base.connection_pool.disconnect! rescue ActiveRecord::ConnectionNotEstablished
-  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
-end
-
-# Alternative: Use after_worker_boot for additional setup if needed
-# after_worker_boot do
-#   # Additional worker setup code
-# end
