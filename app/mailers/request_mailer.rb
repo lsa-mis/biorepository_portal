@@ -20,10 +20,11 @@ class RequestMailer < ApplicationMailer
     mail(to: @user.email, subject: subject)
   end
 
-  def send_loan_request(send_to:, user:, loan_request:, csv_file: nil, pdf_file: nil)
+  def send_loan_request(send_to:, user:, loan_request:, csv_file: nil, pdf_file: nil, file_name: nil)
     @user = user
-    attachments["loan_request.csv"] = { content: File.read(csv_file), content_type: "text/csv" } if csv_file.present?
-    attachments["loan_request.pdf"] = { content: File.read(pdf_file), content_type: "application/pdf" } if pdf_file.present?
+    effective_file_name = file_name.presence || "loan_request_#{loan_request&.id}"
+    attachments["#{effective_file_name}.csv"] = { content: File.read(csv_file), content_type: "text/csv" } if csv_file.present?
+    attachments["#{effective_file_name}.pdf"] = { content: File.read(pdf_file), content_type: "application/pdf" } if pdf_file.present?
     loan_request.attachment_files.each do |file|
       attachments[file.filename.to_s] = {
         mime_type: file.content_type,
@@ -34,12 +35,13 @@ class RequestMailer < ApplicationMailer
     mail(to: send_to, subject: subject)
   end
 
-  def confirmation_loan_request(user, loan_request, collection_ids, csv_file:, pdf_file:)
+  def confirmation_loan_request(user, loan_request, collection_ids, csv_file: nil, pdf_file: nil, file_name: nil)
     @user = user
     @loan_request = loan_request
+    effective_file_name = file_name.presence || "loan_request_#{loan_request&.id}"
     @custom_email_message = get_custom_email_messages(collection_ids, "custom_message_loan_request")
-    attachments["loan_request.csv"] = { content: File.read(csv_file), content_type: "text/csv" } if csv_file.present?
-    attachments["loan_request.pdf"] = { content: File.read(pdf_file), content_type: "application/pdf" } if pdf_file.present?
+    attachments["#{effective_file_name}.csv"] = { content: File.read(csv_file), content_type: "text/csv" } if csv_file.present?
+    attachments["#{effective_file_name}.pdf"] = { content: File.read(pdf_file), content_type: "application/pdf" } if pdf_file.present?
     mail(
       to: @user.email,
       subject: "Confirmation: Your Loan Request Has Been Submitted"
