@@ -1,16 +1,8 @@
 # app/controllers/saved_searches_controller.rb
 class SavedSearchesController < ApplicationController
 
-  def create
-    fail
-    @saved_search = current_user.saved_searches.new(saved_search_params)
-    @saved_search.search_params = params[:search] # Capture the search parameters
-
-    if @saved_search.save
-      redirect_to search_results_path, notice: "Search saved successfully!"
-    else
-      # Handle errors (maybe render the search page again with an alert)
-    end
+  def index
+    @saved_searches = current_user.saved_searches
   end
 
   def show
