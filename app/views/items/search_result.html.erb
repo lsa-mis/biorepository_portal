@@ -14,7 +14,13 @@
         <!-- Main Content: Search Results -->
         <div class="col-md-7 mt-3" id="search-results">
           <div class="mb-3">
-            <h2>Search Results</h2>
+            <div class="d-flex justify-content-between align-items-center">
+              <h2>Search Results</h2>
+              <%= f.submit "Save Search", formaction: "/items/save_search", formmethod: "post", class: "btn btn-secondary" %>
+            </div>
+            <div>
+              
+            </div>
 
             <%= turbo_frame_tag "active_filters" do %>
               <%= render partial: 'layouts/current_filters', locals: { active_filters: @active_filters } %>

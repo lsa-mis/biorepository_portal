@@ -88,6 +88,7 @@ Rails.application.routes.draw do
     collection do
       match 'quick_search' => 'items#quick_search', via: [:get, :post]
       match 'search' => 'items#search', via: [:get, :post]
+      post 'save_search', to: 'items#save_search', as: :save_search
     end
   end
   
@@ -117,6 +118,8 @@ Rails.application.routes.draw do
   get 'add_item_to_checkout/:item_id', to: 'collections#add_item_to_checkout', as: :add_item_to_checkout
 
   get 'application/delete_attachment/:id', to: 'application#delete_attachment', as: :delete_attachment
+
+  resources :saved_searches, only: [:create, :show, :index, :destroy]
 
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", sessions: "users/sessions"} do
     delete 'sign_out', :to => 'users/sessions#destroy', :as => :destroy_user_session
