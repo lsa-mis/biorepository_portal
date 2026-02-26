@@ -67,6 +67,25 @@ class ItemsController < ApplicationController
     end
   end
 
+  def save_search
+    if current_user.nil?
+      redirect_to new_user_session_path, alert: "You must be signed in to save searches."
+      return
+    end
+    # Implement the logic to save the search for the current_user
+    if params[:q].blank?
+      redirect_to search_items_path, alert: "No search parameters to save."
+      return
+    end
+    saved_search = current_user.saved_searches.new(name: "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}", search_params: params[:q].to_unsafe_h)
+    if saved_search.save
+      flash.now[:notice] = "Search saved successfully!"
+      redirect_to search_items_path, notice: "Search saved successfully!"
+    else
+      redirect_to search_items_path, alert: "Failed to save search."
+    end
+  end
+
   include ActionController::Live
 
   def export_to_csv
