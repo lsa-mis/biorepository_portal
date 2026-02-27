@@ -4,7 +4,8 @@ class SearchTimeoutError < StandardError; end
 
 class ItemsController < ApplicationController
   include ActiveFiltersHelper
-  skip_before_action :authenticate_user!, only: [ :show, :search, :quick_search, :export_to_csv ]
+  skip_before_action :auth_user, only: [ :show, :search, :quick_search, :export_to_csv ]
+  # before_action :set_redirection_url, only: [ :show, :search, :quick_search, :export_to_csv ]
   before_action :set_item, only: [ :show ]
 
   # GET /items/1 or /items/1.json

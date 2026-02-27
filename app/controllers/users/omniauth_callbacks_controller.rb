@@ -1,6 +1,7 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   include ApplicationHelper
   skip_before_action :verify_authenticity_token, only: :saml
+  skip_before_action :auth_user
   before_action :set_user
   attr_reader :user, :service
 
@@ -16,7 +17,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to edit_user_registration_path
     else
       sign_in_and_redirect user, event: :authentication
-      $baseURL = ''
       set_flash_message :notice, :success, kind: kind
     end
   end

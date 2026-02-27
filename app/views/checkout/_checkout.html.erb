@@ -5,8 +5,14 @@
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
       <h1>Checkout</h1>
       <% if @checkout.requestables.active.exists? %>
-        <%= link_to new_loan_request_path, class: "btn btn-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
-          <i class="bi bi-envelope"></i> Send Loan Request
+        <% if user_signed_in? %>
+          <%= link_to new_loan_request_path, class: "btn btn-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
+            <i class="bi bi-envelope"></i> Send Loan Request
+          <% end %>
+        <% else %>
+          <%= link_to new_user_session_path, class: "btn btn-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
+            <i class="bi bi-envelope"></i> Sign in to Send Loan Request
+          <% end %>
         <% end %>
       <% end %>
     </div>

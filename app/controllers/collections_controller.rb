@@ -1,6 +1,7 @@
 class CollectionsController < ApplicationController
   before_action :set_collection, only: %i[ show edit update destroy search ]
-  skip_before_action :authenticate_user!, only: [ :index, :show, :search ]
+  skip_before_action :auth_user, only: [ :index, :show, :search ]
+  # before_action :set_redirection_url, only: [ :index, :show, :search ]
   before_action :ensure
 
   def enable_preview

@@ -67,6 +67,7 @@ gem 'sentry-ruby'
 gem 'sentry-rails'
 gem 'country_select'
 gem 'concurrent-ruby', '~> 1.3', '>= 1.3.5'
+gem 'repost'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
