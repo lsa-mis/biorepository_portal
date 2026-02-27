@@ -391,7 +391,6 @@ GEM
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
-    repost (0.5.1)
     responders (3.2.0)
       actionpack (>= 7.0)
       railties (>= 7.0)
@@ -545,7 +544,6 @@ DEPENDENCIES
   rails_accessibility_testing (~> 1.6)
   ransack
   redis (>= 4.0.1)
-  repost
   rspec-rails (~> 8.0.0)
   sentry-rails
   sentry-ruby

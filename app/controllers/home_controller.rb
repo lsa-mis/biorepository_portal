@@ -1,6 +1,5 @@
 class HomeController < ApplicationController
-  skip_before_action :auth_user
-  # before_action :set_redirection_url
+  skip_before_action :authenticate_user!
   before_action :ensure
 
   def enable_preview
