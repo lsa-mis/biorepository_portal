@@ -1,7 +1,7 @@
 require "csv"
 
 class LoanRequestsController < ApplicationController
-  before_action :set_redirection_url
+  # before_action :set_redirection_url
 
   def enable
     redirect_to new_loan_request_path(preview: true)

@@ -9,7 +9,8 @@ class ApplicationController < ActionController::Base
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   # allow_browser versions: :modern
-  before_action :authenticate_user!
+  before_action :auth_user
+  before_action :set_redirection_url
   before_action :set_render_checkout
   before_action :initialize_checkout, unless: :skip_checkout_initialization?
   before_action :make_q
@@ -17,6 +18,29 @@ class ApplicationController < ActionController::Base
   def pundit_user
     whitelisted_params = params.permit(:id, :collection_id, :preview)
     { user: current_user, role: session[:role], collection_ids: session[:collection_ids], params: whitelisted_params }
+  end
+
+  def auth_user
+    unless user_signed_in?
+      session[:return_to] = request.fullpath
+      redirect_post(user_saml_omniauth_authorize_path, options: {authenticity_token: :auto})
+    end
+  end
+
+  def set_redirection_url
+    unless user_signed_in?
+      session[:return_to] = request.fullpath
+    end
+  end
+
+  def after_sign_in_path_for(resource)
+    session[:merge_checkouts] = true
+    return_to = session.delete(:return_to)
+    if return_to.present?
+      return_to
+    else
+      root_path
+    end
   end
 
   def delete_attachment
@@ -60,15 +84,6 @@ class ApplicationController < ActionController::Base
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
     redirect_to(collections_path)
-  end
-
-  def after_sign_in_path_for(resource)
-    session[:merge_checkouts] = true
-    if $baseURL.present?
-      $baseURL
-    else
-      root_path
-    end
   end
 
   def set_render_checkout
@@ -197,12 +212,6 @@ class ApplicationController < ActionController::Base
   
   def make_q
     @q = Item.ransack(params[:q])
-  end
-
-  def set_redirection_url
-    unless user_signed_in?
-      $baseURL = request.fullpath
-    end
   end
 
   def ensure
