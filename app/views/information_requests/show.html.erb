@@ -20,7 +20,7 @@
   </p>
   <p>
     <strong>Message:</strong>
-    <%= @information_request.question.to_s.html_safe %>
+    <%= sanitize(@information_request.question.to_s) %>
   </p>
   <% if @information_request.checkout_items.any? %>
     <p>
