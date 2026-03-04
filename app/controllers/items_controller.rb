@@ -73,10 +73,6 @@ class ItemsController < ApplicationController
       return
     end
     # Implement the logic to save the search for the current_user
-    if params[:q].blank?
-      redirect_to search_items_path, alert: "No search parameters to save."
-      return
-    end
     saved_search = current_user.saved_searches.new(name: "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}", search_params: params[:q].to_unsafe_h)
     if saved_search.save
       flash.now[:notice] = "Search saved successfully!"
@@ -429,6 +425,29 @@ class ItemsController < ApplicationController
 
     def sanitize_csv_value(value)
       value.to_s.start_with?('=', '+', '-', '@') ? "'#{value}'" : value.to_s
+    end
+
+    # Check if all search parameters are empty or nil (recursively)
+    def all_search_params_empty?(hash)
+      return true if hash.nil? || hash.empty?
+      
+      # Convert ActionController::Parameters to hash for processing
+      hash = hash.to_unsafe_h if hash.is_a?(ActionController::Parameters)
+      hash.all? do |key, value|
+        case value
+        when String
+          value.blank?
+        when Hash, ActionController::Parameters
+          all_search_params_empty?(value)
+        when Array
+          value.empty? || value.all? { |item| item.is_a?(String) ? item.blank? : all_search_params_empty?(item) }
+        when NilClass
+          true
+        else
+          # For other types (numbers, booleans), consider them as meaningful values
+          false
+        end
+      end
     end
 
 end
