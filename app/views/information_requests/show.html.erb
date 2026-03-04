@@ -20,7 +20,7 @@
   </p>
   <p>
     <strong>Question:</strong>
-    <%= @information_request.question %>
+    <%= @information_request.question.to_s.html_safe %>
   </p>
   <% if @information_request.checkout_items.any? %>
     <p>
