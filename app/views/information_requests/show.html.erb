@@ -19,7 +19,7 @@
     <%= @information_request.send_to %>
   </p>
   <p>
-    <strong>Question:</strong>
+    <strong>Message:</strong>
     <%= @information_request.question.to_s.html_safe %>
   </p>
   <% if @information_request.checkout_items.any? %>
