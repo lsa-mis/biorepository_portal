@@ -10,6 +10,11 @@ class SavedSearchesController < ApplicationController
   end
 
   def update
+    if @saved_search.update(saved_search_params)
+      redirect_to saved_searches_path, notice: 'Saved search was successfully updated.'
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def show
@@ -19,6 +24,8 @@ class SavedSearchesController < ApplicationController
   end
 
   def destroy
+    @saved_search.destroy
+    redirect_to saved_searches_path, notice: 'Saved search was successfully deleted.'
   end
   
   private

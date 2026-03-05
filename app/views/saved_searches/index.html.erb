@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-12">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2 mb-0">My Saved Searches</h1>
+        <h1>My Saved Searches</h1>
         <%= link_to "New Search", search_items_path, class: "btn btn-primary" %>
       </div>
 
@@ -11,11 +11,10 @@
           <table class="table text-center mt-4">
             <thead class="table-group-divider">
               <tr>
-                <th scope="col" class="text-start">Name</th>
+                <th scope="col" class="text-start">Name/Edit Name</th>
                 <th scope="col" class="text-start">Created At</th>
                 <th scope="col" class="text-start">Created By</th>
-                <th scope="col" class="text-start">Edit</th>
-                <th scope="col" class="text-start">Run</th>
+                <th scope="col" class="text-start">Actions</th>
               </tr>
             </thead>
             <tbody class="table-group-divider">
@@ -23,7 +22,7 @@
                 <tr>
                   <td class="text-start">
                     <div>
-                      <strong><%= saved_search.name %></strong>
+                      <%= link_to saved_search.name, edit_saved_search_path(saved_search), class: "link_to" %>
                       <% if saved_search.global %>
                         <span class="badge bg-success ms-2">
                           <i class="fas fa-globe"></i> Global
@@ -46,12 +45,14 @@
                     <%= saved_search.user&.email || 'Unknown' %>
                   </td>
                   <td class="text-start">
-                    <%= link_to "Edit", edit_saved_search_path(saved_search), 
-                        class: "btn btn-sm btn-outline-secondary" %>
-                  </td>
-                  <td class="text-start">
-                    <%= link_to "Run", search_items_path(q: saved_search.search_params), 
-                        class: "btn btn-sm btn-primary" %>
+                    <div class="btn-group" role="group">
+                      <%= link_to "Run", search_items_path(q: saved_search.search_params), 
+                          class: "btn btn-sm btn-primary" %>
+                      <%= button_to "Delete", saved_search_path(saved_search), 
+                          method: :delete, 
+                          class: "btn btn-sm btn-outline-danger",
+                          method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this saved search?" } %>
+                    </div>
                   </td>
                 </tr>
               <% end %>
