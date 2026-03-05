@@ -17,7 +17,17 @@
             <div class="d-flex justify-content-between align-items-center">
               <h2>Search Results</h2>
               <% if user_signed_in? %>
-                <%= f.submit "Save Search", formaction: "/items/save_search", formmethod: "post", class: "btn btn-secondary" %>
+                <button type="button" class="btn btn-secondary" data-action="click->search#toggleSaveForm" data-search-target="saveButton">
+                  Save Search
+                </button>
+
+                <div class="d-none mt-2" data-search-target="saveForm">
+                  <%= text_field_tag :name, nil, placeholder: "Enter search name", class: "form-control", style: "width: 200px;" %>
+                  <%= f.submit "Submit", formaction: "/items/save_search", formmethod: "post", class: "btn btn-secondary" %>
+                  <button type="button" class="btn btn-outline-secondary btn-sm" data-action="click->search#cancelSave">
+                    Cancel
+                  </button>
+                </div>
               <% else %>
                 <%= link_to new_user_session_path, class: "btn btn-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
                   <i class="bi bi-envelope"></i> Sign In to Save Search

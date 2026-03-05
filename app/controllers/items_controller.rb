@@ -72,8 +72,10 @@ class ItemsController < ApplicationController
       redirect_to new_user_session_path, alert: "You must be signed in to save searches."
       return
     end
-    # Implement the logic to save the search for the current_user
-    saved_search = current_user.saved_searches.new(name: "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}", search_params: params[:q].to_unsafe_h)
+    # Use custom name if provided, otherwise use default timestamped name
+    name = params[:name].presence || "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
+    
+    saved_search = current_user.saved_searches.new(name: name, search_params: params[:q].to_unsafe_h)
     if saved_search.save
       flash.now[:notice] = "Search saved successfully!"
       redirect_to search_items_path, notice: "Search saved successfully!"
