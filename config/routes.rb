@@ -119,7 +119,7 @@ Rails.application.routes.draw do
 
   get 'application/delete_attachment/:id', to: 'application#delete_attachment', as: :delete_attachment
 
-  resources :saved_searches, only: [:create, :show, :index, :destroy]
+  resources :saved_searches, only: [:show, :index, :edit, :update, :destroy]
 
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", sessions: "users/sessions"} do
     delete 'sign_out', :to => 'users/sessions#destroy', :as => :destroy_user_session
