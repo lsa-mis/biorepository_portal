@@ -77,7 +77,6 @@ class ItemsController < ApplicationController
     
     saved_search = current_user.saved_searches.new(name: name, search_params: params[:q].to_unsafe_h)
     if saved_search.save
-      flash.now[:notice] = "Search saved successfully!"
       redirect_to search_items_path, notice: "Search saved successfully!"
     else
       redirect_to search_items_path, alert: "Failed to save search."
