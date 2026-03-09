@@ -30,11 +30,6 @@
                         </span>
                       <% end %>
                     </div>
-                    <% if saved_search.description.present? %>
-                      <div class="text-muted small">
-                        <%= truncate(saved_search.description, length: 80) %>
-                      </div>
-                    <% end %>
                   </td>
                   <td class="text-start">
                     <%= saved_search.created_at.strftime("%b %d, %Y") %>
