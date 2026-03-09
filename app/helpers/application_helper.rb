@@ -112,23 +112,6 @@ module ApplicationHelper
     ]
   end
 
-  ITEM_FIELDS = Item.column_names.select { |name| !%w[id created_at updated_at collection_id].include?(name) }
-
-  PREPARATIONS_FIELDS = Preparation.column_names.select { |name| !%w[id item_id created_at updated_at barcode count].include?(name) }
-  IDENTIFICATIONS_FIELDS = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
-  # Combine all fields into a single array for CSV headers
-  HEADERS = ITEM_FIELDS + IDENTIFICATIONS_FIELDS + PREPARATIONS_FIELDS
-  TITLEIZED_HEADERS = HEADERS.map { |h|
-    case h
-    when 'class_name' then 'Class'
-    when 'order_name' then 'Order'
-    else h.to_s.titleize
-    end
-  }
-
-  def sanitize_csv_value(value)
-    value.to_s.start_with?('=', '+', '-', '@') ? "'#{value}'" : value.to_s
-  end
 
   def show_user_name_by_id(id)
     user = User.find_by(id: id)
