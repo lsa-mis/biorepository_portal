@@ -27,7 +27,7 @@
                       <%= label_tag :global, "Global", class: "form-check-label" %>
                     <% end %>
                     <%= text_field_tag :name, nil, placeholder: "Enter Search Name", class: "form-control", style: "width: 200px;" %>
-                    <%= f.submit "Submit", formaction: "/items/save_search", formmethod: "post", class: "btn btn-secondary" %>
+                    <%= f.submit "Submit", formaction: save_search_items_path, formmethod: "post", class: "btn btn-secondary" %>
                     <button type="button" class="btn btn-outline-secondary btn-sm" data-action="click->search#cancelSave">
                       Cancel
                     </button>
