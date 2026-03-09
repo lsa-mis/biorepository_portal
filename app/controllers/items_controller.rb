@@ -72,10 +72,11 @@ class ItemsController < ApplicationController
       redirect_to new_user_session_path, alert: "You must be signed in to save searches."
       return
     end
+    setup_dynamic_fields
     # Use custom name if provided, otherwise use default timestamped name
     name = params[:name].presence || "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
     
-    saved_search = current_user.saved_searches.new(name: name, search_params: params[:q].to_unsafe_h)
+    saved_search = current_user.saved_searches.new(name: name, description: @active_filters.to_json, search_params: params[:q].to_unsafe_h)
     if saved_search.save
       redirect_to search_items_path, notice: "Search saved successfully!"
     else
