@@ -26,6 +26,14 @@
               <%= form.label :name, class: "form-label" %>
               <%= form.text_field :name, class: "form-control", placeholder: "Enter a name for your saved search" %>
             </div>
+            <% if is_admin? %>
+              <div class="col-12">
+                <div class="form-check">
+                  <%= form.check_box :global, class: "form-check-input" %>
+                  <%= form.label :global, "Make this a global search (visible to all users)", class: "form-check-label" %>
+                </div>
+              </div>
+            <% end %>
 
             <div>
               <%= form.submit "Update Search", class: "btn btn-primary" %>
