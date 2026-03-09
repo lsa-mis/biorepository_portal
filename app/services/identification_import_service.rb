@@ -1,3 +1,4 @@
+require 'csv'
 require 'set'
 
 class IdentificationImportService
