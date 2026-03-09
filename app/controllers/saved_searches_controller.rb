@@ -1,10 +1,10 @@
 # app/controllers/saved_searches_controller.rb
 class SavedSearchesController < ApplicationController
-  before_action :set_saved_search, only: [:show, :edit, :update, :destroy]
+  before_action :set_saved_search, only: [:edit, :update, :destroy]
 
   def index
     @global_saved_searches = SavedSearch.global
-    @saved_searches = current_user.saved_searches
+    @saved_searches = current_user.saved_searches.where(global: false)
   end
 
   def edit
@@ -16,13 +16,6 @@ class SavedSearchesController < ApplicationController
     else
       render :edit, status: :unprocessable_entity
     end
-  end
-
-  def show
-
-    # Apply the saved search parameters to your search logic
-    # @results = Item.search_by(@saved_search.search_params) # Example of re-running the search
-    # render 'items/search_results' # Display results using the regular search results view
   end
 
   def destroy
