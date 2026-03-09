@@ -105,7 +105,7 @@
         </div>
 
         <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
-          <%= link_to "Advanced Search", search_items_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white', role: 'menuitem' %>
+          <%= link_to "Advanced Search", search_items_path, id: "advanced-search-dropdown", class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white', role: 'menuitem' %>
           <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item text-white advanced-search-dropdown" role="menu" aria-labelledby="advanced-search-dropdown">
             <li role="none">
               <%= link_to "Saved Searches", saved_searches_path, class: 'dropdown-item navbar_dropdown_item', role: 'menuitem' %>
