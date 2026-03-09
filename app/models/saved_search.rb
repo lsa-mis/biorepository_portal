@@ -20,7 +20,7 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class SavedSearch < ApplicationRecord
-  belongs_to :user, optional: true
+  belongs_to :user
   validates_presence_of :name, :search_params
 
   scope :global, -> { where(global: true) }
