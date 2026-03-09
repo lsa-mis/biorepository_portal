@@ -61,7 +61,7 @@
               <p><strong>Search Parameters:</strong></p>
               <div class="bg-light p-3 rounded">
                 <% if @saved_search.description.present? %>
-                  <% active_filters = JSON.parse(@saved_search.description) %>
+                  <% active_filters = JSON.parse(@saved_search.description) rescue [] %>
                   <% active_filters.each_with_index do |filter_hash, hash_index| %>
                     <% filter_hash.each_with_index do |(key, label_value_hash), key_index| %>
                       <% if key == "collection_id_in" %>

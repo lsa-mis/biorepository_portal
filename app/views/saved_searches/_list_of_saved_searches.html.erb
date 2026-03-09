@@ -15,11 +15,6 @@
           <td class="text-start">
             <div>
               <%= link_to saved_search.name, edit_saved_search_path(saved_search), class: "link_to" %>
-              <% if saved_search.global %>
-                <span class="badge bg-success ms-2">
-                  <i class="fas fa-globe"></i> Global
-                </span>
-              <% end %>
             </div>
           </td>
           <td class="text-start">
