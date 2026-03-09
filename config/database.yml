@@ -29,12 +29,6 @@ staging:
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
   timeout: 10000
 
-phase2_staging:
-  <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
-  timeout: 10000
-
 production:
   <<: *default
   url: <%= ENV["DATABASE_URL"] %>
