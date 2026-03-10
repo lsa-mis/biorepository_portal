@@ -74,11 +74,9 @@ class ItemsController < ApplicationController
     end
     transform_search_groupings
     setup_dynamic_fields
-    
-    search_params = save_search_params
-    # Use custom name if provided, otherwise use default timestamped name
-    name = search_params[:name].presence || "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
-    global = search_params[:global] == "on" ? true : false
+
+    name = params[:name].presence || "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
+    global = params[:global] == "on" ? true : false
     saved_search = current_user.saved_searches.new(name: name, description: @active_filters.to_json, search_params: params[:q].to_unsafe_h, global: global)
     if saved_search.save
       redirect_to search_items_path, notice: "Search saved successfully!"

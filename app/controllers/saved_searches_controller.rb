@@ -1,10 +1,16 @@
 # app/controllers/saved_searches_controller.rb
 class SavedSearchesController < ApplicationController
   before_action :set_saved_search, only: [:edit, :update, :destroy]
+  skip_before_action :authenticate_user!, only: [ :index ]
 
   def index
     @global_saved_searches = SavedSearch.global
-    @saved_searches = current_user.saved_searches.where(global: false)
+    if current_user
+      @saved_searches = current_user.saved_searches.where(global: false)
+    else
+      @saved_searches = []
+    end
+    authorize SavedSearch
   end
 
   def edit
@@ -26,7 +32,8 @@ class SavedSearchesController < ApplicationController
   private
 
   def set_saved_search
-    @saved_search = current_user.saved_searches.find(params[:id])
+    @saved_search = SavedSearch.find(params[:id])
+    authorize @saved_search
   end
 
   def saved_search_params
