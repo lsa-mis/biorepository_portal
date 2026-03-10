@@ -1,27 +1,19 @@
 <div class="container-fluid py-4">
   <div class="row">
     <div class="col-12">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Global Searches</h1>
-        <%= link_to "New Search", search_items_path, class: "btn btn-primary" %>
-      </div>
       <% if @global_saved_searches.any? %>
-        <%= render partial: "list_of_saved_searches", locals: { saved_searches: @global_saved_searches } %>
-      <% else %>
-        <div class="text-center">
-          <div class="mb-4">
-            <i class="fas fa-search fa-3x text-muted"></i>
-          </div>
-          <h3 class="text-muted">No Saved Searches Yet</h3>
-        </div>
+        <%= render partial: "list_of_saved_searches", locals: { type: :global, saved_searches: @global_saved_searches } %>
       <% end %>
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>My Saved Searches</h2>
-        <%= link_to "New Search", search_items_path, class: "btn btn-primary" %>
-      </div>
-      <% if @saved_searches.any? %>
-        <%= render partial: "list_of_saved_searches", locals: { saved_searches: @saved_searches } %>
-      <% else %>
+      <% if user_signed_in? %>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>My Saved Searches</h2>
+          <%= link_to "New Search", search_items_path, class: "btn btn-primary" %>
+        </div>
+        <% if @saved_searches.any? %>
+          <%= render partial: "list_of_saved_searches", locals: { type: :personal, saved_searches: @saved_searches } %>
+        <% end %>
+      <% end %>
+      <% if @saved_searches.empty? && @global_saved_searches.empty? %>
         <div class="text-center">
           <div class="mb-4">
             <i class="fas fa-search fa-3x text-muted"></i>
@@ -33,4 +25,3 @@
     </div>
   </div>
 </div>
-
