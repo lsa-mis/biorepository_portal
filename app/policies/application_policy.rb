@@ -52,4 +52,8 @@ class ApplicationPolicy
     @role == "developer"
   end
 
+  def authenticated?
+    @user.present?
+  end
+
 end
