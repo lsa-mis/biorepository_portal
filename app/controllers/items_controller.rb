@@ -68,10 +68,6 @@ class ItemsController < ApplicationController
   end
 
   def save_search
-    if current_user.nil?
-      redirect_to new_user_session_path, alert: "You must be signed in to save searches."
-      return
-    end
     transform_search_groupings
     setup_dynamic_fields
 
