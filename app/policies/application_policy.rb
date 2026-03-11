@@ -56,4 +56,8 @@ class ApplicationPolicy
     @user.present?
   end
 
+  def is_owner?
+    authenticated? && @record.user_id == @user.id
+  end
+
 end

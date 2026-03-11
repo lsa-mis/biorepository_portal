@@ -8,7 +8,7 @@ class SavedSearchPolicy < ApplicationPolicy
   end
 
   def update?
-    authenticated?
+    is_owner?
   end
 
   def new?
@@ -20,7 +20,7 @@ class SavedSearchPolicy < ApplicationPolicy
   end
 
   def destroy?
-    authenticated?
+    is_owner?
   end
 
 end

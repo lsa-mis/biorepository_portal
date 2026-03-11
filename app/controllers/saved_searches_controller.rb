@@ -37,6 +37,8 @@ class SavedSearchesController < ApplicationController
   end
 
   def saved_search_params
-    params.require(:saved_search).permit(:name, :global)
+    permitted_attributes = [:name]
+    permitted_attributes << :global if current_user && is_admin?
+    params.require(:saved_search).permit(*permitted_attributes)
   end
 end
