@@ -67,6 +67,27 @@ class ItemsController < ApplicationController
     end
   end
 
+  def save_search
+    unless params[:q].present?
+      redirect_to search_items_path, alert: "No search parameters provided."
+      return
+    end
+    search_params = params[:q].to_unsafe_h
+    transform_search_groupings
+    setup_dynamic_fields
+
+    authorize SavedSearch
+    name = params[:name].presence || "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
+    global = is_admin? && params[:global] == "on"
+
+    saved_search = current_user.saved_searches.new(name: name, filters: @active_filters.to_json, search_params: search_params, global: global)
+    if saved_search.save
+      redirect_to search_items_path, notice: "Search saved successfully!"
+    else
+      redirect_to search_items_path, alert: "Failed to save search."
+    end
+  end
+
   include ActionController::Live
 
   def export_to_csv

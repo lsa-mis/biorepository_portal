@@ -52,4 +52,12 @@ class ApplicationPolicy
     @role == "developer"
   end
 
+  def authenticated?
+    @user.present?
+  end
+
+  def is_owner?
+    authenticated? && @record.user_id == @user.id
+  end
+
 end
