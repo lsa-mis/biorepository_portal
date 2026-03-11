@@ -13,7 +13,7 @@ class SavedSearchPolicy < ApplicationPolicy
   end
 
   def update?
-    is_owner?
+    is_owner? || is_admin?
   end
 
   def new?
@@ -25,7 +25,7 @@ class SavedSearchPolicy < ApplicationPolicy
   end
 
   def destroy?
-    is_owner?
+    is_owner? || is_admin?
   end
 
 end
