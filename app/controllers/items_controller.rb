@@ -75,9 +75,6 @@ class ItemsController < ApplicationController
     transform_search_groupings
     setup_dynamic_fields
 
-    name = params[:name].presence || "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
-    global = params[:global] == "on" ? true : false
-
     authorize SavedSearch
     name = params[:name].presence || "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
     global = is_admin? && params[:global] == "on"
