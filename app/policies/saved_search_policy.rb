@@ -1,4 +1,9 @@
 class SavedSearchPolicy < ApplicationPolicy
+  
+  def save_search?
+    authenticated?
+  end
+  
   def index?
     true
   end
