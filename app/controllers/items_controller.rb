@@ -68,6 +68,10 @@ class ItemsController < ApplicationController
   end
 
   def save_search
+    unless params[:q].present?
+      redirect_to search_items_path, alert: "No search parameters provided."
+      return
+    end
     transform_search_groupings
     setup_dynamic_fields
 
