@@ -58,7 +58,7 @@
               <% end %>
             </div>
             <div class="col-md-6">
-              <p><strong>Search Parameters:</strong></p>
+              <p><strong>Filters:</strong></p>
               <div class="bg-light p-3 rounded">
                 <% if @saved_search.filters.present? %>
                   <% active_filters = JSON.parse(@saved_search.filters) rescue [] %>

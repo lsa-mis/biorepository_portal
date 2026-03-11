@@ -4,9 +4,9 @@
 #
 #  id            :bigint           not null, primary key
 #  filters       :jsonb
-#  global        :boolean          default(FALSE)
-#  name          :string
-#  search_params :jsonb
+#  global        :boolean          default(FALSE), not null
+#  name          :string           not null
+#  search_params :jsonb            not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  user_id       :bigint           not null

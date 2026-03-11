@@ -17,9 +17,13 @@
             <th scope="col" class="text-start">Name</th>
           <% end %>
         <% else %>
-          <th scope="col" class="text-start">Name</th>
+          <% if is_admin? %>
+            <th scope="col" class="text-start">Name/Edit Name</th>
+          <% else %>
+            <th scope="col" class="text-start">Name</th>
+          <% end %>
         <% end %>
-        <th scope="col" class="text-start">Search Parameters</th>
+        <th scope="col" class="text-start">Filters</th>
         <th scope="col" class="text-start">Run</th>
         <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
           <th scope="col" class="text-start">Delete</th>
