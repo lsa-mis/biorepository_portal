@@ -79,7 +79,7 @@ class ItemsController < ApplicationController
     name = params[:name].presence || "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
     global = is_admin? && params[:global] == "on"
 
-    saved_search = current_user.saved_searches.new(name: name, description: @active_filters.to_json, search_params: params[:q].to_unsafe_h, global: global)
+    saved_search = current_user.saved_searches.new(name: name, filters: @active_filters.to_json, search_params: params[:q].to_unsafe_h, global: global)
     if saved_search.save
       redirect_to search_items_path, notice: "Search saved successfully!"
     else

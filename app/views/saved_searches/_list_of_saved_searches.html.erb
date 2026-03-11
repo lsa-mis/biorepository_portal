@@ -41,7 +41,7 @@
             <% end %>
           </td>
           <td class="text-start align-middle">
-            <% if saved_search.description.present? %>
+            <% if saved_search.filters.present? %>
               <%= render partial: "search_parameters", locals: { saved_search: saved_search } %>
             <% else %>
               <span class="text-muted">No parameters saved</span>

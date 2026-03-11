@@ -327,7 +327,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_25_223349) do
 
   create_table "saved_searches", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "description"
+    t.jsonb "filters"
     t.boolean "global", default: false
     t.string "name"
     t.jsonb "search_params"

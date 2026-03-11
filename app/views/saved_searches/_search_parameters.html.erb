@@ -1,4 +1,4 @@
-<% active_filters = JSON.parse(saved_search.description) rescue [] %>
+<% active_filters = JSON.parse(saved_search.filters) rescue [] %>
 <% active_filters ||= [] %>
 <% active_filters.each_with_index do |filter_hash, hash_index| %>
   <% filter_hash.each_with_index do |(key, label_value_hash), key_index| %>

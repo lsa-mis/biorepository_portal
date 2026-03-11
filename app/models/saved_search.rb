@@ -3,7 +3,7 @@
 # Table name: saved_searches
 #
 #  id            :bigint           not null, primary key
-#  description   :string
+#  filters       :jsonb
 #  global        :boolean          default(FALSE)
 #  name          :string
 #  search_params :jsonb
