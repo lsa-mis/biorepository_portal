@@ -37,8 +37,13 @@
           </li>
 
           <li class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0">
-            <%= link_to "Advanced Search", search_items_path, class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white', role: 'menuitem' %>
+            <a class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Advanced Search
+            </a>
             <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item">
+              <li>
+                <%= link_to "Advanced Search", search_items_path, class: 'dropdown-item navbar_dropdown_item' %>
+              </li>
               <li>
                 <%= link_to "Saved Searches", saved_searches_path, class: 'dropdown-item navbar_dropdown_item' %>
               </li>
@@ -105,8 +110,13 @@
         </div>
 
         <div class="nav-item dropdown navbar_dropdown_item h-100 px-2 rounded-0 border-0" style="--bs-focus-ring-color:#E5E5E5;">
-          <%= link_to "Advanced Search", search_items_path, id: "advanced-search-dropdown", class: 'nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white', role: 'menuitem' %>
-          <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item text-white advanced-search-dropdown" role="menu" aria-labelledby="advanced-search-dropdown">
+          <a id="search-dropdown" class="nav-link h-100 d-flex align-items-center fs-5 focus-ring border-0 rounded-2 text-white" style="--bs-focus-ring-color:#E5E5E5;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" tabindex="0">
+            Search
+          </a>
+          <ul class="dropdown-menu bg-primary rounded-0 navbar_dropdown_item text-white search-dropdown" role="menu" aria-labelledby="search-dropdown">
+            <li role="none">
+              <%= link_to "Advanced Search", search_items_path, class: 'dropdown-item navbar_dropdown_item', role: 'menuitem' %>
+            </li>
             <li role="none">
               <%= link_to "Saved Searches", saved_searches_path, class: 'dropdown-item navbar_dropdown_item', role: 'menuitem' %>
             </li>
