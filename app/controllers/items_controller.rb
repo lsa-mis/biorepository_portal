@@ -103,11 +103,11 @@ class ItemsController < ApplicationController
     identification_fields = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
     all_fields = item_fields + identification_fields
     response.headers['Content-Type'] = 'text/csv'
-    response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today}.csv"
+    response.headers['Content-Disposition'] = "attachment; filename=biorepository-download-#{Date.today}.csv"
     response.headers['Last-Modified'] = Time.now.httpdate
     begin
       csv = CSV.new(response.stream)
-      citation_text = "When using this dataset please use the following citation: #{request.base_url} (#{Date.today.to_s}) UofM Biorepository Web Portal"
+      citation_text = "When using this dataset please use the following citation: #{request.host} (#{Date.today.to_s}) UofM Biorepository Web Portal"
       headers = csv_headers(all_fields)
       csv << ([citation_text] + Array.new(headers.length - 1, nil))
       csv << headers
