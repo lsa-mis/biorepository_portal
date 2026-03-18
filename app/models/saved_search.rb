@@ -5,7 +5,7 @@
 #  id            :bigint           not null, primary key
 #  filters       :jsonb
 #  global        :boolean          default(FALSE), not null
-#  name          :string           not null
+#  name          :string
 #  search_params :jsonb            not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
