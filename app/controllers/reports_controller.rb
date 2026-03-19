@@ -8,6 +8,7 @@ class ReportsController < ApplicationController
       {title: "Information Requests", url: information_requests_report_reports_path, description: "This report shows Information Requests statistics" },
       {title: "Loan Requests", url: loan_requests_report_reports_path, description: "This report shows Loan Requests statistics" },
       {title: "Import Data", url: import_data_report_reports_path, description: "This report shows Import Data Log statistics" },
+      {title: "Search Statistics", url: search_statistics_report_reports_path, description: "This report shows Search Statistics" },
       ]
   end
 
@@ -106,6 +107,22 @@ class ReportsController < ApplicationController
         end
       else
         @data = nil
+      end
+    end
+  end
+
+  def search_statistics_report
+    authorize :report, :search_statistics_report?
+    if params[:commit]
+      start_time, end_time, collection_id = collect_form_params
+      @display_collections = false
+      statistic_data = SearchStatistic.where(created_at: start_time..end_time).order(created_at: :desc)
+      if statistic_data.any?
+        @title = "Search Statistics Report"
+        @headers = ["Field Label", "Field Value", "Created At"]
+        @data = statistic_data.map do |stat|
+          [stat.field_label, stat.field_value, stat.created_at.strftime("%Y-%m-%d %H:%M")]
+        end
       end
     end
   end
