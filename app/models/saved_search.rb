@@ -22,7 +22,7 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class SavedSearch < ApplicationRecord
-  acts_as_list
+  acts_as_list scope: [:user_id, :global]
   belongs_to :user
   validates_presence_of :name, :search_params
 
