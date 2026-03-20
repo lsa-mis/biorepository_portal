@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_25_223349) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_20_135400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -334,6 +334,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_25_223349) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_saved_searches_on_user_id"
+  end
+
+  create_table "search_statistics", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "field_label", null: false
+    t.string "field_name", null: false
+    t.string "field_value", null: false
+    t.string "search_session_id"
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_search_statistics_on_created_at"
+    t.index ["search_session_id", "created_at"], name: "index_search_statistics_on_search_session_id_and_created_at"
+    t.index ["search_session_id"], name: "index_search_statistics_on_search_session_id"
   end
 
   create_table "unavailables", force: :cascade do |t|

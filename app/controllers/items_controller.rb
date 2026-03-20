@@ -47,8 +47,11 @@ class ItemsController < ApplicationController
     
     setup_search_query
     execute_search_and_paginate
-
-    Rails.logger.info "========================= hell"
+    setup_dynamic_fields
+    @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+    if @active_filters.present?
+      save_filters_to_statistic(@active_filters)
+    end
     
     respond_to do |format|
       format.html { render :search_result }
@@ -75,6 +78,7 @@ class ItemsController < ApplicationController
     search_params = params[:q].to_unsafe_h
     transform_search_groupings
     setup_dynamic_fields
+    @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
 
     authorize SavedSearch
     name = params[:name].presence || "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
@@ -373,7 +377,7 @@ class ItemsController < ApplicationController
       @items = filtered_items.includes(:collection, :current_identification, :preparations).page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
 
       @all_collections = Collection.order(:division)
-      setup_dynamic_fields
+      # setup_dynamic_fields
     end
     
     def setup_dynamic_fields
@@ -389,8 +393,52 @@ class ItemsController < ApplicationController
         end
         @dynamic_fields << group_pairs unless group_pairs.empty?
       end
-      @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+      # @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
     end
+
+    def save_filters_to_statistic(filters)
+      return if filters.blank?
+      
+      # Generate a unique search session ID for this search
+      search_session_id = SecureRandom.uuid
+      
+      filters.each do |filter_group|
+        filter_group.each do |field_name, field_data|
+          field_data.each do |field_label, field_values|
+            # Handle different value formats (Array, Hash, or single value)
+            case field_values
+            when Array
+              # For arrays like ["pso", "mos"]
+              field_values.each do |value|
+                create_search_statistic(field_name, field_label, value, search_session_id)
+              end
+            when Hash
+              # For hashes like {"collection_8"=>"UMMZ Division of Mammals", "collection_4"=>"MPABI"}
+              field_values.each do |key, value|
+                create_search_statistic(field_name, key, value, search_session_id)
+              end
+            else
+              # For single values
+              create_search_statistic(field_name, field_label, field_values, search_session_id)
+            end
+          end
+        end
+      end
+    end
+
+    def create_search_statistic(field_name, field_label, field_value, search_session_id)
+      field_label = field_label.split('_').first.titleize
+      SearchStatistic.create(
+        field_name: field_name.to_s,
+        field_label: field_label.to_s, 
+        field_value: field_value.to_s,
+        search_session_id: search_session_id
+      )
+    rescue => e
+      Rails.logger.error "Failed to save search statistic: #{e.message}"
+      Rails.logger.error "Field: #{field_name}, Label: #{field_label}, Value: #{field_value}, Session: #{search_session_id}"
+    end
+
 
     def csv_headers(all_fields)
       # Preload all MapField mappings in a single query to avoid N+1

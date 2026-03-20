@@ -15,4 +15,8 @@ class ReportPolicy < ApplicationPolicy
     is_admin?
   end
 
+  def search_statistics_report?
+    is_admin?
+  end
+
 end

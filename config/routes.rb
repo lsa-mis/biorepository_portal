@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       get 'information_requests_report', to: 'reports#information_requests_report'
       get 'loan_requests_report', to: 'reports#loan_requests_report'
       get 'import_data_report', to: 'reports#import_data_report'
+      get 'search_statistics_report', to: 'reports#search_statistics_report'
     end
   end
 
