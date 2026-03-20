@@ -72,9 +72,14 @@ class ItemsController < ApplicationController
 
   def save_search
     unless params[:q].present?
-      redirect_to search_items_path, alert: "No search parameters provided."
+      flash.now[:alert] = "No search parameters provided."
+      respond_to do |format|
+        format.turbo_stream
+        format.html { render :search_result }
+      end
       return
     end
+
     search_params = params[:q].to_unsafe_h
     transform_search_groupings
     setup_dynamic_fields
@@ -86,9 +91,22 @@ class ItemsController < ApplicationController
 
     saved_search = current_user.saved_searches.new(name: name, filters: @active_filters.to_json, search_params: search_params, global: global)
     if saved_search.save
-      redirect_to search_items_path, notice: "Search saved successfully!"
+      flash.now[:notice] = "Search saved successfully!"
     else
-      redirect_to search_items_path, alert: "Failed to save search."
+      flash.now[:alert] = "Failed to save search."
+    end
+
+    respond_to do |format|
+      format.turbo_stream # This will render save_search.turbo_stream.erb
+      format.html { 
+        # Fallback for non-Turbo requests - set up full search data
+        @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
+        collection_ids = extract_collection_ids
+        setup_filter_data(collection_ids)
+        setup_search_query
+        execute_search_and_paginate
+        render :search_result 
+      }
     end
   end
 

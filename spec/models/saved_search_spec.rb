@@ -6,6 +6,7 @@
 #  filters       :jsonb
 #  global        :boolean          default(FALSE), not null
 #  name          :string           not null
+#  position      :integer
 #  search_params :jsonb            not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
@@ -13,7 +14,8 @@
 #
 # Indexes
 #
-#  index_saved_searches_on_user_id  (user_id)
+#  index_saved_searches_on_position  (position)
+#  index_saved_searches_on_user_id   (user_id)
 #
 # Foreign Keys
 #
