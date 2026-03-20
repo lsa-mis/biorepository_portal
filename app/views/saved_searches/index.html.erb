@@ -6,8 +6,8 @@
       <% end %>
       <% if user_signed_in? %>
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2>My Saved Searches</h2>
-          <%= link_to "New Search", search_items_path, class: "btn btn-primary" %>
+          <h2>My Search Templates</h2>
+          <%= link_to "New Search Template", search_items_path, class: "btn btn-primary" %>
         </div>
         <% if @saved_searches.any? %>
           <%= render partial: "list_of_saved_searches", locals: { type: :personal, saved_searches: @saved_searches } %>
@@ -18,7 +18,7 @@
           <div class="mb-4">
             <i class="fas fa-search fa-3x text-muted"></i>
           </div>
-          <h3 class="text-muted">No Saved Searches Yet</h3>
+          <h3 class="text-muted">No Search Templates Yet</h3>
         </div>
       <% end %>
 
