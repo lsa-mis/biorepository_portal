@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_20_123748) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_20_135400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -329,7 +329,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_20_123748) do
     t.datetime "created_at", null: false
     t.jsonb "filters"
     t.boolean "global", default: false, null: false
-    t.string "name"
+    t.string "name", null: false
     t.jsonb "search_params", default: {}, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
@@ -343,6 +343,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_20_123748) do
     t.string "field_value", null: false
     t.string "search_session_id"
     t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_search_statistics_on_created_at"
+    t.index ["search_session_id", "created_at"], name: "index_search_statistics_on_search_session_id_and_created_at"
+    t.index ["search_session_id"], name: "index_search_statistics_on_search_session_id"
   end
 
   create_table "unavailables", force: :cascade do |t|
