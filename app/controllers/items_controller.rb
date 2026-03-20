@@ -56,18 +56,18 @@ class ItemsController < ApplicationController
     respond_to do |format|
       format.html { render :search_result }
     end
-  # rescue SearchTimeoutError
-  #   respond_to do |format|
-  #     format.html { render plain: "Search is taking too long. Please try with fewer filters.", status: 504 }
-  #     format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 504 }
-  #   end
-  # rescue => e
-  #   Rails.logger.error "******************************* Search error: #{e.message}"
-  #   Rails.logger.error e.backtrace.join("\n")
-  #   respond_to do |format|
-  #     format.html { render plain: "An error occurred during search", status: 500 }
-  #     format.json { render json: { error: "An error occurred during search" }, status: 500 }
-  #   end
+  rescue SearchTimeoutError
+    respond_to do |format|
+      format.html { render plain: "Search is taking too long. Please try with fewer filters.", status: 504 }
+      format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 504 }
+    end
+  rescue => e
+    Rails.logger.error "******************************* Search error: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
+    respond_to do |format|
+      format.html { render plain: "An error occurred during search", status: 500 }
+      format.json { render json: { error: "An error occurred during search" }, status: 500 }
+    end
   end
 
   def save_search
