@@ -111,6 +111,11 @@ class ReportsController < ApplicationController
       else
         @data = nil
       end
+
+      respond_to do |format|
+        format.html
+        format.csv { send_data csv_data("import_data"), filename: 'import_data_report.csv', type: 'text/csv' }
+      end
     end
   end
 
@@ -126,6 +131,13 @@ class ReportsController < ApplicationController
         @data = statistic_data.map do |stat|
           [stat.field_label, stat.field_value, stat.search_session_id, stat.created_at.strftime("%Y-%m-%d %H:%M")]
         end
+      else
+        @data = nil
+      end
+
+      respond_to do |format|
+        format.html
+        format.csv { send_data csv_data("search_statistics"), filename: 'search_statistics_report.csv', type: 'text/csv' }
       end
     end
   end
