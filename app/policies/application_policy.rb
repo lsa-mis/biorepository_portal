@@ -57,7 +57,16 @@ class ApplicationPolicy
   end
 
   def is_owner?
-    authenticated? && @record.user_id == @user.id
+    return false unless authenticated?
+    
+    case @record
+    when ActiveRecord::Relation
+      # For relations, check if all records belong to the user
+      @record.all? { |record| record.user_id == @user.id }
+    else
+      # For single records
+      @record.user_id == @user.id
+    end
   end
 
 end

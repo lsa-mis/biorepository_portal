@@ -2,7 +2,9 @@
   <div class="row">
     <div class="col-12">
       <% if @global_saved_searches.any? %>
-        <%= render partial: "list_of_saved_searches", locals: { type: :global, saved_searches: @global_saved_searches } %>
+        <%= turbo_frame_tag "global_saved_searches_list" do %>
+          <%= render partial: "list_of_saved_searches", locals: { type: :global, saved_searches: @global_saved_searches } %>
+        <% end %>
       <% end %>
       <% if user_signed_in? %>
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -10,7 +12,9 @@
           <%= link_to "New Search Template", search_items_path, class: "btn btn-primary" %>
         </div>
         <% if @saved_searches.any? %>
-          <%= render partial: "list_of_saved_searches", locals: { type: :personal, saved_searches: @saved_searches } %>
+          <%= turbo_frame_tag "saved_searches_list" do %>
+            <%= render partial: "list_of_saved_searches", locals: { type: :personal, saved_searches: @saved_searches } %>
+          <% end %>
         <% end %>
       <% end %>
       <% if @saved_searches.empty? && @global_saved_searches.empty? %>

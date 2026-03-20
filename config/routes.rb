@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       patch :move_down
     end
   end
+
   resources :reports, only: [:index] do
     collection do
       get 'information_requests_report', to: 'reports#information_requests_report'
@@ -69,6 +70,13 @@ Rails.application.routes.draw do
 
   get "loan_questions/preview", to: "loan_questions#preview", as: :preview_loan_questions
   resources :loan_questions do
+    member do
+      patch :move_up
+      patch :move_down
+    end
+  end
+
+  resources :saved_searches do
     member do
       patch :move_up
       patch :move_down
