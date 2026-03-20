@@ -399,6 +399,9 @@ class ItemsController < ApplicationController
     def save_filters_to_statistic(filters)
       return if filters.blank?
       
+      # Generate a unique search session ID for this search
+      search_session_id = SecureRandom.uuid
+      
       filters.each do |filter_group|
         filter_group.each do |field_name, field_data|
           field_data.each do |field_label, field_values|
@@ -407,32 +410,33 @@ class ItemsController < ApplicationController
             when Array
               # For arrays like ["pso", "mos"]
               field_values.each do |value|
-                create_search_statistic(field_name, field_label, value)
+                create_search_statistic(field_name, field_label, value, search_session_id)
               end
             when Hash
               # For hashes like {"collection_8"=>"UMMZ Division of Mammals", "collection_4"=>"MPABI"}
               field_values.each do |key, value|
-                create_search_statistic(field_name, key, value)
+                create_search_statistic(field_name, key, value, search_session_id)
               end
             else
               # For single values
-              create_search_statistic(field_name, field_label, field_values)
+              create_search_statistic(field_name, field_label, field_values, search_session_id)
             end
           end
         end
       end
     end
 
-    def create_search_statistic(field_name, field_label, field_value)
+    def create_search_statistic(field_name, field_label, field_value, search_session_id)
       field_label = field_label.split('_').first.titleize
       SearchStatistic.create(
         field_name: field_name.to_s,
         field_label: field_label.to_s, 
-        field_value: field_value.to_s
+        field_value: field_value.to_s,
+        search_session_id: search_session_id
       )
     rescue => e
       Rails.logger.error "Failed to save search statistic: #{e.message}"
-      Rails.logger.error "Field: #{field_name}, Label: #{field_label}, Value: #{field_value}"
+      Rails.logger.error "Field: #{field_name}, Label: #{field_label}, Value: #{field_value}, Session: #{search_session_id}"
     end
 
 

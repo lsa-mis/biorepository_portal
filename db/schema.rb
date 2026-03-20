@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_18_154055) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_20_123748) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -341,6 +341,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_154055) do
     t.string "field_label", null: false
     t.string "field_name", null: false
     t.string "field_value", null: false
+    t.string "search_session_id"
     t.datetime "updated_at", null: false
   end
 

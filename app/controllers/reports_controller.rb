@@ -119,9 +119,9 @@ class ReportsController < ApplicationController
       statistic_data = SearchStatistic.where(created_at: start_time..end_time).order(created_at: :desc)
       if statistic_data.any?
         @title = "Search Statistics Report"
-        @headers = ["Field Label", "Field Value", "Created At"]
+        @headers = ["Field Label", "Field Value", "Search ID", "Created At"]
         @data = statistic_data.map do |stat|
-          [stat.field_label, stat.field_value, stat.created_at.strftime("%Y-%m-%d %H:%M")]
+          [stat.field_label, stat.field_value, stat.search_session_id, stat.created_at.strftime("%Y-%m-%d %H:%M")]
         end
       end
     end
