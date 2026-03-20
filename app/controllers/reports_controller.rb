@@ -32,6 +32,7 @@ class ReportsController < ApplicationController
 
   def information_requests_report
     authorize :report, :information_requests_report?
+    @display_collections = true
     if params[:commit]
       start_time, end_time, collection_id = collect_form_params
       information_requests = InformationRequest.includes(:rich_text_question).where(created_at: start_time..end_time).order(created_at: :desc)
@@ -63,6 +64,7 @@ class ReportsController < ApplicationController
 
   def loan_requests_report
     authorize :report, :loan_requests_report?
+    @display_collections = true
     if params[:commit]
       start_time, end_time, collection_id = collect_form_params
       loan_requests = LoanRequest.where(created_at: start_time..end_time).order(created_at: :desc)
@@ -94,6 +96,7 @@ class ReportsController < ApplicationController
 
   def import_data_report
     authorize :report, :import_data_report?
+    @display_collections = true
     if params[:commit]
       start_time, end_time, collection_id = collect_form_params
       import_logs = ItemImportLog.includes(:collection).where(date: start_time..end_time).order(date: :desc)
