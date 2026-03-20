@@ -10,6 +10,12 @@
 #  updated_at        :datetime         not null
 #  search_session_id :string
 #
+# Indexes
+#
+#  index_search_statistics_on_created_at                        (created_at)
+#  index_search_statistics_on_search_session_id                 (search_session_id)
+#  index_search_statistics_on_search_session_id_and_created_at  (search_session_id,created_at)
+#
 FactoryBot.define do
   factory :search_statistic do
     
