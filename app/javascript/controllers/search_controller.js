@@ -220,4 +220,10 @@ export default class extends Controller {
     }
   }
 
+  // Method to hide save form after successful save (called via Turbo Stream)
+  hideSaveFormAfterSave() {
+    // Same logic as cancelSave but specifically for post-save cleanup
+    this.cancelSave()
+  }
+
 }

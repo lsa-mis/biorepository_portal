@@ -1,1 +1,24 @@
 <%= render_flash_stream %>
+
+<%= turbo_stream.append "search-results" do %>
+  <script>
+    // Directly hide the save form and show the save button
+    const saveForm = document.querySelector('[data-search-target="saveForm"]');
+    const saveButton = document.querySelector('[data-search-target="saveButton"]');
+    
+    if (saveForm && saveButton) {
+      saveForm.classList.add("d-none");
+      saveButton.classList.remove("d-none");
+      
+      // Clear the input field
+      const input = saveForm.querySelector("input[type='text']");
+      if (input) {
+        input.required = false;
+        input.value = "";
+      }
+    }
+    
+    // Clean up - remove this script
+    document.currentScript.remove();
+  </script>
+<% end %>
