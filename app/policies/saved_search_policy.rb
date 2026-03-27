@@ -28,4 +28,16 @@ class SavedSearchPolicy < ApplicationPolicy
     is_owner? || is_admin?
   end
 
+  def reorder?
+    is_owner? || is_admin?
+  end
+
+  def move_up?
+    is_owner? || is_admin?
+  end
+
+  def move_down?
+    is_owner? || is_admin?
+  end
+
 end
