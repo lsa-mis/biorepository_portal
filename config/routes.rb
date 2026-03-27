@@ -76,12 +76,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :saved_searches do
-    member do
-      patch :move_up
-      patch :move_down
-    end
-  end
   get "checkout", to: "checkout#show"
   post "checkout/add"
   post "checkout/change"
@@ -128,7 +122,12 @@ Rails.application.routes.draw do
 
   get 'application/delete_attachment/:id', to: 'application#delete_attachment', as: :delete_attachment
 
-  resources :saved_searches, only: [:index, :edit, :update, :destroy]
+  resources :saved_searches, only: [:index, :edit, :update, :destroy] do
+    member do
+      patch :move_up
+      patch :move_down
+    end
+  end
 
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", sessions: "users/sessions"} do
     delete 'sign_out', :to => 'users/sessions#destroy', :as => :destroy_user_session
