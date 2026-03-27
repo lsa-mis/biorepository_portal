@@ -29,7 +29,7 @@ class SavedSearchPolicy < ApplicationPolicy
   end
 
   def reorder?
-    is_owner? ||is_admin?
+    is_owner? || is_admin?
   end
 
   def move_up?
