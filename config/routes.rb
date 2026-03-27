@@ -91,7 +91,7 @@ Rails.application.routes.draw do
     collection do
       match 'quick_search' => 'items#quick_search', via: [:get, :post]
       match 'search' => 'items#search', via: [:get, :post]
-      match 'save_search' => 'items#save_search', via: [:get, :post], as: :save_search
+      match 'save_search' => 'items#save_search', via: :post, as: :save_search
     end
   end
   
