@@ -71,15 +71,6 @@ class ItemsController < ApplicationController
   end
 
   def save_search
-    unless params[:q].present?
-      flash.now[:alert] = "No search parameters provided."
-      respond_to do |format|
-        format.turbo_stream
-        format.html { render :search_result }
-      end
-      return
-    end
-
     search_params = params[:q].to_unsafe_h
     transform_search_groupings
     setup_dynamic_fields
