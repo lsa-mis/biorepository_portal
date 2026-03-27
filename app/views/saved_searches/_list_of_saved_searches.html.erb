@@ -28,14 +28,14 @@
     <tbody class="table-group-divider">
       <% saved_searches.each do |saved_search| %>
         <tr>
-          <td class="text-start align-middle">
-            <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
+          <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
+            <td class="text-start align-middle">
               <div class="d-flex gap-1 justify-content-start align-items-center">
                 <%= button_to "Up", move_up_saved_search_path(saved_search), method: :patch, class: "btn btn-sm btn-outline-secondary me-1" %>
                 <%= button_to "Down", move_down_saved_search_path(saved_search), method: :patch, class: "btn btn-sm btn-outline-secondary" %>
               </div>
-            <% end %>
-          </td>
+            </td>
+          <% end %>
           <td class="text-start align-middle">
             <%= saved_search.position %>
           </td>
