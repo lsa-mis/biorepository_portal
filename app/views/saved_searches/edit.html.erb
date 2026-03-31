@@ -2,8 +2,8 @@
   <div class="row">
     <div class="col-12">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2 mb-0">Edit Saved Search</h1>
-        <%= link_to "Back to Saved Searches", saved_searches_path, class: "btn btn-outline-secondary" %>
+        <h1 class="h2 mb-0">Edit Search Template</h1>
+        <%= link_to "Back to Search Templates", saved_searches_path, class: "btn btn-outline-secondary" %>
       </div>
 
       <div class="card">
@@ -24,19 +24,19 @@
 
             <div class="col-12">
               <%= form.label :name, class: "form-label" %>
-              <%= form.text_field :name, class: "form-control", placeholder: "Enter a name for your saved search" %>
+              <%= form.text_field :name, class: "form-control", placeholder: "Enter a name for your search template" %>
             </div>
             <% if is_admin? %>
               <div class="col-12">
                 <div class="form-check">
                   <%= form.check_box :global, class: "form-check-input" %>
-                  <%= form.label :global, "Make this a global search (visible to all users)", class: "form-check-label" %>
+                  <%= form.label :global, "Make this a curated search (visible to all users)", class: "form-check-label" %>
                 </div>
               </div>
             <% end %>
 
             <div>
-              <%= form.submit "Update Search", class: "btn btn-primary" %>
+              <%= form.submit "Update Search Template", class: "btn btn-primary" %>
               <%= link_to "Cancel", saved_searches_path, class: "link_to" %>
             </div>
           <% end %>
@@ -46,7 +46,7 @@
       <!-- Display search details (read-only) -->
       <div class="card mt-4">
         <div class="card-header">
-          <h5 class="mb-0">Search Details</h5>
+          <h5 class="mb-0">Search Template Details</h5>
         </div>
         <div class="card-body">
           <div class="row">
@@ -54,7 +54,7 @@
               <p><strong>Created:</strong> <%= @saved_search.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
               <p><strong>Created by:</strong> <%= @saved_search.user&.email || 'Unknown' %></p>
               <% if @saved_search.global %>
-                <p><strong>Type:</strong> <span class="badge bg-success">Global Search</span></p>
+                <p><strong>Type:</strong> <span class="badge bg-success">Curated Search Template</span></p>
               <% end %>
             </div>
             <div class="col-md-6">

@@ -122,7 +122,6 @@ export default class extends Controller {
   }
 
   submit(event) {
-    console.log("submit search form")
     clearTimeout(this.timeout)
 
     this.timeout = setTimeout(() => {
@@ -218,6 +217,12 @@ export default class extends Controller {
        input.required = false
       input.value = ""
     }
+  }
+
+  // Method to hide save form after successful save (called via Turbo Stream)
+  hideSaveFormAfterSave() {
+    // Same logic as cancelSave but specifically for post-save cleanup
+    this.cancelSave()
   }
 
 }

@@ -1,7 +1,7 @@
 <tr id="<%= dom_id(loan_question) %>">
   <% if is_super_admin? %>
     <td class="text-start align-middle">
-        <div class="d-flex gap-1 justify-content-start align-items-center">
+      <div class="d-flex gap-1 justify-content-start align-items-center">
         <%= button_to "Up", move_up_loan_question_path(loan_question), method: :patch, class: "btn btn-sm btn-outline-secondary me-1" %>
         <%= button_to "Down", move_down_loan_question_path(loan_question), method: :patch, class: "btn btn-sm btn-outline-secondary" %>
       </div>

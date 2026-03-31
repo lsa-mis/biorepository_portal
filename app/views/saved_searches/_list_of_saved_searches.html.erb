@@ -1,8 +1,8 @@
 <% if type == :global %>
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Global Searches</h1>
+    <h1>Curated Search Templates</h1>
     <% if is_admin? %>
-      <%= link_to "New Search", search_items_path, class: "btn btn-primary" %>
+      <%= link_to "New Search Template", search_items_path, class: "btn btn-primary" %>
     <% end %>
   </div>
 <% end %>
@@ -10,24 +10,17 @@
   <table class="table text-center mt-4">
     <thead class="table-group-divider">
       <tr>
-        <% if type == :global %>
-          <% if is_admin? %>
-            <th scope="col" class="text-start">Name/Edit Name</th>
-          <% else %>
-            <th scope="col" class="text-start">Name</th>
-          <% end %>
-        <% else %>
-          <% if is_admin? %>
-            <th scope="col" class="text-start">Name/Edit Name</th>
-          <% else %>
-            <th scope="col" class="text-start">Name</th>
-          <% end %>
-        <% end %>
-        <th scope="col" class="text-start">Filters</th>
-        <th scope="col" class="text-start">Run</th>
         <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
+          <th scope="col" class="text-start">Reorder</th>
+        <% end %>
+        <th scope="col" class="text-start">Position</th>
+        <th scope="col" class="text-start">Template Name</th>
+        <th scope="col" class="text-start">Filters Applied</th>
+        <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
+          <th scope="col" class="text-start">Edit</th>
           <th scope="col" class="text-start">Delete</th>
         <% else %>
+          <td></td>
           <td></td>
         <% end %>
       </tr>
@@ -35,14 +28,19 @@
     <tbody class="table-group-divider">
       <% saved_searches.each do |saved_search| %>
         <tr>
+          <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
+            <td class="text-start align-middle">
+              <div class="d-flex gap-1 justify-content-start align-items-center">
+                <%= button_to "Up", move_up_saved_search_path(saved_search), method: :patch, class: "btn btn-sm btn-outline-secondary me-1" %>
+                <%= button_to "Down", move_down_saved_search_path(saved_search), method: :patch, class: "btn btn-sm btn-outline-secondary" %>
+              </div>
+            </td>
+          <% end %>
           <td class="text-start align-middle">
-            <% if type == :global && is_admin? %>
-              <%= link_to saved_search.name, edit_saved_search_path(saved_search), class: "link_to" %>
-            <% elsif type == :personal && saved_search.user == current_user %>
-              <%= link_to saved_search.name, edit_saved_search_path(saved_search), class: "link_to" %>
-            <% else %>
-              <%= saved_search.name %>
-            <% end %>
+            <%= saved_search.position %>
+          </td>
+          <td class="text-start align-middle">
+            <%= link_to saved_search.name, search_items_path(q: saved_search.search_params), class: "link_to", data: { turbo_frame: "_top" } %>
           </td>
           <td class="text-start align-middle">
             <% if saved_search.filters.present? %>
@@ -51,22 +49,21 @@
               <span class="text-muted">No parameters saved</span>
             <% end %>
           </td>
-          <td class="text-start align-middle">
-            <%= link_to "Run", search_items_path(q: saved_search.search_params), class: "btn btn-sm btn-primary" %>
-          </td>
-          <td class="text-start align-middle">
-            <% if type == :global && is_admin? %>
-              <%= link_to saved_search_path(saved_search), 'aria-label': "delete_#{saved_search.id}", data: { turbo_confirm: "Are you sure you want to delete this saved search?" , turbo_method: :delete } do %>
+          <% if type == :global && is_admin? || type == :personal && saved_search.user == current_user%>
+            <td class="text-start align-middle">
+              <%= link_to edit_saved_search_path(saved_search), class: "link_to", data: { turbo_frame: "_top" } do %>
+                <i class="bi bi-pencil-square text-primary"></i>
+              <% end %>
+            </td>
+            <td class="text-start align-middle">
+              <%= link_to saved_search_path(saved_search), 'aria-label': "delete_#{saved_search.id}", data: { turbo_confirm: "Are you sure you want to delete this saved search?" , turbo_method: :delete, turbo_frame: "_top" } do %>
                 <i class="bi bi-trash-fill text-danger"></i>
               <% end %>
-            <% elsif type == :personal && saved_search.user == current_user %>
-              <%= link_to saved_search_path(saved_search), 'aria-label': "delete_#{saved_search.id}", data: { turbo_confirm: "Are you sure you want to delete this saved search?" , turbo_method: :delete } do %>
-                <i class="bi bi-trash-fill text-danger"></i>
-              <% end %>
-            <% else %>
-              <span class="text-muted"></span>
-            <% end %>
-          </td>
+            </td>
+          <% else %>
+            <td><span class="text-muted"></span></td>
+            <td><span class="text-muted"></span></td>
+          <% end %>
         </tr>
       <% end %>
     </tbody>
