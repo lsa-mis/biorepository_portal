@@ -71,7 +71,7 @@ class ItemsController < ApplicationController
   end
 
   def save_search
-    search_params = params[:q].to_unsafe_h
+    search_params = params[:q]&.to_unsafe_h || {}
     transform_search_groupings
     setup_dynamic_fields
     @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
