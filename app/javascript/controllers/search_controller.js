@@ -122,7 +122,6 @@ export default class extends Controller {
   }
 
   submit(event) {
-    console.log("submit search form")
     clearTimeout(this.timeout)
 
     this.timeout = setTimeout(() => {

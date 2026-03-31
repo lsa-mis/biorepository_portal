@@ -9,7 +9,6 @@ export default class extends Controller {
     if (searchForm && searchForm.hasAttribute('data-controller')) {
       const searchController = this.application.getControllerForElementAndIdentifier(searchForm, 'search')
       if (searchController && typeof searchController.hideSaveFormAfterSave === 'function') {
-        console.log("calling hideSaveFormAfterSave")
         searchController.hideSaveFormAfterSave()
       }
     }
