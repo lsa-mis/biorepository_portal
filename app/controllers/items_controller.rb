@@ -88,7 +88,12 @@ class ItemsController < ApplicationController
     end
 
     respond_to do |format|
-      format.turbo_stream # This will render save_search.turbo_stream.erb
+      format.turbo_stream do
+        render turbo_stream: [
+          render_flash_stream,
+          turbo_stream.after("search-form", '<div data-action="search#hideSaveFormAfterSave" data-search-target="autoTrigger" class="d-none" data-controller="auto-trigger"></div>')
+        ]
+      end
       format.html { 
         # Fallback for non-Turbo requests - set up full search data
         @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
