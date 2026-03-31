@@ -91,7 +91,7 @@ class ItemsController < ApplicationController
       format.turbo_stream do
         render turbo_stream: [
           render_flash_stream,
-          turbo_stream.after("search-form", '<div data-action="search#hideSaveFormAfterSave" data-search-target="autoTrigger" class="d-none" data-controller="auto-trigger"></div>')
+          turbo_stream.after("search-form", '<div data-controller="auto-trigger" class="d-none"></div>')
         ]
       end
       format.html { 
