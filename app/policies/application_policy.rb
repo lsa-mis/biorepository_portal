@@ -58,11 +58,10 @@ class ApplicationPolicy
 
   def is_owner?
     return false unless authenticated?
-    
-    case @record
-    when ActiveRecord::Relation
-      # For relations, check if all records belong to the user
-      @record.all? { |record| record.user_id == @user.id }
+    return false unless @record.present?
+    if @record.is_a?(ActiveRecord::Relation)
+      # For relations, ensure there are records and all of them belong to the user using SQL
+      @record.where.not(user_id: @user.id).none?
     else
       # For single records
       @record.user_id == @user.id
