@@ -6,7 +6,7 @@ class SavedSearchesController < ApplicationController
   def index
     @global_saved_searches = SavedSearch.global.order(:position)
     if current_user
-      @saved_searches = current_user.saved_searches.where(global: false).order(:position) 
+      @saved_searches = current_user.saved_searches.where(global: false).order(created_at: :desc) 
     else
       @saved_searches = []
     end
@@ -52,7 +52,7 @@ class SavedSearchesController < ApplicationController
       @saved_searches = SavedSearch.global.order(:position)
     else      
       turbo_frame = "saved_searches_list"
-      @saved_searches = current_user.saved_searches.where(global: false).order(:position)
+      @saved_searches = current_user.saved_searches.where(global: false).order(created_at: :desc)
     end
 
     respond_to do |format|
