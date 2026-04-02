@@ -2,7 +2,7 @@
   <% is_preview = params[:preview].present? %>
   <%= render "layouts/announcement", is_preview: is_preview, location: "collections_index" %>
 
-  <h1 class="pt-5 text-center">Explore Collection Catalog</h1>
+  <h1 class="text-center">Explore Collection Catalog</h1>
   <%= render "layouts/number_of_items_for_loan" %>
   <% if is_super_admin? %>
     <div class="my-3 text-end">
