@@ -10,7 +10,7 @@
   <table class="table text-center mt-4">
     <thead class="table-group-divider">
       <tr>
-        <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
+        <% if type == :global && is_admin? %>
           <th scope="col" class="text-start">Reorder</th>
         <% end %>
         <th scope="col" class="text-start">Template Name</th>
@@ -27,7 +27,7 @@
     <tbody class="table-group-divider">
       <% saved_searches.each do |saved_search| %>
         <tr>
-          <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
+          <% if type == :global && is_admin? %>
             <td class="text-start align-middle">
               <div class="d-flex gap-1 justify-content-start align-items-center">
                 <%= button_to "Up", move_up_saved_search_path(saved_search), method: :patch, class: "btn btn-sm btn-outline-secondary me-1" %>
