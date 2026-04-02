@@ -13,7 +13,6 @@
         <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
           <th scope="col" class="text-start">Reorder</th>
         <% end %>
-        <th scope="col" class="text-start">Position</th>
         <th scope="col" class="text-start">Template Name</th>
         <th scope="col" class="text-start">Filters Applied</th>
         <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
@@ -36,9 +35,6 @@
               </div>
             </td>
           <% end %>
-          <td class="text-start align-middle">
-            <%= saved_search.position %>
-          </td>
           <td class="text-start align-middle">
             <%= link_to saved_search.name, search_items_path(q: saved_search.search_params), class: "link_to", data: { turbo_frame: "_top" } %>
           </td>
