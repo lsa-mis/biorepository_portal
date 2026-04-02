@@ -53,9 +53,6 @@
             <div class="col-md-6">
               <p><strong>Created:</strong> <%= @saved_search.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
               <p><strong>Created by:</strong> <%= @saved_search.user&.email || 'Unknown' %></p>
-              <% if @saved_search.global %>
-                <p><strong>Type:</strong> <span class="badge bg-success">Curated Search Template</span></p>
-              <% end %>
             </div>
             <div class="col-md-6">
               <p><strong>Filters:</strong></p>
