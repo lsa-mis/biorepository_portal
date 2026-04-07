@@ -10,10 +10,9 @@
   <table class="table text-center mt-4">
     <thead class="table-group-divider">
       <tr>
-        <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
+        <% if type == :global && is_admin? %>
           <th scope="col" class="text-start">Reorder</th>
         <% end %>
-        <th scope="col" class="text-start">Position</th>
         <th scope="col" class="text-start">Template Name</th>
         <th scope="col" class="text-start">Filters Applied</th>
         <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
@@ -28,7 +27,7 @@
     <tbody class="table-group-divider">
       <% saved_searches.each do |saved_search| %>
         <tr>
-          <% if type == :global && is_admin? || type == :personal && user_signed_in? %>
+          <% if type == :global && is_admin? %>
             <td class="text-start align-middle">
               <div class="d-flex gap-1 justify-content-start align-items-center">
                 <%= button_to "Up", move_up_saved_search_path(saved_search), method: :patch, class: "btn btn-sm btn-outline-secondary me-1" %>
@@ -36,9 +35,6 @@
               </div>
             </td>
           <% end %>
-          <td class="text-start align-middle">
-            <%= saved_search.position %>
-          </td>
           <td class="text-start align-middle">
             <%= link_to saved_search.name, search_items_path(q: saved_search.search_params), class: "link_to", data: { turbo_frame: "_top" } %>
           </td>
@@ -49,7 +45,7 @@
               <span class="text-muted">No parameters saved</span>
             <% end %>
           </td>
-          <% if type == :global && is_admin? || type == :personal && saved_search.user == current_user%>
+          <% if user_allowed_to_edit?(saved_search) %>
             <td class="text-start align-middle">
               <%= link_to edit_saved_search_path(saved_search), class: "link_to", data: { turbo_frame: "_top" } do %>
                 <i class="bi bi-pencil-square text-primary"></i>

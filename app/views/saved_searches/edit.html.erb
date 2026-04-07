@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-12">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2 mb-0">Edit Search Template</h1>
+        <h1>Edit Search Template</h1>
         <%= link_to "Back to Search Templates", saved_searches_path, class: "btn btn-outline-secondary" %>
       </div>
 
@@ -53,9 +53,6 @@
             <div class="col-md-6">
               <p><strong>Created:</strong> <%= @saved_search.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
               <p><strong>Created by:</strong> <%= @saved_search.user&.email || 'Unknown' %></p>
-              <% if @saved_search.global %>
-                <p><strong>Type:</strong> <span class="badge bg-success">Curated Search Template</span></p>
-              <% end %>
             </div>
             <div class="col-md-6">
               <p><strong>Filters:</strong></p>

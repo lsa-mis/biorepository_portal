@@ -74,7 +74,7 @@
   <%= hidden_field_tag :loan_request, params[:loan_request] %>
   <%= hidden_field_tag :return_to, params[:return_to] %>
 
-  <div class="d-grid">
+  <div class="mb-3">
     <% if params[:loan_request] %>
       <%= f.submit "Update Shipping Address", class: "btn btn-primary", data: { address_form_target: "submitButton" } %>
     <% else %>
