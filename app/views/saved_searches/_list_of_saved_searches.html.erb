@@ -45,7 +45,7 @@
               <span class="text-muted">No parameters saved</span>
             <% end %>
           </td>
-          <% if type == :global && is_admin? || type == :personal && saved_search.user == current_user%>
+          <% if user_allowed_to_edit?(saved_search) %>
             <td class="text-start align-middle">
               <%= link_to edit_saved_search_path(saved_search), class: "link_to", data: { turbo_frame: "_top" } do %>
                 <i class="bi bi-pencil-square text-primary"></i>

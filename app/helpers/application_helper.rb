@@ -195,4 +195,19 @@ module ApplicationHelper
     end
   end
 
+  def user_allowed_to_edit?(saved_search)
+    return false unless user_signed_in?
+    return true if is_super_admin?
+    if saved_search.global && is_admin?
+      created_by_uniqname = saved_search.user.email.split("@").first
+      current_user_uniqname = current_user.email.split("@").first
+      collection_groups = Collection.pluck(:admin_group).compact
+      user_groups = collection_groups.select { |group| LdapLookup.is_member_of_group?(current_user_uniqname, group) }
+      creator_groups = collection_groups.select { |group| LdapLookup.is_member_of_group?(created_by_uniqname, group) }
+      (user_groups & creator_groups).any?
+    else
+      saved_search.user == current_user
+    end
+  end
+
 end
