@@ -206,16 +206,12 @@ module ApplicationHelper
     end
   end
 
-  def get_uniqname_from_email(email)
-    email.split("@").first
-  end
-
   def user_allowed_to_edit?(saved_search)
     return false unless user_signed_in?
     return true if is_super_admin?
     if saved_search.global && is_admin?
-      created_by_uniqname = get_uniqname_from_email(saved_search.user.email)
-      current_user_uniqname = get_uniqname_from_email(current_user.email)
+      created_by_uniqname = get_uniqname(saved_search.user.email)
+      current_user_uniqname = get_uniqname(current_user.email)
       user_groups = admin_groups_for_uniqname(current_user_uniqname)
       creator_groups = admin_groups_for_uniqname(created_by_uniqname)
       (user_groups & creator_groups).any?
