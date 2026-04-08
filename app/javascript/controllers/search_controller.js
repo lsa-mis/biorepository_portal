@@ -126,15 +126,16 @@ export default class extends Controller {
     console.log ("Submitting form with timeout")
     this.timeout = setTimeout(() => {
       // Temporarily disable required attribute on save search field during main form submission
-      const saveInput = this.saveFormTarget?.querySelector("input[type='text']")
-      const wasRequired = saveInput?.required || false
-      
+      let saveInput = null
+      let wasRequired = false
+      if (this.hasSaveFormTarget) {
+        saveInput = this.saveFormTarget.querySelector("input[type='text']")
+        wasRequired = saveInput?.required || false
+      }
       if (saveInput && wasRequired) {
         saveInput.required = false
       }
-      
       this.formTarget.requestSubmit()
-      
       // Restore required attribute after submission
       if (saveInput && wasRequired) {
         saveInput.required = true
