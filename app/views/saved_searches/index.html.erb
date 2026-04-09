@@ -1,11 +1,12 @@
-<div class="container-fluid py-4">
+<div class="container-fluid">
+  <h1>Saved Search Templates</h1>
+  <p class="text-start mb-4">
+    <% is_preview = params[:preview].present? %>
+    <%= render "layouts/announcement", is_preview: is_preview, location: "saved_searches" %>
+  </p>
+
   <div class="row">
     <div class="col-12">
-      <% if @global_saved_searches.any? %>
-        <%= turbo_frame_tag "global_saved_searches_list" do %>
-          <%= render partial: "list_of_saved_searches", locals: { type: :global, saved_searches: @global_saved_searches } %>
-        <% end %>
-      <% end %>
       <% if user_signed_in? %>
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h2>My Search Templates</h2>
@@ -15,6 +16,11 @@
           <%= turbo_frame_tag "saved_searches_list" do %>
             <%= render partial: "list_of_saved_searches", locals: { type: :personal, saved_searches: @saved_searches } %>
           <% end %>
+        <% end %>
+      <% end %>
+      <% if @global_saved_searches.any? %>
+        <%= turbo_frame_tag "global_saved_searches_list" do %>
+          <%= render partial: "list_of_saved_searches", locals: { type: :global, saved_searches: @global_saved_searches } %>
         <% end %>
       <% end %>
       <% if @saved_searches.empty? && @global_saved_searches.empty? %>
