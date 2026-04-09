@@ -18,17 +18,18 @@
           <td>
             <% case announcement.location %>
             <% when "about" %>
-              <%= button_to "Preview", preview_about_access_path, method: :post, class: "btn btn-link" %>
+              <%#= button_to "Preview", preview_about_access_path, method: :post, class: "btn btn-link" %>
+              <%= link_to "Preview", about_path(preview: true), class: "btn btn-link" %>
             <% when "app_preferences" %>
               <%= link_to "Preview", app_prefs_path(preview: true), class: "btn btn-link" %>
             <% when "checkout" %>
-              <%= button_to "Preview", preview_checkout_access_path, method: :post, class: "btn btn-link" %>
+              <%= link_to "Preview", checkout_path(preview: true), class: "btn btn-link" %>
             <% when "collections_index" %>
-              <%= button_to "Preview", preview_collections_access_path, method: :post, class: "btn btn-link" %>
+              <%= link_to "Preview", collections_path(preview: true), class: "btn btn-link" %>
             <% when "faq" %>
-              <%= button_to "Preview", preview_faqs_access_path, method: :post, class: "btn btn-link" %>
+              <%= link_to "Preview", faqs_path(preview: true), class: "btn btn-link" %>
             <% when "loan_questions" %>
-              <%= button_to "Preview", preview_loan_questions_access_path, method: :post, class: "btn btn-link" %>
+              <%= link_to "Preview", loan_questions_path(preview: true), class: "btn btn-link" %>
             <% when "loan_request" %>
               <%= link_to "Preview", new_loan_request_path(preview: true), class: "btn btn-link" %>
             <% when "information_request" %>

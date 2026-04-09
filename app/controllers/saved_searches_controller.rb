@@ -3,10 +3,6 @@ class SavedSearchesController < ApplicationController
   before_action :set_saved_search, only: [:edit, :update, :destroy, :move_up, :move_down]
   skip_before_action :authenticate_user!, only: [ :index ]
 
-  def enable
-    redirect_to saved_searches_path(preview: true)
-  end
-
   def index
     @global_saved_searches = SavedSearch.global.order(:position)
     if current_user

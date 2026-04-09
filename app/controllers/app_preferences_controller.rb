@@ -1,10 +1,6 @@
 class AppPreferencesController < ApplicationController
   before_action :set_pref_types, only: %i[ index new create]
 
-  def enable_preview
-    redirect_to app_prefs_path(preview: true)
-  end
-
   # GET /app_preferences or /app_preferences.json
   def index
     @app_preference = AppPreference.new
