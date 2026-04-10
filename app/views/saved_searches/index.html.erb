@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <h1>Saved Search Templates</h1>
   <div>
-    <% is_preview = params[:preview].present? && policy(Announcement).preview? %>
+    <% is_preview = params[:preview] == "true" && policy(Announcement).preview? %>
     <%= render "layouts/announcement", is_preview: is_preview, location: "saved_searches" %>
   </div>
 

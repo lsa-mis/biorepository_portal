@@ -1,5 +1,5 @@
 <% content_for :title, "FAQs" %>
-<% is_preview = params[:preview].present? && policy(Announcement).preview? %>
+<% is_preview = params[:preview] == "true" && policy(Announcement).preview? %>
 <%= render "layouts/announcement", is_preview: is_preview, location: "faq" %>
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
   <h1>Frequently Asked Questions</h1>
