@@ -1,4 +1,5 @@
 require 'set'
+require 'benchmark'
 
 class IdentificationImportService
   attr_reader :file
