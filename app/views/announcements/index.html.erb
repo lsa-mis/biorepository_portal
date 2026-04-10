@@ -18,7 +18,6 @@
           <td>
             <% case announcement.location %>
             <% when "about" %>
-              <%#= button_to "Preview", preview_about_access_path, method: :post, class: "btn btn-link" %>
               <%= link_to "Preview", about_path(preview: true), class: "btn btn-link" %>
             <% when "app_preferences" %>
               <%= link_to "Preview", app_prefs_path(preview: true), class: "btn btn-link" %>
