@@ -1,6 +1,8 @@
 <div>
-  <% is_preview = params[:preview].present? %>
-  <%= render "layouts/announcement", is_preview: is_preview, location: "loan_questions" %>
+  <% if policy(Announcement).preview? %>
+    <% is_preview = params[:preview].present? %>
+    <%= render "layouts/announcement", is_preview: is_preview, location: "loan_questions" %>
+  <% end %>
   <div class="md:d-flex justify-content-between align-items-center mb-3">
     <h1>Loan Questions</h1>
 

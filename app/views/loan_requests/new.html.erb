@@ -2,9 +2,10 @@
   <% content_for :head do %>
     <%= tag.meta name: "turbo-cache-control", content: "no-cache" %>
   <% end %>
-
-  <% is_preview = params[:preview].present? %>
-  <%= render "layouts/announcement", is_preview: is_preview, location: "loan_request" %>
+  <% if policy(Announcement).preview? %>
+    <% is_preview = params[:preview].present? %>
+    <%= render "layouts/announcement", is_preview: is_preview, location: "loan_request" %>
+  <% end %>
 
   <%= render "loan_requests/steps", step: 1 %>
 

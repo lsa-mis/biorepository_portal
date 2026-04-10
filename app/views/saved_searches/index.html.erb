@@ -1,8 +1,10 @@
 <div class="container-fluid">
   <h1>Saved Search Templates</h1>
   <p class="text-start mb-4">
-    <% is_preview = params[:preview].present? %>
-    <%= render "layouts/announcement", is_preview: is_preview, location: "saved_searches" %>
+    <% if policy(Announcement).preview? %>
+      <% is_preview = params[:preview].present? %>
+      <%= render "layouts/announcement", is_preview: is_preview, location: "saved_searches" %>
+    <% end %>
   </p>
 
   <div class="row">

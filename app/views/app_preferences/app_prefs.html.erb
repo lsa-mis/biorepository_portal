@@ -1,6 +1,8 @@
 <div>
-  <% is_preview = params[:preview].present? %>
-  <%= render "layouts/announcement", is_preview: is_preview, location: "app_preferences" %>
+  <% if policy(Announcement).preview? %>
+    <% is_preview = params[:preview].present? %>
+    <%= render "layouts/announcement", is_preview: is_preview, location: "app_preferences" %>
+  <% end %>
 
   <h1>Application Preferences</h1>
   <%= render "app_preferences/all_preferences" %>

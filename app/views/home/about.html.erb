@@ -11,17 +11,19 @@
       <!-- Heading and About Text -->
       <h1>About LSA Biorepository</h1>
       <p class="text-start mb-4">
-        <% is_preview = params[:preview].present? %>
-        <% if is_preview %>
-          <div class="d-flex justify-content-between align-items-center mt-3">
-            <% if (announcement = Announcement.find_by(location: "about")) %>
+        <% if policy(Announcement).preview? %>
+          <% is_preview = params[:preview].present? %>
+          <% if is_preview %>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <% if (announcement = Announcement.find_by(location: "about")) %>
+                  <%= sanitize(announcement.content.to_s) %>
+              <% end %>
+              <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary", data: { turbo_frame: "_top" } %>
+            </div>
+          <% else %>
+            <% if (announcement = Announcement.find_by(location: "about")) && announcement.displayed? %>
                 <%= sanitize(announcement.content.to_s) %>
             <% end %>
-            <%= link_to "Back to Announcement", announcements_path, class: "btn btn-outline-secondary", data: { turbo_frame: "_top" } %>
-          </div>
-        <% else %>
-          <% if (announcement = Announcement.find_by(location: "about")) && announcement.displayed? %>
-              <%= sanitize(announcement.content.to_s) %>
           <% end %>
         <% end %>
       </p>
