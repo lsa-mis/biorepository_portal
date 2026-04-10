@@ -1,7 +1,5 @@
-<% if policy(Announcement).preview? %>
-  <% is_preview = params[:preview].present? %>
-  <%= render "layouts/announcement", is_preview: is_preview, location: "information_request" %>
-<% end %>
+<% is_preview = params[:preview].present? && policy(Announcement).preview? %>
+<%= render "layouts/announcement", is_preview: is_preview, location: "information_request" %>
 
 <h1>Create Information Request</h1>
 

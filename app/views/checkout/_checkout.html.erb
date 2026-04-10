@@ -1,9 +1,7 @@
 <%= turbo_frame_tag "checkout" do %>
   <div class="">
-    <% if policy(Announcement).preview? %>
-      <% is_preview = params[:preview].present? %>
-      <%= render "layouts/announcement", is_preview: is_preview, location: "checkout" %>
-    <% end %>
+    <% is_preview = params[:preview].present? && policy(Announcement).preview? %>
+    <%= render "layouts/announcement", is_preview: is_preview, location: "checkout" %>
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
       <h1>Checkout</h1>
       <% if @checkout.requestables.active.exists? %>
