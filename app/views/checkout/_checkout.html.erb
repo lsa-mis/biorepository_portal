@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "checkout" do %>
   <div class="">
-    <% is_preview = params[:preview].present? %>
+    <% is_preview = params[:preview] == "true" && policy(Announcement).preview? %>
     <%= render "layouts/announcement", is_preview: is_preview, location: "checkout" %>
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
       <h1>Checkout</h1>

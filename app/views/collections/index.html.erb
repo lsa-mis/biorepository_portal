@@ -1,5 +1,5 @@
 <div class="">
-  <% is_preview = params[:preview].present? %>
+  <% is_preview = params[:preview] == "true" && policy(Announcement).preview? %>
   <%= render "layouts/announcement", is_preview: is_preview, location: "collections_index" %>
 
   <h1 class="text-center">Explore Collection Catalog</h1>
