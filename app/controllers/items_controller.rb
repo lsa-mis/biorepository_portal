@@ -118,7 +118,7 @@ class ItemsController < ApplicationController
       Item.all
     end
     item_fields = Item.column_names.select { |name| !%w[id created_at updated_at collection_id event_date_end].include?(name) }
-    identification_fields = Identification.column_names.select { |name| !%w[id item_id created_at updated_at].include?(name) }
+    identification_fields = Identification.column_names.select { |name| !%w[id item_id current created_at updated_at].include?(name) }
     all_fields = item_fields + identification_fields
     response.headers['Content-Type'] = 'text/csv'
     response.headers['Content-Disposition'] = "attachment; filename=biorepository-download-#{Date.today}.csv"

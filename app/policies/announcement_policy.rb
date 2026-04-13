@@ -10,4 +10,8 @@ class AnnouncementPolicy < ApplicationPolicy
   def update?
     is_admin?
   end
+
+  def preview?
+    is_admin?
+  end
 end

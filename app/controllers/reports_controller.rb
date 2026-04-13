@@ -126,10 +126,16 @@ class ReportsController < ApplicationController
       @display_collections = false
       statistic_data = SearchStatistic.where(created_at: start_time..end_time).order(created_at: :desc)
       if statistic_data.any?
-        @title = "Search Statistics Report"
-        @headers = ["Field Label", "Field Value", "Search ID", "Created At"]
-        @data = statistic_data.map do |stat|
-          [stat.field_label, stat.field_value, stat.search_session_id, stat.created_at.strftime("%Y-%m-%d %H:%M")]
+        @title = "Search Statistics Report (Grouped by Session)"
+        @headers = ["Field Count", "Fields Searched", "Created At"]
+        
+        # Group by search_session_id
+        grouped_data = statistic_data.group_by(&:search_session_id)
+        
+        @data = grouped_data.map do |_session_id, stats|
+          field_list = stats.map { |stat| "#{stat.field_label}: #{stat.field_value}" }.join("; ")
+          earliest_time = stats.last.created_at.strftime("%Y-%m-%d %H:%M")
+          [stats.count, field_list, earliest_time]
         end
       else
         @data = nil
