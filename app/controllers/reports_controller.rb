@@ -132,9 +132,9 @@ class ReportsController < ApplicationController
         # Group by search_session_id
         grouped_data = statistic_data.group_by(&:search_session_id)
         
-        @data = grouped_data.map do |session_id, stats|
+        @data = grouped_data.map do |_session_id, stats|
           field_list = stats.map { |stat| "#{stat.field_label}: #{stat.field_value}" }.join("; ")
-          earliest_time = stats.min_by(&:created_at).created_at.strftime("%Y-%m-%d %H:%M")
+          earliest_time = stats.last.created_at.strftime("%Y-%m-%d %H:%M")
           [stats.count, field_list, earliest_time]
         end
       else
