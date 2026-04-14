@@ -1,3 +1,5 @@
+require 'csv'
+
 class SearchTimeoutError < StandardError; end
 
 class ItemsController < ApplicationController
@@ -132,32 +134,33 @@ class ItemsController < ApplicationController
       items.in_batches(of: 1000) do |batch|
         batch = batch.includes(:collection, :current_identification, :preparations)
         batch.each do |item|
-          row = [sanitize_csv_value(item.collection.division)]
-          item_fields.each do |key|
-            if key == "event_date_start"
-              row << get_csv_value_for_event_date_start(item)
+          row = []
+          ITEM_FIELDS.each do |key|
+            if key == "collection_id"
+              row << sanitize_csv_value(item.collection.division)
             else
               row << sanitize_csv_value(item.attributes[key])
             end
           end
+
           identification = item.current_identification
           if identification
-            identification_fields.each do |id_key|
+            IDENTIFICATIONS_FIELDS.each do |id_key|
               row << sanitize_csv_value(identification.attributes[id_key])
             end
           else
-            identification_fields.each do |id_key|
+            IDENTIFICATIONS_FIELDS.each do |id_key|
               row << sanitize_csv_value(nil)
             end
           end
-          preparations = item.preparations
-          if preparations.any?
-            row << generate_column_with_preparation(preparations)
+          if item.preparations.any?
+            item.preparations.each do |prep|
+              csv << generate_row_with_preparation(row, prep)
+            end
           else
             # If no preparations, still output a row with empty preparation data
-            row << ""
+            csv << generate_row_with_preparation(row, nil)
           end
-          csv << row
         end
       end
     ensure
@@ -241,6 +244,21 @@ class ItemsController < ApplicationController
         end
         params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
       end
+    end
+
+    def generate_row_with_preparation(row, prep)
+      row_with_prep = row.dup
+      if prep
+        attributes = prep.attributes
+        PREPARATIONS_FIELDS.each do |prep_key|
+          row_with_prep << sanitize_csv_value(attributes[prep_key])
+        end
+      else
+        PREPARATIONS_FIELDS.each do |prep_key|
+          row_with_prep << sanitize_csv_value(nil)
+        end
+      end
+      row_with_prep
     end
 
     def extract_collection_ids

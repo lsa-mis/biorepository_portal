@@ -21,14 +21,6 @@ Devise.setup do |config|
     entity_id = Rails.application.credentials.staging_entity_id
   end
 
-  if Rails.env.phase2_staging?
-    idp_login_url = Rails.application.credentials.phase2_staging_idp_sso_target_url
-    idp_logout_url = Rails.application.credentials.phase2_staging_idp_slo_target_url
-    idp_fingerprint = Rails.application.credentials.phase2_staging_idp_cert_fingerprint
-    consumer_service_url = Rails.application.credentials.phase2_staging_assertion_consumer_service_url
-    entity_id = Rails.application.credentials.phase2_staging_entity_id
-  end
-
   if Rails.env.production?
     idp_login_url = Rails.application.credentials.production_idp_sso_target_url
     idp_logout_url = Rails.application.credentials.production_idp_slo_target_url

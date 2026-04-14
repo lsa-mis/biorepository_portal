@@ -52,17 +52,7 @@ Rails.application.configure do
   config.active_support.disallowed_deprecation = :raise
 
   # Tell Active Support which deprecation messages to disallow.
-  # Note: ActiveSupport::Configurable warning is expected in Rails 8.1 transition period
-  config.active_support.disallowed_deprecation_warnings = [
-    # Add any specific deprecation warnings you want to treat as errors here
-  ]
-  
-  # Silence Rails 8.1 -> 8.2 transitional warnings in development
-  if config.active_support.respond_to?(:silenced_deprecation_warnings)
-    config.active_support.silenced_deprecation_warnings = [
-      "ActiveSupport::Configurable is deprecated without replacement"
-    ]
-  end
+  config.active_support.disallowed_deprecation_warnings = []
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load
