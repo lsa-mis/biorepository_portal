@@ -39,11 +39,11 @@
     <%= render partial: "layouts/navbar" %>
     <%= render partial: "layouts/additional_bar" %>
 
-    <main>
+    <main id="maincontent">
       <div id="flash">
         <%= render "layouts/flash" %>
       </div>
-      <div id="maincontent" tabindex="-1" class="<%= (controller.controller_name == 'home' && controller.action_name == 'about') ? '' : 'mx-3 mx-lg-9' %>">
+      <div class="<%= (controller.controller_name == 'home' && controller.action_name == 'about') ? '' : 'mx-3 mx-lg-9' %>">
         <%= yield %>
         <%= turbo_frame_tag "remote_modal", target: "_top" %>
       </div>
