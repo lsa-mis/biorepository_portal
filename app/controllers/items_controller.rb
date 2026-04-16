@@ -409,7 +409,6 @@ class ItemsController < ApplicationController
       @items = filtered_items.includes(:collection, :current_identification, :preparations).page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
 
       @all_collections = Collection.order(:division)
-      # setup_dynamic_fields
     end
     
     def setup_dynamic_fields
@@ -425,7 +424,6 @@ class ItemsController < ApplicationController
         end
         @dynamic_fields << group_pairs unless group_pairs.empty?
       end
-      # @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
     end
 
     def save_filters_to_statistic(filters)
