@@ -58,7 +58,7 @@
     <%= form.file_field :image, accept: ".jpg,.jpeg,.png" %>
   </div>
 
-  <div class="mt-3 mb-3">
+  <div class="mt-3 mb-4">
     <%= form.submit %>
     <% if collection.persisted? %>
       <%= link_to "Cancel", collection_path(collection), class: "link_to" %>
