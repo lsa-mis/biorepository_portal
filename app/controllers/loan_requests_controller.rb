@@ -1,5 +1,3 @@
-require "csv"
-
 class LoanRequestsController < ApplicationController
   before_action :set_redirection_url
 
