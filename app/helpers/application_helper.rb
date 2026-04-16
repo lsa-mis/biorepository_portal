@@ -212,4 +212,29 @@ module ApplicationHelper
     end
   end
 
+  def collection_admin_groups
+    @collection_admin_groups ||= Collection.pluck(:admin_group).compact
+  end
+
+  def admin_groups_for_uniqname(uniqname)
+    @admin_groups_for_uniqname ||= {}
+    @admin_groups_for_uniqname[uniqname] ||= collection_admin_groups.select do |group|
+      LdapLookup.is_member_of_group?(uniqname, group)
+    end
+  end
+
+  def user_allowed_to_edit?(saved_search)
+    return false unless user_signed_in?
+    return true if is_super_admin?
+    if saved_search.global && is_admin?
+      created_by_uniqname = get_uniqname(saved_search.user.email)
+      current_user_uniqname = get_uniqname(current_user.email)
+      user_groups = admin_groups_for_uniqname(current_user_uniqname)
+      creator_groups = admin_groups_for_uniqname(created_by_uniqname)
+      (user_groups & creator_groups).any?
+    else
+      saved_search.user == current_user
+    end
+  end
+
 end

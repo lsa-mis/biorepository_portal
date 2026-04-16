@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["group", "row", "rows", "groupTemplate", "groupsContainer", "form"]
+  static targets = ["group", "row", "rows", "groupTemplate", "groupsContainer", "form", "saveButton", "saveForm"]
 
   connect() {
     console.log("connect dynamic search")
@@ -123,9 +123,22 @@ export default class extends Controller {
 
   submit(event) {
     clearTimeout(this.timeout)
-
     this.timeout = setTimeout(() => {
+      // Temporarily disable required attribute on save search field during main form submission
+      let saveInput = null
+      let wasRequired = false
+      if (this.hasSaveFormTarget) {
+        saveInput = this.saveFormTarget.querySelector("input[type='text']")
+        wasRequired = saveInput?.required || false
+      }
+      if (saveInput && wasRequired) {
+        saveInput.required = false
+      }
       this.formTarget.requestSubmit()
+      // Restore required attribute after submission
+      if (saveInput && wasRequired) {
+        saveInput.required = true
+      }
     }, 1000)
   }
 
@@ -195,6 +208,34 @@ export default class extends Controller {
       })
     }
     return false
+  }
+
+  toggleSaveForm() {
+    this.saveButtonTarget.classList.add("d-none")
+    this.saveFormTarget.classList.remove("d-none")
+    // Focus on the input field
+    const input = this.saveFormTarget.querySelector("input[type='text']")
+    if (input) {
+      input.required = true
+      input.focus()
+    }
+  }
+
+  cancelSave() {
+    this.saveFormTarget.classList.add("d-none")
+    this.saveButtonTarget.classList.remove("d-none")
+    // Clear the input field
+    const input = this.saveFormTarget.querySelector("input[type='text']")
+    if (input) {
+       input.required = false
+      input.value = ""
+    }
+  }
+
+  // Method to hide save form after successful save (called via Turbo Stream)
+  hideSaveFormAfterSave() {
+    // Same logic as cancelSave but specifically for post-save cleanup
+    this.cancelSave()
   }
 
 }

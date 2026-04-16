@@ -49,8 +49,11 @@ class ItemsController < ApplicationController
     
     setup_search_query
     execute_search_and_paginate
-
-    Rails.logger.info "========================= hell"
+    setup_dynamic_fields
+    @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+    if @active_filters.present?
+      save_filters_to_statistic(@active_filters)
+    end
     
     respond_to do |format|
       format.html { render :search_result }
@@ -69,6 +72,42 @@ class ItemsController < ApplicationController
     end
   end
 
+  def save_search
+    search_params = params[:q]&.to_unsafe_h || {}
+    transform_search_groupings
+    setup_dynamic_fields
+    @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+
+    authorize SavedSearch
+    name = params[:name].presence || "Saved Search #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
+    global = is_admin? && params[:global] == "on"
+
+    saved_search = current_user.saved_searches.new(name: name, filters: @active_filters.to_json, search_params: search_params, global: global)
+    if saved_search.save
+      flash.now[:notice] = "Search saved successfully!"
+    else
+      flash.now[:alert] = "Failed to save search."
+    end
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          render_flash_stream,
+          turbo_stream.after("search-form", '<div data-controller="auto-trigger" class="d-none"></div>')
+        ]
+      end
+      format.html { 
+        # Fallback for non-Turbo requests - set up full search data
+        @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
+        collection_ids = extract_collection_ids
+        setup_filter_data(collection_ids)
+        setup_search_query
+        execute_search_and_paginate
+        render :search_result 
+      }
+    end
+  end
+
   include ActionController::Live
 
   def export_to_csv
@@ -80,12 +119,18 @@ class ItemsController < ApplicationController
     else
       Item.all
     end
+    item_fields = Item.column_names.select { |name| !%w[id created_at updated_at collection_id event_date_end].include?(name) }
+    identification_fields = Identification.column_names.select { |name| !%w[id item_id current created_at updated_at].include?(name) }
+    all_fields = item_fields + identification_fields
     response.headers['Content-Type'] = 'text/csv'
-    response.headers['Content-Disposition'] = "attachment; filename=items-#{Date.today}.csv"
+    response.headers['Content-Disposition'] = "attachment; filename=biorepository-download-#{Date.today}.csv"
     response.headers['Last-Modified'] = Time.now.httpdate
     begin
       csv = CSV.new(response.stream)
-      csv << TITLEIZED_HEADERS
+      citation_text = "When using this dataset please use the following citation: #{request.host} (#{Date.today.to_s}) UofM Biorepository Web Portal"
+      headers = csv_headers(all_fields)
+      csv << ([citation_text] + Array.new(headers.length - 1, nil))
+      csv << headers
       items.in_batches(of: 1000) do |batch|
         batch = batch.includes(:collection, :current_identification, :preparations)
         batch.each do |item|
@@ -364,7 +409,7 @@ class ItemsController < ApplicationController
       @items = filtered_items.includes(:collection, :current_identification, :preparations).page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
 
       @all_collections = Collection.order(:division)
-      setup_dynamic_fields
+      # setup_dynamic_fields
     end
     
     def setup_dynamic_fields
@@ -380,7 +425,92 @@ class ItemsController < ApplicationController
         end
         @dynamic_fields << group_pairs unless group_pairs.empty?
       end
-      @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+      # @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+    end
+
+    def save_filters_to_statistic(filters)
+      return if filters.blank?
+      
+      # Generate a unique search session ID for this search
+      search_session_id = SecureRandom.uuid
+      
+      filters.each do |filter_group|
+        filter_group.each do |field_name, field_data|
+          field_data.each do |field_label, field_values|
+            # Handle different value formats (Array, Hash, or single value)
+            case field_values
+            when Array
+              # For arrays like ["pso", "mos"]
+              field_values.each do |value|
+                create_search_statistic(field_name, field_label, value, search_session_id)
+              end
+            when Hash
+              # For hashes like {"collection_8"=>"UMMZ Division of Mammals", "collection_4"=>"MPABI"}
+              field_values.each do |key, value|
+                create_search_statistic(field_name, key, value, search_session_id)
+              end
+            else
+              # For single values
+              create_search_statistic(field_name, field_label, field_values, search_session_id)
+            end
+          end
+        end
+      end
+    end
+
+    def create_search_statistic(field_name, field_label, field_value, search_session_id)
+      field_label = field_label.split('_').first.titleize
+      SearchStatistic.create(
+        field_name: field_name.to_s,
+        field_label: field_label.to_s, 
+        field_value: field_value.to_s,
+        search_session_id: search_session_id
+      )
+    rescue => e
+      Rails.logger.error "Failed to save search statistic: #{e.message}"
+      Rails.logger.error "Field: #{field_name}, Label: #{field_label}, Value: #{field_value}, Session: #{search_session_id}"
+    end
+
+
+    def csv_headers(all_fields)
+      # Preload all MapField mappings in a single query to avoid N+1
+      map_field_mappings = MapField.where(rails_field: all_fields).pluck(:rails_field, :specify_field).to_h
+      
+      headers = ['Collection']
+
+      all_fields.each do |field|
+        if field == 'event_date_start'
+          specify_field = 'eventDate'
+        else
+          specify_field = map_field_mappings[field] || field.titleize
+        end
+        headers << specify_field
+      end
+      headers << 'preparations'
+      headers
+    end
+
+    def get_csv_value_for_event_date_start(item)
+      if item.event_date_start.present? && item.event_date_end.present?
+        if item.event_date_start == item.event_date_end
+          sanitize_csv_value(item.event_date_start.to_s)
+        else
+          sanitize_csv_value("#{item.event_date_start}/#{item.event_date_end}")
+        end
+      else
+        sanitize_csv_value(item.event_date_start.to_s)
+      end
+    end
+
+    def generate_column_with_preparation(preparations)
+      column = preparations.map do |preparation|
+        "#{preparation.prep_type} - #{preparation.count}: #{preparation.barcode}: #{preparation.description}"
+      end.join('; ')
+      sanitize_csv_value(column)
+    end
+
+    def sanitize_csv_value(value)
+      value.to_s.start_with?('=', '+', '-', '@') ? "'#{value}'" : value.to_s
     end
 
 end

@@ -9,11 +9,13 @@ Rails.application.routes.draw do
       patch :move_down
     end
   end
+
   resources :reports, only: [:index] do
     collection do
       get 'information_requests_report', to: 'reports#information_requests_report'
       get 'loan_requests_report', to: 'reports#loan_requests_report'
       get 'import_data_report', to: 'reports#import_data_report'
+      get 'search_statistics_report', to: 'reports#search_statistics_report'
     end
   end
 
@@ -52,14 +54,6 @@ Rails.application.routes.draw do
   resources :loan_requests, only: [:new, :show]
   post "loan_requests/send_loan_request", to: "loan_requests#send_loan_request", as: :send_loan_request
 
-  post "loan_requests/enable", to: "loan_requests#enable", as: :enable_loan_request
-  post "loan_questions/enable_preview", to: "loan_questions#enable_preview", as: :preview_loan_questions_access
-  post "faqs/enable_preview", to: "faqs#enable_preview", as: :preview_faqs_access
-  post "collections/enable_preview", to: "collections#enable_preview", as: :preview_collections_access
-  post "checkout/enable_preview", to: "checkout#enable_preview", as: :preview_checkout_access
-  post "home/enable_preview", to: "home#enable_preview", as: :preview_about_access
-
-
   patch "update_loan_answer/:id", to: "loan_answers#update", as: :update_loan_answer
   get "edit_loan_answer/:id", to: "loan_answers#edit", as: :edit_loan_answer
 
@@ -73,6 +67,7 @@ Rails.application.routes.draw do
       patch :move_down
     end
   end
+
   get "checkout", to: "checkout#show"
   post "checkout/add"
   post "checkout/change"
@@ -88,6 +83,7 @@ Rails.application.routes.draw do
     collection do
       match 'quick_search' => 'items#quick_search', via: [:get, :post]
       match 'search' => 'items#search', via: [:get, :post]
+      match 'save_search' => 'items#save_search', via: :post, as: :save_search
     end
   end
   
@@ -117,6 +113,13 @@ Rails.application.routes.draw do
   get 'add_item_to_checkout/:item_id', to: 'collections#add_item_to_checkout', as: :add_item_to_checkout
 
   get 'application/delete_attachment/:id', to: 'application#delete_attachment', as: :delete_attachment
+
+  resources :saved_searches, only: [:index, :edit, :update, :destroy] do
+    member do
+      patch :move_up
+      patch :move_down
+    end
+  end
 
   devise_for :users, controllers: {omniauth_callbacks: "users/omniauth_callbacks", sessions: "users/sessions"} do
     delete 'sign_out', :to => 'users/sessions#destroy', :as => :destroy_user_session

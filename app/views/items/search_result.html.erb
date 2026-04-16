@@ -6,15 +6,51 @@
         <!-- Sidebar: Advanced Search -->
 
         <div class="col-md-4 mt-3">
+          <h1>Advanced Search</h1>
           <div class="p-3 bg-light border rounded h-100">
             <%= render partial: 'layouts/advance_search', locals: { f: f } %>
           </div>
         </div>
 
         <!-- Main Content: Search Results -->
-        <div class="col-md-7 mt-3" id="search-results">
+        <div class="col-md-7 mt-3" id="search-results" tabindex="-1">
           <div class="mb-3">
-            <h2>Search Results</h2>
+            <div class="d-flex align-items-center justify-content-between gap-3">
+              <h2>Search Results</h2>
+              <% if user_signed_in? %>
+                <button type="button" class="btn btn-link p-0" data-action="click->search#toggleSaveForm" data-search-target="saveButton">
+                  <i class="bi bi-bookmarks-fill"></i>
+                  Save Search
+                </button>
+              <% else %>
+                <%= link_to new_user_session_path, class: "link_to", data: { turbo_frame: "_top" } do %>
+                  <i class="bi bi-person-fill"></i> Sign In to Save Search
+                <% end %>
+              <% end %>
+            </div>
+
+            <% if user_signed_in? %>
+              <div class="d-none mt-3 w-100" data-search-target="saveForm">
+                <div class="d-flex align-items-end gap-2">
+                  <div class="flex-grow-1">
+                    <% if is_admin? %>
+                      <div class="form-check mb-2">
+                        <%= check_box_tag :global, nil, false, class: "form-check-input" %>
+                        <%= label_tag :global, "Make available for all users", class: "form-check-label" %>
+                      </div>
+                    <% end %>
+                    <%= text_field_tag :name, nil, placeholder: "Enter Search Name", class: "form-control" %>
+                  </div>
+                  <div class="d-flex flex-column gap-2">
+                    <%= f.submit "Submit", formaction: save_search_items_path, formmethod: "post", class: "btn btn-secondary" %>
+                    <%= link_to "Cancel", "#", class: "link_to", data: { action: "click->search#cancelSave" } %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+            
+            <div>
+            </div>
 
             <%= turbo_frame_tag "active_filters" do %>
               <%= render partial: 'layouts/current_filters', locals: { active_filters: @active_filters } %>
@@ -34,7 +70,8 @@
               <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "search#submit" %>
             </div>
             <div class="mt-4">
-              <%= link_to export_to_csv_path(request.parameters.slice(:q).merge(format: 'csv')), class: "text-nowrap btn btn-primary", data: { turbo: false } do %>
+              <%= link_to export_to_csv_path(request.parameters.slice(:q).merge(format: 'csv')), class: "text-nowrap link_to", data: { turbo: false } do %>
+                <i class="bi bi-download"></i>
                 Export to CSV
               <% end %>
             </div>
