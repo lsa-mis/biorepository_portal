@@ -1,5 +1,3 @@
-require 'csv'
-
 class SearchTimeoutError < StandardError; end
 
 class ItemsController < ApplicationController
@@ -134,33 +132,32 @@ class ItemsController < ApplicationController
       items.in_batches(of: 1000) do |batch|
         batch = batch.includes(:collection, :current_identification, :preparations)
         batch.each do |item|
-          row = []
-          ITEM_FIELDS.each do |key|
-            if key == "collection_id"
-              row << sanitize_csv_value(item.collection.division)
+          row = [sanitize_csv_value(item.collection.division)]
+          item_fields.each do |key|
+            if key == "event_date_start"
+              row << get_csv_value_for_event_date_start(item)
             else
               row << sanitize_csv_value(item.attributes[key])
             end
           end
-
           identification = item.current_identification
           if identification
-            IDENTIFICATIONS_FIELDS.each do |id_key|
+            identification_fields.each do |id_key|
               row << sanitize_csv_value(identification.attributes[id_key])
             end
           else
-            IDENTIFICATIONS_FIELDS.each do |id_key|
+            identification_fields.each do |id_key|
               row << sanitize_csv_value(nil)
             end
           end
-          if item.preparations.any?
-            item.preparations.each do |prep|
-              csv << generate_row_with_preparation(row, prep)
-            end
+          preparations = item.preparations
+          if preparations.any?
+            row << generate_column_with_preparation(preparations)
           else
             # If no preparations, still output a row with empty preparation data
-            csv << generate_row_with_preparation(row, nil)
+            row << ""
           end
+          csv << row
         end
       end
     ensure
