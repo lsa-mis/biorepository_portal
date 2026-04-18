@@ -9,9 +9,9 @@
     <div class="glass-box text-dark p-5 rounded-4 shadow-lg w-100" style="max-width: 800px;">
 
       <!-- Heading and About Text -->
-      <h1 class="text-start mb-4">About LSA Biorepository</h1>
+      <h1>About LSA Biorepository</h1>
       <p class="text-start mb-4">
-      <% is_preview = params[:preview].present? %>
+        <% is_preview = params[:preview] == "true" && policy(Announcement).preview? %>
         <% if is_preview %>
           <div class="d-flex justify-content-between align-items-center mt-3">
             <% if (announcement = Announcement.find_by(location: "about")) %>

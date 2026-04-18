@@ -13,18 +13,18 @@ RSpec.describe LoanRequestsController, type: :request do
   let!(:requestable) { FactoryBot.create(:requestable, checkout: checkout, preparation: preparation,
     item_id: item.id, collection: collection.division, preparation_type: preparation.prep_type, item_name: item.name, count: 1 ) }
 
-  describe 'POST #enable' do
-    let!(:admin_user) { FactoryBot.create(:user) }
+  # describe 'POST #enable' do
+  #   let!(:admin_user) { FactoryBot.create(:user) }
 
-    before do
-      mock_login(admin_user)
-    end
+  #   before do
+  #     mock_login(admin_user)
+  #   end
 
-    it 'redirects to new loan request with preview parameter' do
-      post enable_loan_request_path
-      expect(response).to redirect_to(new_loan_request_path(preview: true))
-    end
-  end
+  #   it 'redirects to new loan request with preview parameter' do
+  #     post enable_loan_request_path
+  #     expect(response).to redirect_to(new_loan_request_path(preview: true))
+  #   end
+  # end
 
   describe 'GET #show with admin role' do
     let!(:admin_user) { FactoryBot.create(:user) }

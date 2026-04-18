@@ -1,6 +1,6 @@
 <% content_for :title, "Answer #{@collection.division} Questions" %>
 
-<h1 class="mb-3 text-center">Answer <%= @collection.division %> Questions</h1>
+<h1 class="text-center">Answer <%= @collection.division %> Questions</h1>
 
 <%= form_with url: update_collection_questions_profile_path(@collection), method: :patch, multipart: true, local: true do %>
   <div class="card shadow-sm">
