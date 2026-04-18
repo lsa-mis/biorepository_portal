@@ -213,7 +213,7 @@ module ApplicationHelper
   end
 
   def collection_admin_groups
-    @collection_admin_groups ||= Collection.pluck(:admin_group).compact
+    @collection_admin_groups ||= Collection.pluck(:admin_group).compact.uniq
   end
 
   def admin_groups_for_uniqname(uniqname)
