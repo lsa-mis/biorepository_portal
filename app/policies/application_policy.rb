@@ -52,4 +52,20 @@ class ApplicationPolicy
     @role == "developer"
   end
 
+  def authenticated?
+    @user.present?
+  end
+
+  def is_owner?
+    return false unless authenticated?
+    return false unless @record.present?
+    if @record.is_a?(ActiveRecord::Relation)
+      # For relations, ensure there are records and all of them belong to the user using SQL
+      @record.where.not(user_id: @user.id).none?
+    else
+      # For single records
+      @record.user_id == @user.id
+    end
+  end
+
 end

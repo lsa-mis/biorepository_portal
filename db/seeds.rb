@@ -87,7 +87,8 @@ locations = [
   "information_request",
   "faq",
   "loan_questions",
-  "collection_questions"
+  "collection_questions",
+  "saved_searches"
 ]
 
 locations.each do |loc|

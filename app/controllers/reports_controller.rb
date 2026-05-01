@@ -8,6 +8,7 @@ class ReportsController < ApplicationController
       {title: "Information Requests", url: information_requests_report_reports_path, description: "This report shows Information Requests statistics" },
       {title: "Loan Requests", url: loan_requests_report_reports_path, description: "This report shows Loan Requests statistics" },
       {title: "Import Data", url: import_data_report_reports_path, description: "This report shows Import Data Log statistics" },
+      {title: "Search Statistics", url: search_statistics_report_reports_path, description: "This report shows Search Statistics" },
       ]
   end
 
@@ -31,6 +32,7 @@ class ReportsController < ApplicationController
 
   def information_requests_report
     authorize :report, :information_requests_report?
+    @display_collections = true
     if params[:commit]
       start_time, end_time, collection_id = collect_form_params
       information_requests = InformationRequest.includes(:rich_text_question).where(created_at: start_time..end_time).order(created_at: :desc)
@@ -62,6 +64,7 @@ class ReportsController < ApplicationController
 
   def loan_requests_report
     authorize :report, :loan_requests_report?
+    @display_collections = true
     if params[:commit]
       start_time, end_time, collection_id = collect_form_params
       loan_requests = LoanRequest.where(created_at: start_time..end_time).order(created_at: :desc)
@@ -93,6 +96,7 @@ class ReportsController < ApplicationController
 
   def import_data_report
     authorize :report, :import_data_report?
+    @display_collections = true
     if params[:commit]
       start_time, end_time, collection_id = collect_form_params
       import_logs = ItemImportLog.includes(:collection).where(date: start_time..end_time).order(date: :desc)
@@ -106,6 +110,40 @@ class ReportsController < ApplicationController
         end
       else
         @data = nil
+      end
+
+      respond_to do |format|
+        format.html
+        format.csv { send_data csv_data("import_data"), filename: 'import_data_report.csv', type: 'text/csv' }
+      end
+    end
+  end
+
+  def search_statistics_report
+    authorize :report, :search_statistics_report?
+    if params[:commit]
+      start_time, end_time, collection_id = collect_form_params
+      @display_collections = false
+      statistic_data = SearchStatistic.where(created_at: start_time..end_time).order(created_at: :desc)
+      if statistic_data.any?
+        @title = "Search Statistics Report (Grouped by Session)"
+        @headers = ["Field Count", "Fields Searched", "Created At"]
+        
+        # Group by search_session_id
+        grouped_data = statistic_data.group_by(&:search_session_id)
+        
+        @data = grouped_data.map do |_session_id, stats|
+          field_list = stats.map { |stat| "#{stat.field_label}: #{stat.field_value}" }.join("; ")
+          earliest_time = stats.last.created_at.strftime("%Y-%m-%d %H:%M")
+          [stats.count, field_list, earliest_time]
+        end
+      else
+        @data = nil
+      end
+
+      respond_to do |format|
+        format.html
+        format.csv { send_data csv_data("search_statistics"), filename: 'search_statistics_report.csv', type: 'text/csv' }
       end
     end
   end

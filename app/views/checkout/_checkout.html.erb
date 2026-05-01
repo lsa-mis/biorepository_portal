@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "checkout" do %>
   <div class="">
-    <% is_preview = params[:preview].present? %>
+    <% is_preview = params[:preview] == "true" && policy(Announcement).preview? %>
     <%= render "layouts/announcement", is_preview: is_preview, location: "checkout" %>
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
       <h1>Checkout</h1>
@@ -11,7 +11,7 @@
           <% end %>
         <% else %>
           <%= link_to new_user_session_path, class: "btn btn-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
-            <i class="bi bi-envelope"></i> Sign in to Send Loan Request
+            <i class="bi bi-envelope"></i> Sign In to Send Loan Request
           <% end %>
         <% end %>
       <% end %>
