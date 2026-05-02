@@ -62,9 +62,9 @@ class Item < ApplicationRecord
   def name
     name = ""
     name = self.catalog_number + " - " if self.catalog_number.present?
-    name += "#{current_identification&.scientific_name&.humanize}"
+    name += "#{current_identification&.scientific_name}"
     if current_identification&.vernacular_name.present?
-      name += " [#{current_identification&.vernacular_name.humanize}]"
+      name += " [#{current_identification&.vernacular_name}]"
     end
     name
   end
