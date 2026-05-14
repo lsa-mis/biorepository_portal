@@ -106,6 +106,8 @@ class ApplicationController < ActionController::Base
         if session[:merge_checkouts] && @checkout.id != current_user.checkout.id
           merge_checkouts(@checkout, current_user.checkout)
           session.delete(:merge_checkouts)
+          # Reload user_checkout to reflect merged requestables
+          user_checkout.requestables.reload
         end
         @checkout = user_checkout
         session[:checkout_id] = @checkout.id
