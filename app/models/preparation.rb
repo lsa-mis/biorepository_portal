@@ -50,4 +50,13 @@ class Preparation < ApplicationRecord
   def self.ransackable_associations(auth_object = nil)
     [ :item ]
   end
+
+  def available?
+    count > 0
+  end
+
+  def unavailable?
+    count == 0
+  end
+  
 end
