@@ -92,7 +92,12 @@ module ApplicationHelper
   end
 
   def preparation_in_checkout(preparation, checkout)
-    checkout.requestables.active.find_by(preparation_id: preparation.id)&.count.to_i > 0
+    return false unless checkout && preparation
+
+    # Use .any? with a block to search the preloaded array in memory
+    checkout.requestables.any? do |r|
+      r.active? && r.preparation_id == preparation.id
+    end
   end
 
   def item_views

@@ -85,7 +85,7 @@ class ApplicationController < ActionController::Base
   def initialize_checkout
     # Only query database if we don't have a checkout ID in session
     if session[:checkout_id].present?
-      @checkout = Checkout.find_by(id: session[:checkout_id]) unless @checkout
+      @checkout = Checkout.includes(:requestables).find_by(id: session[:checkout_id]) unless @checkout
     end
 
     # Create checkout only if we still don't have one
@@ -100,6 +100,7 @@ class ApplicationController < ActionController::Base
       
       if user_checkout.present?
         # User has an existing checkout, use it
+        user_checkout = Checkout.includes(:requestables).find_by(user_id: current_user.id)
         Rails.logger.info "************************************ session[:merge_checkouts]: #{session[:merge_checkouts]}"
         Rails.logger.info "************************************ User has existing checkout with ID: #{user_checkout.id}"
         if session[:merge_checkouts] && @checkout.id != current_user.checkout.id
