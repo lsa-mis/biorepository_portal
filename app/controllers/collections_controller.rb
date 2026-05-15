@@ -10,13 +10,22 @@ class CollectionsController < ApplicationController
 
   # GET /collections/1 or /collections/1.json
   def show
-    @q1 = @collection.items.includes(:current_identification, :preparations).ransack(params[:q1])
+  # 1. Eager load everything used in the accordion and table
+    @q1 = @collection.items.includes(
+      :collection,             # For item.collection.division
+      :current_identification, # For item.display_name
+      :preparations            # For the table and the checkout helper
+    ).ransack(params[:q1])
+
     @items = @q1.result.page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
+    
     @collection_questions = @collection.collection_questions.includes(:collection_options)
-    # Preload checkout's requestables to avoid N+1 queries in the preparation_in_checkout helper
+
+    # 2. Preload checkout requestables (Foreign keys are enough since helper only checks IDs)
     @checkout&.requestables&.load
+
     respond_to do |format|
-      format.html # normal full page
+      format.html
       format.turbo_stream
     end
   end
