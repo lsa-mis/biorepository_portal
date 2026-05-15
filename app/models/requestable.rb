@@ -34,8 +34,10 @@ class Requestable < ApplicationRecord
   scope :saved_for_later, -> { where(saved_for_later: true) }
   scope :active, -> { where(saved_for_later: false).where.not(preparation_id: nil).where.not(item_id: nil) }
 
-  def active?
-    !saved_for_later && preparation_id.present? && item_id.present?
-  end
+def active?
+  return false if saved_for_later
+
+  preparation_id.present? && item_id.present?
+end
 
 end
