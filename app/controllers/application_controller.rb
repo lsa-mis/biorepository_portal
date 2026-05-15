@@ -96,11 +96,10 @@ class ApplicationController < ActionController::Base
 
     # Handle user assignment efficiently
     if user_signed_in?
-      user_checkout = current_user.checkout
+      # Check for existence AND preload associations in one single query
+      user_checkout = Checkout.includes(:requestables).find_by(user_id: current_user.id)
       
       if user_checkout.present?
-        # User has an existing checkout, use it
-        user_checkout = Checkout.includes(:requestables).find_by(user_id: current_user.id)
         Rails.logger.info "************************************ session[:merge_checkouts]: #{session[:merge_checkouts]}"
         Rails.logger.info "************************************ User has existing checkout with ID: #{user_checkout.id}"
         if session[:merge_checkouts] && @checkout.id != current_user.checkout.id
