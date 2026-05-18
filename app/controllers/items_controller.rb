@@ -24,31 +24,14 @@ class ItemsController < ApplicationController
 
     collection_ids = extract_collection_ids
     
-    # Cache collection_ids and only rebuild filter data if they changed
-    cache_key = "collection_ids_#{session.id}"
-    cached_collection_ids = Rails.cache.read(cache_key)
-    
-    if cached_collection_ids != collection_ids
-      Rails.logger.info "******************************* Collection IDs changed, rebuilding filter data"
-      setup_filter_data(collection_ids)
-      Rails.cache.write(cache_key, collection_ids, expires_in: 1.hour)
-    else
-      Rails.logger.info "******************************* Collection IDs unchanged, using cached filter data"
-      # Load cached filter data or rebuild if cache is stale
-      filter_cache_key = filter_cache_key(collection_ids)
-      if Rails.cache.exist?(filter_cache_key)
-        load_cached_filter_data(collection_ids)
-      else
-        Rails.logger.info "******************************* Filter data cache missing, rebuilding"
-        filter_data = setup_filter_data(collection_ids)
-        Rails.cache.write(filter_cache_key, filter_data, expires_in: 1.hour)
-      end
-    end
+    # The cache checking is now entirely handled inside this method
+    setup_filter_data(collection_ids)
     
     setup_search_query
     execute_search_and_paginate
     setup_dynamic_fields
     @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+    
     if @active_filters.present?
       save_filters_to_statistic(@active_filters)
     end
@@ -271,44 +254,26 @@ class ItemsController < ApplicationController
     end
 
     def setup_filter_data(collection_ids)
-      ActiveRecord::Base.transaction do
-        # Set the current timeout setting
-        # Reset to original timeout (SET LOCAL is automatically reset at transaction end)        
-        begin
+      # Deterministic global key based strictly on active collections sorted
+      cache_key = "filters_#{collection_ids.sort.join('_')}"
+
+      filter_data = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+        Rails.logger.info "******************************* Cache missing/expired, rebuilding filter data..."
+        
+        # Execute queries under a strict timeout safe block
+        ActiveRecord::Base.transaction do
           ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = '10s'")
-          cache_key = "filters_#{collection_ids.sort.join('_')}"
-          filter_data = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
-            build_filter_data(collection_ids)
-          end
-          
-          @continents, @countries, @states, @sexs = filter_data[:geo]
-          @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
-          @prep_types = filter_data[:prep_types]
-        rescue ActiveRecord::QueryCanceled
-          Rails.logger.error "******************************* Search timeout - filter data took too long"
-          raise SearchTimeoutError, "Filter data query timed out"
+          build_filter_data(collection_ids)
         end
       end
-    end
 
-    def load_cached_filter_data(collection_ids)
-      cache_key = filter_cache_key(collection_ids)
-      filter_data = Rails.cache.read(cache_key)
-      
-      unless filter_data
-        # Fallback: rebuild if cache is missing
-        filter_data = build_filter_data(collection_ids)
-        Rails.cache.write(cache_key, filter_data, expires_in: 1.hour)
-      end
-      
-      # Assign filter data to instance variables
+      # Instantly unpack the returned cached hash data into view variables
       @continents, @countries, @states, @sexs = filter_data[:geo]
       @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
       @prep_types = filter_data[:prep_types]
-    end
-
-    def filter_cache_key(collection_ids)
-      "filters_#{collection_ids.sort.join('_')}"
+    rescue ActiveRecord::QueryCanceled
+      Rails.logger.error "******************************* Search timeout - filter data took too long"
+      raise SearchTimeoutError, "Filter data query timed out"
     end
 
     def build_filter_data(collection_ids)
