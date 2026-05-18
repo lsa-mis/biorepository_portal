@@ -312,41 +312,33 @@ class ItemsController < ApplicationController
     end
 
     def build_filter_data(collection_ids)
-      # Single query to get all needed data
-      items_data = Item.where(collection_id: collection_ids)
-                      .left_joins(:current_identification, :preparations)
-                      .pluck(:continent, :country, :state_province, :sex,
-                            'identifications.kingdom', 'identifications.phylum', 'identifications.class_name',
-                            'identifications.order_name', 'identifications.family', 'identifications.genus',
-                            'preparations.prep_type')
-      
-      geo_sets = Array.new(4) { Set.new }
-      taxonomy_sets = Array.new(6) { Set.new }
-      prep_types_set = Set.new
-      
-      items_data.each do |continent, country, state_province, sex, kingdom, phylum, class_name, order_name, family, genus, prep_type|
-        # Geographic data
-        geo_sets[0].add([continent&.titleize, continent&.downcase]) if continent.present?
-        geo_sets[1].add([country&.titleize, country&.downcase]) if country.present?
-        geo_sets[2].add([state_province&.titleize, state_province&.downcase]) if state_province.present?
-        geo_sets[3].add([sex&.titleize, sex&.downcase]) if sex.present?
-        
-        # Taxonomy data
-        taxonomy_sets[0].add([kingdom&.titleize, kingdom&.downcase]) if kingdom.present?
-        taxonomy_sets[1].add([phylum&.titleize, phylum&.downcase]) if phylum.present?
-        taxonomy_sets[2].add([class_name&.titleize, class_name&.downcase]) if class_name.present?
-        taxonomy_sets[3].add([order_name&.titleize, order_name&.downcase]) if order_name.present?
-        taxonomy_sets[4].add([family&.titleize, family&.downcase]) if family.present?
-        taxonomy_sets[5].add([genus&.titleize, genus&.downcase]) if genus.present?
-        
-        # Prep types
-        prep_types_set.add([prep_type&.titleize, prep_type&.downcase]) if prep_type.present?
+      # Scope everything to the active collections
+      base_scope = Item.where(collection_id: collection_ids)
+
+      # Helper method to format data directly into the [Titleized, downcase] array format expected by your views
+      # The addition of .uniq guarantees identical behavior to the old Set layout
+      format_filter = ->(values) { values.compact.map { |v| [v.titleize, v.downcase] }.uniq.sort_by(&:first) }
+
+      # 1. Pull unique Geographic fields
+      # (Since columns live on the items table, this is blazing fast)
+      geo_data = %i[continent country state_province sex].map do |column|
+        format_filter.call(base_scope.distinct.pluck(column))
       end
-      
+
+      # 2. Pull unique Taxonomy fields 
+      # (Join identifications once, then pluck unique values)
+      taxon_scope = base_scope.left_joins(:current_identification)
+      taxonomy_data = %w[kingdom phylum class_name order_name family genus].map do |column|
+        format_filter.call(taxon_scope.distinct.pluck("identifications.#{column}"))
+      end
+
+      # 3. Pull unique Preparation types
+      prep_data = format_filter.call(base_scope.left_joins(:preparations).distinct.pluck("preparations.prep_type"))
+
       {
-        geo: geo_sets.map { |set| set.sort_by(&:first) },
-        taxonomy: taxonomy_sets.map { |set| set.sort_by(&:first) },
-        prep_types: prep_types_set.sort_by(&:first)
+        geo: geo_data,
+        taxonomy: taxonomy_data,
+        prep_types: prep_data
       }
     end
 
