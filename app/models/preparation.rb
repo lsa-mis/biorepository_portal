@@ -32,14 +32,6 @@ class Preparation < ApplicationRecord
     display_name
   end
 
-  def unavailable?
-    self.count == 0
-  end
-
-  def available?
-    self.count > 0
-  end
-
   ransacker :prep_type_case_insensitive, type: :string do
     Arel.sql('lower(preparations.prep_type)')
   end
@@ -51,4 +43,13 @@ class Preparation < ApplicationRecord
   def self.ransackable_associations(auth_object = nil)
     [ :item ]
   end
+
+  def available?
+    count > 0
+  end
+
+  def unavailable?
+    count == 0
+  end
+  
 end
