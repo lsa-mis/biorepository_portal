@@ -317,7 +317,8 @@ class ItemsController < ApplicationController
 
       # Helper method to format data directly into the [Titleized, downcase] array format expected by your views
       # The addition of .uniq guarantees identical behavior to the old Set layout
-      format_filter = ->(values) { values.compact.map { |v| [v.titleize, v.downcase] }.uniq.sort_by(&:first) }
+      # Replaces .compact with .select(&:present?) to perfectly match the old filtering logic
+      format_filter = ->(values) { values.select(&:present?).map { |v| [v.titleize, v.downcase] }.uniq.sort_by(&:first) }
 
       # 1. Pull unique Geographic fields
       # (Since columns live on the items table, this is blazing fast)
