@@ -32,11 +32,12 @@ class Preparation < ApplicationRecord
     display_name
   end
 
-  scope :unavailable, -> { where(count: 0) }
-  scope :available, -> { where('count > 0') }
-
   def unavailable?
     self.count == 0
+  end
+
+  def available?
+    self.count > 0
   end
 
   ransacker :prep_type_case_insensitive, type: :string do
