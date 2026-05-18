@@ -91,7 +91,7 @@ module ApplicationHelper
     string
   end
 
-  def preparation_in_checkout(preparation, checkout)
+  def preparation_in_checkout?(preparation, checkout)
     return false unless checkout && preparation
 
     # Use .any? with a block to search the preloaded array in memory
