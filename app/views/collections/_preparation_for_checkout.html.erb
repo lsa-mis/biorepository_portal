@@ -6,7 +6,7 @@
     <% unavailable_preparations = item.preparations.select(&:unavailable?) %>
 
     <% available_preparations.each do |preparation| %>
-      <% if preparation_in_checkout(preparation, @checkout) %>
+      <% if preparation_in_checkout?(preparation, @checkout) %>
         <div>
           <form action="<%= checkout_remove_preparation_path %>" method="post" data-turbo="true">
             <%= hidden_field_tag :id, preparation.id %>

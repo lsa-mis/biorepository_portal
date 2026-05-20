@@ -2,13 +2,16 @@
   <button class="accordion-button collapsed bg-accordion custom-focus-ring" 
           type="button" 
           data-bs-toggle="collapse" 
-          data-bs-target="#panelsStayOpen-collapse<%= (index + 1) %>" 
+          <%# Use the automatic counter here %>
+          data-bs-target="#panelsStayOpen-collapse<%= item_counter %>" 
           aria-expanded="false" 
-          aria-controls="panelsStayOpen-collapse<%= (index + 1) %>">
+          aria-controls="panelsStayOpen-collapse<%= item_counter %>">
     <%= item.collection.division %>: <%= item.display_name %>
   </button>
-  <div id="panelsStayOpen-collapse<%= (index + 1) %>" class="accordion-collapse collapse">
-    <div class="accordion-body">  
+
+  <%# Match the ID to the counter here %>
+  <div id="panelsStayOpen-collapse<%= item_counter %>" class="accordion-collapse collapse">
+    <div class="accordion-body">
       <fieldset>
         <legend style="display: none;">Tabs to display item information</legend>
 
@@ -22,7 +25,7 @@
           <table class="table text-center">
             <tbody class="table-group-divider">
               <% display_fields = {
-                "Preparation Type" => item.preparations.pluck(:prep_type).join(", "),
+                "Preparation Type" => item.preparations.map(&:prep_type).join(", "), #map instead of pluck to reduce database queries
                 "Item Catalog Number" => item.catalog_number,
                 "Date Modified" => item.modified,
                 "Recorded By" => item.recorded_by,
