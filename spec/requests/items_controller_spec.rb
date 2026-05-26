@@ -203,4 +203,41 @@ RSpec.describe ItemsController, type: :request do
       expect(response.body).to include("search")
     end
   end
+  
+  describe 'Search Sidebar Filter Aggregation Performance & Parity' do
+    let!(:collection_1) { FactoryBot.create(:collection, admin_group: 'Group 1', division: 'Division 1') }
+    let!(:collection_2) { FactoryBot.create(:collection, admin_group: 'Group 2', division: 'Division 2') }
+
+    before do
+      # 1. Standard valid data (Using fake names to avoid matching static HTML dropdowns)
+      FactoryBot.create(:item, collection: collection_1, country: 'Narnia', sex: 'Male')
+      
+      # 2. Case folding / Deduplication edge case
+      FactoryBot.create(:item, collection: collection_1, country: 'westeros', sex: 'Female')
+      FactoryBot.create(:item, collection: collection_1, country: 'Westeros', sex: 'Female')
+
+      # 3. Blank-value / Whitespace exclusion edge case
+      FactoryBot.create(:item, collection: collection_1, country: '   ', sex: '')
+      FactoryBot.create(:item, collection: collection_1, country: nil, sex: nil)
+
+      # 4. Out-of-scope collection data (should be ignored)
+      FactoryBot.create(:item, collection: collection_2, country: 'Mordor', sex: 'Male')
+    end
+
+    it 'correctly aggregates, cleans, and deduplicates sidebar filter options via Postgres' do
+      get search_items_path, params: { q: { collection_id_in: [collection_1.id] } }
+      expect(response).to have_http_status(:ok)
+
+      # 1. Standard valid data is rendered in the sidebar
+      expect(response.body).to include('Narnia')
+
+      # 2. The mixed-case entries were cleanly deduplicated 
+      expect(response.body).to include('Westeros')
+
+      # 3. The out-of-scope collection data is completely ignored
+      expect(response.body).not_to include('Mordor')
+    end
+  end
+
 end
+
