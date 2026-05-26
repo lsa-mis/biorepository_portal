@@ -203,9 +203,8 @@ RSpec.describe ItemsController, type: :request do
       expect(response.body).to include("search")
     end
   end
-end
-
-describe 'Search Sidebar Filter Aggregation Performance & Parity' do
+  
+  describe 'Search Sidebar Filter Aggregation Performance & Parity' do
     let!(:collection_1) { FactoryBot.create(:collection, admin_group: 'Group 1', division: 'Division 1') }
     let!(:collection_2) { FactoryBot.create(:collection, admin_group: 'Group 2', division: 'Division 2') }
 
@@ -226,7 +225,6 @@ describe 'Search Sidebar Filter Aggregation Performance & Parity' do
     end
 
     it 'correctly aggregates, cleans, and deduplicates sidebar filter options via Postgres' do
-      # Note: If your app uses Ransack, you may need to nest this param like: params: { q: { collection_id_in: [collection_1.id] } }
       get search_items_path, params: { q: { collection_id_in: [collection_1.id] } }
       expect(response).to have_http_status(:ok)
 
@@ -240,3 +238,6 @@ describe 'Search Sidebar Filter Aggregation Performance & Parity' do
       expect(response.body).not_to include('Mordor')
     end
   end
+
+end
+
