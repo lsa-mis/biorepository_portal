@@ -71,6 +71,28 @@ RSpec.describe ItemsController, type: :request do
   end
 
   describe 'GET/POST /items/search' do
+    context 'when a query times out' do
+      before do
+        allow_any_instance_of(ItemsController)
+          .to receive(:setup_filter_data)
+          .and_raise(ActiveRecord::QueryCanceled, 'statement timeout')
+      end
+
+      it 'returns 503 for html requests' do
+        get search_items_path
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.body).to include('Service Unavailable')
+      end
+
+      it 'returns 503 for json requests' do
+        get search_items_path, params: {}, as: :json
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.parsed_body).to eq({ 'error' => 'Service Unavailable' })
+      end
+    end
+
     context 'with view switching' do
       it 'sets view to rows when switch_view is rows' do
         get search_items_path, params: { switch_view: 'rows' }
