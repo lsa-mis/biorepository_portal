@@ -121,7 +121,7 @@ end
 require 'faker'
 
 puts "Starting seed — 1,000,000 items with preparations and identifications..."
-puts "This will take roughly 30-45 minutes. Progress shown every 1,000 records."
+puts "This will take roughly 15-25 minutes. Progress shown every 1,000 records."
 
 CONTINENTS  = ["Africa", "Antarctica", "Asia", "Europe", "North America", "Oceania", "South America"]
 COUNTRIES   = ["United States", "Canada", "Mexico", "Brazil", "Germany", "Kenya", "Australia", "Japan", "India", "France"]
@@ -170,13 +170,10 @@ batches.times do |i|
       updated_at:         now
     }
   end
-  Item.insert_all(items_data)
 
-  # STEP 2 — fetch IDs of items just inserted
-  item_ids = Item.where("catalog_number LIKE 'SEED-%'")
-                 .order(id: :desc)
-                 .limit(batch_size)
-                 .pluck(:id)
+  # Optimized insert — immediately returns inserted IDs
+  result = Item.insert_all(items_data, returning: %w[id])
+  item_ids = result.rows.flatten
 
   # STEP 3 — insert 1 Preparation per item
   preparations_data = item_ids.map do |item_id|
@@ -190,6 +187,7 @@ batches.times do |i|
       updated_at:  now
     }
   end
+
   Preparation.insert_all(preparations_data)
 
   # STEP 4 — insert 1 Identification per item
@@ -219,6 +217,7 @@ batches.times do |i|
       updated_at:                 now
     }
   end
+
   Identification.insert_all(identifications_data)
 
   puts "Batch #{i + 1}/#{batches} done — #{((i + 1) * batch_size).to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse} items, preparations & identifications inserted"
