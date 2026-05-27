@@ -1,11 +1,11 @@
 class ApplicationController < ActionController::Base
   include ApplicationHelper
   include Pundit::Authorization
-  unless Rails.env.development?
+  # unless Rails.env.development?
     rescue_from StandardError, with: :render_500
     rescue_from ActiveRecord::RecordNotFound, with: :render_404
     rescue_from ActiveRecord::QueryCanceled, with: :render_503
-  end
+  # end
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
 
   def render_404
     respond_to do |format|
-      format.html { render 'errors/not_found', status: :not_found, layout: 'application' }
+      format.html { render 'errors/not_found', status: :not_found, layout: false }
       format.json { render json: { error: 'Not Found' }, status: :not_found }
     end
   end
@@ -46,7 +46,7 @@ class ApplicationController < ActionController::Base
     
     begin
       respond_to do |format|
-        format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'application' }
+        format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: false }
         format.json { render json: { error: 'Internal Server Error' }, status: :internal_server_error }
       end
     rescue => e
@@ -69,7 +69,7 @@ class ApplicationController < ActionController::Base
     
     begin
       respond_to do |format|
-        format.html { render 'errors/service_unavailable_error', status: :service_unavailable, layout: 'application' }
+        format.html { render 'errors/service_unavailable_error', status: :service_unavailable, layout: false }
         format.json { render json: { error: 'Service Unavailable' }, status: :service_unavailable }
       end
     rescue => e
