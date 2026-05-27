@@ -16,6 +16,9 @@ class ItemsController < ApplicationController
   end
 
   def search
+    if (Rails.env.development?) && params[:force_timeout] == "1"
+      raise ActiveRecord::QueryCanceled, "Manual timeout test"
+    end
     Rails.logger.info "++++++++++++++++++++++++++++++ In ItemsController#search"
 
     @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
@@ -260,16 +263,15 @@ class ItemsController < ApplicationController
       ActiveRecord::Base.transaction do
         # Set the current timeout setting
         # Reset to original timeout (SET LOCAL is automatically reset at transaction end)        
-        # begin
-          ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = '10s'")
-          cache_key = "filters_#{collection_ids.sort.join('_')}"
-          filter_data = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
-            build_filter_data(collection_ids)
-          end
-          
-          @continents, @countries, @states, @sexs = filter_data[:geo]
-          @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
-          @prep_types = filter_data[:prep_types]
+        ActiveRecord::Base.connection.execute("SET LOCAL statement_timeout = '10s'")
+        cache_key = "filters_#{collection_ids.sort.join('_')}"
+        filter_data = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+          build_filter_data(collection_ids)
+        end
+        
+        @continents, @countries, @states, @sexs = filter_data[:geo]
+        @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
+        @prep_types = filter_data[:prep_types]
       end
     end
 
