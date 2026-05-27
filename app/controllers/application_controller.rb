@@ -37,7 +37,10 @@ class ApplicationController < ActionController::Base
 
   def render_500(exception)
     # Prevent infinite loops by checking if we're already handling an error
-    return if @handling_error
+    if @handling_error
+      Rails.logger.error "Error while already handling an error in render_500"
+      return render plain: "Internal Server Error", status: :internal_server_error
+    end
     @handling_error = true
     
     # Log the error for debugging
@@ -60,7 +63,10 @@ class ApplicationController < ActionController::Base
 
   def render_503(exception)
     # Prevent infinite loops by checking if we're already handling an error
-    return if @handling_error
+    if @handling_error
+      Rails.logger.error "Error while already handling an error in render_503"
+      return render plain: "Service Unavailable", status: :service_unavailable
+    end
     @handling_error = true
     
     # Log the error for debugging
