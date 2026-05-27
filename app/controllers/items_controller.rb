@@ -1,5 +1,3 @@
-# class SearchTimeoutError < StandardError; end
-
 class ItemsController < ApplicationController
   include ActiveFiltersHelper
   skip_before_action :authenticate_user!, only: [ :show, :search, :quick_search, :export_to_csv ]
@@ -56,18 +54,6 @@ class ItemsController < ApplicationController
     respond_to do |format|
       format.html { render :search_result }
     end
-  # rescue SearchTimeoutError
-  #   respond_to do |format|
-  #     format.html { render plain: "Search is taking too long. Please try with fewer filters.", status: 504 }
-  #     format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 504 }
-  #   end
-  # rescue => e
-  #   Rails.logger.error "******************************* Search error: #{e.message}"
-  #   Rails.logger.error e.backtrace.join("\n")
-  #   respond_to do |format|
-  #     format.html { render plain: "An error occurred during search", status: 500 }
-  #     format.json { render json: { error: "An error occurred during search" }, status: 500 }
-  #   end
   end
 
   def save_search
@@ -284,10 +270,6 @@ class ItemsController < ApplicationController
           @continents, @countries, @states, @sexs = filter_data[:geo]
           @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
           @prep_types = filter_data[:prep_types]
-        # rescue ActiveRecord::QueryCanceled
-        #   Rails.logger.error "******************************* Search timeout - filter data took too long"
-        #   raise SearchTimeoutError, "Filter data query timed out"
-        # end
       end
     end
 
@@ -454,9 +436,6 @@ class ItemsController < ApplicationController
         field_value: field_value.to_s,
         search_session_id: search_session_id
       )
-    # rescue => e
-    #   Rails.logger.error "Failed to save search statistic: #{e.message}"
-    #   Rails.logger.error "Field: #{field_name}, Label: #{field_label}, Value: #{field_value}, Session: #{search_session_id}"
     end
 
 

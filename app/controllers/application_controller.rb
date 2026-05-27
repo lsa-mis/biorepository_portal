@@ -1,11 +1,11 @@
 class ApplicationController < ActionController::Base
   include ApplicationHelper
   include Pundit::Authorization
-  # unless Rails.env.development?
+  unless Rails.env.development?
     rescue_from StandardError, with: :render_500
     rescue_from ActiveRecord::RecordNotFound, with: :render_404
     rescue_from ActiveRecord::QueryCanceled, with: :render_503
-  # end
+  end
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
