@@ -434,10 +434,15 @@ class ItemsController < ApplicationController
       field_label = field_label.split('_').first.titleize
       SearchStatistic.create(
         field_name: field_name.to_s,
-        field_label: field_label.to_s, 
+        field_label: field_label.to_s,
         field_value: field_value.to_s,
         search_session_id: search_session_id
       )
+    rescue ActiveRecord::QueryCanceled, ActiveRecord::ConnectionNotEstablished, ActiveRecord::StatementInvalid => e
+      Rails.logger.warn "************************* Search statistic write failed: #{e.class} - #{e.message}"
+    rescue => e
+      Rails.logger.error "************************* Unexpected stats error: #{e.class} - #{e.message}"
+      raise if Rails.env.development?
     end
 
 
