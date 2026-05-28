@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
 
   def render_404
     respond_to do |format|
-      format.html { render 'errors/not_found', status: :not_found, layout: false }
+      format.html { render 'errors/not_found', status: :not_found, layout: 'error' }
       format.json { render json: { error: 'Not Found' }, status: :not_found }
     end
   end
@@ -49,7 +49,7 @@ class ApplicationController < ActionController::Base
     
     begin
       respond_to do |format|
-        format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: false }
+        format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'error' }
         format.json { render json: { error: 'Internal Server Error' }, status: :internal_server_error }
       end
     rescue => e
@@ -75,7 +75,7 @@ class ApplicationController < ActionController::Base
     
     begin
       respond_to do |format|
-        format.html { render 'errors/service_unavailable_error', status: :service_unavailable, layout: false }
+        format.html { render 'errors/service_unavailable_error', status: :service_unavailable, layout: 'error' }
         format.json { render json: { error: 'Service Unavailable' }, status: :service_unavailable }
       end
     rescue => e
