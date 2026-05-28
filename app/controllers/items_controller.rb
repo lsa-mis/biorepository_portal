@@ -16,9 +16,6 @@ class ItemsController < ApplicationController
   end
 
   def search
-    if (Rails.env.development?) && params[:force_timeout] == "1"
-      raise ActiveRecord::QueryCanceled, "Manual timeout test"
-    end
     Rails.logger.info "++++++++++++++++++++++++++++++ In ItemsController#search"
 
     @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
