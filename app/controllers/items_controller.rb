@@ -41,7 +41,7 @@ class ItemsController < ApplicationController
         load_cached_filter_data(collection_ids)
       else
         Rails.logger.info "******************************* Filter data cache missing, rebuilding"
-        filter_data = setup_filter_data(collection_ids)
+        setup_filter_data(collection_ids)
         Rails.cache.write(filter_cache_key, filter_data, expires_in: 1.hour)
       end
     end
