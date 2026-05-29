@@ -96,7 +96,7 @@ class ApplicationController < ActionController::Base
 
     # Handle user assignment efficiently
     if user_signed_in?
-      # Check for existence AND preload associations in one single query
+      # Look up any existing checkout for the current user
       user_checkout = Checkout.includes(:requestables).find_by(user_id: current_user.id)
       
       if user_checkout.present?
