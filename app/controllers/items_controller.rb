@@ -242,7 +242,7 @@ class ItemsController < ApplicationController
     end
 
     def extract_collection_ids
-      if params[:q]&.dig(:collection_id_in).present?
+      collection_ids = if params[:q]&.dig(:collection_id_in).present?
         params[:q][:collection_id_in]
       elsif params[:collection_id].present?
         collection_ids = [params[:collection_id].to_i]
@@ -251,14 +251,17 @@ class ItemsController < ApplicationController
       else
         Collection.pluck(:id)
       end
+
+      normalize_collection_ids(collection_ids)
+    end
+
+    def normalize_collection_ids(collection_ids)
+      collection_ids.map(&:to_i).uniq.sort
     end
 
     def setup_filter_data(collection_ids)
-      # Normalize the array of collection IDs: Convert to integers, remove duplicates, and sort properly
-      normalized_ids = collection_ids.map(&:to_i).uniq.sort
-      
       # Hash the joined array so the cache key never exceeds length limits
-      id_hash = ActiveSupport::Digest.hexdigest(normalized_ids.join('_'))
+      id_hash = ActiveSupport::Digest.hexdigest(collection_ids.join('_'))
       
       # Create a unique cache key using the hashed collection IDs
       cache_key = "filters_#{id_hash}"
