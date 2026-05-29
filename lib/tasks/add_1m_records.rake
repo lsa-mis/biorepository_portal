@@ -3,9 +3,9 @@ task add_1m_records: :environment do
   puts "********************************"
   puts "Starting seed — 1,000,000 items with preparations and identifications..."
   puts "This will take roughly 15-25 minutes. Progress shown every 1,000 records."
-  step1
-  step2
-  step3
+  item_ids = step1
+  step2(item_ids)
+  step3(item_ids)
   puts "Finished adding 1 million records."
 end
 
@@ -21,6 +21,7 @@ def step1
   batch_size     = 1_000
   total          = 1_000_000
   batches        = total / batch_size
+  all_item_ids   = []
 
   batches.times do |i|
     now = Time.current
@@ -48,21 +49,22 @@ def step1
         updated_at:         now
       }
     end
-    Item.insert_all(items_data)
+    result = Item.insert_all(items_data, returning: [:id])
+    all_item_ids.concat(result.rows.flatten)
     puts "  Step 1 — Batch #{i + 1}/#{batches} done (#{(i + 1) * batch_size} items)"
   end
 
-  puts "Step 1 complete — #{Item.where('catalog_number LIKE ?', 'SEED-%').count} seed items in database."
+  puts "Step 1 complete — #{all_item_ids.count} items inserted this run."
+  all_item_ids
 end
 
-def step2
-  puts "Step 2: insert 1 Preparation per seed item"
+def step2(item_ids)
+  puts "Step 2: insert 1 Preparation per item (#{item_ids.count} items)"
 
   prep_types = ["skin", "skull", "skeleton", "fluid", "tissue", "whole"]
   batch_size = 1_000
-  seed_item_ids = Item.where("catalog_number LIKE 'SEED-%'").pluck(:id)
 
-  seed_item_ids.each_slice(batch_size).with_index do |batch_ids, i|
+  item_ids.each_slice(batch_size).with_index do |batch_ids, i|
     now = Time.current
     preparations_data = batch_ids.map do |item_id|
       {
@@ -82,8 +84,8 @@ def step2
   puts "Step 2 complete — #{Preparation.count} total preparations in database."
 end
 
-def step3
-  puts "Step 3: insert 1 Identification per seed item"
+def step3(item_ids)
+  puts "Step 3: insert 1 Identification per item (#{item_ids.count} items)"
 
   kingdoms    = ["Animalia", "Plantae", "Fungi"]
   phylums     = ["Chordata", "Arthropoda", "Mollusca", "Magnoliophyta"]
@@ -92,11 +94,9 @@ def step3
   families    = ["Felidae", "Canidae", "Accipitridae", "Colubridae", "Muridae"]
   taxon_ranks = ["species", "subspecies", "variety"]
   type_status = ["holotype", "paratype", "syntype", nil]
+  batch_size  = 1_000
 
-  batch_size    = 1_000
-  seed_item_ids = Item.where("catalog_number LIKE 'SEED-%'").pluck(:id)
-
-  seed_item_ids.each_slice(batch_size).with_index do |batch_ids, i|
+  item_ids.each_slice(batch_size).with_index do |batch_ids, i|
     now = Time.current
     identifications_data = batch_ids.map do |item_id|
       genus   = Faker::Creature::Animal.name.split.first.capitalize
