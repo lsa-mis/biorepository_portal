@@ -245,7 +245,7 @@ class ItemsController < ApplicationController
       collection_ids = if params[:q]&.dig(:collection_id_in).present?
         params[:q][:collection_id_in]
       elsif params[:collection_id].present?
-        collection_ids = [params[:collection_id].to_i]
+        collection_ids = [params[:collection_id]]
         params[:q] = ActionController::Parameters.new("collection_id_in" => [collection_ids.first])
         collection_ids
       else
