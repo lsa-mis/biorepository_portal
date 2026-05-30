@@ -3,7 +3,7 @@ task add_1m_records: :environment do
   puts "********************************"
   puts "Starting seed — 1,000,000 items with preparations and identifications..."
   puts "This will take roughly 15-25 minutes. Progress shown every 1,000 records."
-  step1
+  insert_records
   puts "Finished adding 1 million records."
   puts "========================================"
   puts "Items:           #{Item.count}"
@@ -12,8 +12,8 @@ task add_1m_records: :environment do
   puts "========================================"
 end
 
-def step1
-  puts "Step 1: build and insert Items, Preparations and Identifications batch by batch"
+def insert_records
+  puts "Building and inserting Items, Preparations and Identifications batch by batch"
 
   continents  = ["Africa", "Antarctica", "Asia", "Europe", "North America", "Oceania", "South America"]
   countries   = ["United States", "Canada", "Mexico", "Brazil", "Germany", "Kenya", "Australia", "Japan", "India", "France"]
@@ -36,7 +36,6 @@ def step1
   batches.times do |i|
     now = Time.current
 
-    # Build 1,000 items
     items_data = batch_size.times.map do
       {
         catalog_number:     "SEED-#{SecureRandom.hex(6).upcase}",
@@ -62,11 +61,9 @@ def step1
       }
     end
 
-    # Insert items and immediately capture their IDs
     result   = Item.insert_all(items_data, returning: [:id])
     item_ids = result.rows.flatten
 
-    # Step 2 — insert 1 Preparation per item in this batch
     preparations_data = item_ids.map do |item_id|
       {
         item_id:     item_id,
@@ -80,7 +77,6 @@ def step1
     end
     Preparation.insert_all(preparations_data)
 
-    # Step 3 — insert 1 Identification per item in this batch
     identifications_data = item_ids.map do |item_id|
       genus   = Faker::Creature::Animal.name.split.first.capitalize
       species = Faker::Lorem.word.downcase
@@ -111,12 +107,5 @@ def step1
     puts "  Batch #{i + 1}/#{batches} done — #{(i + 1) * batch_size} items, preparations & identifications inserted"
   end
 
-  puts "Step 1 complete — all batches processed."
+  puts "insert_records complete — all batches processed."
 end
-
-def step2(item_ids)
-end
-
-def step3(item_ids)
-end
-
