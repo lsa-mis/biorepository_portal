@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   unless Rails.env.development?
     rescue_from StandardError, with: :render_500
     rescue_from ActiveRecord::RecordNotFound, with: :render_404
+    rescue_from ActiveRecord::QueryCanceled, with: :render_503
   end
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
@@ -29,14 +30,17 @@ class ApplicationController < ActionController::Base
 
   def render_404
     respond_to do |format|
-      format.html { render 'errors/not_found', status: :not_found, layout: 'application' }
+      format.html { render 'errors/not_found', status: :not_found, layout: 'error' }
       format.json { render json: { error: 'Not Found' }, status: :not_found }
     end
   end
 
   def render_500(exception)
     # Prevent infinite loops by checking if we're already handling an error
-    return if @handling_error
+    if @handling_error
+      Rails.logger.error "Error while already handling an error in render_500"
+      return render plain: "Internal Server Error", status: :internal_server_error
+    end
     @handling_error = true
     
     # Log the error for debugging
@@ -45,13 +49,39 @@ class ApplicationController < ActionController::Base
     
     begin
       respond_to do |format|
-        format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'application' }
+        format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'error' }
         format.json { render json: { error: 'Internal Server Error' }, status: :internal_server_error }
       end
     rescue => e
       # If rendering the error page fails, fall back to a simple response
       Rails.logger.error "Error rendering error page: #{e.message}"
       render plain: "Internal Server Error", status: :internal_server_error
+    ensure
+      @handling_error = false
+    end
+  end
+
+  def render_503(exception)
+    # Prevent infinite loops by checking if we're already handling an error
+    if @handling_error
+      Rails.logger.error "Error while already handling an error in render_503"
+      return render plain: "Service Unavailable", status: :service_unavailable
+    end
+    @handling_error = true
+    
+    # Log the error for debugging
+    Rails.logger.error "Service Unavailable: #{exception.class} - #{exception.message}"
+    Rails.logger.error exception.backtrace.join("\n") if exception.backtrace
+    
+    begin
+      respond_to do |format|
+        format.html { render 'errors/service_unavailable_error', status: :service_unavailable, layout: 'error' }
+        format.json { render json: { error: 'Service Unavailable' }, status: :service_unavailable }
+      end
+    rescue => e
+      # If rendering the error page fails, fall back to a simple response
+      Rails.logger.error "Error rendering error page: #{e.message}"
+      render plain: "Service Unavailable", status: :service_unavailable
     ensure
       @handling_error = false
     end
