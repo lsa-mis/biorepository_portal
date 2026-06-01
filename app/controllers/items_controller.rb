@@ -412,8 +412,8 @@ class ItemsController < ApplicationController
         search_session_id: search_session_id
       )
 
-    # Log and handle potential database errors gracefully to avoid crashing the search results page
     rescue ActiveRecord::QueryCanceled, ActiveRecord::ConnectionNotEstablished, ActiveRecord::StatementInvalid => e
+      # Log and handle potential database errors gracefully to avoid crashing the search results page
       Rails.logger.warn "************************* Search statistic write failed: #{e.class} - #{e.message}"
     rescue => e
       Rails.logger.error "************************* Unexpected stats error: #{e.class} - #{e.message}"
