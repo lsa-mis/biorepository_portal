@@ -329,11 +329,24 @@ class ItemsController < ApplicationController
         transform_search_groupings unless params[:page].present?
         @quick_search_filters = false
         
-        @q = Item.left_outer_joins(:current_identification, :collection)
-                .select('items.*, identifications.scientific_name, collections.division')
-                .order(@sort)
-                .ransack(params[:q])
+        # Keeps the common catalog-number path minimal and fast, 
+        # while adding the identification join only when scientific-name sorting requires it.
+        @q = search_scope.ransack(params[:q])
       end
+    end
+
+    def search_scope
+      scope = Item.all
+
+      # PostgreSQL requires a DISTINCT query's ordered joined column to appear
+      # in its SELECT list. Avoid this join for the much more common item sort.
+      if @sort.start_with?('identifications.')
+        scope = scope
+          .left_outer_joins(:current_identification)
+          .select('items.*, identifications.scientific_name')
+      end
+
+      scope.order(@sort)
     end
     
     # Sanitize sort parameters to prevent SQL injection

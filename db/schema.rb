@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_20_172522) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_02_110330) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -238,6 +238,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_20_172522) do
     t.string "verbatim_event_date"
     t.string "verbatim_locality"
     t.string "vitality"
+    t.index ["catalog_number"], name: "index_items_on_catalog_number"
     t.index ["collection_id"], name: "index_items_on_collection_id"
   end
 
