@@ -347,13 +347,18 @@ class ItemsController < ApplicationController
       # Get base results
       filtered_items = @q.result.distinct
       
-      # Count only distinct item IDs to avoid PostgreSQL error
-      @total_items = @q.result.distinct.count('items.id')
-      collection_ids = @q.result.distinct.reorder('').pluck('items.collection_id')
+      # Count only distinct item IDs to avoid PostgreSQL count inflation from joins
+      @total_items = filtered_items.count('items.id')
+      collection_ids = filtered_items.reorder('').pluck('items.collection_id')
       @collections = Collection.where(id: collection_ids).pluck(:division).uniq.join(', ')
       
       # Paginated items with includes for efficiency
       @items = filtered_items.includes(:collection, :current_identification, :preparations).page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
+
+      # Kaminari's view helpers call @items.total_count during rendering.
+      # Override it on this relation only so they reuse the count above.
+      total_items = @total_items
+      @items.define_singleton_method(:total_count) { total_items }
 
       @all_collections = Collection.order(:division)
     end

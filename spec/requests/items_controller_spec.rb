@@ -176,6 +176,17 @@ RSpec.describe ItemsController, type: :request do
       get search_items_path, params: { per: 25 }
       expect(response).to have_http_status(:ok)
     end
+
+    it 'reuses one exact item count for the result summary and numbered pagination' do
+      FactoryBot.create_list(:item, 25, collection: collection)
+
+      queries = capture_sql do
+        get search_items_path, params: { per: 25 }
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(item_count_queries(queries).length).to eq(1)
+    end
   end
 
   describe 'GET /export_to_csv' do
@@ -282,6 +293,20 @@ RSpec.describe ItemsController, type: :request do
       # 3. The out-of-scope collection data is completely ignored
       expect(response.body).not_to include('Mordor')
     end
+  end
+
+  def capture_sql(&block)
+    queries = []
+    callback = lambda do |_name, _start, _finish, _id, payload|
+      queries << payload[:sql] unless payload[:name] == 'SCHEMA'
+    end
+
+    ActiveSupport::Notifications.subscribed(callback, 'sql.active_record', &block)
+    queries
+  end
+
+  def item_count_queries(queries)
+    queries.grep(/COUNT\(DISTINCT "?items"?\."?id"?\)/)
   end
 
 end
