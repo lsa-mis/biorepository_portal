@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :set_render_checkout
   before_action :initialize_checkout, unless: :skip_checkout_initialization?
+  around_action :scan_for_n_plus_one_queries_with_prosopite, if: -> { Rails.env.development? && defined?(Prosopite) }
   before_action :make_q
 
   def pundit_user
@@ -28,12 +29,20 @@ class ApplicationController < ActionController::Base
   
   private
 
-  def render_404
-    respond_to do |format|
-      format.html { render 'errors/not_found', status: :not_found, layout: 'error' }
-      format.json { render json: { error: 'Not Found' }, status: :not_found }
-    end
+def scan_for_n_plus_one_queries_with_prosopite
+  Prosopite.scan
+  yield
+ensure
+  Prosopite.finish
+end
+
+def render_404
+  respond_to do |format|
+    format.html { render 'errors/not_found', status: :not_found, layout: 'error' }
+    format.json { render json: { error: 'Not Found' }, status: :not_found }
   end
+end
+
 
   def render_500(exception)
     # Prevent infinite loops by checking if we're already handling an error
