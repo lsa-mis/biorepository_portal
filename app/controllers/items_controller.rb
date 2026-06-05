@@ -1,5 +1,3 @@
-class SearchTimeoutError < StandardError; end
-
 class ItemsController < ApplicationController
   include ActiveFiltersHelper
   skip_before_action :authenticate_user!, only: [ :show, :search, :quick_search, :export_to_csv ]
@@ -38,18 +36,6 @@ class ItemsController < ApplicationController
     
     respond_to do |format|
       format.html { render :search_result }
-    end
-  rescue SearchTimeoutError
-    respond_to do |format|
-      format.html { render plain: "Search is taking too long. Please try with fewer filters.", status: 504 }
-      format.json { render json: { error: "Search is taking too long. Please try with fewer filters." }, status: 504 }
-    end
-  rescue => e
-    Rails.logger.error "******************************* Search error: #{e.message}"
-    Rails.logger.error e.backtrace.join("\n")
-    respond_to do |format|
-      format.html { render plain: "An error occurred during search", status: 500 }
-      format.json { render json: { error: "An error occurred during search" }, status: 500 }
     end
   end
 
@@ -280,9 +266,6 @@ class ItemsController < ApplicationController
       @continents, @countries, @states, @sexs = filter_data[:geo]
       @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
       @prep_types = filter_data[:prep_types]
-    rescue ActiveRecord::QueryCanceled
-      Rails.logger.error "******************************* Search timeout - filter data took too long"
-      raise SearchTimeoutError, "Filter data query timed out"
     end
 
     def build_filter_data(collection_ids)
@@ -377,13 +360,18 @@ class ItemsController < ApplicationController
       # Get base results
       filtered_items = @q.result.distinct
       
-      # Count only distinct item IDs to avoid PostgreSQL error
-      @total_items = @q.result.distinct.count('items.id')
-      collection_ids = @q.result.distinct.reorder('').pluck('items.collection_id')
+      # Count only distinct item IDs to avoid PostgreSQL count inflation from joins
+      @total_items = filtered_items.count('items.id')
+      collection_ids = filtered_items.reorder('').pluck('items.collection_id')
       @collections = Collection.where(id: collection_ids).pluck(:division).uniq.join(', ')
       
       # Paginated items with includes for efficiency
       @items = filtered_items.includes(:collection, :current_identification, :preparations).page(params[:page]).per(params[:per].presence || Kaminari.config.default_per_page)
+
+      # Kaminari's view helpers call @items.total_count during rendering.
+      # Override it on this relation only so they reuse the count above.
+      total_items = @total_items
+      @items.define_singleton_method(:total_count) { total_items }
 
       @all_collections = Collection.order(:division)
     end
@@ -437,13 +425,17 @@ class ItemsController < ApplicationController
       field_label = field_label.split('_').first.titleize
       SearchStatistic.create(
         field_name: field_name.to_s,
-        field_label: field_label.to_s, 
+        field_label: field_label.to_s,
         field_value: field_value.to_s,
         search_session_id: search_session_id
       )
+
+    rescue ActiveRecord::QueryCanceled, ActiveRecord::ConnectionNotEstablished, ActiveRecord::StatementInvalid => e
+      # Log and handle potential database errors gracefully to avoid crashing the search results page
+      Rails.logger.warn "************************* Search statistic write failed: #{e.class} - #{e.message}"
     rescue => e
-      Rails.logger.error "Failed to save search statistic: #{e.message}"
-      Rails.logger.error "Field: #{field_name}, Label: #{field_label}, Value: #{field_value}, Session: #{search_session_id}"
+      Rails.logger.error "************************* Unexpected stats error: #{e.class} - #{e.message}"
+      raise if Rails.env.development?
     end
 
 

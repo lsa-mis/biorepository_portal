@@ -71,6 +71,50 @@ RSpec.describe ItemsController, type: :request do
   end
 
   describe 'GET/POST /items/search' do
+    context 'when a query for setup_filter_data times out' do
+      before do
+        allow_any_instance_of(ItemsController)
+          .to receive(:setup_filter_data)
+          .and_raise(ActiveRecord::QueryCanceled, 'statement timeout')
+      end
+
+      it 'returns 503 for html requests' do
+        get search_items_path
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.body).to include('Service Unavailable')
+      end
+
+      it 'returns 503 for json requests' do
+        get search_items_path, params: {}, as: :json
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.parsed_body).to eq({ 'error' => 'Service Unavailable' })
+      end
+    end
+
+    context 'when a query for execute_search_and_paginate times out' do
+      before do
+        allow_any_instance_of(ItemsController)
+          .to receive(:execute_search_and_paginate)
+          .and_raise(ActiveRecord::QueryCanceled, 'statement timeout')
+      end
+
+      it 'returns 503 for html requests' do
+        get search_items_path
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.body).to include('Service Unavailable')
+      end
+
+      it 'returns 503 for json requests' do
+        get search_items_path, params: {}, as: :json
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.parsed_body).to eq({ 'error' => 'Service Unavailable' })
+      end
+    end
+    
     context 'with view switching' do
       it 'sets view to rows when switch_view is rows' do
         get search_items_path, params: { switch_view: 'rows' }
@@ -131,6 +175,17 @@ RSpec.describe ItemsController, type: :request do
     it 'handles per page parameter' do
       get search_items_path, params: { per: 25 }
       expect(response).to have_http_status(:ok)
+    end
+
+    it 'reuses one exact item count for the result summary and numbered pagination' do
+      FactoryBot.create_list(:item, 25, collection: collection)
+
+      queries = capture_sql do
+        get search_items_path, params: { per: 25 }
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(item_count_queries(queries).length).to eq(1)
     end
   end
 
@@ -276,6 +331,10 @@ RSpec.describe ItemsController, type: :request do
 
     ActiveSupport::Notifications.subscribed(callback, 'sql.active_record', &block)
     queries
+  end
+
+  def item_count_queries(queries)
+    queries.grep(/COUNT\(DISTINCT "?items"?\."?id"?\)/)
   end
 
 end
