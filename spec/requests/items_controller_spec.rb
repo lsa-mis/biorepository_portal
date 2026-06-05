@@ -189,6 +189,34 @@ RSpec.describe ItemsController, type: :request do
     end
   end
 
+  describe 'search query joins' do
+    it 'does not join associations for the default catalog number sort' do
+      queries = capture_sql do
+        get search_items_path
+      end
+
+      page_query = queries.find { |sql| sql.include?('ORDER BY items.catalog_number asc LIMIT') }
+
+      expect(response).to have_http_status(:ok)
+      expect(page_query).to be_present
+      expect(page_query).not_to include('JOIN "identifications"')
+      expect(page_query).not_to include('JOIN "collections"')
+    end
+
+    it 'joins current identifications when sorting by scientific name' do
+      queries = capture_sql do
+        get search_items_path, params: { sort: 'identifications.scientific_name asc' }
+      end
+
+      page_query = queries.find { |sql| sql.include?('ORDER BY identifications.scientific_name asc LIMIT') }
+
+      expect(response).to have_http_status(:ok)
+      expect(page_query).to be_present
+      expect(page_query).to include('JOIN "identifications"')
+      expect(page_query).not_to include('JOIN "collections"')
+    end
+  end
+
   describe 'GET /export_to_csv' do
     context 'when authenticated' do
       before { mock_login(user) }
