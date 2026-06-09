@@ -4,7 +4,7 @@ class CollectionsController < ApplicationController
 
   # GET /collections or /collections.json
   def index
-    @collections = Collection.includes(:image_attachment).order(:division)
+    @collections = Collection.includes(image_attachment: :blob).order(:division)
     authorize @collections
   end
 
