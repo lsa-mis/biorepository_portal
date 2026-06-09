@@ -125,9 +125,11 @@ end
   end
 
   def initialize_checkout
+    requestables_includes = { requestables: [:preparation, { item: [:collection, :preparations, :current_identification] }] }
+
     # Only query database if we don't have a checkout ID in session
     if session[:checkout_id].present?
-      @checkout = Checkout.includes(:requestables).find_by(id: session[:checkout_id]) unless @checkout
+      @checkout = Checkout.includes(requestables_includes).find_by(id: session[:checkout_id]) unless @checkout
     end
 
     # Create checkout only if we still don't have one
@@ -139,7 +141,7 @@ end
     # Handle user assignment efficiently
     if user_signed_in?
       # Look up any existing checkout for the current user
-      user_checkout = Checkout.includes(:requestables).find_by(user_id: current_user.id)
+      user_checkout = Checkout.includes(requestables_includes).find_by(user_id: current_user.id)
       
       if user_checkout.present?
         Rails.logger.info "************************************ session[:merge_checkouts]: #{session[:merge_checkouts]}"
