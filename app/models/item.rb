@@ -61,18 +61,21 @@ class Item < ApplicationRecord
   has_many :checkouts, through: :unavailables
 
   def name
+    identification = current_identification
+
     name = ""
     name = self.catalog_number + " - " if self.catalog_number.present?
-    name += "#{current_identification&.scientific_name}"
-    if current_identification&.vernacular_name.present?
-      name += " [#{current_identification&.vernacular_name}]"
+    name += "#{identification&.scientific_name}"
+    if identification&.vernacular_name.present?
+      name += " [#{identification.vernacular_name}]"
     end
     name
   end
 
   def display_name
     display_name = self.name
-    display_name += " - " + self.preparations.map(&:display_name).join(", ") if self.preparations.any?
+    preparation_names = self.preparations.map(&:display_name)
+    display_name += " - " + preparation_names.join(", ") if preparation_names.any?
     display_name
   end
 
