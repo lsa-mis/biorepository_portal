@@ -83,7 +83,8 @@ group :development, :test do
   gem 'brakeman', '~> 8.0', require: false
   gem 'rails_accessibility_testing', '~> 1.6'
   gem 'axe-core-capybara', '~> 4.0'
-  gem 'bullet', '~> 8.1'
+  gem 'prosopite', '~> 1.4'
+  gem "pg_query", "~> 6.2"
 end
 
 group :development do
@@ -95,3 +96,5 @@ end
 group :development, :staging do
   gem "letter_opener_web"
 end
+
+
