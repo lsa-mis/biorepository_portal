@@ -85,6 +85,7 @@ group :development, :test do
   gem 'axe-core-capybara', '~> 4.0'
   gem 'prosopite', '~> 1.4'
   gem "pg_query", "~> 6.2"
+  gem 'pghero', git: 'https://github.com/andyatkinson/pghero.git'
 end
 
 group :development do
