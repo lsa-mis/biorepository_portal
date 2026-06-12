@@ -136,6 +136,6 @@ Rails.application.routes.draw do
   root "home#about"
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development? || Rails.env.staging?
-  mount PgHero::Engine, at: '/pghero' if Rails.env.development?
+  mount PgHero::Engine, at: '/pghero' if Rails.env.development? || Rails.env.staging? || Rails.env.phase2_staging?
 
 end
