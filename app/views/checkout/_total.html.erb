@@ -1,4 +1,4 @@
-<% active_count = @checkout.requestables.count(&:active?) %>
+<% active_count = @checkout_active_count.to_i %>
 
 <% if active_count > 0 %>
     (<%= active_count %>)

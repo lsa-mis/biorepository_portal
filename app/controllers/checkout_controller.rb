@@ -15,6 +15,7 @@ class CheckoutController < ApplicationController
 
       # Reload the checkout to ensure the new requestable is included in the association
       @checkout.requestables.reload
+      set_checkout_active_count
 
     respond_to do |format|
       format.turbo_stream do
@@ -62,6 +63,7 @@ class CheckoutController < ApplicationController
 
     # Reload the checkout to ensure the updated requestable is included in the association
     @checkout.requestables.reload
+    set_checkout_active_count
 
     respond_to do |format|
       format.turbo_stream do
@@ -81,6 +83,7 @@ class CheckoutController < ApplicationController
     authorize @checkout if current_user
     Requestable.find(params[:id])&.destroy
     @checkout.requestables.reload # Reload the association to reflect the destroyed record
+    set_checkout_active_count
     flash.now[:notice] = "Preparation removed from checkout."
     respond_to do |format|
       format.turbo_stream do
@@ -104,6 +107,7 @@ class CheckoutController < ApplicationController
       flash.now[:alert] = "No matching preparation found in checkout."
     end
     @checkout.requestables.reload # Reload the association to reflect the destroyed record
+    set_checkout_active_count
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [
@@ -139,6 +143,7 @@ class CheckoutController < ApplicationController
       flash.now[:alert] = "Preparation not found in checkout."
     end
     @checkout.requestables.reload # Reload the association to reflect the updated record
+    set_checkout_active_count
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [turbo_stream.replace('checkout',
@@ -161,6 +166,7 @@ class CheckoutController < ApplicationController
       flash.now[:alert] = "Preparation not found in saved for later."
     end
     @checkout.requestables.reload # Reload the association to reflect the updated record
+    set_checkout_active_count
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [turbo_stream.replace('checkout',
