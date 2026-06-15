@@ -283,15 +283,16 @@ class ItemsController < ApplicationController
         format_filter.call(base_scope.distinct.pluck(column))
       end
 
-      # 2. Pull unique Taxonomy fields 
-      # (Join identifications once, then pluck unique values)
-      taxon_scope = base_scope.left_joins(:current_identification)
-      taxonomy_data = %w[kingdom phylum class_name order_name family genus].map do |column|
-        format_filter.call(taxon_scope.distinct.pluck("identifications.#{column}"))
+      # 2. Pull unique Taxonomy fields
+      # Query identifications directly - no items JOIN needed since all collections share taxonomy
+      taxon_columns = %w[kingdom phylum class_name order_name family genus]
+      taxonomy_data = taxon_columns.map do |column|
+        format_filter.call(Identification.where(current: true).distinct.pluck(column))
       end
 
       # 3. Pull unique Preparation types
-      prep_data = format_filter.call(base_scope.left_joins(:preparations).distinct.pluck("preparations.prep_type"))
+      # Query preparations directly - all collections share the same prep_types, no items JOIN needed
+      prep_data = format_filter.call(Preparation.distinct.pluck(:prep_type))
 
       {
         geo: geo_data,
