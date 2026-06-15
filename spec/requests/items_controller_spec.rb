@@ -338,3 +338,73 @@ RSpec.describe ItemsController, type: :request do
   end
 
 end
+
+  describe 'build_filter_data collection scoping' do
+    let(:mammals_collection) { FactoryBot.create(:collection, division: "UMMZ Division of Mammals", admin_group: "mammals_admin") }
+    let(:reptiles_collection) { FactoryBot.create(:collection, division: "UMMZ Division of Reptiles", admin_group: "reptiles_admin") }
+
+    let(:mammal_item) { FactoryBot.create(:item, collection: mammals_collection) }
+    let(:reptile_item) { FactoryBot.create(:item, collection: reptiles_collection) }
+
+    before do
+      # Mammal collection has Mammalia taxonomy only
+      FactoryBot.create(:identification,
+        item: mammal_item,
+        current: true,
+        kingdom: "Animalia",
+        phylum: "Chordata",
+        class_name: "Mammalia",
+        order_name: "Carnivora",
+        family: "Felidae",
+        genus: "Panthera"
+      )
+
+      # Reptile collection has Reptilia taxonomy only
+      FactoryBot.create(:identification,
+        item: reptile_item,
+        current: true,
+        kingdom: "Animalia",
+        phylum: "Chordata",
+        class_name: "Reptilia",
+        order_name: "Squamata",
+        family: "Anura",
+        genus: "Iguana"
+      )
+    end
+
+    it 'only shows taxonomy filters belonging to the selected collection' do
+      controller = ItemsController.new
+      mammal_ids = [mammals_collection.id]
+      filter_data = controller.send(:build_filter_data, mammal_ids)
+
+      # Mammalia should appear in mammal collection filters
+      class_names = filter_data[:taxonomy][2].map(&:last)
+      expect(class_names).to include("mammalia")
+
+      # Reptilia should NOT appear in mammal collection filters
+      expect(class_names).not_to include("reptilia")
+    end
+
+    it 'only shows prep_type filters belonging to the selected collection' do
+      FactoryBot.create(:preparation, item: mammal_item, prep_type: "skin")
+      FactoryBot.create(:preparation, item: reptile_item, prep_type: "fluid")
+
+      controller = ItemsController.new
+      mammal_ids = [mammals_collection.id]
+      filter_data = controller.send(:build_filter_data, mammal_ids)
+
+      prep_types = filter_data[:prep_types].map(&:last)
+      expect(prep_types).to include("skin")
+      expect(prep_types).not_to include("fluid")
+    end
+
+    it 'shows all taxonomy values when all collections are selected' do
+      controller = ItemsController.new
+      all_ids = [mammals_collection.id, reptiles_collection.id]
+      filter_data = controller.send(:build_filter_data, all_ids)
+
+      class_names = filter_data[:taxonomy][2].map(&:last)
+      expect(class_names).to include("mammalia")
+      expect(class_names).to include("reptilia")
+    end
+  end
