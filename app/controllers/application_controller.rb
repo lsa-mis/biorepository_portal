@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :set_render_checkout
   before_action :initialize_checkout, unless: :skip_checkout_initialization?
+  before_action :set_checkout_active_count, unless: :skip_checkout_initialization?
   around_action :prosopite_scan, if: -> { Rails.env.development? && defined?(Prosopite) }
 
   before_action :make_q
@@ -125,11 +126,9 @@ end
   end
 
   def initialize_checkout
-    requestables_includes = { requestables: [:preparation, { item: [:collection, :preparations, :current_identification] }] }
-
     # Only query database if we don't have a checkout ID in session
     if session[:checkout_id].present?
-      @checkout = Checkout.includes(requestables_includes).find_by(id: session[:checkout_id]) unless @checkout
+      @checkout = Checkout.find_by(id: session[:checkout_id]) unless @checkout
     end
 
     # Create checkout only if we still don't have one
@@ -141,13 +140,13 @@ end
     # Handle user assignment efficiently
     if user_signed_in?
       # Look up any existing checkout for the current user
-      user_checkout = Checkout.includes(requestables_includes).find_by(user_id: current_user.id)
+      user_checkout = Checkout.find_by(user_id: current_user.id)
       
       if user_checkout.present?
         Rails.logger.info "************************************ session[:merge_checkouts]: #{session[:merge_checkouts]}"
         Rails.logger.info "************************************ User has existing checkout with ID: #{user_checkout.id}"
-        if session[:merge_checkouts] && @checkout.id != current_user.checkout.id
-          merge_checkouts(@checkout, current_user.checkout)
+        if session[:merge_checkouts] && @checkout.id != user_checkout.id
+          merge_checkouts(@checkout, user_checkout)
           session.delete(:merge_checkouts)
           # Reload user_checkout to reflect merged requestables
           user_checkout.requestables.reload
@@ -159,6 +158,10 @@ end
         @checkout.update(user_id: current_user.id)
       end
     end
+  end
+
+  def set_checkout_active_count
+    @checkout_active_count = @checkout&.requestables&.active&.count.to_i
   end
 
   def checkout_availability
@@ -194,6 +197,7 @@ end
         end
       end
     end
+    set_checkout_active_count
     alert
   end
 
@@ -254,4 +258,3 @@ end
   
 
 end
-
