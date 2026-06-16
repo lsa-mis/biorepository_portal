@@ -93,7 +93,7 @@ group :development do
   gem 'annotaterb', '~> 4.22'
 end
 
-group :development, :staging do
+group :development, :staging, :phase2_staging do
   gem "letter_opener_web"
 end
 
