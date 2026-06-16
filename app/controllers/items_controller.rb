@@ -269,35 +269,24 @@ class ItemsController < ApplicationController
     end
 
     def build_filter_data(collection_ids)
-      # Scope everything to the active collections
       base_scope = Item.where(collection_id: collection_ids)
-
-      # Helper method to format data directly into the [Titleized, downcase] array format expected by your views
-      # The addition of .uniq guarantees identical behavior to the old Set layout
-      # Replaces .compact with .select(&:present?) to perfectly match the old filtering logic
       format_filter = ->(values) { values.select(&:present?).map { |v| [v.titleize, v.downcase] }.uniq.sort_by(&:first) }
 
-      # 1. Pull unique Geographic fields
-      # (Since columns live on the items table, this is blazing fast)
+      # 1. Geographic fields — composite indexes on (collection_id, column) make these fast
       geo_data = %i[continent country state_province sex].map do |column|
         format_filter.call(base_scope.distinct.pluck(column))
       end
 
-      # 2. Pull unique Taxonomy fields 
-      # (Join identifications once, then pluck unique values)
+      # 2. Taxonomy fields — scoped to collection_ids, partial indexes on identifications WHERE current=true
       taxon_scope = base_scope.left_joins(:current_identification)
       taxonomy_data = %w[kingdom phylum class_name order_name family genus].map do |column|
         format_filter.call(taxon_scope.distinct.pluck("identifications.#{column}"))
       end
 
-      # 3. Pull unique Preparation types
+      # 3. Preparation types — scoped to collection_ids
       prep_data = format_filter.call(base_scope.left_joins(:preparations).distinct.pluck("preparations.prep_type"))
 
-      {
-        geo: geo_data,
-        taxonomy: taxonomy_data,
-        prep_types: prep_data
-      }
+      { geo: geo_data, taxonomy: taxonomy_data, prep_types: prep_data }
     end
 
     def setup_search_query
