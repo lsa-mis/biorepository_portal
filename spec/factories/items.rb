@@ -45,7 +45,8 @@
 #
 # Indexes
 #
-#  index_items_on_collection_id  (collection_id)
+#  index_items_on_catalog_number  (catalog_number)
+#  index_items_on_collection_id   (collection_id)
 #
 # Foreign Keys
 #

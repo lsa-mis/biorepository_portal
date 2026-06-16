@@ -13,6 +13,10 @@ class CheckoutController < ApplicationController
     @checkout.requestables.create(preparation: @preparation, count: 1, item_id: @preparation.item_id, preparation_type: 
       @preparation.prep_type, item_name: @preparation.item.name, collection: @preparation.item.collection.division)
 
+      # Reload the checkout to ensure the new requestable is included in the association
+      @checkout.requestables.reload
+      set_checkout_active_count
+
     respond_to do |format|
       format.turbo_stream do
         flash.now[:notice] = "Preparation added to checkout."
@@ -56,6 +60,11 @@ class CheckoutController < ApplicationController
     else
       notice = "No matching preparation found in checkout."
     end
+
+    # Reload the checkout to ensure the updated requestable is included in the association
+    @checkout.requestables.reload
+    set_checkout_active_count
+
     respond_to do |format|
       format.turbo_stream do
         flash.now[:notice] = notice
@@ -73,6 +82,8 @@ class CheckoutController < ApplicationController
   def remove
     authorize @checkout if current_user
     Requestable.find(params[:id])&.destroy
+    @checkout.requestables.reload # Reload the association to reflect the destroyed record
+    set_checkout_active_count
     flash.now[:notice] = "Preparation removed from checkout."
     respond_to do |format|
       format.turbo_stream do
@@ -95,6 +106,8 @@ class CheckoutController < ApplicationController
     else
       flash.now[:alert] = "No matching preparation found in checkout."
     end
+    @checkout.requestables.reload # Reload the association to reflect the destroyed record
+    set_checkout_active_count
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [
@@ -129,6 +142,8 @@ class CheckoutController < ApplicationController
     else
       flash.now[:alert] = "Preparation not found in checkout."
     end
+    @checkout.requestables.reload # Reload the association to reflect the updated record
+    set_checkout_active_count
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [turbo_stream.replace('checkout',
@@ -150,6 +165,8 @@ class CheckoutController < ApplicationController
     else
       flash.now[:alert] = "Preparation not found in saved for later."
     end
+    @checkout.requestables.reload # Reload the association to reflect the updated record
+    set_checkout_active_count
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: [turbo_stream.replace('checkout',

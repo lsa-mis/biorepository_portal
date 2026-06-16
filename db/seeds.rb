@@ -97,8 +97,3 @@ locations.each do |loc|
   end
 end
 
-# collections = Collection.create!([
-#   { division: "MPABI" },
-#   { division: "Mammals Tissue" },
-#   { division: "Herpetology Tissue" }
-# ])

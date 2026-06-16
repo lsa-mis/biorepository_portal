@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   unless Rails.env.development?
     rescue_from StandardError, with: :render_500
     rescue_from ActiveRecord::RecordNotFound, with: :render_404
+    rescue_from ActiveRecord::QueryCanceled, with: :render_503
   end
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
@@ -12,6 +13,9 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :set_render_checkout
   before_action :initialize_checkout, unless: :skip_checkout_initialization?
+  before_action :set_checkout_active_count, unless: :skip_checkout_initialization?
+  around_action :prosopite_scan, if: -> { Rails.env.development? && defined?(Prosopite) }
+
   before_action :make_q
 
   def pundit_user
@@ -29,14 +33,27 @@ class ApplicationController < ActionController::Base
 
   def render_404
     respond_to do |format|
-      format.html { render 'errors/not_found', status: :not_found, layout: 'application' }
+      format.html { render 'errors/not_found', status: :not_found, layout: 'error' }
       format.json { render json: { error: 'Not Found' }, status: :not_found }
     end
+   
   end
+
+def prosopite_scan
+  Prosopite.scan
+  yield
+ensure
+  Prosopite.finish
+end
+
+ 
 
   def render_500(exception)
     # Prevent infinite loops by checking if we're already handling an error
-    return if @handling_error
+    if @handling_error
+      Rails.logger.error "Error while already handling an error in render_500"
+      return render plain: "Internal Server Error", status: :internal_server_error
+    end
     @handling_error = true
     
     # Log the error for debugging
@@ -45,13 +62,39 @@ class ApplicationController < ActionController::Base
     
     begin
       respond_to do |format|
-        format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'application' }
+        format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'error' }
         format.json { render json: { error: 'Internal Server Error' }, status: :internal_server_error }
       end
     rescue => e
       # If rendering the error page fails, fall back to a simple response
       Rails.logger.error "Error rendering error page: #{e.message}"
       render plain: "Internal Server Error", status: :internal_server_error
+    ensure
+      @handling_error = false
+    end
+  end
+
+  def render_503(exception)
+    # Prevent infinite loops by checking if we're already handling an error
+    if @handling_error
+      Rails.logger.error "Error while already handling an error in render_503"
+      return render plain: "Service Unavailable", status: :service_unavailable
+    end
+    @handling_error = true
+    
+    # Log the error for debugging
+    Rails.logger.error "Service Unavailable: #{exception.class} - #{exception.message}"
+    Rails.logger.error exception.backtrace.join("\n") if exception.backtrace
+    
+    begin
+      respond_to do |format|
+        format.html { render 'errors/service_unavailable_error', status: :service_unavailable, layout: 'error' }
+        format.json { render json: { error: 'Service Unavailable' }, status: :service_unavailable }
+      end
+    rescue => e
+      # If rendering the error page fails, fall back to a simple response
+      Rails.logger.error "Error rendering error page: #{e.message}"
+      render plain: "Service Unavailable", status: :service_unavailable
     ensure
       @handling_error = false
     end
@@ -96,15 +139,17 @@ class ApplicationController < ActionController::Base
 
     # Handle user assignment efficiently
     if user_signed_in?
-      user_checkout = current_user.checkout
+      # Look up any existing checkout for the current user
+      user_checkout = Checkout.find_by(user_id: current_user.id)
       
       if user_checkout.present?
-        # User has an existing checkout, use it
         Rails.logger.info "************************************ session[:merge_checkouts]: #{session[:merge_checkouts]}"
         Rails.logger.info "************************************ User has existing checkout with ID: #{user_checkout.id}"
-        if session[:merge_checkouts] && @checkout.id != current_user.checkout.id
-          merge_checkouts(@checkout, current_user.checkout)
+        if session[:merge_checkouts] && @checkout.id != user_checkout.id
+          merge_checkouts(@checkout, user_checkout)
           session.delete(:merge_checkouts)
+          # Reload user_checkout to reflect merged requestables
+          user_checkout.requestables.reload
         end
         @checkout = user_checkout
         session[:checkout_id] = @checkout.id
@@ -113,6 +158,10 @@ class ApplicationController < ActionController::Base
         @checkout.update(user_id: current_user.id)
       end
     end
+  end
+
+  def set_checkout_active_count
+    @checkout_active_count = @checkout&.requestables&.available_for_checkout&.count.to_i
   end
 
   def checkout_availability
@@ -148,6 +197,7 @@ class ApplicationController < ActionController::Base
         end
       end
     end
+    set_checkout_active_count
     alert
   end
 
@@ -204,5 +254,7 @@ class ApplicationController < ActionController::Base
       $baseURL = request.fullpath
     end
   end
+
+  
 
 end

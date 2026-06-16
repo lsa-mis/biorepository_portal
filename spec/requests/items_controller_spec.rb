@@ -71,6 +71,50 @@ RSpec.describe ItemsController, type: :request do
   end
 
   describe 'GET/POST /items/search' do
+    context 'when a query for setup_filter_data times out' do
+      before do
+        allow_any_instance_of(ItemsController)
+          .to receive(:setup_filter_data)
+          .and_raise(ActiveRecord::QueryCanceled, 'statement timeout')
+      end
+
+      it 'returns 503 for html requests' do
+        get search_items_path
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.body).to include('Service Unavailable')
+      end
+
+      it 'returns 503 for json requests' do
+        get search_items_path, params: {}, as: :json
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.parsed_body).to eq({ 'error' => 'Service Unavailable' })
+      end
+    end
+
+    context 'when a query for execute_search_and_paginate times out' do
+      before do
+        allow_any_instance_of(ItemsController)
+          .to receive(:execute_search_and_paginate)
+          .and_raise(ActiveRecord::QueryCanceled, 'statement timeout')
+      end
+
+      it 'returns 503 for html requests' do
+        get search_items_path
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.body).to include('Service Unavailable')
+      end
+
+      it 'returns 503 for json requests' do
+        get search_items_path, params: {}, as: :json
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.parsed_body).to eq({ 'error' => 'Service Unavailable' })
+      end
+    end
+    
     context 'with view switching' do
       it 'sets view to rows when switch_view is rows' do
         get search_items_path, params: { switch_view: 'rows' }
@@ -131,6 +175,45 @@ RSpec.describe ItemsController, type: :request do
     it 'handles per page parameter' do
       get search_items_path, params: { per: 25 }
       expect(response).to have_http_status(:ok)
+    end
+
+    it 'reuses one exact item count for the result summary and numbered pagination' do
+      FactoryBot.create_list(:item, 25, collection: collection)
+
+      queries = capture_sql do
+        get search_items_path, params: { per: 25 }
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(item_count_queries(queries).length).to eq(1)
+    end
+  end
+
+  describe 'search query joins' do
+    it 'does not join associations for the default catalog number sort' do
+      queries = capture_sql do
+        get search_items_path
+      end
+
+      page_query = queries.find { |sql| sql.include?('ORDER BY items.catalog_number asc LIMIT') }
+
+      expect(response).to have_http_status(:ok)
+      expect(page_query).to be_present
+      expect(page_query).not_to include('JOIN "identifications"')
+      expect(page_query).not_to include('JOIN "collections"')
+    end
+
+    it 'joins current identifications when sorting by scientific name' do
+      queries = capture_sql do
+        get search_items_path, params: { sort: 'identifications.scientific_name asc' }
+      end
+
+      page_query = queries.find { |sql| sql.include?('ORDER BY identifications.scientific_name asc LIMIT') }
+
+      expect(response).to have_http_status(:ok)
+      expect(page_query).to be_present
+      expect(page_query).to include('JOIN "identifications"')
+      expect(page_query).not_to include('JOIN "collections"')
     end
   end
 
@@ -203,7 +286,7 @@ RSpec.describe ItemsController, type: :request do
       expect(response.body).to include("search")
     end
   end
-  
+
   describe 'Search Sidebar Filter Aggregation Performance & Parity' do
     let!(:collection_1) { FactoryBot.create(:collection, admin_group: 'Group 1', division: 'Division 1') }
     let!(:collection_2) { FactoryBot.create(:collection, admin_group: 'Group 2', division: 'Division 2') }
@@ -225,6 +308,7 @@ RSpec.describe ItemsController, type: :request do
     end
 
     it 'correctly aggregates, cleans, and deduplicates sidebar filter options via Postgres' do
+      # Note: If your app uses Ransack, you may need to nest this param like: params: { q: { collection_id_in: [collection_1.id] } }
       get search_items_path, params: { q: { collection_id_in: [collection_1.id] } }
       expect(response).to have_http_status(:ok)
 
@@ -239,5 +323,88 @@ RSpec.describe ItemsController, type: :request do
     end
   end
 
+  def capture_sql(&block)
+    queries = []
+    callback = lambda do |_name, _start, _finish, _id, payload|
+      queries << payload[:sql] unless payload[:name] == 'SCHEMA'
+    end
+
+    ActiveSupport::Notifications.subscribed(callback, 'sql.active_record', &block)
+    queries
+  end
+
+  def item_count_queries(queries)
+    queries.grep(/COUNT\(DISTINCT "?items"?\."?id"?\)/)
+  end
+
 end
 
+  describe 'build_filter_data collection scoping' do
+    let(:mammals_collection) { FactoryBot.create(:collection, division: "UMMZ Division of Mammals", admin_group: "mammals_admin") }
+    let(:reptiles_collection) { FactoryBot.create(:collection, division: "UMMZ Division of Reptiles", admin_group: "reptiles_admin") }
+
+    let(:mammal_item) { FactoryBot.create(:item, collection: mammals_collection) }
+    let(:reptile_item) { FactoryBot.create(:item, collection: reptiles_collection) }
+
+    before do
+      # Mammal collection has Mammalia taxonomy only
+      FactoryBot.create(:identification,
+        item: mammal_item,
+        current: true,
+        kingdom: "Animalia",
+        phylum: "Chordata",
+        class_name: "Mammalia",
+        order_name: "Carnivora",
+        family: "Felidae",
+        genus: "Panthera"
+      )
+
+      # Reptile collection has Reptilia taxonomy only
+      FactoryBot.create(:identification,
+        item: reptile_item,
+        current: true,
+        kingdom: "Animalia",
+        phylum: "Chordata",
+        class_name: "Reptilia",
+        order_name: "Squamata",
+        family: "Anura",
+        genus: "Iguana"
+      )
+    end
+
+    it 'only shows taxonomy filters belonging to the selected collection' do
+      controller = ItemsController.new
+      mammal_ids = [mammals_collection.id]
+      filter_data = controller.send(:build_filter_data, mammal_ids)
+
+      # Mammalia should appear in mammal collection filters
+      class_names = filter_data[:taxonomy][2].map(&:last)
+      expect(class_names).to include("mammalia")
+
+      # Reptilia should NOT appear in mammal collection filters
+      expect(class_names).not_to include("reptilia")
+    end
+
+    it 'only shows prep_type filters belonging to the selected collection' do
+      FactoryBot.create(:preparation, item: mammal_item, prep_type: "skin")
+      FactoryBot.create(:preparation, item: reptile_item, prep_type: "fluid")
+
+      controller = ItemsController.new
+      mammal_ids = [mammals_collection.id]
+      filter_data = controller.send(:build_filter_data, mammal_ids)
+
+      prep_types = filter_data[:prep_types].map(&:last)
+      expect(prep_types).to include("skin")
+      expect(prep_types).not_to include("fluid")
+    end
+
+    it 'shows all taxonomy values when all collections are selected' do
+      controller = ItemsController.new
+      all_ids = [mammals_collection.id, reptiles_collection.id]
+      filter_data = controller.send(:build_filter_data, all_ids)
+
+      class_names = filter_data[:taxonomy][2].map(&:last)
+      expect(class_names).to include("mammalia")
+      expect(class_names).to include("reptilia")
+    end
+  end
