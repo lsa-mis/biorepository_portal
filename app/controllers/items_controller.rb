@@ -266,7 +266,6 @@ class ItemsController < ApplicationController
       @continents, @countries, @states, @sexs = filter_data[:geo]
       @kingdoms, @phylums, @classes, @orders, @families, @genuses = filter_data[:taxonomy]
       @prep_types = filter_data[:prep_types]
-<<<<<<< phase-3
     end
 
     def build_filter_data(collection_ids)
@@ -274,54 +273,20 @@ class ItemsController < ApplicationController
       format_filter = ->(values) { values.select(&:present?).map { |v| [v.titleize, v.downcase] }.uniq.sort_by(&:first) }
 
       # 1. Geographic fields — composite indexes on (collection_id, column) make these fast
-=======
-    rescue ActiveRecord::QueryCanceled
-      Rails.logger.error "******************************* Search timeout - filter data took too long"
-      raise SearchTimeoutError, "Filter data query timed out"
-    end
-
-    def build_filter_data(collection_ids)
-      # Scope everything to the active collections
-      base_scope = Item.where(collection_id: collection_ids)
-
-      # Helper method to format data directly into the [Titleized, downcase] array format expected by your views
-      # The addition of .uniq guarantees identical behavior to the old Set layout
-      # Replaces .compact with .select(&:present?) to perfectly match the old filtering logic
-      format_filter = ->(values) { values.select(&:present?).map { |v| [v.titleize, v.downcase] }.uniq.sort_by(&:first) }
-
-      # 1. Pull unique Geographic fields
-      # (Since columns live on the items table, this is blazing fast)
->>>>>>> staging
       geo_data = %i[continent country state_province sex].map do |column|
         format_filter.call(base_scope.distinct.pluck(column))
       end
 
-<<<<<<< phase-3
       # 2. Taxonomy fields — scoped to collection_ids, partial indexes on identifications WHERE current=true
-=======
-      # 2. Pull unique Taxonomy fields 
-      # (Join identifications once, then pluck unique values)
->>>>>>> staging
       taxon_scope = base_scope.left_joins(:current_identification)
       taxonomy_data = %w[kingdom phylum class_name order_name family genus].map do |column|
         format_filter.call(taxon_scope.distinct.pluck("identifications.#{column}"))
       end
 
-<<<<<<< phase-3
       # 3. Preparation types — scoped to collection_ids
       prep_data = format_filter.call(base_scope.left_joins(:preparations).distinct.pluck("preparations.prep_type"))
 
       { geo: geo_data, taxonomy: taxonomy_data, prep_types: prep_data }
-=======
-      # 3. Pull unique Preparation types
-      prep_data = format_filter.call(base_scope.left_joins(:preparations).distinct.pluck("preparations.prep_type"))
-
-      {
-        geo: geo_data,
-        taxonomy: taxonomy_data,
-        prep_types: prep_data
-      }
->>>>>>> staging
     end
 
     def setup_search_query
