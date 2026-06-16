@@ -135,7 +135,7 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "home#about"
 
-  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development? || Rails.env.staging?
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development? || Rails.env.staging? || Rails.env.phase2_staging?
   mount PgHero::Engine, at: '/pghero' if Rails.env.development? || Rails.env.staging? || Rails.env.phase2_staging?
 
 end
