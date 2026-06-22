@@ -78,7 +78,7 @@ class Collections::CollectionQuestionsController < ApplicationController
 
   def move_up
     @collection_question.move_higher
-    @collection_questions = @collection.collection_questions.order(:position)
+    @collection_questions = @collection.collection_questions.includes(:rich_text_question).order(:position)
     
     respond_to do |format|
       format.turbo_stream { 
@@ -93,7 +93,7 @@ class Collections::CollectionQuestionsController < ApplicationController
 
   def move_down
     @collection_question.move_lower
-    @collection_questions = @collection.collection_questions.order(:position)
+    @collection_questions = @collection.collection_questions.includes(:rich_text_question).order(:position)
     
     respond_to do |format|
       format.turbo_stream { 
@@ -110,7 +110,7 @@ class Collections::CollectionQuestionsController < ApplicationController
     @collection_question.destroy
 
     respond_to do |format|
-      @collection_questions = @collection.collection_questions.order(:position)
+      @collection_questions = @collection.collection_questions.includes(:rich_text_question).order(:position)
       format.turbo_stream
       format.html { redirect_to collection_path(@collection), notice: "Collection question deleted." }
     end

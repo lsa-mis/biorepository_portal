@@ -82,7 +82,7 @@ class LoanQuestionsController < ApplicationController
   # DELETE /loan_questions/1 or /loan_questions/1.json
   def destroy
     if @loan_question.destroy
-      @loan_questions = LoanQuestion.all
+      @loan_questions = LoanQuestion.includes(:rich_text_question).order(:position)
       flash.now[:notice] = "Loan question was successfully deleted."
     end
   end
@@ -96,7 +96,7 @@ class LoanQuestionsController < ApplicationController
   def move_up
     @loan_question.move_higher
     authorize @loan_question
-    @loan_questions = LoanQuestion.order(:position)
+    @loan_questions = LoanQuestion.includes(:rich_text_question).order(:position)
     
     respond_to do |format|
       format.turbo_stream { 
@@ -112,7 +112,7 @@ class LoanQuestionsController < ApplicationController
   def move_down
     @loan_question.move_lower
     authorize @loan_question
-    @loan_questions = LoanQuestion.order(:position)
+    @loan_questions = LoanQuestion.includes(:rich_text_question).order(:position)
     
     respond_to do |format|
       format.turbo_stream { 
@@ -152,4 +152,3 @@ class LoanQuestionsController < ApplicationController
       params.require(:loan_question).permit(:position, :question, :question_type, :required, options_attributes: [:id, :value])
     end
 end
-
