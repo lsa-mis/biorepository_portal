@@ -152,3 +152,4 @@ class LoanQuestionsController < ApplicationController
       params.require(:loan_question).permit(:position, :question, :question_type, :required, options_attributes: [:id, :value])
     end
 end
+

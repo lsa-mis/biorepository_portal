@@ -144,3 +144,4 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
     
 end
+
