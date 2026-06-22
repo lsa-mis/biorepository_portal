@@ -19,14 +19,14 @@
           <td><%= request.send_to %></td>
           <td>
             <% if pdf_attachment.present? %>
-              <%= link_to 'View PDF', rails_blob_url(pdf_attachment, disposition: "inline"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+              <%= link_to 'View PDF', rails_blob_url(pdf_attachment, disposition: "inline"), target: "_blank", rel: "noopener noreferrer",  class: "btn btn-sm btn-outline-primary" %>
             <% else %>
               <span class="text-muted">No PDF</span>
             <% end %>
           </td>
           <td>
             <% if csv_attachment.present? %>
-              <%= link_to 'Download CSV', rails_blob_url(csv_attachment, disposition: "attachment"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+              <%= link_to 'Download CSV', rails_blob_url(csv_attachment, disposition: "attachment"), target: "_blank", rel: "noopener noreferrer", class: "btn btn-sm btn-outline-primary" %>
             <% else %>
               <span class="text-muted">No CSV</span>
             <% end %>
