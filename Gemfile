@@ -55,7 +55,7 @@ gem 'omniauth-saml', '~> 2.1'
 gem 'ostruct'
 gem "dartsass-rails"
 gem "bootstrap", "~> 5.3.3"
-
+gem 'benchmark'
 gem 'ldap_lookup', '~> 2.1.0'
 gem "pundit"
 # export to pdf
