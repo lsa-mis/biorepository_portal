@@ -175,7 +175,7 @@ RSpec.describe LoanQuestion, type: :request do
         expect {
           delete loan_question_path(loan_question)
         }.to change(LoanQuestion, :count).by(-1)
-        expect(response.body).to include('Loan question was successfully deleted')
+        expect(flash[:notice]).to eq('Loan question was successfully deleted.')
       end
     end
 

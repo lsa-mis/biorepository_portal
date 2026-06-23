@@ -77,13 +77,13 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'capybara', '~> 3.40'
   gem 'webdrivers', '= 5.3.0'
-  gem 'faker'
   gem 'pry'
   gem 'pundit-matchers', '~> 3.1', '>= 3.1.2'
   gem 'brakeman', '~> 8.0', require: false
   gem 'rails_accessibility_testing', '~> 1.6'
   gem 'axe-core-capybara', '~> 4.0'
-  gem 'bullet', '~> 8.1'
+  gem 'prosopite', '~> 1.4'
+  gem "pg_query", "~> 6.2"
 end
 
 group :development do
@@ -92,6 +92,14 @@ group :development do
   gem 'annotaterb', '~> 4.22'
 end
 
-group :development, :staging do
+group :development, :staging, :phase2_staging do
   gem "letter_opener_web"
+end
+
+group :development, :staging, :phase2_staging do
+  gem 'pghero', git: 'https://github.com/andyatkinson/pghero.git'
+end
+
+group :development, :phase2_staging do
+  gem 'faker'
 end

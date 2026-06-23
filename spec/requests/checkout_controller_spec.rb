@@ -104,6 +104,19 @@ RSpec.describe CheckoutController, type: :request do
       get checkout_path
       expect(response.body).to include("<option selected=\"selected\" value=\"3\">3</option>")
     end
+
+    it 'does not count checkout items whose preparation is no longer available' do
+      post checkout_add_path, params: { id: preparation.id, count: 1 }, headers: {'Accept' => 'text/vnd.turbo-stream.html'}
+      expect(response).to have_http_status(200)
+
+      get checkout_path
+      expect(response.body).to include("(1)")
+
+      preparation.update!(count: 0)
+
+      get checkout_path
+      expect(response.body).not_to include("(1)")
+    end
   end
 
 end

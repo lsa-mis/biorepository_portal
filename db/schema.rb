@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_20_172522) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_15_035128) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -173,7 +173,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_20_172522) do
     t.string "type_status"
     t.datetime "updated_at", null: false
     t.string "vernacular_name"
+    t.index ["class_name"], name: "idx_identifications_current_class", where: "(current = true)"
+    t.index ["family"], name: "idx_identifications_current_family", where: "(current = true)"
+    t.index ["genus"], name: "idx_identifications_current_genus", where: "(current = true)"
+    t.index ["item_id", "current", "kingdom", "phylum", "class_name", "order_name", "family", "genus"], name: "idx_identifications_taxonomy_covering"
+    t.index ["item_id", "current"], name: "idx_identifications_item_current"
     t.index ["item_id"], name: "index_identifications_on_item_id"
+    t.index ["kingdom"], name: "idx_identifications_current_kingdom", where: "(current = true)"
+    t.index ["order_name"], name: "idx_identifications_current_order", where: "(current = true)"
+    t.index ["phylum"], name: "idx_identifications_current_phylum", where: "(current = true)"
   end
 
   create_table "information_requests", force: :cascade do |t|
@@ -238,6 +246,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_20_172522) do
     t.string "verbatim_event_date"
     t.string "verbatim_locality"
     t.string "vitality"
+    t.index ["catalog_number"], name: "index_items_on_catalog_number"
+    t.index ["collection_id", "continent"], name: "idx_items_collection_continent"
+    t.index ["collection_id", "country"], name: "idx_items_collection_country"
+    t.index ["collection_id", "sex"], name: "idx_items_collection_sex"
+    t.index ["collection_id", "state_province"], name: "idx_items_collection_state_province"
     t.index ["collection_id"], name: "index_items_on_collection_id"
   end
 
@@ -307,6 +320,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_20_172522) do
     t.string "prep_type"
     t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_preparations_on_item_id"
+    t.index ["prep_type"], name: "idx_preparations_prep_type"
   end
 
   create_table "requestables", force: :cascade do |t|

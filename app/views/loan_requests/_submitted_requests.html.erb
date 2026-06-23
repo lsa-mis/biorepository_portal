@@ -11,25 +11,28 @@
     </thead>
     <tbody>
       <% @loan_requests.each do |request| %>
+        <% pdf_attachment = request.pdf_file_attachment %>
+        <% csv_attachment = request.csv_file_attachment %>
+        <% attachment_files = request.attachment_files_attachments %>
         <tr>
           <td><%= request.created_at.in_time_zone("Eastern Time (US & Canada)").strftime("%Y-%m-%d %H:%M") %></td>
           <td><%= request.send_to %></td>
           <td>
-            <% if request.pdf_file.attached? %>
-              <%= link_to 'View PDF', rails_blob_url(request.pdf_file, disposition: "inline"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+            <% if pdf_attachment.present? %>
+              <%= link_to 'View PDF', rails_blob_url(pdf_attachment, disposition: "inline"), target: "_blank", rel: "noopener noreferrer",  class: "btn btn-sm btn-outline-primary" %>
             <% else %>
               <span class="text-muted">No PDF</span>
             <% end %>
           </td>
           <td>
-            <% if request.csv_file.attached? %>
-              <%= link_to 'Download CSV', rails_blob_url(request.csv_file, disposition: "attachment"), target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+            <% if csv_attachment.present? %>
+              <%= link_to 'Download CSV', rails_blob_url(csv_attachment, disposition: "attachment"), target: "_blank", rel: "noopener noreferrer", class: "btn btn-sm btn-outline-primary" %>
             <% else %>
               <span class="text-muted">No CSV</span>
             <% end %>
           </td>
           <td>
-            <% if request.attachment_files.attached? %>
+            <% if attachment_files.any? %>
               <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#attachmentsModal-<%= request.id %>" aria-label="Open attachments modal for request <%= request.id %>">
                 Attached Files
               </button>
@@ -44,7 +47,7 @@
                     </div>
                     <div class="modal-body">
                       <ul class="list-group">
-                        <% request.attachment_files.each do |file| %>
+                        <% attachment_files.each do |file| %>
                           <li class="list-group-item">
                             <%= link_to file.filename.to_s, rails_blob_url(file, disposition: "attachment"), target: "_blank", rel: "noopener noreferrer" %>
                           </li>

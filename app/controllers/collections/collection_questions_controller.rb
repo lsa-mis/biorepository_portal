@@ -24,11 +24,8 @@ class Collections::CollectionQuestionsController < ApplicationController
     respond_to do |format|
       begin
         if @collection_question.save
-          if collection_question_params[:question_type].in?(%w[dropdown checkbox])
-            options = params[:options_attributes].values
-            options.each do |option|
-              CollectionOption.create(value: option[:value], collection_question_id: @collection_question.id)
-            end
+          if @collection_question.question_type.in?(%w[dropdown checkbox]) && params[:options_attributes].present?
+            create_options(@collection_question, params[:options_attributes].values)
           end
           format.html { redirect_to collection_collection_question_path(@collection, @collection_question), notice: "Collection question created." }
           format.json { render :show, status: :ok, location: [@collection, @collection_question] }
@@ -78,7 +75,7 @@ class Collections::CollectionQuestionsController < ApplicationController
 
   def move_up
     @collection_question.move_higher
-    @collection_questions = @collection.collection_questions.order(:position)
+    @collection_questions = @collection.collection_questions.includes(:rich_text_question).order(:position)
     
     respond_to do |format|
       format.turbo_stream { 
@@ -93,7 +90,7 @@ class Collections::CollectionQuestionsController < ApplicationController
 
   def move_down
     @collection_question.move_lower
-    @collection_questions = @collection.collection_questions.order(:position)
+    @collection_questions = @collection.collection_questions.includes(:rich_text_question).order(:position)
     
     respond_to do |format|
       format.turbo_stream { 
@@ -110,7 +107,7 @@ class Collections::CollectionQuestionsController < ApplicationController
     @collection_question.destroy
 
     respond_to do |format|
-      @collection_questions = @collection.collection_questions.order(:position)
+      @collection_questions = @collection.collection_questions.includes(:rich_text_question).order(:position)
       format.turbo_stream
       format.html { redirect_to collection_path(@collection), notice: "Collection question deleted." }
     end
@@ -120,8 +117,12 @@ class Collections::CollectionQuestionsController < ApplicationController
 
   def update_options(question, option_params)
     question.collection_options.destroy_all
+    create_options(question, option_params)
+  end
+
+  def create_options(question, option_params)
     option_params.each do |option|
-      CollectionOption.create(value: option[:value], collection_question_id: question.id)
+      question.collection_options.create!(value: option[:value])
     end
   end
 
@@ -144,3 +145,4 @@ class Collections::CollectionQuestionsController < ApplicationController
   end
     
 end
+

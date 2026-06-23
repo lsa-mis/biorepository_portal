@@ -5,7 +5,13 @@ class ProfilesController < ApplicationController
 
   def show
     @collections = Collection.joins(:collection_questions).distinct
-    @loan_requests = current_user.loan_requests.with_attached_pdf_file.with_attached_csv_file.order(created_at: :desc)
+    @loan_requests = current_user.loan_requests
+                                 .includes(
+                                   pdf_file_attachment: :blob,
+                                   csv_file_attachment: :blob,
+                                   attachment_files_attachments: :blob
+                                 )
+                                 .order(created_at: :desc)
     @information_requests = current_user.information_requests.order(created_at: :desc)
   end
 
@@ -104,7 +110,7 @@ class ProfilesController < ApplicationController
     end
 
     redirect_to show_collections_questions_profile_path, notice: "Loan questions updated successfully."
-  end    
+  end
 
   def show_collections_questions
     @collections = Collection.joins(:collection_questions).distinct
@@ -121,8 +127,8 @@ class ProfilesController < ApplicationController
       @collection_answers[collection] = question_answer_hash
     end
     loan_questions = LoanQuestion.includes(:loan_answers).order(:position)
-	  @loan_answers = loan_questions.each_with_object({}) do |question, hash|
-	    hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
+    @loan_answers = loan_questions.each_with_object({}) do |question, hash|
+      hash[question] = question.loan_answers.find { |answer| answer.user_id == current_user.id }
     end
   end
 
@@ -169,5 +175,5 @@ class ProfilesController < ApplicationController
   def profile_params
     params.require(:user).permit(:first_name, :last_name, :affiliation, :orcid)
   end
-  
+
 end

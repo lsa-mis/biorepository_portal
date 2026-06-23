@@ -1,4 +1,4 @@
-<% @checkout.requestables.active.order(:id).each do |requestable| %>
+<% @checkout.requestables.active.order(:id).includes(:preparation, item: [:collection, :preparations, :current_identification]).each do |requestable| %>
   <% item = requestable.item %>
   <% preparation = requestable.preparation %>
   <div class="card mb-3">
