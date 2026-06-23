@@ -1,5 +1,4 @@
 require 'set'
-require 'benchmark'
 
 class ItemImportService
   attr_reader :file, :collection_id
