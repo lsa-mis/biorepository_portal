@@ -52,7 +52,7 @@ gem "image_processing", "~> 1.2"
 gem "devise", "~> 5.0.4"
 gem 'omniauth-rails_csrf_protection', '~> 1.0'
 gem 'omniauth-saml', '~> 2.1'
-
+gem 'ostruct'
 gem "dartsass-rails"
 gem "bootstrap", "~> 5.3.3"
 
