@@ -59,7 +59,7 @@ class IdentificationImportService
   private
 
   def save_identification(item, row)
-    identification = Identification.new(item_id: item.id)
+    identification = item.identifications.build
 
     assign_fields(identification, row)
 
