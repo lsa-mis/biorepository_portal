@@ -9,7 +9,7 @@ class ItemImportService
     @user = user
     @collection = Collection.find(@collection_id)
     @items_by_occurrence = Item.where(collection_id: @collection_id).index_by(&:occurrence_id)
-    @items_in_db = Set.new(Item.where(collection_id: @collection_id).pluck(:occurrence_id))
+    @items_in_db = @items_by_occurrence.keys.to_set
     @field_names = {}
     @log = ImportLog.new
     @notes = []
@@ -133,7 +133,7 @@ class ItemImportService
 
   def build_field_names
     header = CSV.open(@file.path, &:readline)
-    map_fields_by_specify_field = MapField.where(specify_field: header.map { |h| h.strip }).index_by(&:specify_field)
+    map_fields_by_specify_field = MapField.where(specify_field: header.map { |h| h.strip }, table: ["items", "preparations"]).index_by(&:specify_field)
 
     header.each_with_object({}) do |h, hash|
       map_field = map_fields_by_specify_field[h.strip]
