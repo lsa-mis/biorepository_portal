@@ -8,6 +8,7 @@ class IdentificationImportService
     @collection_id = collection_id
     @user = user
     @field_names = {}
+    @specify_field_by_rails_and_table = {}
     @log = ImportLog.new
     @notes = []
     @errors = 0
@@ -80,7 +81,8 @@ class IdentificationImportService
     @field_names.each_with_index do |(field, _table), index|
       next unless _table == "identifications"
       next if field.include?("ignore")
-      field_in_row = MapField.find_by(rails_field: field, table: _table).specify_field
+      field_in_row = @specify_field_by_rails_and_table[[field, _table]]
+      next if field_in_row.blank?
       value = row_hash[field_in_row]&.strip
       next if value.blank?
 
@@ -100,7 +102,10 @@ class IdentificationImportService
     header = CSV.open(@file.path, &:readline)
     header.each_with_object({}) do |h, hash|
       map_field = MapField.find_by(specify_field: h.strip)
-      hash[map_field.rails_field] = map_field.table if map_field
+      if map_field
+        hash[map_field.rails_field] = map_field.table
+        @specify_field_by_rails_and_table[[map_field.rails_field, map_field.table]] = map_field.specify_field
+      end
     end
   end
 
