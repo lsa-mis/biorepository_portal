@@ -7,6 +7,7 @@ class ItemImportService
     @file = file
     @collection_id = collection_id
     @user = user
+    @collection = Collection.find(@collection_id)
     @items_by_occurrence = Item.where(collection_id: @collection_id).index_by(&:occurrence_id)
     @items_in_db = Set.new(Item.where(collection_id: @collection_id).pluck(:occurrence_id))
     @field_names = {}
@@ -20,7 +21,7 @@ class ItemImportService
   # It reads the CSV file, processes each row, and updates or creates items in the database.
   def call
     total_time = Benchmark.measure {
-      @log.import_logger.info("#{DateTime.now} - #{Collection.find(@collection_id).division} - Processing Occurrence File: #{@file.original_filename}")
+      @log.import_logger.info("#{DateTime.now} - #{@collection.division} - Processing Occurrence File: #{@file.original_filename}")
       CSV.foreach(@file.path, headers: true) do |row|
         record = row.fields.map { |val| val&.delete('"')&.strip }
 
@@ -55,7 +56,7 @@ class ItemImportService
   end
 
   def save_item(record)
-    item = Item.new(collection_id: @collection_id)
+    item = Item.new(collection: @collection)
     preparations_string = assign_fields(item, record)
     if item.save
       update_preparations(item, preparations_string)
