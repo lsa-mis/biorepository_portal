@@ -145,7 +145,7 @@ class ItemImportService
     end
 
     # Remove all existing preparations for the item
-    item.preparations.destroy_all
+    Preparation.where(item_id: item.id).delete_all
 
     prep_entries = preparations_string.split(';').map(&:strip)
 
