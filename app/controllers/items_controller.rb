@@ -235,7 +235,7 @@ class ItemsController < ApplicationController
         params[:q] = ActionController::Parameters.new("collection_id_in" => [collection_ids.first])
         collection_ids
       else
-        Collection.pluck(:id)
+        Collection.joins(:items).distinct.pluck(:id)
       end
 
       normalize_collection_ids(collection_ids)
@@ -362,7 +362,7 @@ class ItemsController < ApplicationController
       total_items = @total_items
       @items.define_singleton_method(:total_count) { total_items }
 
-      @all_collections = Collection.order(:division)
+      @all_collections = Collection.joins(:items).distinct.order(:division)
     end
     
     def setup_dynamic_fields
