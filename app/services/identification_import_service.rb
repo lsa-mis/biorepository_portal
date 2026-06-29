@@ -30,8 +30,10 @@ class IdentificationImportService
 
         grouped_rows[occurrence_id] << row.drop(1)
       end
+      items_by_occurrence = Item.where(collection_id: @collection_id, occurrence_id: grouped_rows.keys).index_by(&:occurrence_id)
+
       grouped_rows.each do |occurrence_id, rows|
-        item = Item.find_by(occurrence_id: occurrence_id)
+        item = items_by_occurrence[occurrence_id]
         next unless item
 
         # Remove existing identifications for this item
