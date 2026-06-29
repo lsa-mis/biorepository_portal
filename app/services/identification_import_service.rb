@@ -100,8 +100,10 @@ class IdentificationImportService
 
   def build_field_names
     header = CSV.open(@file.path, &:readline)
+    map_fields_by_specify_field = MapField.where(specify_field: header.map { |h| h.strip }).index_by(&:specify_field)
+
     header.each_with_object({}) do |h, hash|
-      map_field = MapField.find_by(specify_field: h.strip)
+      map_field = map_fields_by_specify_field[h.strip]
       if map_field
         hash[map_field.rails_field] = map_field.table
         @specify_field_by_rails_and_table[[map_field.rails_field, map_field.table]] = map_field.specify_field
