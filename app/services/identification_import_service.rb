@@ -35,7 +35,7 @@ class IdentificationImportService
         next unless item
 
         # Remove existing identifications for this item
-        item.identifications.destroy_all
+        Identification.where(item_id: item.id).delete_all
 
         rows.each do |row|
           save_identification(item, row)
