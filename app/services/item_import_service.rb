@@ -7,6 +7,7 @@ class ItemImportService
     @file = file
     @collection_id = collection_id
     @user = user
+    @items_by_occurrence = Item.where(collection_id: @collection_id).index_by(&:occurrence_id)
     @items_in_db = Set.new(Item.where(collection_id: @collection_id).pluck(:occurrence_id))
     @field_names = {}
     @log = ImportLog.new
@@ -70,7 +71,7 @@ class ItemImportService
   end
 
   def update_item(record)
-    item = Item.find_by(occurrence_id: record[0])
+    item = @items_by_occurrence[record[0]]
     return unless item
 
     preparations_string = assign_fields(item, record)
