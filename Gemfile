@@ -1,9 +1,9 @@
 source "https://rubygems.org"
 
-ruby "3.3.6"
+ruby "4.0.1"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.2"
+gem "rails", "~> 8.1.3"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
@@ -52,10 +52,10 @@ gem "image_processing", "~> 1.2"
 gem "devise", "~> 5.0.3"
 gem 'omniauth-rails_csrf_protection', '~> 1.0'
 gem 'omniauth-saml', '~> 2.1'
-
+gem 'ostruct'
 gem "dartsass-rails"
 gem "bootstrap", "~> 5.3.3"
-
+gem 'benchmark'
 gem 'ldap_lookup', '~> 2.1.0'
 gem "pundit"
 # export to pdf
@@ -66,7 +66,7 @@ gem "skylight"
 gem 'sentry-ruby'
 gem 'sentry-rails'
 gem 'country_select'
-gem 'concurrent-ruby', '~> 1.3', '>= 1.3.5'
+gem 'concurrent-ruby', '~> 1.3'
 gem 'csv', '~> 3.3', '>= 3.3.5'
 
 group :development, :test do
@@ -100,6 +100,6 @@ group :development, :staging, :phase2_staging do
   gem 'pghero', git: 'https://github.com/andyatkinson/pghero.git'
 end
 
-group :development, :phase2_staging do
+group :development, :test, :phase2_staging do
   gem 'faker'
 end
