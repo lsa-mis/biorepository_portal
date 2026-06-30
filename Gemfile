@@ -100,6 +100,6 @@ group :development, :staging, :phase2_staging do
   gem 'pghero', git: 'https://github.com/andyatkinson/pghero.git'
 end
 
-group :development, :phase2_staging do
+group :development, :test, :phase2_staging do
   gem 'faker'
 end
