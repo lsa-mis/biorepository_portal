@@ -11,6 +11,8 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
+  variables:
+    idle_session_timeout: 300s
 
 development:
   <<: *default
@@ -28,6 +30,13 @@ staging:
   url: <%= ENV["DATABASE_URL"] %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
   timeout: 10000
+
+phase2_staging:
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
+  timeout: 10000
+  idle_session_timeout: 300s
 
 production:
   <<: *default
