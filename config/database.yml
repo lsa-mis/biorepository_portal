@@ -11,6 +11,8 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
+  variables:
+    idle_session_timeout: 300s
 
 development:
   <<: *default
