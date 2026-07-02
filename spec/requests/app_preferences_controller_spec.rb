@@ -48,7 +48,7 @@ RSpec.describe AppPreferencesController, type: :request do
           description: "Show barcode",
           pref_type: "boolean"
         }
-      }
+      }, headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
 
       expect(response).to have_http_status(:success)
       expect(AppPreference.where(name: "show_barcode").count).to eq(2)
