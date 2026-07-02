@@ -98,12 +98,7 @@ locations.each do |loc|
 end
 
 app_preferences = [
-  {
-    name: "generic_contact_email",
-    description: "Email address to send information request about all collections",
-    pref_type: "string",
-    value: ""
-  },
+  
   {
     name: "collection_email_to_send_requests",
     description: "Comma-separated list of collection-specific email addresses to send requests to collection admins",
