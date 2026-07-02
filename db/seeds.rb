@@ -143,3 +143,28 @@ Collection.all.each do |collection|
   end
 end
 puts "App preferences seeded for #{Collection.count} collections (#{AppPreference.count} total records)"
+
+global_preferences = [
+  {
+    name: "generic_contact_email",
+    description: "Email address to send information request about all collections",
+    pref_type: "string",
+    value: ""
+  },
+  {
+    name: "home_page_image",
+    description: "Home page image",
+    pref_type: "image",
+    value: ""
+  }
+]
+
+global_preferences.each do |pref|
+  GlobalPreference.find_or_create_by!(name: pref[:name]) do |gp|
+    gp.description = pref[:description]
+    gp.pref_type = pref[:pref_type]
+    gp.value = pref[:value]
+  end
+end
+
+puts "Global preferences seeded (#{GlobalPreference.count} total records)"
