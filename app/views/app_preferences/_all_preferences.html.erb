@@ -54,7 +54,7 @@
   <%= form_with model: @app_prefs, url: app_prefs_path, method: :post do |form| %>
     <% @collections.each do |collection| %>
       <h3 class="my-4 ms-6"><%= collection.division %></h3>
-      <% @app_prefs.where(collection_id: collection).each do |pref| %>
+      <% @app_prefs_by_collection.fetch(collection.id, []).each do |pref| %>
         <%= fields_for 'app_prefs[]' do %>
           <div>
             <% if pref.pref_type == "boolean" %>

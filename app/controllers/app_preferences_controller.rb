@@ -18,6 +18,7 @@ class AppPreferencesController < ApplicationController
       @collections = Collection.where(id: session[:collection_ids])
       @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
     end
+    @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
     @global_prefs = GlobalPreference.includes(:image_attachment).all.order(:pref_type, :description)
     authorize @app_prefs
     authorize @global_prefs
@@ -54,6 +55,7 @@ class AppPreferencesController < ApplicationController
               flash.now[:alert] = "Error updating app preference: #{app_pref&.errors&.full_messages&.join(', ') || 'Preference not found.'}"
               @collections = Collection.where(id: session[:collection_ids])
               @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
+              @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
               render :app_prefs, status: :unprocessable_entity and return
             end
           end
@@ -85,9 +87,8 @@ class AppPreferencesController < ApplicationController
     elsif params[:app_preference].present?
       # create preference for every collection
       Collection.all.each do |collection|
-        @app_preference = AppPreference.new(app_preference_params)
+        @app_preference = collection.app_preferences.build(app_preference_params.except(:collection_id))
         authorize @app_preference
-        @app_preference.collection_id = collection.id
         unless @app_preference.save
           AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["no"]}
           GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["yes"]}
