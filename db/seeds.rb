@@ -97,3 +97,49 @@ locations.each do |loc|
   end
 end
 
+app_preferences = [
+  {
+    name: "generic_contact_email",
+    description: "Email address to send information request about all collections",
+    pref_type: "string",
+    value: ""
+  },
+  {
+    name: "collection_email_to_send_requests",
+    description: "Comma-separated list of collection-specific email addresses to send requests to collection admins",
+    pref_type: "string",
+    value: ""
+  },
+  {
+    name: "custom_message_information_request",
+    description: "Add message to information request confirmation emails",
+    pref_type: "string",
+    value: ""
+  },
+  {
+    name: "no_loan_requests",
+    description: "The collection doesnt allow loan request for preparations",
+    pref_type: "boolean",
+    value: "0"
+  },
+  {
+    name: "custom_message_loan_request",
+    description: "Add message to loan request confirmation emails",
+    pref_type: "string",
+    value: ""
+  }
+]
+
+Collection.all.each do |collection|
+  app_preferences.each do |pref|
+    AppPreference.find_or_create_by!(
+      collection_id: collection.id,
+      name: pref[:name]
+    ) do |ap|
+      ap.description = pref[:description]
+      ap.pref_type = pref[:pref_type]
+      ap.value = pref[:value]
+    end
+  end
+end
+puts "App preferences seeded for #{Collection.count} collections (#{AppPreference.count} total records)"
