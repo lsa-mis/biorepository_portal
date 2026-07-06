@@ -7,6 +7,7 @@
 #  division          :string
 #  division_page_url :string
 #  link_to_policies  :string
+#  no_loan_requests  :boolean          default(FALSE), not null
 #  short_description :text
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
@@ -19,29 +20,13 @@ require 'rails_helper'
 
 RSpec.describe Collection, type: :model do
   describe '#no_loan_requests' do
-    let(:collection) { create(:collection) }
-
-    it 'is false when the preference is not enabled' do
-      create(
-        :app_preference,
-        collection: collection,
-        name: 'no_loan_requests',
-        pref_type: :boolean,
-        value: '0'
-      )
-
+    it 'defaults to false' do
+      collection = create(:collection)
       expect(collection.no_loan_requests).to be false
     end
 
-    it 'is true when the collection-specific preference is enabled' do
-      create(
-        :app_preference,
-        collection: collection,
-        name: 'no_loan_requests',
-        pref_type: :boolean,
-        value: '1'
-      )
-
+    it 'can be enabled on the collection' do
+      collection = create(:collection, no_loan_requests: true)
       expect(collection.no_loan_requests).to be true
     end
   end

@@ -71,28 +71,16 @@ RSpec.describe Collection, type: :request do
       expect(response.body).not_to include("Import")
     end
 
-    it 'displays No Loan Requests when the collection preference is enabled' do
-      create(
-        :app_preference,
-        collection: collection,
-        name: 'no_loan_requests',
-        pref_type: :boolean,
-        value: '1'
-      )
+    it 'displays No Loan Requests when the collection status is enabled' do
+      collection.update!(no_loan_requests: true)
 
       get collection_path(collection)
 
       expect(response.body).to include("No Loan Requests")
     end
 
-    it 'does not display No Loan Requests when the collection preference is disabled' do
-      create(
-        :app_preference,
-        collection: collection,
-        name: 'no_loan_requests',
-        pref_type: :boolean,
-        value: '0'
-      )
+    it 'does not display No Loan Requests when the collection status is disabled' do
+      collection.update!(no_loan_requests: false)
 
       get collection_path(collection)
 
