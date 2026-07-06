@@ -344,7 +344,7 @@ class ItemsController < ApplicationController
     end
 
     def execute_search_and_paginate
-      log_postgres_global_session_stats(controller: 'ItemsController', action: 'search')
+      log_postgres_global_session_stats
 
       # Get base results
       filtered_items = @q.result.distinct

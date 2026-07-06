@@ -13,7 +13,7 @@ class HomeController < ApplicationController
     else
       @items = Item.includes(:collection, :current_identification, :preparations).limit(6)
     end
-    log_postgres_global_session_stats(controller: 'HomeController', action: 'about')
+    log_postgres_global_session_stats
     
     # Preload checkout's requestables to avoid N+1 queries in the preparation_in_checkout helper
     @checkout&.requestables&.load

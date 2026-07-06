@@ -10,7 +10,7 @@ class CollectionsController < ApplicationController
 
   # GET /collections/1 or /collections/1.json
   def show
-    log_postgres_global_session_stats(controller: 'CollectionsController', action: 'show')
+    log_postgres_global_session_stats
     # 1. Eager load everything used in the accordion and table
     @q1 = @collection.items.includes(
       :collection,             # For item.collection.division
@@ -32,7 +32,7 @@ class CollectionsController < ApplicationController
   end
 
   def search
-    log_postgres_global_session_stats(controller: 'CollectionsController', action: 'search')
+    log_postgres_global_session_stats
     @q1 = @collection.items.includes(:current_identification, :preparations).ransack(params[:q1])
     @items = @q1.result.page(params[:page]).per(params[:per]).max_paginates_per(500)
     # Preload checkout's requestables to avoid N+1 queries in the preparation_in_checkout helper

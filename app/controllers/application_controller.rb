@@ -255,7 +255,8 @@ end
     end
   end
 
-  def log_postgres_global_session_stats(controller: params[:controller], action: params[:action])
+  def log_postgres_global_session_stats(controller: self.class.name, action: action_name)
+    return unless ENV["LOG_PG_SESSION_STATS"] == "1"
     rows = ActiveRecord::Base.connection.exec_query(<<~SQL)
       SELECT state, count(*)
       FROM pg_stat_activity
