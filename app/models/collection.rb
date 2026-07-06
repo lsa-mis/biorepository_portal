@@ -32,4 +32,18 @@ class Collection < ApplicationRecord
   def self.ransackable_attributes(auth_object = nil)
     ["admin_group", "created_at", "description", "division", "division_page_url", "id", "id_value", "link_to_policies", "updated_at"]
   end
+
+  def no_loan_requests
+    preference_enabled?("no_loan_requests")
+  end
+
+  def preference_enabled?(name)
+    preference = if app_preferences.loaded?
+      app_preferences.detect { |app_preference| app_preference.name == name }
+    else
+      app_preferences.find_by(name: name)
+    end
+
+    ActiveModel::Type::Boolean.new.cast(preference&.value) == true
+  end
 end
