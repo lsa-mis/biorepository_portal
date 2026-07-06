@@ -32,10 +32,9 @@ end
     message = params[:information_request][:question]
     send_to = params[:information_request][:send_to]
     if params[:selected_checkout_items].present?
-        checkout_items = params[:selected_checkout_items]
-        collection_ids = get_collection_ids_from_emails(send_to)
+      checkout_items = params[:selected_checkout_items]
     else
-        collection_ids = get_collection_ids_from_emails(send_to)
+      collection_ids = get_collection_ids_from_emails(send_to)
     end
     @information_request = InformationRequest.new(
       question: message,
