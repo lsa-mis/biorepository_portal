@@ -17,24 +17,25 @@ class InformationRequestsController < ApplicationController
   end
 
   def new
-    @information_request = InformationRequest.new
-    @send_to = {}    
-    emails = AppPreference.joins(:collection).where(name: "collection_email_to_send_requests").where.not(value: [nil, '']).pluck("collections.division", :value)
-    emails.each { |division, email| @send_to[division] = email }
-    generic_email = GlobalPreference.find_by(name: "generic_contact_email")&.value || ""
-    @send_to["Collections email"] = generic_email if generic_email.present?
-  end
+  @information_request = InformationRequest.new
+  @checkout_items, @collection_ids = get_checkout_items  # ADD THIS LINE
+  @send_to = {}    
+  emails = AppPreference.joins(:collection).where(name: "collection_email_to_send_requests").where.not(value: [nil, '']).pluck("collections.division", :value)
+  emails.each { |division, email| @send_to[division] = email }
+  generic_email = GlobalPreference.find_by(name: "generic_contact_email")&.value || ""
+  @send_to["Collections email"] = generic_email if generic_email.present?
+end
 
   def send_information_request
 
     checkout_items = []
     message = params[:information_request][:question]
     send_to = params[:information_request][:send_to]
-    if params[:include_items_from_checkout] == "1"
-      # Assuming you have a method to get items from checkout
-      checkout_items, collection_ids = get_checkout_items
+    if params[:selected_checkout_items].present?
+        checkout_items = params[:selected_checkout_items]
+        collection_ids = get_collection_ids_from_emails(send_to)
     else
-      collection_ids = get_collection_ids_from_emails(send_to)
+        collection_ids = get_collection_ids_from_emails(send_to)
     end
     @information_request = InformationRequest.new(
       question: message,
@@ -62,6 +63,8 @@ class InformationRequestsController < ApplicationController
     else
       flash.now[:alert] = "Failed to send information request."
       @send_to = Collection.pluck(:admin_group).compact
+      @checkout_items, @collection_ids = get_checkout_items # to resolve rspec error
+
       render :new
     end
   end
