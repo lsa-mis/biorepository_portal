@@ -261,6 +261,7 @@ end
       SELECT COALESCE(state, 'unknown') AS state, count(*) AS count
       FROM pg_stat_activity
       WHERE backend_type = 'client backend'
+      AND datname = current_database()
       GROUP BY 1;
     SQL
 
