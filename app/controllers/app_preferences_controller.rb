@@ -61,6 +61,7 @@ class AppPreferencesController < ApplicationController
           end
         end
       end
+      sync_no_loan_requests_preferences(@app_prefs, params[:app_prefs])
     end
     redirect_to app_prefs_path, notice: "Preferences are updated."
   end
@@ -143,6 +144,20 @@ class AppPreferencesController < ApplicationController
 
     def set_pref_types
       @pref_types = AppPreference.pref_types.keys
+    end
+
+    def sync_no_loan_requests_preferences(app_prefs, submitted_prefs)
+      collection_ids = app_prefs.where(name: "no_loan_requests").distinct.pluck(:collection_id)
+      return if collection_ids.empty?
+
+      enabled_collection_ids = submitted_prefs.to_unsafe_h.filter_map do |collection_id, preferences|
+        collection_id.to_i if preferences["no_loan_requests"].present?
+      end
+
+      enabled_collection_ids &= collection_ids
+
+      Collection.where(id: collection_ids).update_all(no_loan_requests: false)
+      Collection.where(id: enabled_collection_ids).update_all(no_loan_requests: true) if enabled_collection_ids.any?
     end
 
     # Only allow a list of trusted parameters through.
