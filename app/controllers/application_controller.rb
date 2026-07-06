@@ -255,6 +255,24 @@ end
     end
   end
 
-  
+  def log_postgres_global_session_stats
+    return unless ENV["LOG_PG_SESSION_STATS"] == "1"
+    controller ||= self.class.name
+    action ||= action_name
+    rows = ActiveRecord::Base.connection.exec_query(<<~SQL)
+      SELECT COALESCE(state, 'unknown') AS state, count(*) AS count
+      FROM pg_stat_activity
+      WHERE backend_type = 'client backend'
+      AND datname = current_database()
+      GROUP BY 1;
+    SQL
+
+    state_counts = rows.to_a.to_h { |row| [row["state"], row["count"].to_i] }
+
+    Rails.logger.info { "++++++++++++++++++++++++++++++++ [pg_stat_activity] session stats for #{controller}##{action}: #{state_counts.inspect}" }
+    Rails.logger.info { "++++++++++++++++++++++++++++++++ [pg_stat_activity] sessions active=#{state_counts.fetch('active', 0)} idle=#{state_counts.fetch('idle', 0)}" }
+  rescue ActiveRecord::ActiveRecordError => e
+    Rails.logger.warn { "++++++++++++++++++++++++++++++++ [pg_stat_activity] session stats unavailable: #{e.class} - #{e.message}" }
+  end
 
 end
