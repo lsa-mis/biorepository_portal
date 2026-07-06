@@ -255,8 +255,10 @@ end
     end
   end
 
-  def log_postgres_global_session_stats(controller: self.class.name, action: action_name)
+  def log_postgres_global_session_stats
     return unless ENV["LOG_PG_SESSION_STATS"] == "1"
+    controller ||= self.class.name
+    action ||= action_name
     rows = ActiveRecord::Base.connection.exec_query(<<~SQL)
       SELECT COALESCE(state, 'unknown') AS state, count(*) AS count
       FROM pg_stat_activity
