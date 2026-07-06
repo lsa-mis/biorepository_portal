@@ -267,10 +267,10 @@ end
 
     state_counts = rows.to_a.to_h { |row| [row["state"], row["count"].to_i] }
 
-    Rails.logger.debug "++++++++++++++++++++++++++++++++ [pg_stat_activity] session stats for #{controller}##{action}: #{state_counts.inspect}"
-    Rails.logger.debug "++++++++++++++++++++++++++++++++ [pg_stat_activity] sessions active=#{state_counts.fetch('active', 0)} idle=#{state_counts.fetch('idle', 0)}"
+    Rails.logger.debug { "++++++++++++++++++++++++++++++++ [pg_stat_activity] session stats for #{controller}##{action}: #{state_counts.inspect}" }
+    Rails.logger.debug { "++++++++++++++++++++++++++++++++ [pg_stat_activity] sessions active=#{state_counts.fetch('active', 0)} idle=#{state_counts.fetch('idle', 0)}" }
   rescue ActiveRecord::ActiveRecordError => e
-    Rails.logger.debug "++++++++++++++++++++++++++++++++ [pg_stat_activity] session stats unavailable: #{e.class} - #{e.message}"
+    Rails.logger.debug { "++++++++++++++++++++++++++++++++ [pg_stat_activity] session stats unavailable: #{e.class} - #{e.message}" }
   end
 
 end
