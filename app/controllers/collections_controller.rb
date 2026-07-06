@@ -165,7 +165,7 @@ class CollectionsController < ApplicationController
         note = result[:note]
       else
         status = "completed"
-        note = ["#{import_type} import completed successfully."]
+        note = ["#{import_type} import completed successfully. Total time: #{result[:time]} minutes."]
       end
       ItemImportLog.create(date: DateTime.now, user: current_user.name_with_email, collection_id: collection_id, status: status, note: note)
     end
