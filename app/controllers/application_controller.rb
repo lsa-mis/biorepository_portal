@@ -258,20 +258,18 @@ end
   def log_postgres_global_session_stats(controller: self.class.name, action: action_name)
     return unless ENV["LOG_PG_SESSION_STATS"] == "1"
     rows = ActiveRecord::Base.connection.exec_query(<<~SQL)
-      SELECT state, count(*)
+      SELECT COALESCE(state, 'unknown') AS state, count(*) AS count
       FROM pg_stat_activity
       WHERE backend_type = 'client backend'
-      GROUP BY state;
+      GROUP BY 1;
     SQL
 
-    state_counts = rows.to_a.each_with_object({}) do |row, counts|
-      counts[row["state"]] = row["count"].to_i
-    end
+    state_counts = rows.to_a.to_h { |row| [row["state"], row["count"].to_i] }
 
-    Rails.logger.info "+++++++++++++++++++++++++++++ PostgreSQL global session stats for #{controller}##{action}: #{state_counts.inspect}"
-    Rails.logger.info "+++++++++++++++++++++++++++++ PostgreSQL global sessions - active: #{state_counts.fetch('active', 0)}, idle: #{state_counts.fetch('idle', 0)}"
+    Rails.logger.debug "++++++++++++++++++++++++++++++++ [pg_stat_activity] session stats for #{controller}##{action}: #{state_counts.inspect}"
+    Rails.logger.debug "++++++++++++++++++++++++++++++++ [pg_stat_activity] sessions active=#{state_counts.fetch('active', 0)} idle=#{state_counts.fetch('idle', 0)}"
   rescue ActiveRecord::ActiveRecordError => e
-    Rails.logger.warn "+++++++++++++++++++++++++++++ PostgreSQL global session stats unavailable: #{e.class} - #{e.message}"
+    Rails.logger.debug "++++++++++++++++++++++++++++++++ [pg_stat_activity] session stats unavailable: #{e.class} - #{e.message}"
   end
 
 end
