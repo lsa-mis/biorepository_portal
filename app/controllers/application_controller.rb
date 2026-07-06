@@ -255,6 +255,22 @@ end
     end
   end
 
-  
+  def log_postgres_global_session_stats(controller: params[:controller], action: params[:action])
+    rows = ActiveRecord::Base.connection.exec_query(<<~SQL)
+      SELECT state, count(*)
+      FROM pg_stat_activity
+      WHERE backend_type = 'client backend'
+      GROUP BY state;
+    SQL
+
+    state_counts = rows.to_a.each_with_object({}) do |row, counts|
+      counts[row["state"]] = row["count"].to_i
+    end
+
+    Rails.logger.info "+++++++++++++++++++++++++++++ PostgreSQL global session stats for #{controller}##{action}: #{state_counts.inspect}"
+    Rails.logger.info "+++++++++++++++++++++++++++++ PostgreSQL global sessions - active: #{state_counts.fetch('active', 0)}, idle: #{state_counts.fetch('idle', 0)}"
+  rescue ActiveRecord::ActiveRecordError => e
+    Rails.logger.warn "+++++++++++++++++++++++++++++ PostgreSQL global session stats unavailable: #{e.class} - #{e.message}"
+  end
 
 end

@@ -16,8 +16,6 @@ class ItemsController < ApplicationController
   end
 
   def search
-    Rails.logger.info "++++++++++++++++++++++++++++++ In ItemsController#search"
-
     @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
 
     collection_ids = extract_collection_ids
@@ -346,6 +344,8 @@ class ItemsController < ApplicationController
     end
 
     def execute_search_and_paginate
+      log_postgres_global_session_stats(controller: 'ItemsController', action: 'search')
+
       # Get base results
       filtered_items = @q.result.distinct
       
