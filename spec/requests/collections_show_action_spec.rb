@@ -26,7 +26,7 @@ RSpec.describe Collection, type: :request do
       end
     end
 
-  end 
+  end
 
   context 'with admin role' do
       let!(:admin_user) { FactoryBot.create(:user) }
@@ -70,5 +70,33 @@ RSpec.describe Collection, type: :request do
       get collection_path(collection)
       expect(response.body).not_to include("Import")
     end
+
+    it 'displays No Loan Requests when the collection preference is enabled' do
+      create(
+        :app_preference,
+        collection: collection,
+        name: 'no_loan_requests',
+        pref_type: :boolean,
+        value: '1'
+      )
+
+      get collection_path(collection)
+
+      expect(response.body).to include("No Loan Requests")
+    end
+
+    it 'does not display No Loan Requests when the collection preference is disabled' do
+      create(
+        :app_preference,
+        collection: collection,
+        name: 'no_loan_requests',
+        pref_type: :boolean,
+        value: '0'
+      )
+
+      get collection_path(collection)
+
+      expect(response.body).not_to include("No Loan Requests")
+    end
   end
-end 
+end

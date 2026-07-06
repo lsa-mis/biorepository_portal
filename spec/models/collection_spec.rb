@@ -18,5 +18,31 @@
 require 'rails_helper'
 
 RSpec.describe Collection, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe '#no_loan_requests' do
+    let(:collection) { create(:collection) }
+
+    it 'is false when the preference is not enabled' do
+      create(
+        :app_preference,
+        collection: collection,
+        name: 'no_loan_requests',
+        pref_type: :boolean,
+        value: '0'
+      )
+
+      expect(collection.no_loan_requests).to be false
+    end
+
+    it 'is true when the collection-specific preference is enabled' do
+      create(
+        :app_preference,
+        collection: collection,
+        name: 'no_loan_requests',
+        pref_type: :boolean,
+        value: '1'
+      )
+
+      expect(collection.no_loan_requests).to be true
+    end
+  end
 end
