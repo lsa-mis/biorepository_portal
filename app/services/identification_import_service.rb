@@ -12,7 +12,7 @@ class IdentificationImportService
     @log = ImportLog.new
     @notes = []
     @errors = 0
-    @result = { errors: 0, note: [] }
+    @result = { errors: 0, note: [], time: 0 }
   end
 
   # Assumes:
@@ -45,14 +45,15 @@ class IdentificationImportService
       end
     }
     task_time = ((total_time.real / 60) % 60).round(2)
-    @log.import_logger.info("***********************Identification import completed. Total time: #{task_time} minutes.")
+    @log.import_logger.info("**** IdentificationImportService, Identification import completed. Total time: #{task_time} minutes.")
     @notes << "Identification import completed. File: #{@file.original_filename}. Total time: #{task_time} minutes."
     @result[:errors] = @errors
     @result[:note] = @notes.reverse # Reverse to maintain order of processing
+    @result[:time] = task_time
     return @result
     
   rescue => e
-    @log.import_logger.error("***********************Error importing identifications: #{e.message}")
+    @log.import_logger.error("**** IdentificationImportService, Error importing identifications: #{e.message}")
     @notes << "Identification import: Error importing identifications. Error: #{e.message}"
     @result[:errors] = @errors + 1
     @result[:note] = @notes.reverse
@@ -67,12 +68,12 @@ class IdentificationImportService
     assign_fields(identification, row)
 
     unless identification.save
-      @log.import_logger.error("***********************Failed to save identification: #{identification.errors.full_messages.join(', ')}")
+      @log.import_logger.error("**** IdentificationImportService, Failed to save identification: #{identification.errors.full_messages.join(', ')}")
       @errors += 1
       @notes << "Identification import: Failed to save identification. Item: #{item.occurrence_id}. Error: #{identification.errors.full_messages.join(', ')}"
     end
   rescue => e
-    @log.import_logger.error("***********************Error saving identification: #{e.message}")
+    @log.import_logger.error("**** IdentificationImportService, Error saving identification: #{e.message}")
     @errors += 1
     @notes << "Identification import: Error saving identification. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
