@@ -79,12 +79,16 @@
 
   <div class="mt-3">
   <% if @checkout_items.present? %>
-  <p class="fw-semibold mb-2">Select Items from Checkout to Include:</p>
-<p class="text-muted small mb-2">Select the items you want to reference in your information request. Selected items will be included in the email sent to the collection team.</p>
+    <p class="fw-semibold mb-2">Select Items from Checkout to Include:</p>
+    <p class="text-muted small mb-2">
+      Select the items you want to reference in your information request.
+      Selected items will be included in the email sent to the collection team.
+    </p>
     <div class="p-3 rounded border bg-light">
       <% @checkout_items.each_with_index do |item, index| %>
         <div class="form-check mb-2">
-          <%= check_box_tag "selected_checkout_items[]", item, false,
+          <%= check_box_tag "selected_checkout_items[]", item,
+              @information_request.checkout_items&.include?(item),
               id: "checkout_item_#{index}",
               class: "form-check-input" %>
           <label class="form-check-label small text-muted" for="checkout_item_<%= index %>">
@@ -93,12 +97,12 @@
         </div>
       <% end %>
     </div>
-  <% elsif @checkout_items.empty? %>
+  <% else %>
     <div class="mt-2">
       <span class="text-muted small">No items currently in checkout.</span>
     </div>
   <% end %>
-</div>
+  </div>
   
   <div class="mt-3 p-4 rounded-4 shadow"
       style="background: rgba(0, 0, 0, 0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
