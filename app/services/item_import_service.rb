@@ -189,10 +189,12 @@ class ItemImportService
   end
 
   def cleanup_removed_items
-    @items_in_db.each do |occurrence_id|
-      item = Item.find_by(occurrence_id: occurrence_id)
-      item&.destroy
-    end
+    return if @items_in_db.empty?
+
+    Item
+      .where(collection_id: @collection_id, occurrence_id: @items_in_db.to_a)
+      .includes(:identifications, :preparations)
+      .find_each(&:destroy)
   end
 
   def is_date?(string)
