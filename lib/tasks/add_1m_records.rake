@@ -56,6 +56,7 @@ def insert_records
         vitality:           ["alive", "dead"].sample,
         sampling_protocol:  Faker::Lorem.words(number: 3).join(" "),
         occurrence_remarks: Faker::Lorem.sentence,
+        occurrence_id:      Faker::Alphanumeric.unique.alphanumeric(number: 20).downcase,
         created_at:         now,
         updated_at:         now
       }
