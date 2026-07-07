@@ -7,7 +7,6 @@
 #  division          :string
 #  division_page_url :string
 #  link_to_policies  :string
-#  no_loan_requests  :boolean          default(FALSE), not null
 #  short_description :text
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null

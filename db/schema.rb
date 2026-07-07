@@ -131,7 +131,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_124500) do
     t.string "division"
     t.string "division_page_url"
     t.string "link_to_policies"
-    t.boolean "no_loan_requests", default: false, null: false
     t.text "short_description"
     t.datetime "updated_at", null: false
     t.index ["division"], name: "index_collections_on_division"
