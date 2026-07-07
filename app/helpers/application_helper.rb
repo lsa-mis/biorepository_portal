@@ -160,11 +160,14 @@ module ApplicationHelper
   def get_checkout_items
     checkout_items = []
     collection_ids = []
-    @checkout.requestables.active.each do |requestable|
+    @checkout.requestables.active
+             .includes(preparation: { item: [:collection, :identifications] })
+             .each do |requestable|
       preparation = requestable.preparation
       item = preparation.item
+      current_id = item.identifications.find { |i| i.current }
       checkout_item = ""
-      checkout_item += "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{item.current_identification&.scientific_name}, Preparation: #{preparation.prep_type}"
+      checkout_item += "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{current_id&.scientific_name}, Preparation: #{preparation.prep_type}"
       if preparation.barcode.present?
         checkout_item += ", Barcode: #{preparation.barcode}"
       end
@@ -173,22 +176,21 @@ module ApplicationHelper
       end
       checkout_item += ", Count: #{requestable.count}"
       checkout_items << checkout_item
-      collection_ids << item.collection_id    
+      collection_ids << item.collection_id
     end
     [checkout_items, collection_ids.uniq]
   end
 
-  def get_collection_ids_from_emails(send_to)
-    AppPreference.where(name: "collection_email_to_send_requests", value: send_to).pluck(:collection_id)
-  end
-
   def get_checkout_items_with_ids
     checkout_items = []
-    @checkout.requestables.active.each do |requestable|
+    @checkout.requestables.active
+             .includes(preparation: { item: [:collection, :identifications] })
+             .each do |requestable|
       preparation = requestable.preparation
       item = preparation.item
+      current_id = item.identifications.find { |i| i.current }
       checkout_item = ""
-      checkout_item += "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{item.current_identification&.scientific_name}, Preparation: #{preparation.prep_type}"
+      checkout_item += "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{current_id&.scientific_name}, Preparation: #{preparation.prep_type}"
       if preparation.barcode.present?
         checkout_item += ", Barcode: #{preparation.barcode}"
       end
@@ -200,6 +202,10 @@ module ApplicationHelper
       checkout_items << checkout_item
     end
     checkout_items
+  end
+
+  def get_collection_ids_from_emails(send_to)
+    AppPreference.where(name: "collection_email_to_send_requests", value: send_to).pluck(:collection_id)
   end
   
   def number_of_items_to_loan

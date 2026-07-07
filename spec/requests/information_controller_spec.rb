@@ -2,9 +2,16 @@ require 'rails_helper'
 
 RSpec.describe InformationRequestsController, type: :request do
   let(:user) { FactoryBot.create(:user) }
+  let(:checkout_items) { ["Specimen A123", "Specimen B456", "Specimen C789"] }
+  let(:collection_ids) { [1, 2] }
 
   before do
     mock_login(user)
+    # get_checkout_items is called both in `new` and inside send_information_request's
+    # server-side filter. Stub it so submitted items can actually pass the filter.
+    allow_any_instance_of(InformationRequestsController)
+      .to receive(:get_checkout_items)
+      .and_return([checkout_items, collection_ids])
   end
 
   describe 'GET /new_information_request' do
@@ -41,6 +48,48 @@ RSpec.describe InformationRequestsController, type: :request do
           }
         }
         expect(response.body).to include("Failed to send information request.")
+      end
+    end
+
+    context 'with selected checkout items' do
+      it 'saves only the items that are actually in the checkout' do
+        post send_information_request_path, params: {
+          information_request: {
+            question: "Can I get details on specimen 123?",
+            send_to: "curator@example.com"
+          },
+          selected_checkout_items: ["Specimen A123", "Specimen B456"]
+        }
+
+        expect(response).to redirect_to(faqs_path)
+        expect(InformationRequest.last.checkout_items).to match_array(["Specimen A123", "Specimen B456"])
+      end
+
+      it 'filters out items that are not actually in the checkout' do
+        post send_information_request_path, params: {
+          information_request: {
+            question: "Can I get details on specimen 123?",
+            send_to: "curator@example.com"
+          },
+          selected_checkout_items: ["Specimen A123", "Fake Item Not In Checkout"]
+        }
+
+        expect(InformationRequest.last.checkout_items).to eq(["Specimen A123"])
+        expect(InformationRequest.last.checkout_items).not_to include("Fake Item Not In Checkout")
+      end
+    end
+
+    context 'without any selected checkout items' do
+      it 'saves an empty checkout_items array' do
+        post send_information_request_path, params: {
+          information_request: {
+            question: "Can I get details on specimen 123?",
+            send_to: "curator@example.com"
+          }
+        }
+
+        expect(response).to redirect_to(faqs_path)
+        expect(InformationRequest.last.checkout_items).to eq([])
       end
     end
   end
