@@ -210,33 +210,33 @@ class ItemImportService
       if start_date
         item.event_date_start = start_date
       else
-        @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+        @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}'")
         @errors += 1
-        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
+        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: '#{value}'"
       end
       end_date = parse_flexible_date(end_str)
       if end_date
         item.event_date_end = end_date
       else
-        @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+        @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}'")
         @errors += 1
-        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
+        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: '#{value}'"
       end
     else
       date = parse_flexible_date(value)
       if date
         item.event_date_start = date
-        # item.event_date_end   = date
+        # item.event_date_end = date
       else
-        @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+        @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}'")
         @errors += 1
-        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
+        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: '#{value}'"
       end 
     end
     rescue ArgumentError => e
-    @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+    @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}'. Error: #{e.message}")
     @errors += 1
-    @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
+    @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}, value: '#{value}'. Error: #{e.message}"
   end
 
   def parse_flexible_date(string)
