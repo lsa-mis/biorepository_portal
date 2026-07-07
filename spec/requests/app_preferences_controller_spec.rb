@@ -8,7 +8,7 @@ RSpec.describe AppPreferencesController, type: :request do
   before do
     uniqname = get_uniqname(developer.email)
     allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(true)
-    allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, SUPER_ADMIN_LDAP_GROUP).and_return(false)
+    allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
     allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "mpabi-admins").and_return(false)
     allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "zoo-admins").and_return(false)
     mock_login(developer)
