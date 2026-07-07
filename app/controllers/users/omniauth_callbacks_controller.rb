@@ -38,8 +38,8 @@ def set_user
   uniqname = get_uniqname(@user.email)
   user_membership = find_user_membership(uniqname)
 
-  session[:collection_ids] = determine_collection_ids(user_membership)
   session[:role] = determine_user_role(uniqname, user_membership)
+  session[:collection_ids] = determine_collection_ids(user_membership)
 end
 
 private
@@ -57,18 +57,18 @@ end
 
 def determine_collection_ids(user_membership)
   if user_membership.present?
-    Collection.where(admin_group: user_membership).pluck(:id)
+    Collection.where(admin_group: user_membership).order(:division).pluck(:id)
   else
-    []
+    Collection.order(:division).pluck(:id)
   end
 end
 
 def determine_user_role(uniqname, user_membership)
   if LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-developers')
-    session[:collection_ids] = Collection.pluck(:id)
+    session[:collection_ids] = Collection.order(:division).pluck(:id)
     session[:role] = "developer"
   elsif LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-super-admins')
-    session[:collection_ids] = Collection.pluck(:id)
+    session[:collection_ids] = Collection.order(:division).pluck(:id)
     'super_admin'
   elsif user_membership.present?
     'admin'
