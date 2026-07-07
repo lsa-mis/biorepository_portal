@@ -60,6 +60,9 @@ class Item < ApplicationRecord
   has_many :unavailables
   has_many :checkouts, through: :unavailables
 
+  validates :collection_id, presence: true
+  validates :occurrence_id, presence: true, uniqueness: { scope: :collection_id }
+
   def name
     identification = current_identification
 
