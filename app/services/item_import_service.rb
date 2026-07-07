@@ -43,7 +43,7 @@ class ItemImportService
     @result[:time] = task_time
     return @result
     rescue => e
-      @log.import_logger.error("***********************Error importing Item: #{e.message}")
+      @log.import_logger.error("**** ItemImportService, Error importing Item: #{e.message}")
       @notes << "Occurrence import: Error importing Item. Error: #{e.message}"
       @result[:errors] = @errors + 1
       @result[:note] = @notes.reverse
@@ -67,7 +67,7 @@ class ItemImportService
       @notes << "Occurrence import: Failed to save item. Item: #{item.occurrence_id}. Error: #{item.errors.full_messages.join(', ')}"
     end
   rescue => e
-    @log.import_logger.error("***********************Error saving item: #{e.message}")
+    @log.import_logger.error("**** ItemImportService, Error saving item: #{e.message}")
     @errors += 1
     @notes << "Occurrence import: Error saving item. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
@@ -88,7 +88,7 @@ class ItemImportService
       @notes << "Occurrence import: failed to update item. Item: #{item.occurrence_id}. Error: #{item.errors.full_messages.join(', ')}"
     end
   rescue => e
-    @log.import_logger.error("***********************Error updating item: #{e.message}")
+    @log.import_logger.error("**** ItemImportService, Error updating item: #{e.message}")
     @errors += 1
     @notes << "Occurrence import: Error updating item. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
