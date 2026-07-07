@@ -12,10 +12,10 @@ class AppPreferencesController < ApplicationController
 
   def app_prefs
     if session[:role] == "developer" || session[:role] == "super_admin"
-      @collections = Collection.all
+      @collections = Collection.order(:division)
       @app_prefs = AppPreference.all.order(:pref_type, :description)
     else
-      @collections = Collection.where(id: session[:collection_ids])
+      @collections = Collection.where(id: session[:collection_ids]).order(:division)  
       @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
     end
     @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
@@ -46,21 +46,20 @@ class AppPreferencesController < ApplicationController
       @app_prefs = AppPreference.where(collection_id: session[:collection_ids])
       authorize @app_prefs
       @app_prefs.where(pref_type: 'boolean').update_all(value: "0")
-      if params[:app_prefs].present?
-        params[:app_prefs].each do |collection, p|
-          collection_id = collection.to_i
-          p.each do |k, v|
-            app_pref = AppPreference.find_by(collection_id: collection_id, name: k)
-            unless app_pref&.update(value: v)
-              flash.now[:alert] = "Error updating app preference: #{app_pref&.errors&.full_messages&.join(', ') || 'Preference not found.'}"
-              @collections = Collection.where(id: session[:collection_ids])
-              @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
-              @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
-              render :app_prefs, status: :unprocessable_entity and return
-            end
+      params[:app_prefs].each do |collection, p|
+        collection_id = collection.to_i
+        p.each do |k, v|
+          app_pref = AppPreference.find_by(collection_id: collection_id, name: k)
+          unless app_pref&.update(value: v)
+            flash.now[:alert] = "Error updating app preference: #{app_pref&.errors&.full_messages&.join(', ') || 'Preference not found.'}"
+            @collections = Collection.where(id: session[:collection_ids]).order(:division)
+            @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
+            @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
+            render :app_prefs, status: :unprocessable_entity and return
           end
         end
       end
+      sync_no_loan_requests_preferences(@app_prefs, params[:app_prefs])
     end
     redirect_to app_prefs_path, notice: "Preferences are updated."
   end
@@ -137,12 +136,22 @@ class AppPreferencesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
 
-    def set_collections
-      @collections = Collection.where(id: session[:collection_ids])
-    end
-
     def set_pref_types
       @pref_types = AppPreference.pref_types.keys
+    end
+
+    def sync_no_loan_requests_preferences(app_prefs, submitted_prefs)
+      collection_ids = app_prefs.where(name: "no_loan_requests").distinct.pluck(:collection_id)
+      return if collection_ids.empty?
+
+      enabled_collection_ids = submitted_prefs.to_unsafe_h.filter_map do |collection_id, preferences|
+        collection_id.to_i if preferences["no_loan_requests"].present?
+      end
+
+      enabled_collection_ids &= collection_ids
+
+      Collection.where(id: collection_ids).update_all(no_loan_requests: false)
+      Collection.where(id: enabled_collection_ids).update_all(no_loan_requests: true) if enabled_collection_ids.any?
     end
 
     # Only allow a list of trusted parameters through.
