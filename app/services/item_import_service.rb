@@ -100,7 +100,7 @@ class ItemImportService
     @field_names.each_with_index do |(field, table), index|
       next if field.include?("ignore")
 
-      value = record[index]&.strip || ""
+      value = record[index]&.strip || nil
 
       case table
       when "items"
