@@ -7,19 +7,21 @@ class ItemImportService
     @file = file
     @collection_id = collection_id
     @user = user
-    @items_in_db = Set.new(Item.where(collection_id: @collection_id).pluck(:occurrence_id))
+    @collection = Collection.find(@collection_id)
+    @items_by_occurrence = Item.where(collection_id: @collection_id).index_by(&:occurrence_id)
+    @items_in_db = @items_by_occurrence.keys.to_set
     @field_names = {}
     @log = ImportLog.new
     @notes = []
     @errors = 0
-    @result = { errors: 0, note: [] }
+    @result = { errors: 0, note: [], time: 0 }
   end
 
   # This method is the main entry point for the CSV import process.
   # It reads the CSV file, processes each row, and updates or creates items in the database.
   def call
     total_time = Benchmark.measure {
-      @log.import_logger.info("#{DateTime.now} - #{Collection.find(@collection_id).division} - Processing Occurrence File: #{@file.original_filename}")
+      @log.import_logger.info("#{DateTime.now} - #{@collection.division} - Processing Occurrence File: #{@file.original_filename}")
       CSV.foreach(@file.path, headers: true) do |row|
         record = row.fields.map { |val| val&.delete('"')&.strip }
 
@@ -34,13 +36,14 @@ class ItemImportService
       cleanup_removed_items
     }
     task_time = ((total_time.real / 60) % 60).round(2)
-    @log.import_logger.info("***********************Occurrence import completed. Total time: #{task_time} minutes.")
+    @log.import_logger.info("**** ItemImportService, Occurrence import completed. Total time: #{task_time} minutes.")
     @notes << "Occurrence import completed. File: #{@file.original_filename}. Total time: #{task_time} minutes."
     @result[:errors] = @errors
     @result[:note] = @notes.reverse # Reverse to maintain order of processing
+    @result[:time] = task_time
     return @result
     rescue => e
-      @log.import_logger.error("***********************Error importing Item: #{e.message}")
+      @log.import_logger.error("**** ItemImportService, Error importing Item: #{e.message}")
       @notes << "Occurrence import: Error importing Item. Error: #{e.message}"
       @result[:errors] = @errors + 1
       @result[:note] = @notes.reverse
@@ -54,23 +57,23 @@ class ItemImportService
   end
 
   def save_item(record)
-    item = Item.new(collection_id: @collection_id)
+    item = Item.new(collection: @collection)
     preparations_string = assign_fields(item, record)
     if item.save
       update_preparations(item, preparations_string)
     else
-      @log.import_logger.error("***********************Failed to save item: #{item.errors.full_messages.join(', ')}")
+      @log.import_logger.error("**** ItemImportService, Failed to save item: #{item.errors.full_messages.join(', ')}")
       @errors += 1
       @notes << "Occurrence import: Failed to save item. Item: #{item.occurrence_id}. Error: #{item.errors.full_messages.join(', ')}"
     end
   rescue => e
-    @log.import_logger.error("***********************Error saving item: #{e.message}")
+    @log.import_logger.error("**** ItemImportService, Error saving item: #{e.message}")
     @errors += 1
     @notes << "Occurrence import: Error saving item. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
 
   def update_item(record)
-    item = Item.find_by(occurrence_id: record[0])
+    item = @items_by_occurrence[record[0]]
     return unless item
 
     preparations_string = assign_fields(item, record)
@@ -80,12 +83,12 @@ class ItemImportService
   
       update_preparations(item, preparations_string)
     else
-      @log.import_logger.error("***********************Failed to update item: #{item.errors.full_messages.join(', ')}")
+      @log.import_logger.error("**** ItemImportService, Failed to update item: #{item.errors.full_messages.join(', ')}")
       @errors += 1
       @notes << "Occurrence import: failed to update item. Item: #{item.occurrence_id}. Error: #{item.errors.full_messages.join(', ')}"
     end
   rescue => e
-    @log.import_logger.error("***********************Error updating item: #{e.message}")
+    @log.import_logger.error("**** ItemImportService, Error updating item: #{e.message}")
     @errors += 1
     @notes << "Occurrence import: Error updating item. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
@@ -97,8 +100,7 @@ class ItemImportService
     @field_names.each_with_index do |(field, table), index|
       next if field.include?("ignore")
 
-      value = record[index]&.strip
-      next unless value.present?
+      value = record[index]&.strip || nil
 
       case table
       when "items"
@@ -118,7 +120,7 @@ class ItemImportService
       when "preparations"
         preparations_string = value
       else
-        # @log.import_logger.error("***********************Item - skipping field from: #{table}")
+        # @log.import_logger.error("**** ItemImportService, Item - skipping field from: #{table}")
       end
     end
 
@@ -131,8 +133,10 @@ class ItemImportService
 
   def build_field_names
     header = CSV.open(@file.path, &:readline)
+    map_fields_by_specify_field = MapField.where(specify_field: header.map { |h| h.strip }, table: ["items", "preparations"]).index_by(&:specify_field)
+
     header.each_with_object({}) do |h, hash|
-      map_field = MapField.find_by(specify_field: h.strip)
+      map_field = map_fields_by_specify_field[h.strip]
       hash[map_field.rails_field] = map_field.table if map_field
     end
   end
@@ -145,7 +149,7 @@ class ItemImportService
     end
 
     # Remove all existing preparations for the item
-    item.preparations.destroy_all
+    Preparation.where(item_id: item.id).delete_all
 
     prep_entries = preparations_string.split(';').map(&:strip)
 
@@ -159,17 +163,16 @@ class ItemImportService
 
       update_prep_fields(preparation, values)
       unless preparation.save
-        @log.import_logger.error("***********************Failed to save preparation (#{prep_type}): #{preparation.errors.full_messages.join(', ')}")
+        @log.import_logger.error("**** ItemImportService, Failed to save preparation (#{prep_type}): #{preparation.errors.full_messages.join(', ')}")
         @errors += 1
         @notes << "Occurrence import: Failed to save preparation (#{prep_type}). Item: #{item.occurrence_id}. Error: #{preparation.errors.full_messages.join(', ')}"
       end
     end
   rescue => e
-    @log.import_logger.error("***********************Error updating preparations: #{e.message}")
+    @log.import_logger.error("**** ItemImportService, Error updating preparations: #{e.message}")
     @errors += 1
     @notes << "Occurrence import: Error updating preparations. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
-
 
   def extract_prep_type_and_count(values)
     parts = values[0].to_s.split('-').map(&:strip)
@@ -186,10 +189,12 @@ class ItemImportService
   end
 
   def cleanup_removed_items
-    @items_in_db.each do |occurrence_id|
-      item = Item.find_by(occurrence_id: occurrence_id)
-      item&.destroy
-    end
+    return if @items_in_db.empty?
+
+    Item
+      .where(collection_id: @collection_id, occurrence_id: @items_in_db.to_a)
+      .includes(:identifications, :preparations)
+      .find_each(&:destroy)
   end
 
   def is_date?(string)
@@ -205,33 +210,33 @@ class ItemImportService
       if start_date
         item.event_date_start = start_date
       else
-        @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+        @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}'")
         @errors += 1
-        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
+        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: '#{value}'"
       end
       end_date = parse_flexible_date(end_str)
       if end_date
         item.event_date_end = end_date
       else
-        @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+        @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}'")
         @errors += 1
-        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
+        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: '#{value}'"
       end
     else
       date = parse_flexible_date(value)
       if date
         item.event_date_start = date
-        # item.event_date_end   = date
+        # item.event_date_end = date
       else
-        @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+        @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}'")
         @errors += 1
-        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
+        @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: '#{value}'"
       end 
     end
     rescue ArgumentError => e
-    @log.import_logger.error("***********************#{item.occurrence_id} - Invalid eventDate format: '#{value}' — #{e.message}")
+    @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}'. Error: #{e.message}")
     @errors += 1
-    @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}. Error: #{e.message}"
+    @notes << "Occurrence import: Invalid eventDate format. Item: #{item.occurrence_id}, value: '#{value}'. Error: #{e.message}"
   end
 
   def parse_flexible_date(string)
