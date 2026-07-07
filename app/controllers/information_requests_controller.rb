@@ -3,8 +3,8 @@ class InformationRequestsController < ApplicationController
 
   def show_modal
     @information_request = InformationRequest.find(params[:id])
-    render turbo_stream: turbo_stream.update("modal_content_frame"){
-      render_to_string partial: "information_requests/review", 
+    render turbo_stream: turbo_stream.update("modal_content_frame") {
+      render_to_string partial: "information_requests/review",
         formats: [:html],
         locals: { information_request: @information_request }
     }
@@ -18,24 +18,30 @@ class InformationRequestsController < ApplicationController
 
   def new
     @information_request = InformationRequest.new
-    @send_to = {}    
-    emails = AppPreference.joins(:collection).where(name: "collection_email_to_send_requests").where.not(value: [nil, '']).pluck("collections.division", :value)
+    @checkout_items, @collection_ids = get_checkout_items
+    @send_to = {}
+    emails = AppPreference.joins(:collection)
+                          .where(name: "collection_email_to_send_requests")
+                          .where.not(value: [nil, ''])
+                          .pluck("collections.division", :value)
     emails.each { |division, email| @send_to[division] = email }
     generic_email = GlobalPreference.find_by(name: "generic_contact_email")&.value || ""
     @send_to["Collections email"] = generic_email if generic_email.present?
   end
 
   def send_information_request
-
     checkout_items = []
     message = params[:information_request][:question]
     send_to = params[:information_request][:send_to]
-    if params[:include_items_from_checkout] == "1"
-      # Assuming you have a method to get items from checkout
-      checkout_items, collection_ids = get_checkout_items
-    else
-      collection_ids = get_collection_ids_from_emails(send_to)
+
+    if params[:selected_checkout_items].present?
+      all_checkout_items, = get_checkout_items
+      checkout_items = Array(params[:selected_checkout_items])
+                         .select { |i| all_checkout_items.include?(i) }
     end
+
+    collection_ids = get_collection_ids_from_emails(send_to)
+
     @information_request = InformationRequest.new(
       question: message,
       send_to: send_to,
@@ -43,6 +49,7 @@ class InformationRequestsController < ApplicationController
       checkout_items: checkout_items,
       collection_ids: collection_ids
     )
+
     if @information_request.save
       RequestMailer.with(
         information_request: @information_request,
@@ -60,8 +67,17 @@ class InformationRequestsController < ApplicationController
       ).confirmation_information_request.deliver_now
       redirect_to faqs_path, notice: "Information request sent successfully."
     else
+
       flash.now[:alert] = "Failed to send information request."
-      @send_to = Collection.pluck(:admin_group).compact
+      @send_to = {}
+      emails = AppPreference.joins(:collection)
+                            .where(name: "collection_email_to_send_requests")
+                            .where.not(value: [nil, ""])
+                            .pluck("collections.division", :value)
+      emails.each { |division, email| @send_to[division] = email }
+      generic_email = GlobalPreference.find_by(name: "generic_contact_email")&.value || ""
+      @send_to["Collections email"] = generic_email if generic_email.present?
+      @checkout_items, @collection_ids = get_checkout_items
       render :new
     end
   end
