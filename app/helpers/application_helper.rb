@@ -100,6 +100,14 @@ module ApplicationHelper
     end
   end
 
+  def preparation_checkout_label(item)
+    if item&.collection&.no_loan_requests?
+      "Add Preparation to Checkout (Information Request Only)"
+    else
+      "Add Preparation to Checkout"
+    end
+  end
+
   def item_views
     [
       [ 'Rows', 'rows' ],
