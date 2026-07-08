@@ -5,7 +5,7 @@
     <h1><%= @item.collection.division %> Collection</h1>
     <h2><%= @item.display_name %></h2>
     <%= turbo_frame_tag "checkout_item_row_#{@item.id}" do %>
-      <%= render partial: "collections/preparation_for_checkout", locals: { item: @item } %>
+      <%= render partial: "collections/preparation_for_checkout", locals: { item: @item, checkout_label: preparation_checkout_label(@item) } %>
     <% end %>
 
     <%= link_to safe_return_path(params[:return_to], collection_path(@item.collection)), class: "btn btn-outline-primary mt-4" do %>
