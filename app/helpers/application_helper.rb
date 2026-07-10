@@ -256,4 +256,41 @@ module ApplicationHelper
     end
   end
 
+  def get_loan_checkout_items
+  checkout_items = []
+  collection_ids = []
+  @checkout.requestables.active
+    .includes(:preparation, item: [:collection, :current_identification])
+    .select { |r| r.preparation.item.collection.accepts_loan_requests }
+    .each do |requestable|
+      preparation = requestable.preparation
+      item = preparation.item
+      checkout_item = "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{item.current_identification&.scientific_name}, Preparation: #{preparation.prep_type}"
+      checkout_item += ", Barcode: #{preparation.barcode}" if preparation.barcode.present?
+      checkout_item += ", Description: #{preparation.description}" if preparation.description.present?
+      checkout_item += ", Count: #{requestable.count}"
+      checkout_items << checkout_item
+      collection_ids << item.collection_id
+    end
+  [checkout_items, collection_ids.uniq]
+end
+
+def get_loan_checkout_items_with_ids
+  checkout_items = []
+  @checkout.requestables.active
+    .includes(:preparation, item: [:collection, :current_identification])
+    .select { |r| r.preparation.item.collection.accepts_loan_requests }
+    .each do |requestable|
+      preparation = requestable.preparation
+      item = preparation.item
+      checkout_item = "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{item.current_identification&.scientific_name}, Preparation: #{preparation.prep_type}"
+      checkout_item += ", Barcode: #{preparation.barcode}" if preparation.barcode.present?
+      checkout_item += ", Description: #{preparation.description}" if preparation.description.present?
+      checkout_item += ", Count: #{requestable.count}"
+      checkout_item += ", #{item.id}"
+      checkout_items << checkout_item
+    end
+  checkout_items
+ end
+
 end
