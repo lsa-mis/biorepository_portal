@@ -1,4 +1,4 @@
-<% @checkout.requestables.saved_for_later.order(:id).each do |requestable| %>
+<% @saved_requestables.each do |requestable| %>
   <% item = requestable.preparation.item %>
   <% preparation = requestable.preparation %>
   <div class="card mb-3">
