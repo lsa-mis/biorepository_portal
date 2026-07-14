@@ -53,11 +53,16 @@ class RequestMailer < ApplicationMailer
     def get_custom_email_messages(collection_ids, message_type)
       custom_email_messages = {}
       if collection_ids.present?
-        collection_ids.each do |collection_id|
-          collection = Collection.find_by(id: collection_id)
-          next unless collection
-          collection_name = collection.division
-          collection_email_message = AppPreference.find_by(name: message_type, collection_id: collection_id)&.value
+        ids = Array(collection_ids).compact_blank
+        messages_by_collection_id = AppPreference
+          .joins(:collection)
+          .where(name: message_type, collection_id: ids)
+          .where.not(value: [nil, ""])
+          .pluck("app_preferences.collection_id", "collections.division", "app_preferences.value")
+          .index_by { |collection_id, _collection_name, _message| collection_id.to_s }
+
+        ids.each do |collection_id|
+          _id, collection_name, collection_email_message = messages_by_collection_id[collection_id.to_s]
           custom_email_messages[collection_name] = collection_email_message if collection_email_message.present?
         end
       end
