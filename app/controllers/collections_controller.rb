@@ -186,8 +186,10 @@ class CollectionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def collection_params
-      params.require(:collection).permit(:division, :admin_group, :short_description, :long_description, :division_page_url, :link_to_policies, :image) 
-    end
+  params.require(:collection).permit(:division, :admin_group, :short_description, 
+    :long_description, :division_page_url, :link_to_policies, :image,
+    :accepts_loan_requests)  # ← add this
+end
 
     def search_params
       params.permit(:q1, :commit)

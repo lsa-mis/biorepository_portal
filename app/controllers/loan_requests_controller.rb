@@ -57,21 +57,22 @@ class LoanRequestsController < ApplicationController
       redirect_to step_four_path and return
     end
     alert = checkout_availability
-    @checkout_items = get_checkout_items_with_ids
+    @checkout_items = get_loan_checkout_items_with_ids
     authorize LoanRequest
     flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed from Checkout." if alert.present?
   end
 
   def send_loan_request
-    @shipping_address = Address.find(params[:shipping_address_id])
+  @shipping_address = Address.find(params[:shipping_address_id])
 
-    if @checkout.nil? || @checkout.requestables.active.empty?
-      flash[:alert] = "No items in checkout."
-      redirect_to root_path
-      return
-    end
+  if @checkout.nil? || @checkout.requestables.active.empty?
+    flash[:alert] = "No items in checkout."
+    redirect_to root_path
+    return
+  end
 
-    @checkout_items, @collection_ids = get_checkout_items
+  @checkout_items, @collection_ids = get_loan_checkout_items
+
 
     emails = @collection_ids.map do |collection_id|
       AppPreference.find_by(
@@ -217,7 +218,9 @@ class LoanRequestsController < ApplicationController
         answer_text = primary_position_answer&.answer&.to_plain_text.presence || "Not Provided"
         # Organism remarks can contain multiple semicolon-delimited segments;
         # for this CSV export we only include the first segment
-        @checkout.requestables.active.each do |requestable|
+        @checkout.requestables.active
+            .select { |r| r.preparation.item.collection.accepts_loan_requests }
+            .each do |requestable|
           csv << [
             [user.first_name, user.last_name].compact.join(" "),
             user.affiliation,
