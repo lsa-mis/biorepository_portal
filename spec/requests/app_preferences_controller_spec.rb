@@ -33,6 +33,14 @@ RSpec.describe AppPreferencesController, type: :request do
     ensure
       ActiveSupport::Notifications.unsubscribe(subscription) if subscription
     end
+
+    it 'renders placeholders on string preferences' do
+      FactoryBot.create(:app_preference, collection: mpabi_collection, name: "catalog_prefix", pref_type: :string, placeholder: "Enter catalog prefix")
+
+      get app_prefs_path
+
+      expect(response.body).to include('placeholder="Enter catalog prefix"')
+    end
   end
 
   describe 'POST /app_preferences' do
@@ -55,6 +63,20 @@ RSpec.describe AppPreferencesController, type: :request do
       expect(collection_loads).to be_empty
     ensure
       ActiveSupport::Notifications.unsubscribe(subscription) if subscription
+    end
+
+    it 'creates string preferences with placeholder text' do
+      post app_preferences_path, params: {
+        app_preference: {
+          name: "collection_email_to_send_requests",
+          description: "Collection request email",
+          pref_type: "string",
+          placeholder: "curator@example.edu"
+        }
+      }, headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
+
+      expect(response).to have_http_status(:success)
+      expect(AppPreference.where(name: "collection_email_to_send_requests").pluck(:placeholder).uniq).to eq(["curator@example.edu"])
     end
   end
 

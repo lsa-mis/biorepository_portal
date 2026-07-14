@@ -13,7 +13,7 @@
               </div>
             <% elsif pref.pref_type == "string" %>
               <label for=<%= "global_prefs_#{pref.name}" %>><%= pref.description %></label>
-              <%= text_field_tag("global_prefs[#{pref.name}]", pref.value, disabled: !is_super_admin?) %>
+              <%= text_field_tag("global_prefs[#{pref.name}]", pref.value, placeholder: pref.placeholder, disabled: !is_super_admin?) %>
             <% elsif pref.pref_type == "integer" %>
               <label for=<%= "global_prefs_#{pref.name}" %>><%= pref.description %></label>
               <%= number_field_tag("global_prefs[#{pref.name}]", pref.value, disabled: !is_super_admin?) %>
@@ -65,7 +65,7 @@
               </div>
             <% elsif pref.pref_type == "string" %>
               <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %>><%= pref.description %></label>
-              <%= text_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value) %>
+              <%= text_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value, placeholder: pref.placeholder) %>
             <% elsif pref.pref_type == "integer" %>
               <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %>><%= pref.description %></label>
               <%= number_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value) %>

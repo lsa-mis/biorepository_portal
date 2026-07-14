@@ -5,19 +5,23 @@
         <tr>
           <th scope="col" class="text-start">Name</th>
           <th scope="col">Description</th>
+          <th scope="col">Placeholder</th>
           <th scope="col" class="text-center">Type</th>
           <th scope="col" class="text-center">Global</th>
           <th scope="col" class="text-center">Delete</th>
         </tr>
       </thead>
       <tbody class="table-group-divider" id="app_preferences">
-        <% @app_preferences.each do |name, descr, pref_type, global| %>
+        <% @app_preferences.each do |name, descr, pref_type, placeholder, global| %>
           <tr>
             <td class="text-start">
               <%= name %>
             </td>
             <td class="text-start">
               <%= descr %>
+            </td>
+            <td class="text-start">
+              <%= placeholder %>
             </td>
             <td class="text-center">
               <%= pref_type %>

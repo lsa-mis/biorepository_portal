@@ -5,6 +5,7 @@
 #  id            :bigint           not null, primary key
 #  description   :string
 #  name          :string
+#  placeholder   :string
 #  pref_type     :integer
 #  value         :string
 #  created_at    :datetime         not null
@@ -23,6 +24,7 @@ FactoryBot.define do
   factory :app_preference do
     name { "Default Name" }
     description { "Default Description" }
+    placeholder { nil }
     pref_type { 1 }
     value { "Default Value" }
     association :collection
