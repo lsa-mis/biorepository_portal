@@ -226,7 +226,7 @@ class ItemImportService
       date = parse_flexible_date(value)
       if date
         item.event_date_start = date
-        # item.event_date_end = date
+        item.event_date_end = nil
       else
         @log.import_logger.error("**** ItemImportService, #{item.occurrence_id} - Invalid eventDate format: '#{value}'")
         @errors += 1
