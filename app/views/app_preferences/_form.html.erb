@@ -27,6 +27,11 @@
     </div>
 
     <div class="">
+      <%= form.label :placeholder, "Placeholder" %>
+      <%= form.text_field :placeholder %>
+    </div>
+
+    <div class="">
       <%= form.label :pref_type, 'Type *' %>
       <%= form.select :pref_type, @pref_types.map{ |key| [key.titleize, key] }, { include_blank: "Select ...", required: true } %>
     </div>

@@ -103,13 +103,15 @@ app_preferences = [
     name: "collection_email_to_send_requests",
     description: "Comma-separated list of collection-specific email addresses to send requests to collection admins",
     pref_type: "string",
-    value: ""
+    value: "",
+    placeholder: "curator@example.edu, collection-admin@example.edu"
   },
   {
     name: "custom_message_information_request",
     description: "Add message to information request confirmation emails",
     pref_type: "string",
-    value: ""
+    value: "",
+    placeholder: "Thank you for your information request. A collection manager will follow up soon."
   },
   {
     name: "no_loan_requests",
@@ -121,20 +123,23 @@ app_preferences = [
     name: "custom_message_loan_request",
     description: "Add message to loan request confirmation emails",
     pref_type: "string",
-    value: ""
+    value: "",
+    placeholder: "Thank you for your loan request. We will review availability and respond soon."
   }
 ]
 
 Collection.all.each do |collection|
   app_preferences.each do |pref|
-    AppPreference.find_or_create_by!(
+    app_preference = AppPreference.find_or_create_by!(
       collection_id: collection.id,
       name: pref[:name]
     ) do |ap|
       ap.description = pref[:description]
       ap.pref_type = pref[:pref_type]
       ap.value = pref[:value]
+      ap.placeholder = pref[:placeholder]
     end
+    app_preference.update!(placeholder: pref[:placeholder]) if pref[:placeholder].present? && app_preference.placeholder.blank?
   end
 end
 puts "App preferences seeded for #{Collection.count} collections (#{AppPreference.count} total records)"
@@ -144,7 +149,8 @@ global_preferences = [
     name: "generic_contact_email",
     description: "Email address to send information request about all collections",
     pref_type: "string",
-    value: ""
+    value: "",
+    placeholder: "biorepository@example.edu"
   },
   {
     name: "home_page_image",
@@ -155,11 +161,13 @@ global_preferences = [
 ]
 
 global_preferences.each do |pref|
-  GlobalPreference.find_or_create_by!(name: pref[:name]) do |gp|
+  global_preference = GlobalPreference.find_or_create_by!(name: pref[:name]) do |gp|
     gp.description = pref[:description]
     gp.pref_type = pref[:pref_type]
     gp.value = pref[:value]
+    gp.placeholder = pref[:placeholder]
   end
+  global_preference.update!(placeholder: pref[:placeholder]) if pref[:placeholder].present? && global_preference.placeholder.blank?
 end
 
 puts "Global preferences seeded (#{GlobalPreference.count} total records)"

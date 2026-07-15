@@ -6,8 +6,8 @@ class AppPreferencesController < ApplicationController
     @app_preference = AppPreference.new
     authorize AppPreference
     @app_preferences = []
-    AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["no"]}
-    GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["yes"]}
+    AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["no"]}
+    GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["yes"]}
   end
 
   def app_prefs
@@ -78,8 +78,8 @@ class AppPreferencesController < ApplicationController
       @app_preference = GlobalPreference.new(app_preference_params)
       authorize @app_preference
       unless @app_preference.save
-        AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["no"]}
-        GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["yes"]}
+        AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["no"]}
+        GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["yes"]}
         flash.now[:alert] = "Error creating app preference."
         return
       end
@@ -89,8 +89,8 @@ class AppPreferencesController < ApplicationController
         @app_preference = collection.app_preferences.build(app_preference_params.except(:collection_id))
         authorize @app_preference
         unless @app_preference.save
-          AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["no"]}
-          GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["yes"]}
+          AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["no"]}
+          GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["yes"]}
           flash.now[:alert] = "Error creating app preference."
           return
         end
@@ -98,8 +98,8 @@ class AppPreferencesController < ApplicationController
     end
     flash.now[:notice] =  "App preference was successfully created."
     @app_preference = AppPreference.new
-    AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["no"]}
-    GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["yes"]}
+    AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["no"]}
+    GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["yes"]}
   end
 
   def delete_preference
@@ -156,6 +156,6 @@ class AppPreferencesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def app_preference_params
-      params.require(:app_preference).permit(:name, :description, :value, :pref_type, :collection_id)
+      params.require(:app_preference).permit(:name, :description, :value, :pref_type, :placeholder, :collection_id)
     end
 end
