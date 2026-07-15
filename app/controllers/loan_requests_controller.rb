@@ -219,7 +219,7 @@ class LoanRequestsController < ApplicationController
         # Organism remarks can contain multiple semicolon-delimited segments;
         # for this CSV export we only include the first segment
         @checkout.requestables.active
-            .select { |r| r.preparation.item.collection.accepts_loan_requests }
+            .reject { |r| r.preparation.item.collection.no_loan_requests }
             .each do |requestable|
           csv << [
             [user.first_name, user.last_name].compact.join(" "),

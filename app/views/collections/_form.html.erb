@@ -58,8 +58,8 @@
     <%= form.file_field :image, accept: ".jpg,.jpeg,.png" %>
     <div class="mt-3">
   <div class="form-check">
-    <%= form.check_box :accepts_loan_requests, class: "form-check-input" %>
-    <%= form.label :accepts_loan_requests, "Accepts Loan Requests", class: "form-check-label" %>
+    <%= form.check_box :no_loan_requests, class: "form-check-input" %>
+    <%= form.label :no_loan_requests, "Accepts Loan Requests", class: "form-check-label" %>
   </div>
   <small class="text-muted">Check this if this collection accepts loan requests from users.</small>
 </div>
@@ -74,8 +74,8 @@
     <% end %>
     <div class="mt-3">
   <div class="form-check">
-    <%= form.check_box :accepts_loan_requests, class: "form-check-input" %>
-    <%= form.label :accepts_loan_requests, "Accepts Loan Requests", class: "form-check-label fw-semibold" %>
+    <%= form.check_box :no_loan_requests, class: "form-check-input" %>
+    <%= form.label :no_loan_requests, "Accepts Loan Requests", class: "form-check-label fw-semibold" %>
   </div>
   <small class="text-muted">Enable this if this collection accepts loan requests from users.</small>
 </div>
