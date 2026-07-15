@@ -188,7 +188,7 @@ class CollectionsController < ApplicationController
     def collection_params
   params.require(:collection).permit(:division, :admin_group, :short_description, 
     :long_description, :division_page_url, :link_to_policies, :image,
-    :accepts_loan_requests)  # ← add this
+    :no_loan_requests)
 end
 
     def search_params

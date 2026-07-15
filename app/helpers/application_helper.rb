@@ -261,7 +261,7 @@ module ApplicationHelper
   collection_ids = []
   @checkout.requestables.active
     .includes(:preparation, item: [:collection, :current_identification])
-    .select { |r| r.preparation.item.collection.accepts_loan_requests }
+    .reject { |r| r.preparation.item.collection.no_loan_requests }
     .each do |requestable|
       preparation = requestable.preparation
       item = preparation.item
@@ -279,7 +279,7 @@ def get_loan_checkout_items_with_ids
   checkout_items = []
   @checkout.requestables.active
     .includes(:preparation, item: [:collection, :current_identification])
-    .select { |r| r.preparation.item.collection.accepts_loan_requests }
+    .reject { |r| r.preparation.item.collection.no_loan_requests }
     .each do |requestable|
       preparation = requestable.preparation
       item = preparation.item

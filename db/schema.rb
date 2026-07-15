@@ -127,6 +127,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_171000) do
   end
 
   create_table "collections", force: :cascade do |t|
+    t.boolean "accepts_loan_requests"
     t.string "admin_group"
     t.datetime "created_at", null: false
     t.string "division"
@@ -333,6 +334,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_171000) do
     t.datetime "created_at", null: false
     t.bigint "item_id"
     t.string "item_name"
+    t.boolean "loan_request", default: true, null: false
     t.bigint "preparation_id"
     t.string "preparation_type"
     t.boolean "saved_for_later", default: false, null: false
