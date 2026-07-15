@@ -3,30 +3,30 @@
     <% is_preview = params[:preview] == "true" && policy(Announcement).preview? %>
     <%= render "layouts/announcement", is_preview: is_preview, location: "checkout" %>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
-  <h1>Checkout</h1>
-  <div class="d-flex gap-2 flex-wrap">
-    <% if user_signed_in? %>
-      <% if @loan_available.any? %>
-        <%= link_to new_loan_request_path, class: "btn btn-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
-          <i class="bi bi-envelope"></i> Send Loan Request
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
+    <h1>Checkout</h1>
+    <div class="d-flex gap-2 flex-wrap">
+      <% if user_signed_in? %>
+        <% if @loan_available.any? %>
+          <%= link_to new_loan_request_path, class: "btn btn-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
+            <i class="bi bi-envelope"></i> Send Loan Request
+          <% end %>
+        <% end %>
+        <%= link_to new_information_request_path, class: "btn btn-outline-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
+          <i class="bi bi-info-circle"></i> Send Information Request
+        <% end %>
+      <% else %>
+        <%= link_to new_user_session_path, class: "btn btn-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
+          <i class="bi bi-envelope"></i> Sign In to Send Loan Request
+        <% end %>
+        <%= link_to new_user_session_path, class: "btn btn-outline-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
+          <i class="bi bi-info-circle"></i> Sign In to Send Information Request
         <% end %>
       <% end %>
-      <%= link_to new_information_request_path, class: "btn btn-outline-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
-        <i class="bi bi-info-circle"></i> Send Information Request
-      <% end %>
-    <% else %>
-      <%= link_to new_user_session_path, class: "btn btn-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
-        <i class="bi bi-envelope"></i> Sign In to Send Loan Request
-      <% end %>
-      <%= link_to new_user_session_path, class: "btn btn-outline-primary h-50 mb-2", data: { turbo_frame: "_top" } do %>
-        <i class="bi bi-info-circle"></i> Sign In to Send Information Request
-      <% end %>
-    <% end %>
+    </div>
   </div>
-</div>
 
-    <% if @checkout.requestables.active.exists? %>
+    <% if @all_requestables.exists? %>
 
       <%# ── LOAN REQUEST SECTION ── %>
       <div class="mt-4 p-4 border rounded-3 shadow-sm">
@@ -37,7 +37,7 @@
         <p class="text-muted mb-4">Only items from collections that accept loan requests can be included. Uncheck items you don't want to include.</p>
 
         <% if @loan_available.any? %>
-          <h6 class="text-success mb-3"><i class="bi bi-check-circle-fill"></i> Available for Loan</h6>
+          <h3 class="text-success mb-3"><i class="bi bi-check-circle-fill"></i> Available for Loan</h3>
           <% @loan_available.each do |requestable| %>
             <% item = requestable.item %>
             <% preparation = requestable.preparation %>
@@ -78,87 +78,6 @@
                       </div>
 
                       <div class="col-md-4 text-start">
-  <%= form_with url: checkout_remove_path, data: { turbo_confirm: "Are you sure you want to remove this item?" } do |form| %>
-    <%= form.hidden_field :id, value: requestable.id %>
-    <button type="submit" class="btn btn-link">
-      <i class="bi bi-trash-fill text-danger"></i> Remove
-    </button>
-  <% end %>
-</div>
-              <div class="col-md-4 text-start">
-                    <%= form_with url: checkout_save_for_later_path, data: { turbo_frame: "checkout" } do |form| %>
-                    <%= form.hidden_field :id, value: preparation.id %>
-                     <button type="submit" class="btn btn-link">
-                      <i class="bi bi-bookmarks"></i> Save for Later
-                      </button>
-                       <% end %>
-                    </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          <% end %>
-        <% end %>
-                <div class="mt-3">
-          <% if @loan_available.any? && user_signed_in? %>
-            <%= link_to new_loan_request_path, class: "btn btn-primary", data: { turbo_frame: "_top" } do %>
-              <i class="bi bi-send"></i> Send Loan Request
-            <% end %>
-          <% elsif !user_signed_in? %>
-            <%= link_to new_user_session_path, class: "btn btn-primary", data: { turbo_frame: "_top" } do %>
-              Sign In to Send Loan Request
-            <% end %>
-          <% else %>
-            <button class="btn btn-primary" disabled>
-              <i class="bi bi-send"></i> Send Loan Request
-            </button>
-            <div class="text-muted small mt-1">No items available for loan in your checkout.</div>
-          <% end %>
-        </div>
-      </div>
-
-        <% if @loan_unavailable.any? %>
-          <h6 class="text-danger mt-3 mb-3"><i class="bi bi-x-circle-fill"></i> Not Available for Loan</h6>
-          <% @loan_unavailable.each do |requestable| %>
-            <% item = requestable.item %>
-            <% preparation = requestable.preparation %>
-            <div class="card mb-3 border-danger opacity-75">
-              <div class="card-body">
-                <div class="d-flex align-items-start gap-3">
-                  <input type="checkbox"
-                         class="form-check-input mt-1"
-                         disabled
-                         style="width:1.2em;height:1.2em;">
-                  <div class="w-100">
-                    <div class="text-center fw-bold mb-2 text-muted">
-                      <%= link_to item.display_name, item_path(item), class: "text-muted", data: { turbo_frame: "_top" } %>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-4 text-start text-muted">
-                        <strong>Collection:</strong> <%= item.collection.division %>
-                      </div>
-                      <div class="col-md-4 text-start text-muted">
-                        <strong>Preparation Type:</strong> <%= show_preparation(requestable) %>
-                      </div>
-                      <!-- ADDED: Count dropdown (previously missing from this section) -->
-                      <div class="col-md-4 text-start mb-2">
-                        <%= form_with url: checkout_change_path,
-                            data: { controller: "autosubmit", autosubmit_target: "form", turbo_frame: "checkout" } do |form| %>
-                          <%= form.hidden_field :id, value: preparation.id %>
-                          <div class="position-relative" style="display:inline-block;">
-                            <%= form.select :count, options_for_select(0..preparation.count, requestable.count), {},
-                                { class: "form-control pe-4 checkout-select",
-                                  "data-action": "change->autosubmit#submit",
-                                  "aria-label": "Select count for #{item.display_name}" } %>
-                            <span class="position-absolute top-50 end-0 translate-middle-y pe-2" style="pointer-events:none;">
-                              <i class="bi bi-caret-down-fill"></i>
-                            </span>
-                          </div>
-                        <% end %>
-                      </div>
-                      <!-- END ADDED -->
-                      <div class="col-md-4 text-start">
                         <%= form_with url: checkout_remove_path, data: { turbo_confirm: "Are you sure you want to remove this item?" } do |form| %>
                           <%= form.hidden_field :id, value: requestable.id %>
                           <button type="submit" class="btn btn-link">
@@ -175,17 +94,96 @@
                         <% end %>
                       </div>
                     </div>
-                    <div class="text-danger small mt-1">
-                      <i class="bi bi-info-circle"></i> This collection does not accept loan requests
-                    </div>
                   </div>
                 </div>
               </div>
             </div>
           <% end %>
+          <div class="mt-3">
+            <% if @loan_available.any? && user_signed_in? %>
+              <%= link_to new_loan_request_path, class: "btn btn-primary", data: { turbo_frame: "_top" } do %>
+                <i class="bi bi-send"></i> Send Loan Request
+              <% end %>
+            <% elsif !user_signed_in? %>
+              <%= link_to new_user_session_path, class: "btn btn-primary", data: { turbo_frame: "_top" } do %>
+                Sign In to Send Loan Request
+              <% end %>
+            <% else %>
+              <button class="btn btn-primary" disabled>
+                <i class="bi bi-send"></i> Send Loan Request
+              </button>
+              <div class="text-muted small mt-1">No items available for loan in your checkout.</div>
+            <% end %>
+          </div>
         <% end %>
+      </div>
 
-
+      <% if @loan_unavailable.any? %>
+        <h3 class="text-danger mt-3 mb-3"><i class="bi bi-x-circle-fill"></i> Not Available for Loan</h3>
+        <% @loan_unavailable.each do |requestable| %>
+          <% item = requestable.item %>
+          <% preparation = requestable.preparation %>
+          <div class="card mb-3 border-danger opacity-75">
+            <div class="card-body">
+              <div class="d-flex align-items-start gap-3">
+                <input type="checkbox"
+                        class="form-check-input mt-1"
+                        disabled
+                        style="width:1.2em;height:1.2em;">
+                <div class="w-100">
+                  <div class="text-center fw-bold mb-2 text-muted">
+                    <%= link_to item.display_name, item_path(item), class: "text-muted", data: { turbo_frame: "_top" } %>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4 text-start text-muted">
+                      <strong>Collection:</strong> <%= item.collection.division %>
+                    </div>
+                    <div class="col-md-4 text-start text-muted">
+                      <strong>Preparation Type:</strong> <%= show_preparation(requestable) %>
+                    </div>
+                    <!-- ADDED: Count dropdown (previously missing from this section) -->
+                    <div class="col-md-4 text-start mb-2">
+                      <%= form_with url: checkout_change_path,
+                          data: { controller: "autosubmit", autosubmit_target: "form", turbo_frame: "checkout" } do |form| %>
+                        <%= form.hidden_field :id, value: preparation.id %>
+                        <div class="position-relative" style="display:inline-block;">
+                          <%= form.select :count, options_for_select(0..preparation.count, requestable.count), {},
+                              { class: "form-control pe-4 checkout-select",
+                                "data-action": "change->autosubmit#submit",
+                                "aria-label": "Select count for #{item.display_name}" } %>
+                          <span class="position-absolute top-50 end-0 translate-middle-y pe-2" style="pointer-events:none;">
+                            <i class="bi bi-caret-down-fill"></i>
+                          </span>
+                        </div>
+                      <% end %>
+                    </div>
+                    <!-- END ADDED -->
+                    <div class="col-md-4 text-start">
+                      <%= form_with url: checkout_remove_path, data: { turbo_confirm: "Are you sure you want to remove this item?" } do |form| %>
+                        <%= form.hidden_field :id, value: requestable.id %>
+                        <button type="submit" class="btn btn-link">
+                          <i class="bi bi-trash-fill text-danger"></i> Remove
+                        </button>
+                      <% end %>
+                    </div>
+                    <div class="col-md-4 text-start">
+                      <%= form_with url: checkout_save_for_later_path, data: { turbo_frame: "checkout" } do |form| %>
+                        <%= form.hidden_field :id, value: preparation.id %>
+                        <button type="submit" class="btn btn-link">
+                          <i class="bi bi-bookmarks"></i> Save for Later
+                        </button>
+                      <% end %>
+                    </div>
+                  </div>
+                  <div class="text-danger small mt-1">
+                    <i class="bi bi-info-circle"></i> This collection does not accept loan requests
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
 
       <%# ── INFORMATION REQUEST SECTION ── %>
       <div class="mt-4 p-4 border rounded-3 shadow-sm">
