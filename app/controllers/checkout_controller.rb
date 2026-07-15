@@ -5,6 +5,7 @@ class CheckoutController < ApplicationController
     @render_checkout = false
     alert = checkout_availability
     @checkout.reload
+    set_active_requestables
     set_saved_requestables
     flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed from Checkout." if alert.present?
   end
@@ -16,6 +17,7 @@ class CheckoutController < ApplicationController
 
       # Reload the checkout to ensure the new requestable is included in the association
       @checkout.requestables.reload
+      set_active_requestables
       set_saved_requestables
       set_checkout_active_count
 
@@ -65,6 +67,7 @@ class CheckoutController < ApplicationController
 
     # Reload the checkout to ensure the updated requestable is included in the association
     @checkout.requestables.reload
+    set_active_requestables
     set_saved_requestables
     set_checkout_active_count
 
@@ -86,6 +89,7 @@ class CheckoutController < ApplicationController
     authorize @checkout if current_user
     Requestable.find(params[:id])&.destroy
     @checkout.requestables.reload # Reload the association to reflect the destroyed record
+    set_active_requestables
     set_saved_requestables
     set_checkout_active_count
     flash.now[:notice] = "Preparation removed from checkout."
@@ -147,6 +151,7 @@ class CheckoutController < ApplicationController
       flash.now[:alert] = "Preparation not found in checkout."
     end
     @checkout.requestables.reload # Reload the association to reflect the updated record
+    set_active_requestables
     set_saved_requestables
     set_checkout_active_count
     respond_to do |format|
@@ -171,6 +176,7 @@ class CheckoutController < ApplicationController
       flash.now[:alert] = "Preparation not found in saved for later."
     end
     @checkout.requestables.reload # Reload the association to reflect the updated record
+    set_active_requestables
     set_saved_requestables
     set_checkout_active_count
     respond_to do |format|
@@ -189,6 +195,7 @@ class CheckoutController < ApplicationController
     authorize @checkout if current_user
     Unavailable.find(params[:id])&.destroy
     @checkout.unavailables.reload  # Reload the association to reflect the destroyed record
+    set_active_requestables
     set_saved_requestables
     flash.now[:notice] = "Item removed from checkout."
     respond_to do |format|
@@ -205,6 +212,7 @@ class CheckoutController < ApplicationController
     authorize @checkout if current_user
     NoLongerAvailable.find(params[:id])&.destroy
     @checkout.no_longer_availables.reload  # Reload the association to reflect the destroyed record
+    set_active_requestables
     set_saved_requestables
     flash.now[:notice] = "Item removed from checkout."
     respond_to do |format|
@@ -218,6 +226,15 @@ class CheckoutController < ApplicationController
   end
 
   private
+
+  def set_active_requestables
+    @all_requestables = @checkout.requestables.active
+                                .order(:id)
+                                .includes(:preparation, item: [ :collection, :preparations, :current_identification ])
+    @loan_unavailable, @loan_available = @all_requestables.partition do |requestable|
+      requestable.preparation.item.collection.no_loan_requests
+    end
+  end
 
   def set_saved_requestables
     @saved_requestables = @checkout.requestables
