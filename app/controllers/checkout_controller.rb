@@ -232,7 +232,7 @@ class CheckoutController < ApplicationController
                                 .order(:id)
                                 .includes(:preparation, item: [ :collection, :preparations, :current_identification ])
     @loan_unavailable, @loan_available = @all_requestables.partition do |requestable|
-      requestable.preparation.item.collection.no_loan_requests
+      requestable.item.collection.no_loan_requests
     end
   end
 
