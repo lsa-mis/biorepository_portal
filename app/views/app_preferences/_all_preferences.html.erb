@@ -68,8 +68,9 @@
                 </div>
                 <div class="form-check">
                   <%= radio_button_tag "app_prefs[#{collection.id}][loan_requests_policy]", "information_requests_only", collection.no_loan_requests?, id: information_requests_only_input_id, class: "form-check-input" %>
-                  <%= label_tag information_requests_only_input_id, "Collection doesn’t allow Loan Requests", class: "form-check-label" %>
-                  <div class="form-text">Information Requests only</div>
+                  <%= label_tag information_requests_only_input_id, class: "form-check-label" do %>
+                    Collection doesn’t allow Loan Requests <span class="text-muted ms-2">Information Requests only</span>
+                  <% end %>
                 </div>
               </fieldset>
             <% elsif pref.pref_type == "boolean" %>
