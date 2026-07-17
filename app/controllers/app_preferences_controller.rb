@@ -1,8 +1,4 @@
 class AppPreferencesController < ApplicationController
-  LOAN_REQUESTS_POLICY_PARAM = "loan_requests_policy"
-  LOAN_REQUESTS_ALLOWED = "allowed"
-  INFORMATION_REQUESTS_ONLY = "information_requests_only"
-
   before_action :set_pref_types, only: %i[ index new create]
 
   # GET /app_preferences or /app_preferences.json
@@ -15,8 +11,13 @@ class AppPreferencesController < ApplicationController
   end
 
   def app_prefs
-    @collections = editable_collections
-    @app_prefs = editable_app_preferences.order(:pref_type, :description)
+    if session[:role] == "developer" || session[:role] == "super_admin"
+      @collections = Collection.order(:division)
+      @app_prefs = AppPreference.all.order(:pref_type, :description)
+    else
+      @collections = Collection.where(id: session[:collection_ids]).order(:division)
+      @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
+    end
     @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
     @global_prefs = GlobalPreference.includes(:image_attachment).all.order(:pref_type, :description)
     authorize @app_prefs
@@ -42,20 +43,38 @@ class AppPreferencesController < ApplicationController
         end
       end
     elsif params[:app_prefs].present?
-      @app_prefs = editable_app_preferences
+      if session[:role] == "developer" || session[:role] == "super_admin"
+        @app_prefs = AppPreference.all
+      else
+        @app_prefs = AppPreference.where(collection_id: session[:collection_ids])
+      end
       authorize @app_prefs
       @app_prefs.where(pref_type: 'boolean').update_all(value: "0")
       params[:app_prefs].each do |collection, p|
         collection_id = collection.to_i
         p.each do |k, v|
-          pref_name, pref_value = app_preference_update_value(k, v)
-          next if pref_name.nil?
+          if k == "loan_requests_policy"
+            if v == "allowed"
+              k = "no_loan_requests"
+              v = "0"
+            elsif v == "information_requests_only"
+              k = "no_loan_requests"
+              v = "1"
+            else
+              next
+            end
+          end
 
-          app_pref = @app_prefs.find_by(collection_id: collection_id, name: pref_name)
-          unless app_pref&.update(value: pref_value)
+          app_pref = @app_prefs.find_by(collection_id: collection_id, name: k)
+          unless app_pref&.update(value: v)
             flash.now[:alert] = "Error updating app preference: #{app_pref&.errors&.full_messages&.join(', ') || 'Preference not found.'}"
-            @collections = editable_collections
-            @app_prefs = editable_app_preferences.order(:pref_type, :description)
+            if session[:role] == "developer" || session[:role] == "super_admin"
+              @collections = Collection.order(:division)
+              @app_prefs = AppPreference.all.order(:pref_type, :description)
+            else
+              @collections = Collection.where(id: session[:collection_ids]).order(:division)
+              @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
+            end
             @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
             render :app_prefs, status: :unprocessable_entity and return
           end
@@ -142,22 +161,6 @@ class AppPreferencesController < ApplicationController
       @pref_types = AppPreference.pref_types.keys
     end
 
-    def editable_collections
-      if session[:role] == "developer" || session[:role] == "super_admin"
-        Collection.order(:division)
-      else
-        Collection.where(id: session[:collection_ids]).order(:division)
-      end
-    end
-
-    def editable_app_preferences
-      if session[:role] == "developer" || session[:role] == "super_admin"
-        AppPreference.all
-      else
-        AppPreference.where(collection_id: session[:collection_ids])
-      end
-    end
-
     def sync_no_loan_requests_preferences(app_prefs, submitted_prefs)
       collection_ids = app_prefs.where(name: "no_loan_requests").distinct.pluck(:collection_id)
       return if collection_ids.empty?
@@ -166,7 +169,11 @@ class AppPreferencesController < ApplicationController
         collection_id = collection_id.to_i
         next unless collection_ids.include?(collection_id)
 
-        no_loan_requests = no_loan_requests_from_policy(preferences[LOAN_REQUESTS_POLICY_PARAM])
+        if preferences["loan_requests_policy"] == "allowed"
+          no_loan_requests = false
+        elsif preferences["loan_requests_policy"] == "information_requests_only"
+          no_loan_requests = true
+        end
         next if no_loan_requests.nil?
 
         [collection_id, no_loan_requests]
@@ -174,26 +181,6 @@ class AppPreferencesController < ApplicationController
 
       policy_updates.each do |collection_id, no_loan_requests|
         Collection.where(id: collection_id).update_all(no_loan_requests: no_loan_requests)
-      end
-    end
-
-    def app_preference_update_value(param_name, value)
-      if param_name == LOAN_REQUESTS_POLICY_PARAM
-        no_loan_requests = no_loan_requests_from_policy(value)
-        return if no_loan_requests.nil?
-
-        ["no_loan_requests", no_loan_requests ? "1" : "0"]
-      else
-        [param_name, value]
-      end
-    end
-
-    def no_loan_requests_from_policy(policy)
-      case policy
-      when LOAN_REQUESTS_ALLOWED
-        false
-      when INFORMATION_REQUESTS_ONLY
-        true
       end
     end
 
