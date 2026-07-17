@@ -41,6 +41,61 @@ RSpec.describe AppPreferencesController, type: :request do
 
       expect(response.body).to include('placeholder="Enter catalog prefix"')
     end
+
+    it 'renders no_loan_requests as a radio group instead of a switch' do
+      FactoryBot.create(:app_preference, collection: mpabi_collection, name: "no_loan_requests", pref_type: :boolean)
+
+      get app_prefs_path
+
+      document = Nokogiri::HTML(response.body)
+      fieldset = document.at_css('fieldset')
+
+      expect(response.body).not_to include('name="app_prefs[' + mpabi_collection.id.to_s + '][no_loan_requests]"')
+      expect(fieldset.at_css('legend').text).to eq("Loan Requests")
+      expect(fieldset.css('input[type="radio"][name="app_prefs[' + mpabi_collection.id.to_s + '][loan_requests_policy]"]').map { |input| input["value"] }).to contain_exactly("allowed", "information_requests_only")
+      expect(fieldset.text).to include("Collection allows Loan Requests")
+      expect(fieldset.text).to include("Collection doesn’t allow Loan Requests")
+      expect(fieldset.text).to include("Information Requests only")
+    end
+
+    it 'selects the allows option when loan requests are allowed' do
+      mpabi_collection.update!(no_loan_requests: false)
+      FactoryBot.create(:app_preference, collection: mpabi_collection, name: "no_loan_requests", pref_type: :boolean)
+
+      get app_prefs_path
+
+      document = Nokogiri::HTML(response.body)
+      allowed = document.at_css('input[type="radio"][name="app_prefs[' + mpabi_collection.id.to_s + '][loan_requests_policy]"][value="allowed"]')
+      information_requests_only = document.at_css('input[type="radio"][name="app_prefs[' + mpabi_collection.id.to_s + '][loan_requests_policy]"][value="information_requests_only"]')
+
+      expect(allowed["checked"]).to eq("checked")
+      expect(information_requests_only["checked"]).to be_nil
+    end
+
+    it 'selects the information requests only option when loan requests are disabled' do
+      mpabi_collection.update!(no_loan_requests: true)
+      FactoryBot.create(:app_preference, collection: mpabi_collection, name: "no_loan_requests", pref_type: :boolean)
+
+      get app_prefs_path
+
+      document = Nokogiri::HTML(response.body)
+      allowed = document.at_css('input[type="radio"][name="app_prefs[' + mpabi_collection.id.to_s + '][loan_requests_policy]"][value="allowed"]')
+      information_requests_only = document.at_css('input[type="radio"][name="app_prefs[' + mpabi_collection.id.to_s + '][loan_requests_policy]"][value="information_requests_only"]')
+
+      expect(allowed["checked"]).to be_nil
+      expect(information_requests_only["checked"]).to eq("checked")
+    end
+
+    it 'selects the allows option by default when no preference value is set' do
+      FactoryBot.create(:app_preference, collection: mpabi_collection, name: "no_loan_requests", pref_type: :boolean, value: nil)
+
+      get app_prefs_path
+
+      document = Nokogiri::HTML(response.body)
+      allowed = document.at_css('input[type="radio"][name="app_prefs[' + mpabi_collection.id.to_s + '][loan_requests_policy]"][value="allowed"]')
+
+      expect(allowed["checked"]).to eq("checked")
+    end
   end
 
   describe 'POST /app_preferences' do

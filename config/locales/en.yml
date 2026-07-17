@@ -29,3 +29,11 @@
 
 en:
   hello: "Hello world"
+  app_preferences:
+    loan_requests_policy:
+      legend: "Loan Requests"
+      allowed:
+        label: "Collection allows Loan Requests"
+      information_requests_only:
+        label: "Collection doesn’t allow Loan Requests"
+        description: "Information Requests only"
