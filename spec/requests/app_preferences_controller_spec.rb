@@ -43,7 +43,7 @@ RSpec.describe AppPreferencesController, type: :request do
     end
 
     it 'renders no_loan_requests as a radio group instead of a switch' do
-      FactoryBot.create(:app_preference, collection: mpabi_collection, name: "no_loan_requests", pref_type: :boolean)
+      FactoryBot.create(:app_preference, collection: mpabi_collection, name: "no_loan_requests", description: "Loan request policy", pref_type: :boolean)
 
       get app_prefs_path
 
@@ -51,7 +51,7 @@ RSpec.describe AppPreferencesController, type: :request do
       fieldset = document.at_css('fieldset')
 
       expect(response.body).not_to include('name="app_prefs[' + mpabi_collection.id.to_s + '][no_loan_requests]"')
-      expect(fieldset.at_css('legend').text).to eq("Loan Requests")
+      expect(fieldset.at_css('legend').text).to eq("Loan request policy")
       expect(fieldset.css('input[type="radio"][name="app_prefs[' + mpabi_collection.id.to_s + '][loan_requests_policy]"]').map { |input| input["value"] }).to contain_exactly("allowed", "information_requests_only")
       expect(fieldset.text).to include("Collection allows Loan Requests")
       expect(fieldset.text).to include("Collection doesn’t allow Loan Requests")

@@ -61,7 +61,7 @@
               <% allowed_input_id = "app_prefs_#{collection.id}_loan_requests_policy_allowed" %>
               <% information_requests_only_input_id = "app_prefs_#{collection.id}_loan_requests_policy_information_requests_only" %>
               <fieldset class="my-3">
-                <legend class="fs-6">Loan Requests</legend>
+                <legend class="fs-6"><%= pref.description %></legend>
                 <div class="form-check">
                   <%= radio_button_tag "app_prefs[#{collection.id}][loan_requests_policy]", "allowed", !collection.no_loan_requests?, id: allowed_input_id, class: "form-check-input" %>
                   <%= label_tag allowed_input_id, "Collection allows Loan Requests", class: "form-check-label" %>
