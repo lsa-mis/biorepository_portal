@@ -1,4 +1,8 @@
 class AppPreferencesController < ApplicationController
+  LOAN_REQUESTS_POLICY_PARAM = "loan_requests_policy"
+  LOAN_REQUESTS_ALLOWED = "allowed"
+  INFORMATION_REQUESTS_ONLY = "information_requests_only"
+
   before_action :set_pref_types, only: %i[ index new create]
 
   # GET /app_preferences or /app_preferences.json
@@ -49,8 +53,11 @@ class AppPreferencesController < ApplicationController
       params[:app_prefs].each do |collection, p|
         collection_id = collection.to_i
         p.each do |k, v|
-          app_pref = AppPreference.find_by(collection_id: collection_id, name: k)
-          unless app_pref&.update(value: v)
+          pref_name, pref_value = app_preference_update_value(k, v)
+          next if pref_name.nil?
+
+          app_pref = AppPreference.find_by(collection_id: collection_id, name: pref_name)
+          unless app_pref&.update(value: pref_value)
             flash.now[:alert] = "Error updating app preference: #{app_pref&.errors&.full_messages&.join(', ') || 'Preference not found.'}"
             @collections = Collection.where(id: session[:collection_ids]).order(:division)
             @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
@@ -144,14 +151,39 @@ class AppPreferencesController < ApplicationController
       collection_ids = app_prefs.where(name: "no_loan_requests").distinct.pluck(:collection_id)
       return if collection_ids.empty?
 
-      enabled_collection_ids = submitted_prefs.to_unsafe_h.filter_map do |collection_id, preferences|
-        collection_id.to_i if preferences["no_loan_requests"].present?
+      policy_updates = submitted_prefs.to_unsafe_h.filter_map do |collection_id, preferences|
+        collection_id = collection_id.to_i
+        next unless collection_ids.include?(collection_id)
+
+        no_loan_requests = no_loan_requests_from_policy(preferences[LOAN_REQUESTS_POLICY_PARAM])
+        next if no_loan_requests.nil?
+
+        [collection_id, no_loan_requests]
       end
 
-      enabled_collection_ids &= collection_ids
+      policy_updates.each do |collection_id, no_loan_requests|
+        Collection.where(id: collection_id).update_all(no_loan_requests: no_loan_requests)
+      end
+    end
 
-      Collection.where(id: collection_ids).update_all(no_loan_requests: false)
-      Collection.where(id: enabled_collection_ids).update_all(no_loan_requests: true) if enabled_collection_ids.any?
+    def app_preference_update_value(param_name, value)
+      if param_name == LOAN_REQUESTS_POLICY_PARAM
+        no_loan_requests = no_loan_requests_from_policy(value)
+        return if no_loan_requests.nil?
+
+        ["no_loan_requests", no_loan_requests ? "1" : "0"]
+      else
+        [param_name, value]
+      end
+    end
+
+    def no_loan_requests_from_policy(policy)
+      case policy
+      when LOAN_REQUESTS_ALLOWED
+        false
+      when INFORMATION_REQUESTS_ONLY
+        true
+      end
     end
 
     # Only allow a list of trusted parameters through.

@@ -141,35 +141,64 @@ RSpec.describe AppPreferencesController, type: :request do
       FactoryBot.create(:app_preference, collection: zoo_collection, name: "no_loan_requests", pref_type: :boolean, value: "0")
     end
 
-    it 'syncs enabled no_loan_requests preferences to collections' do
+    it 'stores no_loan_requests as false when loan requests are allowed' do
+      mpabi_collection.update!(no_loan_requests: true)
+
       post app_prefs_path, params: {
         app_prefs: {
           mpabi_collection.id => {
-            no_loan_requests: "1"
-          }
-        }
-      }
-
-      expect(response).to redirect_to(app_prefs_path)
-      expect(mpabi_collection.reload.no_loan_requests).to be true
-      expect(zoo_collection.reload.no_loan_requests).to be false
-    end
-
-    it 'syncs unchecked no_loan_requests preferences to false on collections' do
-      mpabi_collection.update!(no_loan_requests: true)
-      zoo_collection.update!(no_loan_requests: true)
-
-      post app_prefs_path, params: {
-        app_prefs: {
-          zoo_collection.id => {
-            no_loan_requests: "1"
+            loan_requests_policy: "allowed"
           }
         }
       }
 
       expect(response).to redirect_to(app_prefs_path)
       expect(mpabi_collection.reload.no_loan_requests).to be false
+      expect(zoo_collection.reload.no_loan_requests).to be false
+    end
+
+    it 'stores no_loan_requests as true when only information requests are allowed' do
+      post app_prefs_path, params: {
+        app_prefs: {
+          zoo_collection.id => {
+            loan_requests_policy: "information_requests_only"
+          }
+        }
+      }
+
+      expect(response).to redirect_to(app_prefs_path)
       expect(zoo_collection.reload.no_loan_requests).to be true
+    end
+
+    it 'preserves an existing no_loan_requests value when the policy parameter is absent' do
+      mpabi_collection.update!(no_loan_requests: true)
+      FactoryBot.create(:app_preference, collection: mpabi_collection, name: "show_barcode", pref_type: :boolean, value: "0")
+
+      post app_prefs_path, params: {
+        app_prefs: {
+          mpabi_collection.id => {
+            show_barcode: "1"
+          }
+        }
+      }
+
+      expect(response).to redirect_to(app_prefs_path)
+      expect(mpabi_collection.reload.no_loan_requests).to be true
+    end
+
+    it 'does not interpret unexpected policy values as true' do
+      mpabi_collection.update!(no_loan_requests: false)
+
+      post app_prefs_path, params: {
+        app_prefs: {
+          mpabi_collection.id => {
+            loan_requests_policy: "yes_please"
+          }
+        }
+      }
+
+      expect(response).to redirect_to(app_prefs_path)
+      expect(mpabi_collection.reload.no_loan_requests).to be false
     end
   end
 end
