@@ -43,11 +43,7 @@ class AppPreferencesController < ApplicationController
         end
       end
     elsif params[:app_prefs].present?
-      if session[:role] == "developer" || session[:role] == "super_admin"
-        @app_prefs = AppPreference.all
-      else
-        @app_prefs = AppPreference.where(collection_id: session[:collection_ids])
-      end
+      @app_prefs = AppPreference.where(collection_id: session[:collection_ids])
       authorize @app_prefs
       @app_prefs.where(pref_type: 'boolean').update_all(value: "0")
       params[:app_prefs].each do |collection, p|
@@ -68,13 +64,8 @@ class AppPreferencesController < ApplicationController
           app_pref = @app_prefs.find_by(collection_id: collection_id, name: k)
           unless app_pref&.update(value: v)
             flash.now[:alert] = "Error updating app preference: #{app_pref&.errors&.full_messages&.join(', ') || 'Preference not found.'}"
-            if session[:role] == "developer" || session[:role] == "super_admin"
-              @collections = Collection.order(:division)
-              @app_prefs = AppPreference.all.order(:pref_type, :description)
-            else
-              @collections = Collection.where(id: session[:collection_ids]).order(:division)
-              @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
-            end
+            @collections = Collection.where(id: session[:collection_ids]).order(:division)
+            @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
             @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
             render :app_prefs, status: :unprocessable_entity and return
           end

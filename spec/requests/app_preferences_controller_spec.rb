@@ -170,23 +170,6 @@ RSpec.describe AppPreferencesController, type: :request do
       expect(zoo_collection.reload.no_loan_requests).to be true
     end
 
-    it 'stores elevated user changes for collections outside their admin collection ids' do
-      uniqname = get_uniqname(developer.email)
-      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "mpabi-admins").and_return(true)
-      mock_login(developer)
-
-      post app_prefs_path, params: {
-        app_prefs: {
-          zoo_collection.id => {
-            loan_requests_policy: "information_requests_only"
-          }
-        }
-      }
-
-      expect(response).to redirect_to(app_prefs_path)
-      expect(zoo_collection.reload.no_loan_requests).to be true
-    end
-
     it 'preserves an existing no_loan_requests value when the policy parameter is absent' do
       mpabi_collection.update!(no_loan_requests: true)
       FactoryBot.create(:app_preference, collection: mpabi_collection, name: "show_barcode", pref_type: :boolean, value: "0")
