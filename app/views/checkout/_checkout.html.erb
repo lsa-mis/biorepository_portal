@@ -35,7 +35,7 @@
           </div>
           <p class="text-muted mb-4">Items from collections that accept loan requests.</p>
           <% @loan_available.each do |requestable| %>
-            <% item = requestable.item %>
+            <% item = requestable.preparation.item %>
             <% preparation = requestable.preparation %>
             <div class="card mb-3 border-success">
               <div class="card-body">
@@ -95,7 +95,7 @@
         </div>
         <p class="text-muted mb-4">All items are available for information requests.</p>
         <% @all_requestables.each do |requestable| %>
-          <% item = requestable.item %>
+          <% item = requestable.preparation.item %>
           <% preparation = requestable.preparation %>
           <div class="card mb-3">
             <div class="card-body">
