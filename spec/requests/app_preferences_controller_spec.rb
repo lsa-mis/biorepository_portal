@@ -200,5 +200,61 @@ RSpec.describe AppPreferencesController, type: :request do
       expect(response).to redirect_to(app_prefs_path)
       expect(mpabi_collection.reload.no_loan_requests).to be false
     end
+
+    it 'checks that preferences are created for existing collections when a new preference is added' do
+      extra_collection = FactoryBot.create(:collection, division: "old_collection", admin_group: "old-admins")
+      preference_name = "enable_dashboard_banner"
+
+      expect do
+        post app_preferences_path, params: {
+          app_preference: {
+            name: preference_name,
+            description: "Enable dashboard banner",
+            pref_type: "boolean"
+          }
+        }, headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
+      end.to change { AppPreference.where(name: preference_name).count }.by(Collection.count)
+
+      expect(response).to have_http_status(:success)
+      expect(AppPreference.where(name: preference_name).pluck(:collection_id)).to match_array([mpabi_collection.id, zoo_collection.id, extra_collection.id])
+    end
+    
+    it 'checks that preferences are updated correctly after a new collection is added' do
+      preference_name = "enable_dashboard_banner"
+
+      # Create the preference for existing collections
+      post app_preferences_path, params: {
+        app_preference: {
+          name: preference_name,
+          description: "Enable dashboard banner",
+          pref_type: "boolean"
+        }
+      }, headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
+
+      post collections_path, params: {
+        collection: {
+          division: "new_collection",
+          admin_group: "new-admins",
+          short_description: "New collection",
+          long_description: "New collection long description",
+          division_page_url: "https://example.edu/new_collection",
+          link_to_policies: "https://example.edu/new_collection/policies"
+        }
+      }
+      new_collection = Collection.find_by!(division: "new_collection")
+      
+      # Now update the preference for the new collection
+      post app_prefs_path, params: {
+        app_prefs: {
+          new_collection.id => {
+            enable_dashboard_banner: "1"
+          }
+        }
+      }
+
+      expect(response).to redirect_to(app_prefs_path)
+      expect(AppPreference.find_by(collection_id: new_collection.id, name: preference_name).value).to eq("1")
+    end
+
   end
 end
