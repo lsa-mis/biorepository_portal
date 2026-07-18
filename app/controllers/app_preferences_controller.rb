@@ -67,6 +67,7 @@ class AppPreferencesController < ApplicationController
             @collections = Collection.where(id: session[:collection_ids]).order(:division)
             @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
             @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
+            @global_prefs = GlobalPreference.includes(:image_attachment).all.order(:pref_type, :description)
             render :app_prefs, status: :unprocessable_entity and return
           end
         end
