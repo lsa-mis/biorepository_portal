@@ -87,7 +87,7 @@ class CollectionsController < ApplicationController
   # DELETE /collections/1 or /collections/1.json
   def destroy
     @collection.destroy!
-
+    session[:collection_ids].delete(@collection.id)
     respond_to do |format|
       format.html { redirect_to collections_path, status: :see_other, notice: "Collection was successfully destroyed." }
       format.json { head :no_content }
