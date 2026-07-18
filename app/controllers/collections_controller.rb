@@ -55,6 +55,7 @@ class CollectionsController < ApplicationController
     respond_to do |format|
       if @collection.save
         # create preferences for the collection
+        session[:collection_ids] << @collection.id
         pref_errors = create_app_preferences(@collection)
         notice_message = if pref_errors
           "Collection was successfully created, but there were errors creating App Preferences. Please contact support."
