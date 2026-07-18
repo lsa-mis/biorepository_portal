@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_18_012942) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_14_171000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -127,7 +127,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_18_012942) do
   end
 
   create_table "collections", force: :cascade do |t|
-    t.boolean "accepts_loan_requests"
     t.string "admin_group"
     t.datetime "created_at", null: false
     t.string "division"
@@ -235,7 +234,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_18_012942) do
     t.float "maximum_elevation_in_meters"
     t.float "minimum_elevation_in_meters"
     t.date "modified"
-    t.string "occurrence_id"
+    t.string "occurrence_id", null: false
     t.text "occurrence_remarks"
     t.text "organism_remarks"
     t.string "other_catalog_numbers"
@@ -253,6 +252,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_18_012942) do
     t.index ["catalog_number"], name: "index_items_on_catalog_number"
     t.index ["collection_id", "continent"], name: "idx_items_collection_continent"
     t.index ["collection_id", "country"], name: "idx_items_collection_country"
+    t.index ["collection_id", "occurrence_id"], name: "index_items_on_collection_id_and_occurrence_id", unique: true
     t.index ["collection_id", "sex"], name: "idx_items_collection_sex"
     t.index ["collection_id", "state_province"], name: "idx_items_collection_state_province"
     t.index ["collection_id"], name: "index_items_on_collection_id"
