@@ -15,7 +15,7 @@ class AppPreferencesController < ApplicationController
       @collections = Collection.order(:division)
       @app_prefs = AppPreference.all.order(:pref_type, :description)
     else
-      @collections = Collection.where(id: session[:collection_ids]).order(:division)  
+      @collections = Collection.where(id: session[:collection_ids]).order(:division)
       @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
     end
     @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
@@ -49,12 +49,25 @@ class AppPreferencesController < ApplicationController
       params[:app_prefs].each do |collection, p|
         collection_id = collection.to_i
         p.each do |k, v|
-          app_pref = AppPreference.find_by(collection_id: collection_id, name: k)
+          if k == "loan_requests_policy"
+            if v == "allowed"
+              k = "no_loan_requests"
+              v = "0"
+            elsif v == "information_requests_only"
+              k = "no_loan_requests"
+              v = "1"
+            else
+              next
+            end
+          end
+
+          app_pref = @app_prefs.find_by(collection_id: collection_id, name: k)
           unless app_pref&.update(value: v)
             flash.now[:alert] = "Error updating app preference: #{app_pref&.errors&.full_messages&.join(', ') || 'Preference not found.'}"
             @collections = Collection.where(id: session[:collection_ids]).order(:division)
             @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
             @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
+            @global_prefs = GlobalPreference.includes(:image_attachment).all.order(:pref_type, :description)
             render :app_prefs, status: :unprocessable_entity and return
           end
         end
@@ -144,14 +157,23 @@ class AppPreferencesController < ApplicationController
       collection_ids = app_prefs.where(name: "no_loan_requests").distinct.pluck(:collection_id)
       return if collection_ids.empty?
 
-      enabled_collection_ids = submitted_prefs.to_unsafe_h.filter_map do |collection_id, preferences|
-        collection_id.to_i if preferences["no_loan_requests"].present?
+      policy_updates = submitted_prefs.to_unsafe_h.filter_map do |collection_id, preferences|
+        collection_id = collection_id.to_i
+        next unless collection_ids.include?(collection_id)
+
+        if preferences["loan_requests_policy"] == "allowed"
+          no_loan_requests = false
+        elsif preferences["loan_requests_policy"] == "information_requests_only"
+          no_loan_requests = true
+        end
+        next if no_loan_requests.nil?
+
+        [collection_id, no_loan_requests]
       end
 
-      enabled_collection_ids &= collection_ids
-
-      Collection.where(id: collection_ids).update_all(no_loan_requests: false)
-      Collection.where(id: enabled_collection_ids).update_all(no_loan_requests: true) if enabled_collection_ids.any?
+      policy_updates.each do |collection_id, no_loan_requests|
+        Collection.where(id: collection_id).update_all(no_loan_requests: no_loan_requests)
+      end
     end
 
     # Only allow a list of trusted parameters through.

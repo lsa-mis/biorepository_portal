@@ -57,7 +57,23 @@
       <% @app_prefs_by_collection.fetch(collection.id, []).each do |pref| %>
         <%= fields_for 'app_prefs[]' do %>
           <div>
-            <% if pref.pref_type == "boolean" %>
+            <% if pref.name == "no_loan_requests" %>
+              <% allowed_input_id = "app_prefs_#{collection.id}_loan_requests_policy_allowed" %>
+              <% information_requests_only_input_id = "app_prefs_#{collection.id}_loan_requests_policy_information_requests_only" %>
+              <fieldset class="my-3">
+                <legend class="fs-6"><%= pref.description %></legend>
+                <div class="form-check">
+                  <%= radio_button_tag "app_prefs[#{collection.id}][loan_requests_policy]", "allowed", !collection.no_loan_requests?, id: allowed_input_id, class: "form-check-input" %>
+                  <%= label_tag allowed_input_id, "Collection allows Loan Requests", class: "form-check-label" %>
+                </div>
+                <div class="form-check">
+                  <%= radio_button_tag "app_prefs[#{collection.id}][loan_requests_policy]", "information_requests_only", collection.no_loan_requests?, id: information_requests_only_input_id, class: "form-check-input" %>
+                  <%= label_tag information_requests_only_input_id, class: "form-check-label" do %>
+                    Collection doesn’t allow Loan Requests <span class="text-muted ms-2">Information Requests only</span>
+                  <% end %>
+                </div>
+              </fieldset>
+            <% elsif pref.pref_type == "boolean" %>
               <% input_id = "app_prefs_#{collection.id}_#{pref.name}" %>
               <div class="form-check form-switch my-3">
                 <%= check_box_tag "app_prefs[#{collection.id}][#{pref.name}]", 1, string_to_boolean(pref.value), id: input_id, class: "form-check-input", role: "switch" %>

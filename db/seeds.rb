@@ -115,7 +115,7 @@ app_preferences = [
   },
   {
     name: "no_loan_requests",
-    description: "The collection doesnt allow loan request for preparations",
+    description: "Loan request policy",
     pref_type: "boolean",
     value: "0"
   },
