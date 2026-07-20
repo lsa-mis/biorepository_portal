@@ -54,42 +54,24 @@
 #
 FactoryBot.define do
   factory :item do
-    occurrence_id { "MyString" }
-    catalog_number { "MyString" }
-    modified { "2025-05-13" }
-    recorded_by { "MyString" }
-    individual_count { 1 }
-    sex { "MyString" }
-    life_stage { "MyString" }
-    reproductive_condition { "MyString" }
-    vitality { "MyString" }
-    other_catalog_numbers { "MyString" }
-    occurrence_remarks { "MyText" }
-    organism_remarks { "MyText" }
-    associated_sequences { "MyString" }
-    field_number { "MyString" }
-    event_date_start { "2025-05-13" }
-    event_date_end { "2025-05-13" }
-    verbatim_event_date { "MyString" }
-    sampling_protocol { "MyString" }
-    event_remarks { "MyText" }
-    continent { "MyString" }
-    country { "MyString" }
-    state_province { "MyString" }
-    county { "MyString" }
-    locality { "MyString" }
-    verbatim_locality { "MyString" }
-    verbatim_elevation { "MyString" }
-    minimum_elevation_in_meters { 1.5 }
-    maximum_elevation_in_meters { 1.5 }
-    decimal_latitude { 1.5 }
-    decimal_longitude { 1.5 }
-    coordinate_uncertainty_in_meters { 1.5 }
-    verbatim_coordinates { "MyString" }
-    georeferenced_by { "MyString" }
-    georeferenced_date { "2025-05-13" }
-    geodetic_datum { "MyString" }
-    georeference_protocol { "MyString" }
+    catalog_number { "SEED-#{SecureRandom.hex(6).upcase}" }
+    continent { ["Africa", "Antarctica", "Asia", "Europe", "North America", "Oceania", "South America"].sample }
+    country { Faker::Address.country }
+    county { Faker::Address.city }
+    state_province { Faker::Address.state }
+    locality { Faker::Address.street_name }
+    decimal_latitude { rand(-90.0..90.0).round(6) }
+    decimal_longitude { rand(-180.0..180.0).round(6) }
+    event_date_start { Faker::Date.backward(days: 3650) }
+    event_date_end { Faker::Date.backward(days: 365) }
+    recorded_by { Faker::Name.name }
+    individual_count { rand(1..20) }
+    life_stage { ["juvenile", "adult"].sample }
+    sex { ["male", "female"].sample }
+    vitality { ["alive", "dead"].sample }
+    sampling_protocol { Faker::Lorem.words(number: 3).join(" ") }
+    occurrence_remarks { Faker::Lorem.sentence }
+    occurrence_id { Faker::Alphanumeric.unique.alphanumeric(number: 20).downcase }
     collection { nil }
   end
 end
