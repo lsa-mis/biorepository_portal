@@ -17,7 +17,7 @@ RSpec.describe CheckoutController, type: :request do
       get checkout_path
       expect(response.body).to include("Checkout")
       expect(response.body).to include("Saved for Later")
-      expect(response.body).not_to include("Send Loan Request")
+      expect(response.body).to include("Sign In to Send Loan Request")
     end
 
     it 'should add to checkout' do
@@ -25,12 +25,6 @@ RSpec.describe CheckoutController, type: :request do
       expect(response).to have_http_status(200)
       get checkout_path
       expect(response.body).to include(preparation.item.display_name)
-    end
-
-    it 'should not display Send Loan Request Button when there are no preparations in the cart' do
-      get checkout_path
-      expect(response).to have_http_status(200)
-      expect(response.body).not_to include("Send Loan Request")
     end
 
     it 'should display Send Loan Request Button when there are preparations in the cart' do
@@ -117,6 +111,25 @@ RSpec.describe CheckoutController, type: :request do
       get checkout_path
       expect(response.body).not_to include("(1)")
     end
+  end
+
+  describe 'GET #show with none role' do
+    let!(:user) { FactoryBot.create(:user, first_name: 'John', last_name: 'Doe', affiliation: 'Test University') }
+
+    before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
+      mock_login(user)
+    end
+
+    it 'should not display Send Loan Request Button when there are no preparations in the cart' do
+      get checkout_path
+      expect(response).to have_http_status(200)
+      expect(response.body).not_to include("Send Loan Request")
+    end
+
   end
 
 end
