@@ -66,6 +66,10 @@ RSpec.describe LoanRequestsController, type: :request do
 
   describe 'GET #new' do
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
     end
 
@@ -79,6 +83,10 @@ RSpec.describe LoanRequestsController, type: :request do
 
   describe 'GET #new when user has incomplete information' do
     before do
+      uniqname = get_uniqname(incomplete_user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(incomplete_user)
     end
 
@@ -96,6 +104,10 @@ RSpec.describe LoanRequestsController, type: :request do
 
   describe 'GET #step_two with no answer to loan question' do
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
     end
 
@@ -115,6 +127,10 @@ RSpec.describe LoanRequestsController, type: :request do
   describe 'GET #step_two with an answer to loan question' do
     let!(:loan_answer) { FactoryBot.create(:loan_answer, user: user, loan_question: loan_question, answer: "my answer") }
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
     end
 
@@ -133,6 +149,10 @@ RSpec.describe LoanRequestsController, type: :request do
     let!(:loan_answer) { FactoryBot.create(:loan_answer, user: user, loan_question: loan_question, answer: "my answer") }
 
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
     end
 
@@ -163,6 +183,10 @@ RSpec.describe LoanRequestsController, type: :request do
     let!(:collection_answer) { FactoryBot.create(:collection_answer, user: user, collection_question: collection_question, answer: 'Test answer') }
 
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
     end
 
@@ -213,6 +237,10 @@ RSpec.describe LoanRequestsController, type: :request do
     let!(:address) { FactoryBot.create(:address, user: user) }
 
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
       allow(PdfGenerator).to receive(:new).and_return(double(generate_pdf_content: 'pdf content'))
       allow(RequestMailer).to receive_message_chain(:send_loan_request, :deliver_now)
@@ -277,6 +305,10 @@ RSpec.describe LoanRequestsController, type: :request do
 
   describe 'validation behavior' do
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
     end
 
