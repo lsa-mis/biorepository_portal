@@ -2,10 +2,15 @@ require 'rails_helper'
 
 RSpec.describe InformationRequestsController, type: :request do
   let(:user) { FactoryBot.create(:user) }
+  let(:collection) { FactoryBot.create(:collection) }
   let(:checkout_items) { ["Specimen A123", "Specimen B456", "Specimen C789"] }
   let(:collection_ids) { [1, 2] }
 
   before do
+    uniqname = get_uniqname(user.email)
+    allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+    allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+    allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
     mock_login(user)
     # get_checkout_items is called both in `new` and inside send_information_request's
     # server-side filter. Stub it so submitted items can actually pass the filter.
