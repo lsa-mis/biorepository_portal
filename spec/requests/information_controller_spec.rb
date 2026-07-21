@@ -27,6 +27,39 @@ RSpec.describe InformationRequestsController, type: :request do
       expect(response.body).to include("Email Message")
       expect(response.body).to include("Submit")
     end
+
+    it 'lists loanable and information request only checkout items' do
+      allow_any_instance_of(InformationRequestsController)
+        .to receive(:get_checkout_items)
+        .and_call_original
+
+      loan_collection = FactoryBot.create(
+        :collection,
+        division: 'Loan Collection',
+        admin_group: 'loan-collection-admins',
+        no_loan_requests: false
+      )
+      information_only_collection = FactoryBot.create(
+        :collection,
+        division: 'Info Only Collection',
+        admin_group: 'info-only-collection-admins',
+        no_loan_requests: true
+      )
+      loan_item = FactoryBot.create(:item, collection: loan_collection, catalog_number: 'LOAN-123')
+      information_only_item = FactoryBot.create(:item, collection: information_only_collection, catalog_number: 'INFO-456')
+      FactoryBot.create(:identification, item: loan_item, scientific_name: 'Loanable species')
+      FactoryBot.create(:identification, item: information_only_item, scientific_name: 'Information species')
+      loan_preparation = FactoryBot.create(:preparation, item: loan_item, prep_type: 'Tissue')
+      information_only_preparation = FactoryBot.create(:preparation, item: information_only_item, prep_type: 'Skin')
+      checkout = user.checkout || FactoryBot.create(:checkout, user: user)
+      FactoryBot.create(:requestable, checkout: checkout, preparation: loan_preparation, item_id: loan_item.id)
+      FactoryBot.create(:requestable, checkout: checkout, preparation: information_only_preparation, item_id: information_only_item.id)
+
+      get new_information_request_path
+
+      expect(response.body).to include('Loan Collection, Catalog Number: LOAN-123')
+      expect(response.body).to include('Info Only Collection, Catalog Number: INFO-456')
+    end
   end
 
   describe 'POST /send_information_request' do

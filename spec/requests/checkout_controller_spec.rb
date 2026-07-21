@@ -17,7 +17,7 @@ RSpec.describe CheckoutController, type: :request do
       get checkout_path
       expect(response.body).to include("Checkout")
       expect(response.body).to include("Saved for Later")
-      expect(response.body).to include("Sign In to Send Loan Request")
+      expect(response.body).not_to include("Sign In to Send Loan Request")
     end
 
     it 'should add to checkout' do
@@ -25,6 +25,26 @@ RSpec.describe CheckoutController, type: :request do
       expect(response).to have_http_status(200)
       get checkout_path
       expect(response.body).to include(preparation.item.display_name)
+    end
+
+    it 'should add information request only items to checkout' do
+      information_only_collection = FactoryBot.create(
+        :collection,
+        division: 'Info Only',
+        admin_group: 'info-only-admins',
+        no_loan_requests: true
+      )
+      information_only_item = FactoryBot.create(:item, collection: information_only_collection)
+      information_only_preparation = FactoryBot.create(:preparation, item: information_only_item)
+
+      post checkout_add_path, params: { id: information_only_preparation.id, count: 1 }, headers: {'Accept' => 'text/vnd.turbo-stream.html'}
+      expect(response).to have_http_status(200)
+
+      get checkout_path
+      expect(response.body).to include(information_only_preparation.item.display_name)
+      expect(response.body).to include('(1)')
+      expect(response.body).to include('Information Request')
+      expect(response.body).not_to include('Sign In to Send Loan Request')
     end
 
     it 'should display Send Loan Request Button when there are preparations in the cart' do
