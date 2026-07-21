@@ -173,10 +173,10 @@ class CollectionsController < ApplicationController
 
     def create_app_preferences(collection)
       # intentionally use all distinct AppPreferences as template/default preferences to copy into this new collection
-      app_prefs = AppPreference.distinct(:name).pluck(:name, :description, :pref_type)
+      app_prefs = AppPreference.select(:name, :description, :pref_type, :placeholder).distinct.pluck(:name, :description, :pref_type, :placeholder)
       pref_errors = false
-      app_prefs.each do |name, description, pref_type|
-        app_pref = AppPreference.create(collection: collection, name: name, description: description, pref_type: pref_type, value: nil)
+      app_prefs.each do |name, description, pref_type, placeholder|
+        app_pref = AppPreference.create(collection: collection, name: name, description: description, pref_type: pref_type, placeholder: placeholder, value: nil)
         unless app_pref.persisted?
           Rails.logger.error "Failed to create AppPreference: #{app_pref.errors.full_messages.join(', ')}"
           pref_errors = true

@@ -134,20 +134,38 @@ RSpec.describe AppPreferencesController, type: :request do
       expect(AppPreference.where(name: "collection_email_to_send_requests").pluck(:placeholder).uniq).to eq(["curator@example.edu"])
     end
 
-    it 'does not silently create app preferences when there are no collections' do
+    it 'stores app preferences without a collection and copies them when a collection is created later' do
       Collection.destroy_all
 
       post app_preferences_path, params: {
         app_preference: {
           name: "enable_dashboard_banner",
           description: "Enable dashboard banner",
-          pref_type: "boolean"
+          pref_type: "boolean",
+          placeholder: "Show on dashboard"
         }
       }, headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
 
       expect(response).to have_http_status(:success)
-      expect(response.body).to include("Create a collection before creating App Preferences.")
-      expect(AppPreference.where(name: "enable_dashboard_banner")).to be_empty
+      expect(AppPreference.find_by!(name: "enable_dashboard_banner").collection_id).to be_nil
+
+      post collections_path, params: {
+        collection: {
+          division: "new_collection",
+          admin_group: "new-admins",
+          short_description: "New collection",
+          long_description: "New collection long description",
+          division_page_url: "https://example.edu/new_collection",
+          link_to_policies: "https://example.edu/new_collection/policies"
+        }
+      }
+
+      new_collection = Collection.find_by!(division: "new_collection")
+      new_preference = AppPreference.find_by!(collection: new_collection, name: "enable_dashboard_banner")
+
+      expect(new_preference.description).to eq("Enable dashboard banner")
+      expect(new_preference.pref_type).to eq("boolean")
+      expect(new_preference.placeholder).to eq("Show on dashboard")
     end
   end
 
