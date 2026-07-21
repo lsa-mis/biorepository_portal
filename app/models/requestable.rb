@@ -31,15 +31,23 @@ class Requestable < ApplicationRecord
   belongs_to :item, optional: true
   belongs_to :checkout
 
+  # Items the user moved out of the active cart into "Saved for Later."
   scope :saved_for_later, -> { where(saved_for_later: true) }
+
+  # Loan-requestable cart items only. Excludes saved items, unlinked items,
+  # and items from collections that only allow information requests.
   scope :active, -> {
     joins(item: :collection)
       .where(saved_for_later: false, collections: { no_loan_requests: false })
       .where.not(preparation_id: nil)
       .where.not(item_id: nil)
   }
+
+  # All active cart items, including information-request-only items.
+  # Excludes saved items and unlinked items.
   scope :active_in_checkout, -> { where(saved_for_later: false).where.not(preparation_id: nil).where.not(item_id: nil) }
-  scope :available_for_loan_request, -> { active.joins(:preparation).where("preparations.count > 0") }
+
+  # All active cart items that still have preparation inventory.
   scope :available_in_cart, -> { active_in_checkout.joins(:preparation).where("preparations.count > 0") }
 
   def active?
