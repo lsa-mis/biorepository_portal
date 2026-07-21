@@ -133,6 +133,22 @@ RSpec.describe AppPreferencesController, type: :request do
       expect(response).to have_http_status(:success)
       expect(AppPreference.where(name: "collection_email_to_send_requests").pluck(:placeholder).uniq).to eq(["curator@example.edu"])
     end
+
+    it 'does not silently create app preferences when there are no collections' do
+      Collection.destroy_all
+
+      post app_preferences_path, params: {
+        app_preference: {
+          name: "enable_dashboard_banner",
+          description: "Enable dashboard banner",
+          pref_type: "boolean"
+        }
+      }, headers: { 'Accept' => 'text/vnd.turbo-stream.html' }
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Create a collection before creating App Preferences.")
+      expect(AppPreference.where(name: "enable_dashboard_banner")).to be_empty
+    end
   end
 
   describe 'POST /app_preferences/app_prefs' do
