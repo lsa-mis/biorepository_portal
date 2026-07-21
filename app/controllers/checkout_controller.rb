@@ -228,7 +228,7 @@ class CheckoutController < ApplicationController
   private
 
   def set_active_requestables
-    @all_requestables = @checkout.requestables.active
+    @all_requestables = @checkout.requestables.active_in_checkout
                                 .order(:id)
                                 .includes(:preparation, item: [ :collection, :preparations, :current_identification ])
     @loan_unavailable, @loan_available = @all_requestables.partition do |requestable|

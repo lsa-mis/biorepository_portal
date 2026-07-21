@@ -96,7 +96,7 @@ module ApplicationHelper
 
     # Use .any? with a block to search the preloaded array in memory
     checkout.requestables.any? do |r|
-      r.active? && r.preparation_id == preparation.id
+      r.active_in_checkout? && r.preparation_id == preparation.id
     end
   end
 
