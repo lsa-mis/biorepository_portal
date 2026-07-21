@@ -39,8 +39,8 @@ class Requestable < ApplicationRecord
       .where.not(item_id: nil)
   }
   scope :active_in_checkout, -> { where(saved_for_later: false).where.not(preparation_id: nil).where.not(item_id: nil) }
-  scope :available_for_checkout, -> { active.joins(:preparation).where("preparations.count > 0") }
-  scope :available_in_checkout, -> { active_in_checkout.joins(:preparation).where("preparations.count > 0") }
+  scope :available_for_loan_request, -> { active.joins(:preparation).where("preparations.count > 0") }
+  scope :available_in_cart, -> { active_in_checkout.joins(:preparation).where("preparations.count > 0") }
 
   def active?
     return false if saved_for_later
