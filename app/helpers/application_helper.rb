@@ -168,7 +168,7 @@ module ApplicationHelper
   def get_checkout_items
     checkout_items = []
     collection_ids = []
-    @checkout.requestables.active
+    @checkout.requestables.active_in_checkout
              .includes(preparation: { item: [:collection, :identifications] })
              .each do |requestable|
       preparation = requestable.preparation
@@ -191,7 +191,7 @@ module ApplicationHelper
 
   def get_checkout_items_with_ids
     checkout_items = []
-    @checkout.requestables.active
+    @checkout.requestables.active_in_checkout
              .includes(preparation: { item: [:collection, :identifications] })
              .each do |requestable|
       preparation = requestable.preparation
