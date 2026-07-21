@@ -54,9 +54,9 @@
 #
 class Item < ApplicationRecord
   belongs_to :collection
-  has_many :identifications, dependent: :destroy
+  has_many :identifications, dependent: :delete_all
   has_one :current_identification, -> { where(current: true) }, class_name: 'Identification', foreign_key: 'item_id'
-  has_many :preparations, dependent: :destroy
+  has_many :preparations, dependent: :delete_all
   has_many :unavailables
   has_many :checkouts, through: :unavailables
 
