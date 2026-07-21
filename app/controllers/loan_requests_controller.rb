@@ -328,15 +328,23 @@ end
       end
     end
 
-    def clean_up_checkout_items
-      @checkout.requestables.active.each do |requestable|
-        preparation = requestable.preparation
-        preparation.with_lock do
-          new_count = [preparation.count - requestable.count, 0].max
+  def clean_up_checkout_items
+      active_requestables = @checkout.requestables.active
+      decrement_by_preparation_id = active_requestables.group(:preparation_id).sum(:count)
+
+      Preparation.transaction do
+        locked_preparations = Preparation.where(id: decrement_by_preparation_id.keys).lock.index_by(&:id)
+
+        decrement_by_preparation_id.each do |preparation_id, decrement_count|
+          preparation = locked_preparations[preparation_id]
+          next unless preparation
+
+          new_count = [preparation.count - decrement_count, 0].max
           preparation.update(count: new_count)
         end
+
+        active_requestables.delete_all
       end
-      @checkout.requestables.active.delete_all
     end
 
 end
