@@ -161,7 +161,7 @@ end
   end
 
   def set_checkout_active_count
-    @checkout_active_count = @checkout&.requestables&.available_for_checkout&.count.to_i
+    @checkout_active_count = @checkout&.requestables&.available_in_checkout&.count.to_i
   end
 
   def checkout_availability
