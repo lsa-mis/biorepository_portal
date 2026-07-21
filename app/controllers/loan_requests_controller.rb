@@ -219,20 +219,21 @@ class LoanRequestsController < ApplicationController
         # Organism remarks can contain multiple semicolon-delimited segments;
         # for this CSV export we only include the first segment
         @checkout.requestables.active
-            .reject { |r| r.preparation.item.collection.no_loan_requests }
+            .includes(:preparation, item: :collection)
+            .reject { |r| r.item.collection.no_loan_requests }
             .each do |requestable|
-          csv << [
+         csv << [
             [user.first_name, user.last_name].compact.join(" "),
             user.affiliation,
             user.email,
             answer_text,
             user.orcid,
-            requestable.preparation.item.collection.division,
-            requestable.preparation.item.catalog_number,
+            requestable.item.collection.division,
+            requestable.item.catalog_number,
             requestable.preparation.prep_type,
             requestable.count,
             requestable.preparation.barcode,
-            requestable.preparation.item.organism_remarks&.split(';')&.first,
+            requestable.item.organism_remarks&.split(';')&.first,
             @shipping_address&.address_line_1,
             @shipping_address&.address_line_2,
             @shipping_address&.address_line_3,
@@ -254,25 +255,28 @@ class LoanRequestsController < ApplicationController
     end
 
     def build_collection_answers(checkout, user)
-      collections = Collection
-                .where(id: checkout.requestables.active.map { |requestable| requestable.preparation.item.collection_id }.uniq)
-      collection_answers = {}
+        requestables = checkout.requestables.active.includes(:preparation, item: :collection)
+        collection_ids = requestables.map { |requestable| requestable.item.collection_id }.uniq
 
-      collections.each do |collection|
-        collection_questions = collection.collection_questions.order(:position)
-        next if collection_questions.empty?
+        collections = Collection.where(id: collection_ids)
+                         .includes(collection_questions: [:collection_answers, :rich_text_question])
+        collection_answers = {}
 
-        question_answer_hash = {}
-        collection_questions.each do |question|
-          answer = question.collection_answers.find { |a| a.user_id == user.id }
-          question_answer_hash[question] = answer
-        end
+        collections.each do |collection|
+          collection_questions = collection.collection_questions.sort_by(&:position)
+          next if collection_questions.empty?
 
-        collection_answers[collection] = question_answer_hash
-      end
+          question_answer_hash = {}
+          collection_questions.each do |question|
+            answer = question.collection_answers.find { |a| a.user_id == user.id }
+            question_answer_hash[question] = answer
+          end
 
-      collection_answers
-    end
+    collection_answers[collection] = question_answer_hash
+  end
+
+  collection_answers
+end
 
     def check_missing_answers(answers_hash)
       answers_hash.each do |question, answer|
