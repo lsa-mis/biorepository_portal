@@ -273,6 +273,32 @@ RSpec.describe LoanRequestsController, type: :request do
         
         post send_loan_request_path, params: valid_params
       end
+
+      it 'removes only loan requestable items from checkout' do
+        information_only_collection = FactoryBot.create(
+          :collection,
+          division: 'Info Only',
+          admin_group: 'info-only-admins',
+          no_loan_requests: true
+        )
+        information_only_item = FactoryBot.create(:item, collection: information_only_collection)
+        information_only_preparation = FactoryBot.create(:preparation, item: information_only_item)
+        information_only_requestable = FactoryBot.create(
+          :requestable,
+          checkout: checkout,
+          preparation: information_only_preparation,
+          item_id: information_only_item.id,
+          collection: information_only_collection.division,
+          preparation_type: information_only_preparation.prep_type,
+          item_name: information_only_item.name,
+          count: 1
+        )
+
+        post send_loan_request_path, params: valid_params
+
+        expect(Requestable.exists?(requestable.id)).to be(false)
+        expect(Requestable.exists?(information_only_requestable.id)).to be(true)
+      end
     end
 
     context 'when checkout is empty' do
