@@ -128,6 +128,19 @@ app_preferences = [
   }
 ]
 
+app_preferences.each do |pref|
+  app_preference = AppPreference.find_or_create_by!(
+    collection_id: nil,
+    name: pref[:name]
+  ) do |ap|
+    ap.description = pref[:description]
+    ap.pref_type = pref[:pref_type]
+    ap.value = pref[:value]
+    ap.placeholder = pref[:placeholder]
+  end
+  app_preference.update!(placeholder: pref[:placeholder]) if pref[:placeholder].present? && app_preference.placeholder.blank?
+end
+
 Collection.all.each do |collection|
   app_preferences.each do |pref|
     app_preference = AppPreference.find_or_create_by!(
@@ -142,7 +155,7 @@ Collection.all.each do |collection|
     app_preference.update!(placeholder: pref[:placeholder]) if pref[:placeholder].present? && app_preference.placeholder.blank?
   end
 end
-puts "App preferences seeded for #{Collection.count} collections (#{AppPreference.count} total records)"
+puts "App preferences seeded as templates and for #{Collection.count} collections (#{AppPreference.count} total records)"
 
 global_preferences = [
   {

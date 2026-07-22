@@ -97,15 +97,26 @@ class AppPreferencesController < ApplicationController
         return
       end
     elsif params[:app_preference].present?
-      # create preference for every collection
-      Collection.all.each do |collection|
-        @app_preference = collection.app_preferences.build(app_preference_params.except(:collection_id))
+      if Collection.none?
+        @app_preference = AppPreference.new(app_preference_params.except(:collection_id))
         authorize @app_preference
         unless @app_preference.save
           AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["no"]}
           GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["yes"]}
           flash.now[:alert] = "Error creating app preference."
           return
+        end
+      else
+        # create preference for every collection
+        Collection.all.each do |collection|
+          @app_preference = collection.app_preferences.build(app_preference_params.except(:collection_id))
+          authorize @app_preference
+          unless @app_preference.save
+            AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["no"]}
+            GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["yes"]}
+            flash.now[:alert] = "Error creating app preference."
+            return
+          end
         end
       end
     end
