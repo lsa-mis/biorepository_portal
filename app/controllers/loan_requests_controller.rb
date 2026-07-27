@@ -148,7 +148,7 @@ class LoanRequestsController < ApplicationController
         # Clean up checkout items
         clean_up_checkout_items
 
-        redirect_to checkout_path, notice: "Loan request sent with CSV and PDF attached."
+        redirect_to checkout_path, notice: "Loan request sent with CSV and PDF attached. Check your Profile for details."
       else
         flash[:alert] = "Failed to create loan request. Please try again: #{@loan_request.errors.full_messages.join(', ')}"
         redirect_to new_loan_request_path
