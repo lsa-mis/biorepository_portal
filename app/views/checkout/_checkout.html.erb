@@ -95,8 +95,8 @@
           <i class="bi bi-info-circle-fill fs-4 text-primary"></i>
           <h2 class="mb-0">Information Request</h2>
         </div>
-        <p class="text-muted mb-4">All items are available for information requests.</p>
-        <% @all_requestables.each do |requestable| %>
+          <p class="text-muted mb-4">All items are available for information requests. Your checkout will not be affected — items will still be here when you return.</p>     
+          <% @all_requestables.each do |requestable| %>
           <% item = requestable.item %>
           <% preparation = requestable.preparation %>
           <div class="card mb-3">
