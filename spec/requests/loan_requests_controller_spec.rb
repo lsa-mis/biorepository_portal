@@ -228,6 +228,7 @@ RSpec.describe LoanRequestsController, type: :request do
         get step_five_path, params: { shipping_address_id: address.id }
         expect(response).to have_http_status(:success)
         expect(response.body).to include("Items for Checkout")
+        expect(response.body).to include("After your loan request is sent, these items will be removed from your checkout.")
       end
     end
 
@@ -256,7 +257,7 @@ RSpec.describe LoanRequestsController, type: :request do
         }.to change(LoanRequest, :count).by(1)
 
         expect(response).to redirect_to(checkout_path)
-        expect(flash[:notice]).to eq('Loan request sent with CSV and PDF attached.')
+        expect(flash[:notice]).to eq('Loan request sent with CSV and PDF attached. Check your Profile for details.')
       end
 
       it 'assigns correct attributes to loan request' do
