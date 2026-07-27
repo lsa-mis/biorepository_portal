@@ -65,7 +65,7 @@ class InformationRequestsController < ApplicationController
         checkout_items: checkout_items,
         collection_ids: collection_ids
       ).confirmation_information_request.deliver_now
-      redirect_to faqs_path, notice: "Information request sent successfully."
+      redirect_to faqs_path, notice: "Information request sent successfully. Check Profile for details."
     else
 
       flash.now[:alert] = "Failed to send information request."
