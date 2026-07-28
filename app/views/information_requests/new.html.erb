@@ -81,8 +81,7 @@
   <% if @checkout_items.present? %>
     <p class="fw-semibold mb-2">Select Items from Checkout to Include:</p>
     <p class="text-muted small mb-2">
-      Select the items you want to reference in your information request.
-      Selected items will be included in the email sent to the collection team.
+      Selected items will be included in the email sent to the collection team. Submitting this request will not remove items from your checkout.
     </p>
     <div class="p-3 rounded border bg-light">
       <% @checkout_items.each_with_index do |item, index| %>
