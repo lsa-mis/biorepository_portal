@@ -257,7 +257,7 @@ RSpec.describe LoanRequestsController, type: :request do
         }.to change(LoanRequest, :count).by(1)
 
         expect(response).to redirect_to(checkout_path)
-        expect(flash[:notice]).to eq('Loan request sent with CSV and PDF attached. Check your Profile for details.')
+        expect(flash[:notice]).to eq('Loan request sent. Check your Profile for details.')
       end
 
       it 'assigns correct attributes to loan request' do
