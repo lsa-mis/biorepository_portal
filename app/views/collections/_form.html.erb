@@ -55,9 +55,9 @@
       <%= render partial: "collection_image", locals: { collection: collection } %>
     </div>
     <%= form.label :image, "Update the Image:", class: "w-100 mb-2" %>
-    <%= form.file_field :image, accept: ".jpg,.jpeg,.png" %>
+    <%= form.file_field :image, accept: ".jpg,.jpeg,.png" %>  
   </div>
-
+  
   <div class="mt-3 mb-4">
     <%= form.submit %>
     <% if collection.persisted? %>

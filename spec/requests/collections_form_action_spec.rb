@@ -1,5 +1,4 @@
 require 'rails_helper'
-SUPER_ADMIN_LDAP_GROUP = "lsa-biorepository-super-admins"
 
 RSpec.describe Collection, type: :request do
   subject {

@@ -57,6 +57,7 @@ class CollectionsController < ApplicationController
     respond_to do |format|
       if @collection.save
         # create preferences for the collection
+        session[:collection_ids] << @collection.id
         pref_errors = create_app_preferences(@collection)
         notice_message = if pref_errors
           "Collection was successfully created, but there were errors creating App Preferences. Please contact support."
@@ -88,7 +89,7 @@ class CollectionsController < ApplicationController
   # DELETE /collections/1 or /collections/1.json
   def destroy
     @collection.destroy!
-
+    session[:collection_ids].delete(@collection.id)
     respond_to do |format|
       format.html { redirect_to collections_path, status: :see_other, notice: "Collection was successfully destroyed." }
       format.json { head :no_content }
@@ -174,10 +175,10 @@ class CollectionsController < ApplicationController
 
     def create_app_preferences(collection)
       # intentionally use all distinct AppPreferences as template/default preferences to copy into this new collection
-      app_prefs = AppPreference.distinct(:name).pluck(:name, :description, :pref_type)
+      app_prefs = AppPreference.select(:name, :description, :pref_type, :placeholder).distinct.pluck(:name, :description, :pref_type, :placeholder)
       pref_errors = false
-      app_prefs.each do |name, description, pref_type|
-        app_pref = AppPreference.create(collection: collection, name: name, description: description, pref_type: pref_type, value: nil)
+      app_prefs.each do |name, description, pref_type, placeholder|
+        app_pref = AppPreference.create(collection: collection, name: name, description: description, pref_type: pref_type, placeholder: placeholder, value: nil)
         unless app_pref.persisted?
           Rails.logger.error "Failed to create AppPreference: #{app_pref.errors.full_messages.join(', ')}"
           pref_errors = true
@@ -188,8 +189,10 @@ class CollectionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def collection_params
-      params.require(:collection).permit(:division, :admin_group, :short_description, :long_description, :division_page_url, :link_to_policies, :image) 
-    end
+  params.require(:collection).permit(:division, :admin_group, :short_description, 
+    :long_description, :division_page_url, :link_to_policies, :image,
+    :no_loan_requests)
+end
 
     def search_params
       params.permit(:q1, :commit)

@@ -7,6 +7,7 @@
 #  division          :string
 #  division_page_url :string
 #  link_to_policies  :string
+#  no_loan_requests  :boolean          default(FALSE), not null
 #  short_description :text
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
@@ -18,5 +19,15 @@
 require 'rails_helper'
 
 RSpec.describe Collection, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe '#no_loan_requests' do
+    it 'defaults to false' do
+      collection = create(:collection)
+      expect(collection.no_loan_requests).to be false
+    end
+
+    it 'can be enabled on the collection' do
+      collection = create(:collection, no_loan_requests: true)
+      expect(collection.no_loan_requests).to be true
+    end
+  end
 end

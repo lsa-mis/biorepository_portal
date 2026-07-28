@@ -96,7 +96,15 @@ module ApplicationHelper
 
     # Use .any? with a block to search the preloaded array in memory
     checkout.requestables.any? do |r|
-      r.active? && r.preparation_id == preparation.id
+      r.active_in_checkout? && r.preparation_id == preparation.id
+    end
+  end
+
+  def preparation_checkout_label(item)
+    if item&.collection&.no_loan_requests?
+      "Add Preparation to Checkout (Information Request Only)"
+    else
+      "Add Preparation to Checkout"
     end
   end
 
@@ -160,11 +168,14 @@ module ApplicationHelper
   def get_checkout_items
     checkout_items = []
     collection_ids = []
-    @checkout.requestables.active.each do |requestable|
+    @checkout.requestables.active_in_checkout
+             .includes(preparation: { item: [:collection, :identifications] })
+             .each do |requestable|
       preparation = requestable.preparation
       item = preparation.item
+      current_id = item.identifications.find { |i| i.current }
       checkout_item = ""
-      checkout_item += "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{item.current_identification&.scientific_name}, Preparation: #{preparation.prep_type}"
+      checkout_item += "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{current_id&.scientific_name}, Preparation: #{preparation.prep_type}"
       if preparation.barcode.present?
         checkout_item += ", Barcode: #{preparation.barcode}"
       end
@@ -173,22 +184,21 @@ module ApplicationHelper
       end
       checkout_item += ", Count: #{requestable.count}"
       checkout_items << checkout_item
-      collection_ids << item.collection_id    
+      collection_ids << item.collection_id
     end
     [checkout_items, collection_ids.uniq]
   end
 
-  def get_collection_ids_from_emails(send_to)
-    AppPreference.where(name: "collection_email_to_send_requests", value: send_to).pluck(:collection_id)
-  end
-
   def get_checkout_items_with_ids
     checkout_items = []
-    @checkout.requestables.active.each do |requestable|
+    @checkout.requestables.active_in_checkout
+             .includes(preparation: { item: [:collection, :identifications] })
+             .each do |requestable|
       preparation = requestable.preparation
       item = preparation.item
+      current_id = item.identifications.find { |i| i.current }
       checkout_item = ""
-      checkout_item += "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{item.current_identification&.scientific_name}, Preparation: #{preparation.prep_type}"
+      checkout_item += "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{current_id&.scientific_name}, Preparation: #{preparation.prep_type}"
       if preparation.barcode.present?
         checkout_item += ", Barcode: #{preparation.barcode}"
       end
@@ -200,6 +210,10 @@ module ApplicationHelper
       checkout_items << checkout_item
     end
     checkout_items
+  end
+
+  def get_collection_ids_from_emails(send_to)
+    AppPreference.where(name: "collection_email_to_send_requests", value: send_to).pluck(:collection_id)
   end
   
   def number_of_items_to_loan
@@ -241,5 +255,42 @@ module ApplicationHelper
       saved_search.user == current_user
     end
   end
+
+def get_loan_checkout_items
+  checkout_items = []
+  collection_ids = []
+  @checkout.requestables.active
+    .includes(:preparation, item: [:collection, :current_identification])
+    .reject { |r| r.item.collection.no_loan_requests }
+    .each do |requestable|
+      preparation = requestable.preparation
+      item = requestable.item
+      checkout_item = "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{item.current_identification&.scientific_name}, Preparation: #{preparation.prep_type}"
+      checkout_item += ", Barcode: #{preparation.barcode}" if preparation.barcode.present?
+      checkout_item += ", Description: #{preparation.description}" if preparation.description.present?
+      checkout_item += ", Count: #{requestable.count}"
+      checkout_items << checkout_item
+      collection_ids << item.collection_id
+    end
+  [checkout_items, collection_ids.uniq]
+end
+
+def get_loan_checkout_items_with_ids
+  checkout_items = []
+  @checkout.requestables.active
+    .includes(:preparation, item: [:collection, :current_identification])
+    .reject { |r| r.item.collection.no_loan_requests }
+    .each do |requestable|
+      preparation = requestable.preparation
+      item = requestable.item
+      checkout_item = "#{item.collection.division}, Catalog Number: #{item.catalog_number}, Scientific Name: #{item.current_identification&.scientific_name}, Preparation: #{preparation.prep_type}"
+      checkout_item += ", Barcode: #{preparation.barcode}" if preparation.barcode.present?
+      checkout_item += ", Description: #{preparation.description}" if preparation.description.present?
+      checkout_item += ", Count: #{requestable.count}"
+      checkout_item += ", #{item.id}"
+      checkout_items << checkout_item
+    end
+  checkout_items
+ end
 
 end
