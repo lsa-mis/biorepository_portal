@@ -35,6 +35,27 @@ RSpec.describe ItemsController, type: :request do
         # Test that the page includes preparation information
         expect(response.body).to include("Preparation")
       end
+
+      it 'displays the information-only checkout label for no loan request collections' do
+        collection.update!(no_loan_requests: true)
+        FactoryBot.create(:preparation, item: item)
+
+        get item_path(item)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Add Preparation to Checkout (Information Request Only)')
+      end
+
+      it 'displays the standard checkout label for loan request collections' do
+        collection.update!(no_loan_requests: false)
+        FactoryBot.create(:preparation, item: item)
+
+        get item_path(item)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Add Preparation to Checkout')
+        expect(response.body).not_to include('Information Request Only')
+      end
     end
 
     context 'when item does not exist' do
@@ -133,6 +154,78 @@ RSpec.describe ItemsController, type: :request do
       it 'defaults view when no switch_view param' do
         get search_items_path
         expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context 'with search result card checkout labels' do
+      it 'displays the information-only checkout label for no loan request collections' do
+        collection.update!(no_loan_requests: true)
+        FactoryBot.create(:preparation, item: item)
+
+        get search_items_path, params: { switch_view: 'cards', q: { id_eq: item.id } }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Add Preparation to Checkout (Information Request Only)')
+      end
+
+      it 'displays the standard checkout label for loan request collections' do
+        collection.update!(no_loan_requests: false)
+        FactoryBot.create(:preparation, item: item)
+
+        get search_items_path, params: { switch_view: 'cards', q: { id_eq: item.id } }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Add Preparation to Checkout')
+        expect(response.body).not_to include('Information Request Only')
+      end
+
+      it 'does not query collections once per card when rendering dynamic labels' do
+        search_items = 3.times.map do |index|
+          no_loan_collection = FactoryBot.create(
+            :collection,
+            division: "No Loan Search Cards #{index}",
+            admin_group: "no_loan_search_cards_#{index}",
+            no_loan_requests: true
+          )
+          FactoryBot.create(:item, collection: no_loan_collection)
+        end
+        search_items.each do |search_item|
+          FactoryBot.create(:preparation, item: search_item)
+        end
+
+        queries = capture_sql do
+          get search_items_path, params: { switch_view: 'cards', q: { id_in: search_items.map(&:id) } }
+        end
+
+        collection_n_plus_one_queries = queries.select do |sql|
+          sql.match?(/FROM "?collections"? WHERE "?collections"?\."?id"? =/)
+        end
+
+        expect(response).to have_http_status(:ok)
+        expect(collection_n_plus_one_queries).to be_empty
+      end
+    end
+
+    context 'with search result row checkout labels' do
+      it 'displays the information-only checkout label for no loan request collections' do
+        collection.update!(no_loan_requests: true)
+        FactoryBot.create(:preparation, item: item)
+
+        get search_items_path, params: { switch_view: 'rows', q: { id_eq: item.id } }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Add Preparation to Checkout (Information Request Only)')
+      end
+
+      it 'displays the standard checkout label for loan request collections' do
+        collection.update!(no_loan_requests: false)
+        FactoryBot.create(:preparation, item: item)
+
+        get search_items_path, params: { switch_view: 'rows', q: { id_eq: item.id } }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Add Preparation to Checkout')
+        expect(response.body).not_to include('Information Request Only')
       end
     end
 

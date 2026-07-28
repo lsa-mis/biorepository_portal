@@ -26,7 +26,7 @@ RSpec.describe Collection, type: :request do
       end
     end
 
-  end 
+  end
 
   context 'with admin role' do
       let!(:admin_user) { FactoryBot.create(:user) }
@@ -70,5 +70,21 @@ RSpec.describe Collection, type: :request do
       get collection_path(collection)
       expect(response.body).not_to include("Import")
     end
+
+    it 'displays No Loan Requests when the collection status is enabled' do
+      collection.update!(no_loan_requests: true)
+
+      get collection_path(collection)
+
+      expect(response.body).to include("No Loan Requests")
+    end
+
+    it 'does not display No Loan Requests when the collection status is disabled' do
+      collection.update!(no_loan_requests: false)
+
+      get collection_path(collection)
+
+      expect(response.body).not_to include("No Loan Requests")
+    end
   end
-end 
+end

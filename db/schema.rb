@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_07_124500) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_21_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -80,10 +80,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_124500) do
   end
 
   create_table "app_preferences", force: :cascade do |t|
-    t.bigint "collection_id", null: false
+    t.bigint "collection_id"
     t.datetime "created_at", null: false
     t.string "description"
     t.string "name"
+    t.string "placeholder"
     t.integer "pref_type"
     t.datetime "updated_at", null: false
     t.string "value"
@@ -131,6 +132,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_124500) do
     t.string "division"
     t.string "division_page_url"
     t.string "link_to_policies"
+    t.boolean "no_loan_requests", default: false, null: false
     t.text "short_description"
     t.datetime "updated_at", null: false
     t.index ["division"], name: "index_collections_on_division"
@@ -147,6 +149,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_124500) do
     t.datetime "created_at", null: false
     t.string "description"
     t.string "name"
+    t.string "placeholder"
     t.integer "pref_type"
     t.datetime "updated_at", null: false
     t.string "value"
@@ -331,6 +334,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_124500) do
     t.datetime "created_at", null: false
     t.bigint "item_id"
     t.string "item_name"
+    t.boolean "loan_request", default: true, null: false
     t.bigint "preparation_id"
     t.string "preparation_type"
     t.boolean "saved_for_later", default: false, null: false

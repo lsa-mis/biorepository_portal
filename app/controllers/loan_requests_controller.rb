@@ -57,21 +57,22 @@ class LoanRequestsController < ApplicationController
       redirect_to step_four_path and return
     end
     alert = checkout_availability
-    @checkout_items = get_checkout_items_with_ids
+    @checkout_items = get_loan_checkout_items_with_ids
     authorize LoanRequest
     flash.now[:alert] = alert + " preparation(s) are no longer available and have been removed from Checkout." if alert.present?
   end
 
   def send_loan_request
-    @shipping_address = Address.find(params[:shipping_address_id])
+  @shipping_address = Address.find(params[:shipping_address_id])
 
-    if @checkout.nil? || @checkout.requestables.active.empty?
-      flash[:alert] = "No items in checkout."
-      redirect_to root_path
-      return
-    end
+  if @checkout.nil? || @checkout.requestables.active.empty?
+    flash[:alert] = "No items in checkout."
+    redirect_to root_path
+    return
+  end
 
-    @checkout_items, @collection_ids = get_checkout_items
+  @checkout_items, @collection_ids = get_loan_checkout_items
+
 
     emails = @collection_ids.map do |collection_id|
       AppPreference.find_by(
@@ -147,7 +148,7 @@ class LoanRequestsController < ApplicationController
         # Clean up checkout items
         clean_up_checkout_items
 
-        redirect_to checkout_path, notice: "Loan request sent with CSV and PDF attached."
+        redirect_to checkout_path, notice: "Loan request sent. Check your Profile for details."
       else
         flash[:alert] = "Failed to create loan request. Please try again: #{@loan_request.errors.full_messages.join(', ')}"
         redirect_to new_loan_request_path
@@ -217,19 +218,22 @@ class LoanRequestsController < ApplicationController
         answer_text = primary_position_answer&.answer&.to_plain_text.presence || "Not Provided"
         # Organism remarks can contain multiple semicolon-delimited segments;
         # for this CSV export we only include the first segment
-        @checkout.requestables.active.each do |requestable|
-          csv << [
+        @checkout.requestables.active
+            .includes(:preparation, item: :collection)
+            .reject { |r| r.item.collection.no_loan_requests }
+            .each do |requestable|
+         csv << [
             [user.first_name, user.last_name].compact.join(" "),
             user.affiliation,
             user.email,
             answer_text,
             user.orcid,
-            requestable.preparation.item.collection.division,
-            requestable.preparation.item.catalog_number,
+            requestable.item.collection.division,
+            requestable.item.catalog_number,
             requestable.preparation.prep_type,
             requestable.count,
             requestable.preparation.barcode,
-            requestable.preparation.item.organism_remarks&.split(';')&.first,
+            requestable.item.organism_remarks&.split(';')&.first,
             @shipping_address&.address_line_1,
             @shipping_address&.address_line_2,
             @shipping_address&.address_line_3,
@@ -251,25 +255,28 @@ class LoanRequestsController < ApplicationController
     end
 
     def build_collection_answers(checkout, user)
-      collections = Collection
-                .where(id: checkout.requestables.active.map { |requestable| requestable.preparation.item.collection_id }.uniq)
-      collection_answers = {}
+        requestables = checkout.requestables.active.includes(:preparation, item: :collection)
+        collection_ids = requestables.map { |requestable| requestable.item.collection_id }.uniq
 
-      collections.each do |collection|
-        collection_questions = collection.collection_questions.order(:position)
-        next if collection_questions.empty?
+        collections = Collection.where(id: collection_ids)
+                         .includes(collection_questions: [:collection_answers, :rich_text_question])
+        collection_answers = {}
 
-        question_answer_hash = {}
-        collection_questions.each do |question|
-          answer = question.collection_answers.find { |a| a.user_id == user.id }
-          question_answer_hash[question] = answer
-        end
+        collections.each do |collection|
+          collection_questions = collection.collection_questions.sort_by(&:position)
+          next if collection_questions.empty?
 
-        collection_answers[collection] = question_answer_hash
-      end
+          question_answer_hash = {}
+          collection_questions.each do |question|
+            answer = question.collection_answers.find { |a| a.user_id == user.id }
+            question_answer_hash[question] = answer
+          end
 
-      collection_answers
-    end
+    collection_answers[collection] = question_answer_hash
+  end
+
+  collection_answers
+end
 
     def check_missing_answers(answers_hash)
       answers_hash.each do |question, answer|
@@ -321,15 +328,23 @@ class LoanRequestsController < ApplicationController
       end
     end
 
-    def clean_up_checkout_items
-      @checkout.requestables.active.each do |requestable|
-        preparation = requestable.preparation
-        preparation.with_lock do
-          new_count = [preparation.count - requestable.count, 0].max
+  def clean_up_checkout_items
+      active_requestables = @checkout.requestables.active
+      decrement_by_preparation_id = active_requestables.group(:preparation_id).sum(:count)
+
+      Preparation.transaction do
+        locked_preparations = Preparation.where(id: decrement_by_preparation_id.keys).lock.index_by(&:id)
+
+        decrement_by_preparation_id.each do |preparation_id, decrement_count|
+          preparation = locked_preparations[preparation_id]
+          next unless preparation
+
+          new_count = [preparation.count - decrement_count, 0].max
           preparation.update(count: new_count)
         end
+
+        active_requestables.delete_all
       end
-      @checkout.requestables.active.delete_all
     end
 
 end

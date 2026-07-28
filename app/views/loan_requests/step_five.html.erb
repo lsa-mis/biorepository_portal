@@ -6,6 +6,9 @@
   <div>
     <%= render "profiles/user_loan_items" %>
   </div>
+  <div class="alert alert-info fw-semibold mt-3" role="status">
+    After your loan request is sent, these items will be removed from your checkout.
+  </div>
   <%= hidden_field_tag :shipping_address_id, @shipping_address.id %>
 
   <div class="d-flex justify-content-between align-items-center my-4">

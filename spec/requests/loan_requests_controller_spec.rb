@@ -66,6 +66,10 @@ RSpec.describe LoanRequestsController, type: :request do
 
   describe 'GET #new' do
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
     end
 
@@ -79,6 +83,10 @@ RSpec.describe LoanRequestsController, type: :request do
 
   describe 'GET #new when user has incomplete information' do
     before do
+      uniqname = get_uniqname(incomplete_user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(incomplete_user)
     end
 
@@ -96,6 +104,10 @@ RSpec.describe LoanRequestsController, type: :request do
 
   describe 'GET #step_two with no answer to loan question' do
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
     end
 
@@ -115,6 +127,10 @@ RSpec.describe LoanRequestsController, type: :request do
   describe 'GET #step_two with an answer to loan question' do
     let!(:loan_answer) { FactoryBot.create(:loan_answer, user: user, loan_question: loan_question, answer: "my answer") }
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
     end
 
@@ -133,6 +149,10 @@ RSpec.describe LoanRequestsController, type: :request do
     let!(:loan_answer) { FactoryBot.create(:loan_answer, user: user, loan_question: loan_question, answer: "my answer") }
 
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
     end
 
@@ -163,6 +183,10 @@ RSpec.describe LoanRequestsController, type: :request do
     let!(:collection_answer) { FactoryBot.create(:collection_answer, user: user, collection_question: collection_question, answer: 'Test answer') }
 
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
     end
 
@@ -204,6 +228,7 @@ RSpec.describe LoanRequestsController, type: :request do
         get step_five_path, params: { shipping_address_id: address.id }
         expect(response).to have_http_status(:success)
         expect(response.body).to include("Items for Checkout")
+        expect(response.body).to include("After your loan request is sent, these items will be removed from your checkout.")
       end
     end
 
@@ -213,6 +238,10 @@ RSpec.describe LoanRequestsController, type: :request do
     let!(:address) { FactoryBot.create(:address, user: user) }
 
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
       allow(PdfGenerator).to receive(:new).and_return(double(generate_pdf_content: 'pdf content'))
       allow(RequestMailer).to receive_message_chain(:send_loan_request, :deliver_now)
@@ -228,7 +257,7 @@ RSpec.describe LoanRequestsController, type: :request do
         }.to change(LoanRequest, :count).by(1)
 
         expect(response).to redirect_to(checkout_path)
-        expect(flash[:notice]).to eq('Loan request sent with CSV and PDF attached.')
+        expect(flash[:notice]).to eq('Loan request sent. Check your Profile for details.')
       end
 
       it 'assigns correct attributes to loan request' do
@@ -244,6 +273,32 @@ RSpec.describe LoanRequestsController, type: :request do
         expect(RequestMailer).to receive(:confirmation_loan_request).and_return(double(deliver_now: true))
         
         post send_loan_request_path, params: valid_params
+      end
+
+      it 'removes only loan requestable items from checkout' do
+        information_only_collection = FactoryBot.create(
+          :collection,
+          division: 'Info Only',
+          admin_group: 'info-only-admins',
+          no_loan_requests: true
+        )
+        information_only_item = FactoryBot.create(:item, collection: information_only_collection)
+        information_only_preparation = FactoryBot.create(:preparation, item: information_only_item)
+        information_only_requestable = FactoryBot.create(
+          :requestable,
+          checkout: checkout,
+          preparation: information_only_preparation,
+          item_id: information_only_item.id,
+          collection: information_only_collection.division,
+          preparation_type: information_only_preparation.prep_type,
+          item_name: information_only_item.name,
+          count: 1
+        )
+
+        post send_loan_request_path, params: valid_params
+
+        expect(Requestable.exists?(requestable.id)).to be(false)
+        expect(Requestable.exists?(information_only_requestable.id)).to be(true)
       end
     end
 
@@ -277,6 +332,10 @@ RSpec.describe LoanRequestsController, type: :request do
 
   describe 'validation behavior' do
     before do
+      uniqname = get_uniqname(user.email)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-developers").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, "lsa-biorepository-super-admins").and_return(false)
+      allow(LdapLookup).to receive(:is_member_of_group?).with(uniqname, collection.admin_group).and_return(false)
       mock_login(user)
     end
 

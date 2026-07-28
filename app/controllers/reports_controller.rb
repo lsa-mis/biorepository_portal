@@ -35,10 +35,11 @@ class ReportsController < ApplicationController
     @display_collections = true
     if params[:commit]
       start_time, end_time, collection_id = collect_form_params
-      information_requests = InformationRequest.includes(:rich_text_question).where(created_at: start_time..end_time).order(created_at: :desc)
+      information_requests = InformationRequest.includes(:rich_text_question, :user).where(created_at: start_time..end_time).order(created_at: :desc)
       information_requests = information_requests.where("collection_ids @> ARRAY[?]::integer[]", collection_id) if collection_id.present?
 
       if information_requests.any?
+        collection_divisions = collection_divisions_by_id(information_requests)
         @title = "Information Requests Report"
         @metrics = {
           'Total Information Requests' => information_requests.count,
@@ -46,9 +47,8 @@ class ReportsController < ApplicationController
         @headers = ["View Request", "Collections", "Created At", "Submitted By", "Message"]
         @request_link = true
         @url = "information_request_path"
-        @model_class = InformationRequest
         @data = information_requests.map do |request|
-          [request.id, get_collections(request), request.created_at.strftime("%Y-%m-%d"), show_user_name_by_id(request.user_id), request.question.to_plain_text]
+          [request, get_collections(request, collection_divisions), request.created_at.strftime("%Y-%m-%d"), request.user.name_with_email, request.question.to_plain_text]
         end
       else
         @data = nil
@@ -67,10 +67,11 @@ class ReportsController < ApplicationController
     @display_collections = true
     if params[:commit]
       start_time, end_time, collection_id = collect_form_params
-      loan_requests = LoanRequest.where(created_at: start_time..end_time).order(created_at: :desc)
+      loan_requests = LoanRequest.includes(:user).where(created_at: start_time..end_time).order(created_at: :desc)
       loan_requests = loan_requests.where("collection_ids @> ARRAY[?]::integer[]", collection_id) if collection_id.present?
 
       if loan_requests.any?
+        collection_divisions = collection_divisions_by_id(loan_requests)
         @title = "Loan Requests Report"
         @metrics = {
           'Total Loan Requests' => loan_requests.count,
@@ -79,9 +80,8 @@ class ReportsController < ApplicationController
         @headers = ["View Request", "Collections", "Created At", "Submitted By"]
         @request_link = true
         @url = "loan_request_path"
-        @model_class = LoanRequest
         @data = loan_requests.map do |request|
-          [request.id, get_collections(request), request.created_at.strftime("%Y-%m-%d"), show_user_name_by_id(request.user_id)]
+          [request, get_collections(request, collection_divisions), request.created_at.strftime("%Y-%m-%d"), request.user.name_with_email]
         end
       else
         @data = nil
@@ -177,9 +177,18 @@ class ReportsController < ApplicationController
     [start_time, end_time, collection_id]
   end
 
-  def get_collections(request)
+  def collection_divisions_by_id(requests)
+    collection_ids = requests.flat_map(&:collection_ids).uniq
+    Collection.where(id: collection_ids).pluck(:id, :division).to_h
+  end
+
+  def get_collections(request, collection_divisions = nil)
     collection_ids = request.collection_ids
-    collections = Collection.where(id: collection_ids).pluck(:division).uniq
+    collections = if collection_divisions
+      collection_ids.filter_map { |id| collection_divisions[id] }.uniq
+    else
+      Collection.where(id: collection_ids).pluck(:division).uniq
+    end
     collections.join(', ')
   end
 
@@ -194,10 +203,13 @@ class ReportsController < ApplicationController
       csv << []
       csv << @headers
       @data.each do |row|
+        csv_row = row.dup
         if @request_link
-          row[0] = URI.join(request.base_url + "/" + path + "/" + row[0].to_s)
+          record = csv_row[0]
+          record_id = record.respond_to?(:id) ? record.id : record
+          csv_row[0] = URI.join(request.base_url + "/" + path + "/" + record_id.to_s)
         end
-        csv << row
+        csv << csv_row
       end
     end
   end

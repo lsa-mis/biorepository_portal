@@ -5,11 +5,12 @@
 #  id            :bigint           not null, primary key
 #  description   :string
 #  name          :string
+#  placeholder   :string
 #  pref_type     :integer
 #  value         :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  collection_id :bigint           not null
+#  collection_id :bigint
 #
 # Indexes
 #
@@ -20,7 +21,7 @@
 #  fk_rails_...  (collection_id => collections.id)
 #
 class AppPreference < ApplicationRecord
-  belongs_to :collection
+  belongs_to :collection, optional: true
 
   enum :pref_type, [:boolean, :integer, :string, :image], prefix: true, scopes: true
   

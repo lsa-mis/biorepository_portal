@@ -108,6 +108,11 @@ textarea {
   resize: vertical;
 }
 
+.form-switch .form-check-input:checked {
+  background-color: $um_blue;
+  border-color: $um_blue;
+}
+
 .search-input.form-control {
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
@@ -195,4 +200,3 @@ textarea {
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
-

@@ -5,11 +5,12 @@
 #  id            :bigint           not null, primary key
 #  description   :string
 #  name          :string
+#  placeholder   :string
 #  pref_type     :integer
 #  value         :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  collection_id :bigint           not null
+#  collection_id :bigint
 #
 # Indexes
 #

@@ -6,18 +6,19 @@ class AppPreferencesController < ApplicationController
     @app_preference = AppPreference.new
     authorize AppPreference
     @app_preferences = []
-    AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["no"]}
-    GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["yes"]}
+    AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["no"]}
+    GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["yes"]}
   end
 
   def app_prefs
     if session[:role] == "developer" || session[:role] == "super_admin"
-      @collections = Collection.all
+      @collections = Collection.order(:division)
       @app_prefs = AppPreference.all.order(:pref_type, :description)
     else
-      @collections = Collection.where(id: session[:collection_ids])
+      @collections = Collection.where(id: session[:collection_ids]).order(:division)
       @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
     end
+    @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
     @global_prefs = GlobalPreference.includes(:image_attachment).all.order(:pref_type, :description)
     authorize @app_prefs
     authorize @global_prefs
@@ -45,20 +46,33 @@ class AppPreferencesController < ApplicationController
       @app_prefs = AppPreference.where(collection_id: session[:collection_ids])
       authorize @app_prefs
       @app_prefs.where(pref_type: 'boolean').update_all(value: "0")
-      if params[:app_prefs].present?
-        params[:app_prefs].each do |collection, p|
-          collection_id = collection.to_i
-          p.each do |k, v|
-            app_pref = AppPreference.find_by(collection_id: collection_id, name: k)
-            unless app_pref&.update(value: v)
-              flash.now[:alert] = "Error updating app preference: #{app_pref&.errors&.full_messages&.join(', ') || 'Preference not found.'}"
-              @collections = Collection.where(id: session[:collection_ids])
-              @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
-              render :app_prefs, status: :unprocessable_entity and return
+      params[:app_prefs].each do |collection, p|
+        collection_id = collection.to_i
+        p.each do |k, v|
+          if k == "loan_requests_policy"
+            if v == "allowed"
+              k = "no_loan_requests"
+              v = "0"
+            elsif v == "information_requests_only"
+              k = "no_loan_requests"
+              v = "1"
+            else
+              next
             end
+          end
+
+          app_pref = @app_prefs.find_by(collection_id: collection_id, name: k)
+          unless app_pref&.update(value: v)
+            flash.now[:alert] = "Error updating app preference: #{app_pref&.errors&.full_messages&.join(', ') || 'Preference not found.'}"
+            @collections = Collection.where(id: session[:collection_ids]).order(:division)
+            @app_prefs = AppPreference.where(collection_id: session[:collection_ids]).order(:pref_type, :description)
+            @app_prefs_by_collection = @app_prefs.group_by(&:collection_id)
+            @global_prefs = GlobalPreference.includes(:image_attachment).all.order(:pref_type, :description)
+            render :app_prefs, status: :unprocessable_entity and return
           end
         end
       end
+      sync_no_loan_requests_preferences(@app_prefs, params[:app_prefs])
     end
     redirect_to app_prefs_path, notice: "Preferences are updated."
   end
@@ -77,29 +91,39 @@ class AppPreferencesController < ApplicationController
       @app_preference = GlobalPreference.new(app_preference_params)
       authorize @app_preference
       unless @app_preference.save
-        AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["no"]}
-        GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["yes"]}
+        AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["no"]}
+        GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["yes"]}
         flash.now[:alert] = "Error creating app preference."
         return
       end
     elsif params[:app_preference].present?
-      # create preference for every collection
-      Collection.all.each do |collection|
-        @app_preference = AppPreference.new(app_preference_params)
+      if Collection.none?
+        @app_preference = AppPreference.new(app_preference_params.except(:collection_id))
         authorize @app_preference
-        @app_preference.collection_id = collection.id
         unless @app_preference.save
-          AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["no"]}
-          GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["yes"]}
+          AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["no"]}
+          GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["yes"]}
           flash.now[:alert] = "Error creating app preference."
           return
+        end
+      else
+        # create preference for every collection
+        Collection.all.each do |collection|
+          @app_preference = collection.app_preferences.build(app_preference_params.except(:collection_id))
+          authorize @app_preference
+          unless @app_preference.save
+            AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["no"]}
+            GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["yes"]}
+            flash.now[:alert] = "Error creating app preference."
+            return
+          end
         end
       end
     end
     flash.now[:notice] =  "App preference was successfully created."
     @app_preference = AppPreference.new
-    AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["no"]}
-    GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type).each {|pref| @app_preferences << pref + ["yes"]}
+    AppPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["no"]}
+    GlobalPreference.distinct.order(:name).pluck(:name, :description, :pref_type, :placeholder).each {|pref| @app_preferences << pref + ["yes"]}
   end
 
   def delete_preference
@@ -136,16 +160,35 @@ class AppPreferencesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
 
-    def set_collections
-      @collections = Collection.where(id: session[:collection_ids])
-    end
-
     def set_pref_types
       @pref_types = AppPreference.pref_types.keys
     end
 
+    def sync_no_loan_requests_preferences(app_prefs, submitted_prefs)
+      collection_ids = app_prefs.where(name: "no_loan_requests").distinct.pluck(:collection_id)
+      return if collection_ids.empty?
+
+      policy_updates = submitted_prefs.to_unsafe_h.filter_map do |collection_id, preferences|
+        collection_id = collection_id.to_i
+        next unless collection_ids.include?(collection_id)
+
+        if preferences["loan_requests_policy"] == "allowed"
+          no_loan_requests = false
+        elsif preferences["loan_requests_policy"] == "information_requests_only"
+          no_loan_requests = true
+        end
+        next if no_loan_requests.nil?
+
+        [collection_id, no_loan_requests]
+      end
+
+      policy_updates.each do |collection_id, no_loan_requests|
+        Collection.where(id: collection_id).update_all(no_loan_requests: no_loan_requests)
+      end
+    end
+
     # Only allow a list of trusted parameters through.
     def app_preference_params
-      params.require(:app_preference).permit(:name, :description, :value, :pref_type, :collection_id)
+      params.require(:app_preference).permit(:name, :description, :value, :pref_type, :placeholder, :collection_id)
     end
 end

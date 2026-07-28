@@ -6,14 +6,14 @@
         <%= fields_for 'global_prefs[]' do %>
           <div>
             <% if pref.pref_type == "boolean" %>
-              <div class="my-3">
-                <%= check_box_tag "global_prefs[#{pref.name}]", 1, string_to_boolean(pref.value), class: "form-check-input" %>
-                <span class="check_box_text"><%= pref.description %></span>
-                <label for=<%= "global_prefs_#{pref.name}" %> class="invisible"><%= pref.description %></label>
+              <% input_id = "global_prefs_#{pref.name}" %>
+              <div class="form-check form-switch my-3">
+                <%= check_box_tag "global_prefs[#{pref.name}]", 1, string_to_boolean(pref.value), id: input_id, class: "form-check-input", role: "switch", disabled: !is_super_admin? %>
+                <%= label_tag input_id, pref.description, class: "form-check-label" %>
               </div>
             <% elsif pref.pref_type == "string" %>
               <label for=<%= "global_prefs_#{pref.name}" %>><%= pref.description %></label>
-              <%= text_field_tag("global_prefs[#{pref.name}]", pref.value, disabled: !is_super_admin?) %>
+              <%= text_field_tag("global_prefs[#{pref.name}]", pref.value, placeholder: pref.placeholder, disabled: !is_super_admin?) %>
             <% elsif pref.pref_type == "integer" %>
               <label for=<%= "global_prefs_#{pref.name}" %>><%= pref.description %></label>
               <%= number_field_tag("global_prefs[#{pref.name}]", pref.value, disabled: !is_super_admin?) %>
@@ -54,18 +54,34 @@
   <%= form_with model: @app_prefs, url: app_prefs_path, method: :post do |form| %>
     <% @collections.each do |collection| %>
       <h3 class="my-4 ms-6"><%= collection.division %></h3>
-      <% @app_prefs.where(collection_id: collection).each do |pref| %>
+      <% @app_prefs_by_collection.fetch(collection.id, []).each do |pref| %>
         <%= fields_for 'app_prefs[]' do %>
           <div>
-            <% if pref.pref_type == "boolean" %>
-              <div class="my-3">
-                <%= check_box_tag "app_prefs[#{collection.id}][#{pref.name}]", 1, string_to_boolean(pref.value), class: "form-check-input" %>
-                <span class="check_box_text"><%= pref.description %></span>
-                <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %> class="invisible"><%= pref.description %></label>
+            <% if pref.name == "no_loan_requests" %>
+              <% allowed_input_id = "app_prefs_#{collection.id}_loan_requests_policy_allowed" %>
+              <% information_requests_only_input_id = "app_prefs_#{collection.id}_loan_requests_policy_information_requests_only" %>
+              <fieldset class="my-3">
+                <legend class="fs-6"><%= pref.description %></legend>
+                <div class="form-check">
+                  <%= radio_button_tag "app_prefs[#{collection.id}][loan_requests_policy]", "allowed", !collection.no_loan_requests?, id: allowed_input_id, class: "form-check-input" %>
+                  <%= label_tag allowed_input_id, "Collection allows Loan Requests", class: "form-check-label" %>
+                </div>
+                <div class="form-check">
+                  <%= radio_button_tag "app_prefs[#{collection.id}][loan_requests_policy]", "information_requests_only", collection.no_loan_requests?, id: information_requests_only_input_id, class: "form-check-input" %>
+                  <%= label_tag information_requests_only_input_id, class: "form-check-label" do %>
+                    Collection doesn’t allow Loan Requests <span class="text-muted ms-2">Information Requests only</span>
+                  <% end %>
+                </div>
+              </fieldset>
+            <% elsif pref.pref_type == "boolean" %>
+              <% input_id = "app_prefs_#{collection.id}_#{pref.name}" %>
+              <div class="form-check form-switch my-3">
+                <%= check_box_tag "app_prefs[#{collection.id}][#{pref.name}]", 1, string_to_boolean(pref.value), id: input_id, class: "form-check-input", role: "switch" %>
+                <%= label_tag input_id, pref.description, class: "form-check-label" %>
               </div>
             <% elsif pref.pref_type == "string" %>
               <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %>><%= pref.description %></label>
-              <%= text_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value) %>
+              <%= text_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value, placeholder: pref.placeholder) %>
             <% elsif pref.pref_type == "integer" %>
               <label for=<%= "app_prefs_#{collection.id}_#{pref.name}" %>><%= pref.description %></label>
               <%= number_field_tag("app_prefs[#{collection.id}][#{pref.name}]", pref.value) %>
