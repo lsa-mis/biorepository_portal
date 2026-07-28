@@ -26,7 +26,15 @@
 #
 # Indexes
 #
-#  index_identifications_on_item_id  (item_id)
+#  idx_identifications_current_class      (class_name) WHERE (current = true)
+#  idx_identifications_current_family     (family) WHERE (current = true)
+#  idx_identifications_current_genus      (genus) WHERE (current = true)
+#  idx_identifications_current_kingdom    (kingdom) WHERE (current = true)
+#  idx_identifications_current_order      (order_name) WHERE (current = true)
+#  idx_identifications_current_phylum     (phylum) WHERE (current = true)
+#  idx_identifications_item_current       (item_id,current)
+#  idx_identifications_taxonomy_covering  (item_id,current,kingdom,phylum,class_name,order_name,family,genus)
+#  index_identifications_on_item_id       (item_id)
 #
 # Foreign Keys
 #

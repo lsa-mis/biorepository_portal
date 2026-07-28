@@ -8,10 +8,11 @@ class IdentificationImportService
     @collection_id = collection_id
     @user = user
     @field_names = {}
+    @specify_field_by_rails_and_table = {}
     @log = ImportLog.new
     @notes = []
     @errors = 0
-    @result = { errors: 0, note: [] }
+    @result = { errors: 0, note: [], time: 0 }
   end
 
   # Assumes:
@@ -29,12 +30,14 @@ class IdentificationImportService
 
         grouped_rows[occurrence_id] << row.drop(1)
       end
+      items_by_occurrence = Item.where(collection_id: @collection_id, occurrence_id: grouped_rows.keys).index_by(&:occurrence_id)
+
       grouped_rows.each do |occurrence_id, rows|
-        item = Item.find_by(occurrence_id: occurrence_id)
+        item = items_by_occurrence[occurrence_id]
         next unless item
 
         # Remove existing identifications for this item
-        item.identifications.destroy_all
+        Identification.where(item_id: item.id).delete_all
 
         rows.each do |row|
           save_identification(item, row)
@@ -42,14 +45,15 @@ class IdentificationImportService
       end
     }
     task_time = ((total_time.real / 60) % 60).round(2)
-    @log.import_logger.info("***********************Identification import completed. Total time: #{task_time} minutes.")
+    @log.import_logger.info("**** IdentificationImportService, Identification import completed. Total time: #{task_time} minutes.")
     @notes << "Identification import completed. File: #{@file.original_filename}. Total time: #{task_time} minutes."
     @result[:errors] = @errors
     @result[:note] = @notes.reverse # Reverse to maintain order of processing
+    @result[:time] = task_time
     return @result
     
   rescue => e
-    @log.import_logger.error("***********************Error importing identifications: #{e.message}")
+    @log.import_logger.error("**** IdentificationImportService, Error importing identifications: #{e.message}")
     @notes << "Identification import: Error importing identifications. Error: #{e.message}"
     @result[:errors] = @errors + 1
     @result[:note] = @notes.reverse
@@ -59,17 +63,17 @@ class IdentificationImportService
   private
 
   def save_identification(item, row)
-    identification = Identification.new(item_id: item.id)
+    identification = item.identifications.build
 
     assign_fields(identification, row)
 
     unless identification.save
-      @log.import_logger.error("***********************Failed to save identification: #{identification.errors.full_messages.join(', ')}")
+      @log.import_logger.error("**** IdentificationImportService, Failed to save identification: #{identification.errors.full_messages.join(', ')}")
       @errors += 1
       @notes << "Identification import: Failed to save identification. Item: #{item.occurrence_id}. Error: #{identification.errors.full_messages.join(', ')}"
     end
   rescue => e
-    @log.import_logger.error("***********************Error saving identification: #{e.message}")
+    @log.import_logger.error("**** IdentificationImportService, Error saving identification: #{e.message}")
     @errors += 1
     @notes << "Identification import: Error saving identification. Item: #{item.occurrence_id}. Error: #{e.message}"
   end
@@ -80,7 +84,8 @@ class IdentificationImportService
     @field_names.each_with_index do |(field, _table), index|
       next unless _table == "identifications"
       next if field.include?("ignore")
-      field_in_row = MapField.find_by(rails_field: field, table: _table).specify_field
+      field_in_row = @specify_field_by_rails_and_table[[field, _table]]
+      next if field_in_row.blank?
       value = row_hash[field_in_row]&.strip
       next if value.blank?
 
@@ -98,9 +103,14 @@ class IdentificationImportService
 
   def build_field_names
     header = CSV.open(@file.path, &:readline)
+    map_fields_by_specify_field = MapField.where(specify_field: header.map { |h| h.strip }, table: ["identifications"]).index_by(&:specify_field)
+
     header.each_with_object({}) do |h, hash|
-      map_field = MapField.find_by(specify_field: h.strip)
-      hash[map_field.rails_field] = map_field.table if map_field
+      map_field = map_fields_by_specify_field[h.strip]
+      if map_field
+        hash[map_field.rails_field] = map_field.table
+        @specify_field_by_rails_and_table[[map_field.rails_field, map_field.table]] = map_field.specify_field
+      end
     end
   end
 

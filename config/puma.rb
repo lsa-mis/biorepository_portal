@@ -46,7 +46,7 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 plugin :tmp_restart
 
 # Optional: Log to files only in production for easier debugging
-if rails_env == "production"
+if rails_env == "production" || rails_env == "staging"
   stdout_redirect 'log/puma.stdout.log', 'log/puma.stderr.log', true
 end
 

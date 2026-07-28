@@ -13,6 +13,7 @@
 #
 # Indexes
 #
+#  idx_preparations_prep_type     (prep_type)
 #  index_preparations_on_item_id  (item_id)
 #
 # Foreign Keys

@@ -41,12 +41,17 @@
 #  created_at                       :datetime         not null
 #  updated_at                       :datetime         not null
 #  collection_id                    :bigint           not null
-#  occurrence_id                    :string
+#  occurrence_id                    :string           not null
 #
 # Indexes
 #
-#  index_items_on_catalog_number  (catalog_number)
-#  index_items_on_collection_id   (collection_id)
+#  idx_items_collection_continent                  (collection_id,continent)
+#  idx_items_collection_country                    (collection_id,country)
+#  idx_items_collection_sex                        (collection_id,sex)
+#  idx_items_collection_state_province             (collection_id,state_province)
+#  index_items_on_catalog_number                   (catalog_number)
+#  index_items_on_collection_id                    (collection_id)
+#  index_items_on_collection_id_and_occurrence_id  (collection_id,occurrence_id) UNIQUE
 #
 # Foreign Keys
 #
