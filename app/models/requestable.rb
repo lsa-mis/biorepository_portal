@@ -1,11 +1,13 @@
 # == Schema Information
 #
 # Table name: requestables
+# Database name: primary
 #
 #  id               :bigint           not null, primary key
 #  collection       :string
 #  count            :integer
 #  item_name        :string
+#  loan_request     :boolean          default(TRUE), not null
 #  preparation_type :string
 #  saved_for_later  :boolean          default(FALSE), not null
 #  created_at       :datetime         not null

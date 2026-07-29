@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: saved_searches
+# Database name: primary
 #
 #  id            :bigint           not null, primary key
 #  filters       :jsonb
