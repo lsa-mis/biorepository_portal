@@ -15,15 +15,25 @@ default: &default
     idle_session_timeout: 300s
 
 development:
-  <<: *default
-  database: biorepository_portal_development
+  primary:
+    <<: *default
+    database: biorepository_portal_development
+  cache:
+    <<: *default
+    database: biorepository_portal_development_cache
+    migrations_paths: db/cache_migrate
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
-  database: biorepository_portal_test
+  primary:
+    <<: *default
+    database: biorepository_portal_test
+  cache:
+    <<: *default
+    database: biorepository_portal_test_cache
+    migrations_paths: db/cache_migrate
 
 staging:
   <<: *default
