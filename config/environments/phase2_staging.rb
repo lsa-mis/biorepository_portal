@@ -16,8 +16,9 @@ Rails.application.configure do
 
   # Enable server timing
   # config.server_timing = true
-  
+
   # Use Solid Cache
+  config.action_controller.perform_caching = true
   config.cache_store = :solid_cache_store
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
