@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: unavailables
-# Database name: primary
 #
 #  id               :bigint           not null, primary key
 #  preparation_type :string

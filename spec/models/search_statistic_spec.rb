@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: search_statistics
-# Database name: primary
 #
 #  id                :bigint           not null, primary key
 #  field_label       :string           not null

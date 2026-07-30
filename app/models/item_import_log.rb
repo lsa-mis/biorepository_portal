@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: item_import_logs
-# Database name: primary
 #
 #  id            :bigint           not null, primary key
 #  date          :datetime

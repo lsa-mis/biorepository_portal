@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: loan_requests
-# Database name: primary
 #
 #  id             :bigint           not null, primary key
 #  checkout_items :string           default([]), is an Array

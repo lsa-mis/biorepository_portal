@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: collection_questions
-# Database name: primary
 #
 #  id            :bigint           not null, primary key
 #  position      :integer

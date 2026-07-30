@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: items
-# Database name: primary
 #
 #  id                               :bigint           not null, primary key
 #  associated_sequences             :string

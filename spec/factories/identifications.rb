@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: identifications
-# Database name: primary
 #
 #  id                         :bigint           not null, primary key
 #  class_name                 :string

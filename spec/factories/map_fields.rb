@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: map_fields
-# Database name: primary
 #
 #  id            :bigint           not null, primary key
 #  caption       :string
