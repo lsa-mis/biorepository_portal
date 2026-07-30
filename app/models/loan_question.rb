@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: loan_questions
+# Database name: primary
 #
 #  id            :bigint           not null, primary key
 #  position      :integer

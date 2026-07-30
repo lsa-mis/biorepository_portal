@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: global_preferences
+# Database name: primary
 #
 #  id          :bigint           not null, primary key
 #  description :string
