@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: announcements
-# Database name: primary
 #
 #  id         :bigint           not null, primary key
 #  displayed  :boolean          default(FALSE), not null

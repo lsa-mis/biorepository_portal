@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: collection_answers
-# Database name: primary
 #
 #  id                     :bigint           not null, primary key
 #  created_at             :datetime         not null

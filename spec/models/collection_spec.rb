@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: collections
-# Database name: primary
 #
 #  id                :bigint           not null, primary key
 #  admin_group       :string

@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: preparations
-# Database name: primary
 #
 #  id          :bigint           not null, primary key
 #  barcode     :string

@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: app_preferences
-# Database name: primary
 #
 #  id            :bigint           not null, primary key
 #  description   :string

@@ -1,7 +1,6 @@
 # == Schema Information
 #
 # Table name: collection_options
-# Database name: primary
 #
 #  id                     :bigint           not null, primary key
 #  value                  :string           not null

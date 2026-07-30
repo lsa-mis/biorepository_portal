@@ -444,10 +444,6 @@ GEM
       concurrent-ruby (~> 1.0, >= 1.0.2)
     skylight (7.0.0)
       activesupport (>= 7.1.0)
-    solid_cache (1.0.10)
-      activejob (>= 7.2)
-      activerecord (>= 7.2)
-      railties (>= 7.2)
     sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
       logger
@@ -552,7 +548,6 @@ DEPENDENCIES
   sentry-rails
   sentry-ruby
   skylight
-  solid_cache
   sprockets-rails
   stimulus-rails
   turbo-rails
