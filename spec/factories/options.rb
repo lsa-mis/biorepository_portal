@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: options
+# Database name: primary
 #
 #  id               :bigint           not null, primary key
 #  value            :string
