@@ -68,6 +68,7 @@ gem 'sentry-rails'
 gem 'country_select'
 gem 'concurrent-ruby', '~> 1.3'
 gem 'csv', '~> 3.3', '>= 3.3.5'
+gem 'solid_cache'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
