@@ -42,11 +42,16 @@ staging:
   timeout: 10000
 
 phase2_staging:
-  <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
-  timeout: 10000
-  idle_session_timeout: 300s
+  primary:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
+    timeout: 10000
+    idle_session_timeout: 300s
+  cache:
+    <<: *default
+    url: <%= ENV.fetch("CACHE_DATABASE_URL") { ENV["DATABASE_URL"] } %>
+    migrations_paths: db/cache_migrate
 
 production:
   <<: *default

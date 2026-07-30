@@ -13,6 +13,10 @@ test:
   database: cache
   <<: *default
 
+phase2_staging:
+  database: cache
+  <<: *default
+
 production:
   database: cache
   <<: *default
