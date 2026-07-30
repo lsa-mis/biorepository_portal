@@ -17,6 +17,10 @@ phase2_staging:
   database: cache
   <<: *default
 
+staging:
+  database: cache
+  <<: *default
+
 production:
   database: cache
   <<: *default

@@ -36,10 +36,15 @@ test:
     migrations_paths: db/cache_migrate
 
 staging:
-  <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
-  timeout: 10000
+  primary:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
+    timeout: 10000
+  cache:
+    <<: *default
+    url: <%= ENV.fetch("CACHE_DATABASE_URL") { ENV["DATABASE_URL"] } %>
+    migrations_paths: db/cache_migrate
 
 phase2_staging:
   primary:
@@ -47,14 +52,18 @@ phase2_staging:
     url: <%= ENV["DATABASE_URL"] %>
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
     timeout: 10000
-    idle_session_timeout: 300s
   cache:
     <<: *default
     url: <%= ENV.fetch("CACHE_DATABASE_URL") { ENV["DATABASE_URL"] } %>
     migrations_paths: db/cache_migrate
 
 production:
-  <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
-  timeout: 10000
+  primary:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
+    timeout: 10000
+  cache:
+    <<: *default
+    url: <%= ENV.fetch("CACHE_DATABASE_URL") { ENV["DATABASE_URL"] } %>
+    migrations_paths: db/cache_migrate
