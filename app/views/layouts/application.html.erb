@@ -6,6 +6,8 @@
     <% unless Rails.env.production? %>
       <meta name="robots" content="noindex">
     <% end %>
+    <%= lsa_tdx_feedback_css %>
+    <%= lsa_tdx_feedback_js %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -49,5 +51,6 @@
       </div>
     </main>
     <%= render partial: "layouts/footer" %>
+    <%= lsa_tdx_feedback_modal %>
   </body>
 </html>
