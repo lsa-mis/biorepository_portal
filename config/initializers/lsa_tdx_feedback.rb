@@ -1,5 +1,4 @@
 Rails.application.config.to_prepare do
-   return unless defined?(LsaTdxFeedback::FeedbackController)
   LsaTdxFeedback::FeedbackController.class_eval do
     next if instance_variable_defined?(:@_lsa_tdx_feedback_callbacks_added)
     # The gem controller inherits from ApplicationController, so prevent app-level
