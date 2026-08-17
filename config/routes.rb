@@ -135,6 +135,9 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "home#about"
 
+  # Mount the feedback gem engine
+  mount LsaTdxFeedback::Engine, at: "/lsa_tdx_feedback", as: :lsa_tdx_feedback
+
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development? || Rails.env.staging? || Rails.env.phase2_staging?
   mount PgHero::Engine, at: '/pghero' if Rails.env.development? || Rails.env.staging? || Rails.env.phase2_staging?
 
