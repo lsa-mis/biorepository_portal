@@ -1,7 +1,7 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   include ApplicationHelper
-  skip_before_action :verify_authenticity_token, only: :saml
-  before_action :set_user
+  skip_before_action :verify_authenticity_token, only: [:saml, :failure]
+  before_action :set_user, only: :saml
   attr_reader :user, :service
 
   def saml
@@ -25,75 +25,73 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     return unless user_signed_in?
     current_user.last_sign_in_at < 15.minutes.ago
   end
-end
 
-def auth
-  request.env["omniauth.auth"]
-end
-
-def set_user
-  @user = find_or_create_user
-  return unless @user
-
-  uniqname = get_uniqname(@user.email)
-  user_membership = find_user_membership(uniqname)
-
-  session[:role] = determine_user_role(uniqname, user_membership)
-  session[:collection_ids] = determine_collection_ids(user_membership)
-end
-
-private
-
-def find_or_create_user
-  return current_user if user_signed_in?
-
-  User.find_by(email: auth.info.email) || create_user
-end
-
-def find_user_membership(uniqname)
-  access_groups = Collection.pluck(:admin_group).compact
-  access_groups.select { |group| LdapLookup.is_member_of_group?(uniqname, group) }
-end
-
-def determine_collection_ids(user_membership)
-  if user_membership.present?
-    Collection.where(admin_group: user_membership).order(:division).pluck(:id)
-  else
-    Collection.order(:division).pluck(:id)
+  def auth
+    request.env["omniauth.auth"]
   end
-end
 
-def determine_user_role(uniqname, user_membership)
-  if LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-developers')
-    session[:collection_ids] = Collection.order(:division).pluck(:id)
-    session[:role] = "developer"
-  elsif LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-super-admins')
-    session[:collection_ids] = Collection.order(:division).pluck(:id)
-    'super_admin'
-  elsif user_membership.present?
-    'admin'
-  else
-    'user'
+  def set_user
+    @user = find_or_create_user
+    return unless @user
+
+    uniqname = get_uniqname(@user.email)
+    user_membership = find_user_membership(uniqname)
+
+    session[:role] = determine_user_role(uniqname, user_membership)
+    session[:collection_ids] = determine_collection_ids(user_membership)
   end
-end
 
-def create_user
-  raw_name = auth.info.name.to_s
-  if raw_name.include?("@")
-    first_name = ""
-    last_name = ""
-  else
-    parts = raw_name.split(' ', 2)
-    first_name = parts[0]
-    last_name = parts[1] || ''
+  def find_or_create_user
+    return current_user if user_signed_in?
+
+    User.find_by(email: auth.info.email) || create_user
   end
-  @user = User.create(
-    email: auth.info.email,
-    principal_name: auth.info.principal_name,
-    first_name: first_name,
-    last_name: last_name,
-    affiliation: auth.info.person_affiliation,
-    password: Devise.friendly_token[0, 20]
-  )
 
+  def find_user_membership(uniqname)
+    access_groups = Collection.pluck(:admin_group).compact
+    access_groups.select { |group| LdapLookup.is_member_of_group?(uniqname, group) }
+  end
+
+  def determine_collection_ids(user_membership)
+    if user_membership.present?
+      Collection.where(admin_group: user_membership).order(:division).pluck(:id)
+    else
+      Collection.order(:division).pluck(:id)
+    end
+  end
+
+  def determine_user_role(uniqname, user_membership)
+    if LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-developers')
+      session[:collection_ids] = Collection.order(:division).pluck(:id)
+      session[:role] = "developer"
+    elsif LdapLookup.is_member_of_group?(uniqname, 'lsa-biorepository-super-admins')
+      session[:collection_ids] = Collection.order(:division).pluck(:id)
+      'super_admin'
+    elsif user_membership.present?
+      'admin'
+    else
+      'user'
+    end
+  end
+
+  def create_user
+    raw_name = auth.info.name.to_s
+    if raw_name.include?("@")
+      first_name = ""
+      last_name = ""
+    else
+      parts = raw_name.split(' ', 2)
+      first_name = parts[0]
+      last_name = parts[1] || ''
+    end
+    @user = User.create(
+      email: auth.info.email,
+      principal_name: auth.info.principal_name,
+      first_name: first_name,
+      last_name: last_name,
+      affiliation: auth.info.person_affiliation,
+      password: Devise.friendly_token[0, 20]
+    )
+
+  end
 end
