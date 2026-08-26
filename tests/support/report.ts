@@ -49,6 +49,10 @@ function renderLog(log: Logging, depth = 0): string {
   return output;
 }
 
+function githubCommandValue(value: string): string {
+  return value.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+}
+
 function extractIssues(rendered: string): Array<{ title: string; occurrences: number }> {
   return rendered.split("\n").flatMap((line) => {
     const match = line.match(/^\s*\d+\.\s+(.+?)\s+\((\d+)\s+occurrence/);
@@ -170,6 +174,15 @@ export async function writeAccessibilityReport(
   const issues = extractIssues(rendered);
   const generatedAt = new Date().toISOString();
   const verdict = rulesFailed === 0 ? "PASS" : "FAIL";
+  const openRules = rules.filter((rule) => rule.failed > 0 || rule.cantTell > 0);
+  const ruleDetails = openRules.flatMap((rule, index) => [
+    `  ${index + 1}. ${rule.failed > 0 ? "[FAIL]" : "[REVIEW]"} ${rule.rule}`,
+    `     Failed occurrences: ${rule.failed}`,
+    `     Needs-review occurrences: ${rule.cantTell}`,
+    `     Passed checks: ${rule.passed}`,
+    `     Rule: ${rule.uri}`,
+    `     Source: ${meta.sourceFile}`,
+  ]);
 
   console.log(
     [
@@ -180,9 +193,24 @@ export async function writeAccessibilityReport(
       `  Failed: ${rulesFailed} rule type(s), ${occurrencesFailed} occurrence(s)`,
       `  Needs review: ${rulesCantTell} rule type(s), ${occurrencesCantTell} occurrence(s)`,
       "",
+      "Granular rule results:",
+      ...(ruleDetails.length > 0 ? ruleDetails : ["  No failed or indeterminate rules."]),
+      "",
       rendered,
     ].join("\n"),
   );
+
+  if (process.env.GITHUB_ACTIONS === "true") {
+    for (const rule of openRules) {
+      const status = rule.failed > 0 ? "failed" : "needs review";
+      const detail =
+        `${rule.rule} ${status}: ${rule.failed} failed, ${rule.cantTell} needs review. ` +
+        `${rule.uri} — source ${meta.sourceFile}`;
+      console.log(
+        `::warning title=Accessibility ${rule.rule}::${githubCommandValue(detail)}`,
+      );
+    }
+  }
 
   if (process.env.GITHUB_ACTIONS !== "true") {
     return { artifactsGenerated: false, rulesFailed };

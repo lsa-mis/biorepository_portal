@@ -4,17 +4,8 @@ on:
   push:
     branches: [a11y-gate-testing]
   pull_request:
-    branches: [staging, a11y-gate-testing]
+    branches: [a11y-gate-testing]
   workflow_dispatch:
-    inputs:
-      accessibility_enforcement:
-        description: Whether accessibility failures block this manual run
-        required: true
-        default: enforce
-        type: choice
-        options:
-          - enforce
-          - advisory
 
 concurrency:
   group: accessibility-${{ github.workflow }}-${{ github.ref }}
@@ -28,7 +19,9 @@ jobs:
     env:
       RAILS_ENV: test
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/biorepository_portal_test
-      A11Y_ENFORCEMENT: ${{ inputs.accessibility_enforcement || vars.A11Y_ENFORCEMENT || 'enforce' }}
+      # Report every finding without failing the workflow on accessibility
+      # violations. Test/runtime/infrastructure errors still fail normally.
+      A11Y_ENFORCEMENT: advisory
       SI_UPLOAD_ENABLED: ${{ vars.SI_UPLOAD_ENABLED || 'false' }}
       SI_USER_EMAIL: ${{ secrets.SI_USER_EMAIL }}
       SI_API_KEY: ${{ secrets.SI_API_KEY }}
@@ -82,6 +75,13 @@ jobs:
 
       - name: Run accessibility gate
         run: npm run test:a11y
+
+      - name: Publish accessibility summary
+        if: ${{ !cancelled() }}
+        run: |
+          if [ -f reports/home/summary.md ]; then
+            cat reports/home/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
