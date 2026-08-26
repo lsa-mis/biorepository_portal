@@ -76,7 +76,7 @@ jobs:
 
       - name: Prepare Rails database and assets
         run: |
-          bin/rails db:schema:load
+          bundle exec ruby -ractive_record -e 'ActiveRecord::Base.establish_connection(ENV.fetch("DATABASE_URL")); load "db/schema.rb"'
           bin/rails db:seed
           bin/rails assets:precompile
 
