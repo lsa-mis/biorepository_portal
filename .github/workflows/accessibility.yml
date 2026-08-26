@@ -76,7 +76,8 @@ jobs:
 
       - name: Prepare Rails database and assets
         run: |
-          bin/rails db:prepare
+          bin/rails db:schema:load
+          bin/rails db:seed
           bin/rails assets:precompile
 
       - name: Run accessibility gate
