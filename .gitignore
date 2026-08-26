@@ -41,3 +41,11 @@
 !/app/assets/builds/.keep
 # Ignore Google site verification file
 public/google592431709e6edaf8.html
+
+# Playwright accessibility test output
+/node_modules/
+/playwright-report/
+/test-results/
+/blob-report/
+/reports/*
+!/reports/README.md
