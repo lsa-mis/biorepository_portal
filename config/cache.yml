@@ -13,7 +13,6 @@ test:
   <<: *default
 
 phase2_staging:
-  database: cache
   <<: *default
 
 staging:

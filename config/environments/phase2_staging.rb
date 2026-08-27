@@ -100,5 +100,5 @@ Rails.application.configure do
   config.active_support.to_time_preserves_timezone = :zone
 
   # Use Skylight for performance monitoring.
-  config.skylight.environments << "staging"
+  config.skylight.environments << "phase2_staging"
 end
