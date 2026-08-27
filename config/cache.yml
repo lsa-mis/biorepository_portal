@@ -12,9 +12,6 @@ development:
 test:
   <<: *default
 
-phase2_staging:
-  <<: *default
-
 staging:
   database: cache
   <<: *default
