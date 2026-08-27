@@ -58,7 +58,7 @@ production:
     timeout: 10000
   cache:
     <<: *default
-    url: <%= ENV.fetch("CACHE_DATABASE_URL") %>
+    url: <%= ENV.fetch("CACHE_DATABASE_URL") { ENV["DATABASE_URL"] } %>
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
     timeout: 10000
     migrations_paths: db/cache_migrate
