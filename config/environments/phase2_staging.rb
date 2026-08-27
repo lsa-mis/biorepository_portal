@@ -33,8 +33,6 @@ Rails.application.configure do
   #   config.cache_store = :null_store
   # end
   config.action_controller.perform_caching = true
-  # Use Solid Cache
-  config.cache_store = :solid_cache_store
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
@@ -44,7 +42,7 @@ Rails.application.configure do
 
   # config.action_mailer.perform_caching = false
 
-  host = 'biorepository-staging.lsa.umich.edu'
+  host = 'biorepository-phase2-staging.lsa.umich.edu'
   config.action_mailer.default_url_options = { host: host, protocol: 'https' }
   config.action_mailer.perform_caching = false
   config.action_mailer.raise_delivery_errors = true
@@ -102,5 +100,5 @@ Rails.application.configure do
   config.active_support.to_time_preserves_timezone = :zone
 
   # Use Skylight for performance monitoring.
-  config.skylight.environments << "staging"
+  config.skylight.environments << "phase2_staging"
 end

@@ -68,6 +68,7 @@ gem 'sentry-rails'
 gem 'country_select'
 gem 'concurrent-ruby', '~> 1.3'
 gem 'csv', '~> 3.3', '>= 3.3.5'
+gem 'solid_cache'
 gem 'lsa_tdx_feedback'
 
 group :development, :test do
