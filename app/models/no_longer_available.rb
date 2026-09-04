@@ -1,6 +1,7 @@
 # == Schema Information
 #
 # Table name: no_longer_availables
+# Database name: primary
 #
 #  id               :bigint           not null, primary key
 #  collection       :string

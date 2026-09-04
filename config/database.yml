@@ -15,8 +15,13 @@ default: &default
     idle_session_timeout: 300s
 
 development:
-  <<: *default
-  database: biorepository_portal_development
+  primary:
+    <<: *default
+    database: biorepository_portal_development
+  cache:
+    <<: *default
+    database: biorepository_portal_development_cache
+    migrations_paths: db/cache_migrate
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -26,10 +31,17 @@ test:
   database: biorepository_portal_test
 
 staging:
-  <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
-  timeout: 10000
+  primary:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
+    timeout: 10000
+  cache:
+    <<: *default
+    url: <%= ENV.fetch("CACHE_DATABASE_URL") { ENV["DATABASE_URL"] } %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
+    timeout: 10000
+    migrations_paths: db/cache_migrate
 
 phase2_staging:
   <<: *default
@@ -39,7 +51,14 @@ phase2_staging:
   idle_session_timeout: 300s
 
 production:
-  <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
-  timeout: 10000
+  primary:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 15 } %>
+    timeout: 10000
+  cache:
+    <<: *default
+    url: <%= ENV.fetch("CACHE_DATABASE_URL") { ENV["DATABASE_URL"] } %>
+    pool: <%= ENV.fetch("CACHE_DB_POOL") { 15 } %>
+    timeout: 10000
+    migrations_paths: db/cache_migrate
