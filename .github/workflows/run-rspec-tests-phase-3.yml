@@ -1,4 +1,4 @@
-name: Run RSpec tests
+name: Run RSpec tests - Phase 3
 
 on:
   push:
@@ -53,11 +53,11 @@ jobs:
       #     bundle install
       #     yarn install
 
-      - name: Precompile Assets
-        run: bundle exec rails assets:precompile
-
       - name: Setup DB
         run: bin/rails db:create db:migrate db:seed
+
+      - name: Precompile Assets
+        run: bundle exec rails assets:precompile
 
       - name: Run Model tests
         run: bundle exec rspec spec/models/*
