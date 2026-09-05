@@ -54,7 +54,7 @@ jobs:
       #     yarn install
 
       - name: Setup DB
-        run: bin/rails db:create db:migrate db:seed
+        run: bin/rails db:create db:migrate
 
       - name: Precompile Assets
         run: bundle exec rails assets:precompile
