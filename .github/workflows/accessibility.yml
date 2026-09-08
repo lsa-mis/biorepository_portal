@@ -1,0 +1,105 @@
+name: Accessibility gate
+
+on:
+  push:
+    branches: [a11y-gate-testing]
+  pull_request:
+    branches: [a11y-gate-testing]
+  workflow_dispatch:
+
+concurrency:
+  group: accessibility-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  accessibility:
+    name: Accessibility audit (Alfa)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/biorepository_portal_test
+      # Report every finding without failing the workflow on accessibility
+      # violations. Test/runtime/infrastructure errors still fail normally.
+      A11Y_ENFORCEMENT: advisory
+      SI_UPLOAD_ENABLED: ${{ vars.SI_UPLOAD_ENABLED || 'false' }}
+      SI_USER_EMAIL: ${{ secrets.SI_USER_EMAIL }}
+      SI_API_KEY: ${{ secrets.SI_API_KEY }}
+      SI_SITE_ID: ${{ secrets.SI_SITE_ID }}
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: biorepository_portal_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Type-check accessibility tests
+        run: npm run typecheck:a11y
+
+      - name: Prepare Rails database and assets
+        run: |
+          bundle exec ruby -ractive_record -e 'ActiveRecord::Base.establish_connection(ENV.fetch("DATABASE_URL")); load "db/schema.rb"'
+          bin/rails db:seed
+          bin/rails assets:precompile
+
+      - name: Run accessibility gate
+        run: npm run test:a11y
+
+      - name: Publish accessibility summary
+        if: ${{ !cancelled() }}
+        run: |
+          if [ -f reports/home/summary.md ]; then
+            cat reports/home/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload accessibility reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-reports
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 30
