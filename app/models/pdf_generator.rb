@@ -4,11 +4,11 @@ class PdfGenerator
 
   NO_RESPONSE_PLACEHOLDER = '—'.freeze
   FONT_FAMILY = {
-    'Montserrat' => {
-      light: Rails.root.join('app/assets/stylesheets/Montserrat-Light.ttf'),
-      normal: Rails.root.join('app/assets/stylesheets/Montserrat-Regular.ttf'),
-      medium: Rails.root.join('app/assets/stylesheets/Montserrat-Medium.ttf'),
-      bold: Rails.root.join('app/assets/stylesheets/Montserrat-Black.ttf')
+    'Arial' => {
+      light: Rails.root.join('app/assets/stylesheets/ARIAL.TTF'),
+      normal: Rails.root.join('app/assets/stylesheets/ARIAL.TTF'),
+      medium: Rails.root.join('app/assets/stylesheets/ArialMdm.ttf'),
+      bold: Rails.root.join('app/assets/stylesheets/ARIALBD.TTF')
     }
   }.freeze
 
@@ -23,7 +23,7 @@ class PdfGenerator
   def generate_pdf_content
     Prawn::Document.new do |pdf|
       register_fonts(pdf)
-      pdf.font('Montserrat')
+      pdf.font('Arial')
 
       # Title
       pdf.text "#{@user&.name_with_email}", size: 20, style: :bold, align: :center
