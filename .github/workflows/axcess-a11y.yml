@@ -17,14 +17,13 @@ jobs:
   axcess:
     name: Accessibility report (Axcess)
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 30
     env:
       RAILS_ENV: test
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/biorepository_portal_test
       APP_URL: http://127.0.0.1:3000
       # Scan every public page the crawl can reach. Axcess has no "unlimited"
-      # setting, so this is only a guard against a runaway crawl; the portal's
-      # public site is about 200 URLs with the sample data.
+      # setting, so this is only a guard against a runaway crawl.
       AXCESS_MAX_PAGES: 5000
       REPORT_DIR: ${{ github.workspace }}/reports/axcess
     services:
@@ -151,6 +150,10 @@ jobs:
       - name: Run Axcess scan
         working-directory: .axcess
         run: |
+          # --block matches substrings anywhere in the URL. Filtered searches
+          # (q[...] facets) and item pages reached from them are endless
+          # permutations of the same two templates, so skip them; every page
+          # template is still scanned (about 35 pages with the sample data).
           uv run --no-sync audit crawl "$APP_URL/" \
             --max-pages "$AXCESS_MAX_PAGES" \
             --axe-level AA \
@@ -162,7 +165,9 @@ jobs:
             --skip-semantic \
             --block /export_to_csv \
             --block /users/auth \
-            --block sign_out
+            --block sign_out \
+            --block 'q%5B' \
+            --block 'return_to=%2Fitems%2Fsearch%3F'
 
       - name: Export Axcess reports
         working-directory: .axcess

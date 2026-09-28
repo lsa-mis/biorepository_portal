@@ -5,7 +5,7 @@
 `.github/workflows/axcess-a11y.yml` runs only when a developer starts it: **Actions → Accessibility report → Run workflow**, on any branch. It does not run on pull requests or pushes. It:
 
 1. Boots the app in the `test` environment against Postgres 14, loads `db/seeds.rb`, and adds sample collections, items, and FAQs from `script/ci/a11y_sample_data.rb` so public pages render real content.
-2. Checks out the latest [Axcess](https://github.com/lsa-mis/axcess) `main` and crawls every public page reachable from `http://127.0.0.1:3000/` in headless Chromium with axe-core at WCAG 2.1 AA, plus the keyboard, focus, reflow, and visual checks.
+2. Checks out the latest [Axcess](https://github.com/lsa-mis/axcess) `main` and crawls every public page reachable from `http://127.0.0.1:3000/` (filtered-search permutations are skipped; each page template is still scanned) in headless Chromium with axe-core at WCAG 2.1 AA, plus the keyboard, focus, reflow, and visual checks.
 3. Uploads the report, then runs `script/ci/axcess_report.rb`, which prints every finding to the job log, annotates the run, and writes a job summary that links to the report.
 4. Ends with the report link, in the last step of the log and as a notice on the run.
 
@@ -94,7 +94,7 @@ RAILS_ENV=test bin/rails db:prepare
 RAILS_ENV=test bin/rails runner script/ci/a11y_sample_data.rb
 bin/rails server -e test -p 3000
 # in a checkout of lsa-mis/axcess (first time: make setup && make migrate)
-uv run audit crawl http://127.0.0.1:3000/ --max-pages 5000 --block /export_to_csv --block /users/auth --ignore-robots --skip-ocr --skip-vlm --skip-synthesize --skip-semantic
+uv run audit crawl http://127.0.0.1:3000/ --max-pages 5000 --block /export_to_csv --block /users/auth --block 'q%5B' --block 'return_to=%2Fitems%2Fsearch%3F' --ignore-robots --skip-ocr --skip-vlm --skip-synthesize --skip-semantic
 uv run audit export --format json --output /tmp/axcess.json
 # back in this repo
 ruby script/ci/axcess_report.rb /tmp/axcess.json
