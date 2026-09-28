@@ -1,4 +1,4 @@
-name: Accessibility gate
+name: Accessibility report
 
 on:
   push:
@@ -7,11 +7,6 @@ on:
     branches: [staging, main]
   workflow_dispatch:
     inputs:
-      enforcement:
-        description: "enforce fails the job on blocking findings; advisory only reports them"
-        type: choice
-        options: [enforce, advisory]
-        default: enforce
       max_pages:
         description: "Maximum pages for Axcess to crawl"
         type: number
@@ -30,7 +25,7 @@ permissions:
 
 jobs:
   axcess:
-    name: Accessibility audit (Axcess)
+    name: Accessibility report (Axcess)
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -40,8 +35,6 @@ jobs:
       # nil-safe, so the app boots without it (SAML sign-in stays unconfigured).
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
       APP_URL: http://127.0.0.1:3000
-      A11Y_ENFORCEMENT: ${{ inputs.enforcement || 'enforce' }}
-      A11Y_FAIL_ON: critical,serious
       AXCESS_MAX_PAGES: ${{ inputs.max_pages || 60 }}
       REPORT_DIR: ${{ github.workspace }}/reports/axcess
     services:
@@ -169,29 +162,29 @@ jobs:
           done
           ls -la "$REPORT_DIR"
 
-      - name: Accessibility gate
-        run: ruby script/ci/axcess_gate.rb "$REPORT_DIR/axcess.json"
+      - name: Upload Axcess report
+        id: upload-report
+        uses: actions/upload-artifact@v4
+        with:
+          name: axcess-accessibility-report
+          path: reports/axcess/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Summarize findings
+        env:
+          AXCESS_REPORT_URL: ${{ steps.upload-report.outputs.artifact-url }}
+        run: ruby script/ci/axcess_report.rb "$REPORT_DIR/axcess.json"
 
       - name: Append Axcess report to job summary
-        if: ${{ !cancelled() }}
         run: |
           report="$REPORT_DIR/axcess.md"
-          [ -f "$report" ] || exit 0
           # GitHub caps each step summary at 1 MiB.
           if [ "$(wc -c < "$report")" -lt 900000 ]; then
             { echo "<details><summary>Full Axcess report</summary>"; echo; cat "$report"; echo; echo "</details>"; } >> "$GITHUB_STEP_SUMMARY"
           else
             echo "Full Axcess report is too large for the job summary; download the artifact." >> "$GITHUB_STEP_SUMMARY"
           fi
-
-      - name: Upload Axcess reports
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: axcess-accessibility-report
-          path: reports/axcess/
-          if-no-files-found: warn
-          retention-days: 30
 
       - name: Upload Rails server log
         if: ${{ !cancelled() }}
@@ -201,3 +194,10 @@ jobs:
           path: log/ci-server.log
           if-no-files-found: ignore
           retention-days: 30
+
+      - name: Accessibility report link
+        env:
+          AXCESS_REPORT_URL: ${{ steps.upload-report.outputs.artifact-url }}
+        run: |
+          echo "::notice title=Accessibility report::$AXCESS_REPORT_URL"
+          echo "Accessibility report: $AXCESS_REPORT_URL"

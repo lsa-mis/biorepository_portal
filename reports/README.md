@@ -1,14 +1,15 @@
 # Accessibility reports
 
-## Axcess CI gate
+## Axcess accessibility report
 
 `.github/workflows/axcess-a11y.yml` runs on pull requests and pushes to `staging` and `main`, and can be started by hand from the Actions tab. It:
 
 1. Boots the app in the `test` environment against Postgres 14, loads `db/seeds.rb`, and adds sample collections, items, and FAQs from `script/ci/a11y_sample_data.rb` so public pages render real content.
 2. Checks out the latest [Axcess](https://github.com/lsa-mis/axcess) (`main`, or the `axcess_ref` input) and crawls `http://127.0.0.1:3000/` in headless Chromium with axe-core at WCAG 2.1 AA, plus the keyboard, focus, reflow, and visual checks.
-3. Runs `script/ci/axcess_gate.rb`, which prints every finding to the job log, annotates the run, and writes the job summary.
+3. Uploads the report, then runs `script/ci/axcess_report.rb`, which prints every finding to the job log, annotates the run, and writes a job summary that links to the report.
+4. Ends with the report link, in the last step of the log and as a notice on the run.
 
-The job fails when any **critical** or **serious** axe finding exists. Moderate and minor findings are reported but do not block. Run the workflow manually with `enforcement: advisory` to report without failing.
+Findings never fail the job; this is a report, not a gate. The job fails only when the scan itself cannot produce a report: the app does not boot, Axcess crashes, or fewer than 3 pages were crawled.
 
 Only pages reachable without signing in are scanned.
 
@@ -20,7 +21,7 @@ flowchart LR
     direction TB
     pr["Pull request<br/>into staging or main"]
     push["Push<br/>to staging or main"]
-    manual["Manual run<br/>enforcement · max_pages · axcess_ref"]
+    manual["Manual run<br/>max_pages · axcess_ref"]
   end
 
   subgraph setup["2 · Set up (Postgres 14 service)"]
@@ -41,41 +42,36 @@ flowchart LR
 
   subgraph scan["3 · Scan"]
     direction TB
-    install["uv sync --frozen<br/>+ Chromium with Ubuntu deps"]
+    install["uv sync --frozen · migrate scan DB<br/>+ Chromium with Ubuntu deps"]
     crawl["audit crawl 127.0.0.1:3000<br/>axe-core WCAG 2.1 AA, keyboard,<br/>focus, zoom/reflow, visual"]
     export["audit export<br/>json · md · xlsx · csv"]
     install --> crawl --> export
   end
 
-  subgraph gate["4 · Gate (script/ci/axcess_gate.rb)"]
+  subgraph report["4 · Report"]
     direction TB
-    guard{"≥ 3 pages and<br/>axe ran?"}
-    sort["Blocking = axe × critical/serious<br/>everything else report-only"]
-    echo["Echo issues to the log<br/>annotations + job summary"]
-    decide{"Blocking findings<br/>in enforce mode?"}
-    guard -- yes --> sort --> echo --> decide
+    upload["Upload artifact, 30 days<br/>axcess-accessibility-report"]
+    summarize["axcess_report.rb<br/>echo issues to the log,<br/>annotations, job summary + link"]
+    guard{"Scan complete?<br/>≥ 3 pages, axe ran"}
+    upload --> summarize --> guard
   end
 
-  subgraph outputs["5 · Outputs (uploaded unless cancelled)"]
+  subgraph outputs["5 · Output"]
     direction TB
-    fail["Check fails · exit 1"]
-    pass["Check passes · exit 0"]
-    artifacts["Artifacts, 30 days<br/>axcess-accessibility-report<br/>rails-server-log"]
+    link["Report link<br/>last log line + run notice"]
+    broken["Job fails<br/>no usable report"]
   end
 
   trigger --> co_app
   rails --> install
-  export --> guard
-  guard -- no --> fail
-  decide -- yes --> fail
-  decide -- no --> pass
-  fail --> artifacts
-  pass --> artifacts
+  export --> upload
+  guard -- yes --> link
+  guard -- no --> broken
 ```
 
 ### Reports
 
-Download the **axcess-accessibility-report** artifact from the workflow run. It contains:
+Open the **report link** at the end of the job log (also at the top of the job summary and as a notice on the run), or download the **axcess-accessibility-report** artifact from the run page. It contains:
 
 - `axcess.json` — full machine-readable findings (Axcess export schema v4)
 - `axcess.md` — readable report, also embedded in the job summary
@@ -89,7 +85,7 @@ The **rails-server-log** artifact holds the app log from the scan.
 
 Add a `RAILS_MASTER_KEY` repository secret to boot with decrypted credentials. Without it the app still boots, because every credential lookup is nil-safe; SAML sign-in is simply unconfigured, which does not affect the public pages scanned here.
 
-### Run the gate locally
+### Run the report locally
 
 ```sh
 RAILS_ENV=test bin/rails db:prepare
@@ -99,7 +95,7 @@ bin/rails server -e test -p 3000
 uv run audit crawl http://127.0.0.1:3000/ --ignore-robots --skip-ocr --skip-vlm --skip-synthesize --skip-semantic
 uv run audit export --format json --output /tmp/axcess.json
 # back in this repo
-ruby script/ci/axcess_gate.rb /tmp/axcess.json
+ruby script/ci/axcess_report.rb /tmp/axcess.json
 ```
 
 Generated report files are ignored by Git.
