@@ -3,11 +3,6 @@ name: Accessibility report
 # Run on demand from the Actions tab (Accessibility report > Run workflow).
 on:
   workflow_dispatch:
-    inputs:
-      axcess_ref:
-        description: "lsa-mis/axcess branch, tag, or SHA to scan with"
-        type: string
-        default: main
 
 concurrency:
   group: accessibility-${{ github.workflow }}-${{ github.ref }}
@@ -30,9 +25,6 @@ jobs:
       # public site is about 200 URLs with the sample data.
       AXCESS_MAX_PAGES: 5000
       REPORT_DIR: ${{ github.workspace }}/reports/axcess
-      # Passed through env, never interpolated into a script, so a crafted
-      # ref cannot inject shell syntax.
-      AXCESS_REF: ${{ inputs.axcess_ref || 'main' }}
     services:
       postgres:
         image: postgres:14
@@ -49,16 +41,21 @@ jobs:
           --health-retries=5
 
     steps:
+      # persist-credentials: false keeps the job token out of .git/config,
+      # where the external Axcess code could otherwise read it.
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Check out latest Axcess
         uses: actions/checkout@v4
         with:
           repository: lsa-mis/axcess
-          ref: ${{ inputs.axcess_ref || 'main' }}
+          ref: main
           path: .axcess
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Record Axcess version
         run: |
@@ -76,14 +73,21 @@ jobs:
           commit=$(git -C .axcess log -1 --format='%H')
           line="Axcess ${version} @ $(git -C .axcess log -1 --format='%h %s (%cd)')"
           echo "$line"
-          printf 'version=%s\ncommit=%s\nref=%s\n' "$version" "$commit" "$AXCESS_REF" > "$REPORT_DIR/axcess-version.txt"
+          printf 'version=%s\ncommit=%s\nref=%s\n' "$version" "$commit" main > "$REPORT_DIR/axcess-version.txt"
           echo "Scanned with **${line}** ([lsa-mis/axcess@${commit:0:7}](https://github.com/lsa-mis/axcess/commit/${commit}))" >> "$GITHUB_STEP_SUMMARY"
           echo >> "$GITHUB_STEP_SUMMARY"
 
       # RAILS_MASTER_KEY is optional: every credential lookup is nil-safe, so
       # the app boots without it (SAML sign-in stays unconfigured). When the
       # secret exists it is given only to the two Rails steps below, never to
-      # Axcess.
+      # Axcess's steps.
+      #
+      # Accepted risk: the Rails server keeps the key in its environment while
+      # Axcess runs, and any code on the same runner (Axcess or one of its
+      # dependencies) can read another process's environment via /proc. The
+      # key decrypts config/credentials.yml.enc, which holds staging and
+      # production values. Leave the secret unset unless a scan needs
+      # credentials; the public pages scanned here do not.
       - name: Report master key status
         env:
           HAS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY != '' }}
@@ -181,7 +185,10 @@ jobs:
           AXCESS_REPORT_URL: ${{ steps.upload-report.outputs.artifact-url }}
         run: ruby script/ci/axcess_report.rb "$REPORT_DIR/axcess.json"
 
+      # Run even when the scan was incomplete (the summarize step exits 1), so
+      # the uploaded report is still summarized and linked.
       - name: Append Axcess report to job summary
+        if: ${{ !cancelled() && steps.upload-report.outcome == 'success' }}
         run: |
           report="$REPORT_DIR/axcess.md"
           # GitHub caps each step summary at 1 MiB.
@@ -201,6 +208,7 @@ jobs:
           retention-days: 30
 
       - name: Accessibility report link
+        if: ${{ !cancelled() && steps.upload-report.outcome == 'success' }}
         env:
           AXCESS_REPORT_URL: ${{ steps.upload-report.outputs.artifact-url }}
         run: |

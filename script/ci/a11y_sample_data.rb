@@ -36,7 +36,7 @@ species = [
   ["Sciurus carolinensis", "Eastern gray squirrel"],
   ["Procyon lotor", "Raccoon"],
   ["Myotis lucifugus", "Little brown bat"]
-].each
+].to_enum
 
 collections.each do |collection|
   4.times do
