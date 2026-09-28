@@ -3,6 +3,8 @@ name: Accessibility report
 # Run on demand from the Actions tab (Accessibility report > Run workflow).
 on:
   workflow_dispatch:
+  push:
+    branches: [axcess-a11y-gate]
 
 concurrency:
   group: accessibility-${{ github.workflow }}-${{ github.ref }}
