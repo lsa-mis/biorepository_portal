@@ -1,0 +1,203 @@
+name: Accessibility gate
+
+on:
+  push:
+    branches: [staging, main]
+  pull_request:
+    branches: [staging, main]
+  workflow_dispatch:
+    inputs:
+      enforcement:
+        description: "enforce fails the job on blocking findings; advisory only reports them"
+        type: choice
+        options: [enforce, advisory]
+        default: enforce
+      max_pages:
+        description: "Maximum pages for Axcess to crawl"
+        type: number
+        default: 60
+      axcess_ref:
+        description: "lsa-mis/axcess branch, tag, or SHA to scan with"
+        type: string
+        default: main
+
+concurrency:
+  group: accessibility-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  axcess:
+    name: Accessibility audit (Axcess)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/biorepository_portal_test
+      # Optional. Rails reads this natively; every credential lookup is
+      # nil-safe, so the app boots without it (SAML sign-in stays unconfigured).
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+      APP_URL: http://127.0.0.1:3000
+      A11Y_ENFORCEMENT: ${{ inputs.enforcement || 'enforce' }}
+      A11Y_FAIL_ON: critical,serious
+      AXCESS_MAX_PAGES: ${{ inputs.max_pages || 60 }}
+      REPORT_DIR: ${{ github.workspace }}/reports/axcess
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: biorepository_portal_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check out latest Axcess
+        uses: actions/checkout@v4
+        with:
+          repository: lsa-mis/axcess
+          ref: ${{ inputs.axcess_ref || 'main' }}
+          path: .axcess
+          fetch-depth: 1
+
+      - name: Record Axcess version
+        run: |
+          mkdir -p "$REPORT_DIR"
+          # Keep Axcess's scan database, blobs and logs out of the workspace.
+          # Each path is its own setting; AUDIT_DATA_DIR alone does not move the DB.
+          data="$RUNNER_TEMP/axcess-data"
+          {
+            echo "AUDIT_DATA_DIR=$data"
+            echo "AUDIT_DB_PATH=$data/audit.db"
+            echo "AUDIT_BLOB_DIR=$data/blobs"
+            echo "AUDIT_LOG_DIR=$data/logs"
+          } >> "$GITHUB_ENV"
+          version=$(sed -n 's/^version = "\(.*\)"/\1/p' .axcess/pyproject.toml | head -1)
+          commit=$(git -C .axcess log -1 --format='%H')
+          line="Axcess ${version} @ $(git -C .axcess log -1 --format='%h %s (%cd)')"
+          echo "$line"
+          printf 'version=%s\ncommit=%s\nref=%s\n' "$version" "$commit" "${{ inputs.axcess_ref || 'main' }}" > "$REPORT_DIR/axcess-version.txt"
+          echo "Scanned with **${line}** ([lsa-mis/axcess@${commit:0:7}](https://github.com/lsa-mis/axcess/commit/${commit}))" >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Report master key status
+        run: |
+          if [ -n "$RAILS_MASTER_KEY" ]; then
+            echo "::notice::RAILS_MASTER_KEY secret provided; credentials will be decrypted"
+          else
+            echo "::notice::No RAILS_MASTER_KEY secret; running with nil credentials (public pages only)"
+          fi
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Prepare Rails database, sample data, and assets
+        run: |
+          bundle exec ruby -ractive_record -e 'ActiveRecord::Base.establish_connection(ENV.fetch("DATABASE_URL")); load "db/schema.rb"'
+          bin/rails db:seed
+          bin/rails runner script/ci/a11y_sample_data.rb
+          bin/rails assets:precompile
+
+      - name: Start Rails server
+        run: |
+          bin/rails server --environment test --port 3000 --binding 127.0.0.1 > log/ci-server.log 2>&1 &
+          for _ in $(seq 1 90); do
+            if curl -fsS "$APP_URL/up" > /dev/null 2>&1; then
+              echo "Rails is up at $APP_URL"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::Rails server did not become ready within 90s"
+          tail -n 100 log/ci-server.log
+          exit 1
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: .axcess/uv.lock
+
+      - name: Install Axcess and Chromium
+        working-directory: .axcess
+        run: |
+          # Axcess's build force-includes its compiled web UI, which is not in
+          # git. The CLI scan never serves the UI, so an empty folder suffices.
+          mkdir -p src/audit/web/frontend/dist
+          uv sync --frozen --no-dev
+          uv run --no-sync playwright install --with-deps chromium
+          # Create the scan database schema (what `make migrate` does).
+          mkdir -p "$AUDIT_DATA_DIR"
+          uv run --no-sync yoyo apply --database "sqlite:///$AUDIT_DB_PATH" --batch src/audit/db/migrations
+
+      - name: Run Axcess scan
+        working-directory: .axcess
+        run: |
+          uv run --no-sync audit crawl "$APP_URL/" \
+            --max-pages "$AXCESS_MAX_PAGES" \
+            --max-depth 4 \
+            --axe-level AA \
+            --wcag-version 2.1 \
+            --ignore-robots \
+            --skip-ocr \
+            --skip-vlm \
+            --skip-synthesize \
+            --skip-semantic \
+            --exclude /export_to_csv \
+            --exclude /users/auth \
+            --block sign_out
+
+      - name: Export Axcess reports
+        working-directory: .axcess
+        run: |
+          for fmt in json markdown xlsx csv; do
+            ext=$fmt; [ "$fmt" = markdown ] && ext=md
+            uv run --no-sync audit export --format "$fmt" --output "$REPORT_DIR/axcess.$ext"
+          done
+          ls -la "$REPORT_DIR"
+
+      - name: Accessibility gate
+        run: ruby script/ci/axcess_gate.rb "$REPORT_DIR/axcess.json"
+
+      - name: Append Axcess report to job summary
+        if: ${{ !cancelled() }}
+        run: |
+          report="$REPORT_DIR/axcess.md"
+          [ -f "$report" ] || exit 0
+          # GitHub caps each step summary at 1 MiB.
+          if [ "$(wc -c < "$report")" -lt 900000 ]; then
+            { echo "<details><summary>Full Axcess report</summary>"; echo; cat "$report"; echo; echo "</details>"; } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Full Axcess report is too large for the job summary; download the artifact." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload Axcess reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: axcess-accessibility-report
+          path: reports/axcess/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload Rails server log
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: rails-server-log
+          path: log/ci-server.log
+          if-no-files-found: ignore
+          retention-days: 30
