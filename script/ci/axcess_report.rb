@@ -50,6 +50,10 @@ abort "Axcess export not found: #{json_path}" unless File.exist?(json_path)
 payload = JSON.parse(File.read(json_path))
 scan = payload.fetch("scan")
 report_url = ENV["AXCESS_REPORT_URL"].to_s
+
+# Written by the workflow next to the JSON export: version=, commit=, ref=.
+version_path = File.join(File.dirname(json_path), "axcess-version.txt")
+axcess = File.exist?(version_path) ? File.readlines(version_path, chomp: true).to_h { |l| l.split("=", 2) } : {}
 min_pages = Integer(ENV.fetch("A11Y_MIN_PAGES", "3"))
 
 findings = payload.fetch("a11y_findings", []).select { |f| f["engine_outcome"].to_s == "failed" }
@@ -130,6 +134,11 @@ if (summary_path = ENV["GITHUB_STEP_SUMMARY"])
     out.puts
     unless report_url.empty?
       out.puts "**[Download the full report](#{report_url})** (JSON, Markdown, XLSX, CSV)"
+      out.puts
+    end
+    if axcess["commit"].to_s.size >= 7
+      out.puts "Scanned with Axcess #{axcess['version']} " \
+               "([lsa-mis/axcess@#{axcess['commit'][0, 7]}](https://github.com/lsa-mis/axcess/commit/#{axcess['commit']}))"
       out.puts
     end
     out.puts "Seed `#{scan['seed_url']}` · #{scan['page_count']} pages crawled · " \

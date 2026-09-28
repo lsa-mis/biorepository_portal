@@ -73,8 +73,6 @@ jobs:
           line="Axcess ${version} @ $(git -C .axcess log -1 --format='%h %s (%cd)')"
           echo "$line"
           printf 'version=%s\ncommit=%s\nref=%s\n' "$version" "$commit" main > "$REPORT_DIR/axcess-version.txt"
-          echo "Scanned with **${line}** ([lsa-mis/axcess@${commit:0:7}](https://github.com/lsa-mis/axcess/commit/${commit}))" >> "$GITHUB_STEP_SUMMARY"
-          echo >> "$GITHUB_STEP_SUMMARY"
 
       # RAILS_MASTER_KEY is optional: every credential lookup is nil-safe, so
       # the app boots without it (SAML sign-in stays unconfigured). When the
