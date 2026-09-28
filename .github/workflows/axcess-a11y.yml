@@ -143,6 +143,23 @@ jobs:
           mkdir -p "$AUDIT_DATA_DIR"
           uv run --no-sync yoyo apply --database "sqlite:///$AUDIT_DB_PATH" --batch src/audit/db/migrations
 
+      # Click-Through (Axcess's check that clicks menus, tabs and dialogs and
+      # re-scans what they reveal) makes up to 100 clicks per page by default.
+      # Limit it to one. The Axcess CLI has no option for this yet, so change
+      # the default in this run's checkout, and fail loudly if the setting has
+      # moved rather than silently scanning with 100 clicks.
+      - name: Limit Click-Through to one click per page
+        working-directory: .axcess
+        run: |
+          file=src/audit/crawler/orchestrator.py
+          pattern='^    interaction_max_clicks: int = 100$'
+          if ! grep -q "$pattern" "$file"; then
+            echo "::error::interaction_max_clicks default not found in Axcess $file; update this step"
+            exit 1
+          fi
+          sed -i "s/$pattern/    interaction_max_clicks: int = 1/" "$file"
+          grep -n 'interaction_max_clicks: int = 1$' "$file"
+
       - name: Run Axcess scan
         working-directory: .axcess
         run: |
