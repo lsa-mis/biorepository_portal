@@ -85,6 +85,8 @@ The **rails-server-log** artifact holds the app log from the scan.
 
 Add a `RAILS_MASTER_KEY` repository secret to boot with decrypted credentials. Without it the app still boots, because every credential lookup is nil-safe; SAML sign-in is simply unconfigured, which does not affect the public pages scanned here.
 
+When the secret exists, only the two Rails steps (database setup and server start) receive it; the Axcess steps never do. Pull request runs never receive it, because they execute code from the PR branch; they always scan with empty credentials.
+
 ### Run the report locally
 
 ```sh
