@@ -26,7 +26,7 @@ jobs:
       REPORT_DIR: ${{ github.workspace }}/reports/axcess
     services:
       postgres:
-        image: postgres:14
+        image: postgres:18
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -74,35 +74,16 @@ jobs:
           echo "$line"
           printf 'version=%s\ncommit=%s\nref=%s\n' "$version" "$commit" main > "$REPORT_DIR/axcess-version.txt"
 
-      # RAILS_MASTER_KEY is optional: every credential lookup is nil-safe, so
-      # the app boots without it (SAML sign-in stays unconfigured). When the
-      # secret exists it is given only to the two Rails steps below, never to
-      # Axcess's steps.
-      #
-      # Accepted risk: the Rails server keeps the key in its environment while
-      # Axcess runs, and any code on the same runner (Axcess or one of its
-      # dependencies) can read another process's environment via /proc. The
-      # key decrypts config/credentials.yml.enc, which holds staging and
-      # production values. Leave the secret unset unless a scan needs
-      # credentials; the public pages scanned here do not.
-      - name: Report master key status
-        env:
-          HAS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY != '' }}
-        run: |
-          if [ "$HAS_MASTER_KEY" = "true" ]; then
-            echo "::notice::RAILS_MASTER_KEY provided to the Rails steps only"
-          else
-            echo "::notice::No RAILS_MASTER_KEY secret; running with nil credentials (public pages only)"
-          fi
-
+      # No RAILS_MASTER_KEY here, by design: this repository is public, so the
+      # key that decrypts config/credentials.yml.enc stays off GitHub runners.
+      # Credential lookups are nil-safe, so the app boots and every public page
+      # renders. For a run with credentials, use script/ci/axcess_local.sh.
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
 
       - name: Prepare Rails database, sample data, and assets
-        env:
-          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
           bundle exec ruby -ractive_record -e 'ActiveRecord::Base.establish_connection(ENV.fetch("DATABASE_URL")); load "db/schema.rb"'
           bin/rails db:seed
@@ -110,8 +91,6 @@ jobs:
           bin/rails assets:precompile
 
       - name: Start Rails server
-        env:
-          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
           bin/rails server --environment test --port 3000 --binding 127.0.0.1 > log/ci-server.log 2>&1 &
           for _ in $(seq 1 90); do
