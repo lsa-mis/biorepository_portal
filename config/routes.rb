@@ -18,6 +18,9 @@ Rails.application.routes.draw do
       get 'search_statistics_report', to: 'reports#search_statistics_report'
     end
   end
+  get 'visual_reports', to: 'visual_reports#index'
+  get 'visual_reports/items_by_collection', to: 'visual_reports#items_by_collection', as: :items_by_collection_visual_reports
+  get 'visual_reports/items_in_all_collections', to: 'visual_reports#items_in_all_collections', as: :items_in_all_collections_visual_reports
 
   resource :profile, only: [:show, :edit, :update] do
     get :show_loan_questions
