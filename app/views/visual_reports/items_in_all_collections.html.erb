@@ -7,14 +7,65 @@
   <%= link_to "Back to Visual Reports", visual_reports_path, class: "btn btn-outline-primary mb-3" %>
   <% if @items_by_year.any? %>
     <%= column_chart @items_by_year, xtitle: "Year", ytitle: "Number of Items" %>
+    <table class="table table-sm table-striped">
+      <caption>Number of items collected per year</caption>
+      <thead>
+        <tr>
+          <th scope="col">Year</th>
+          <th scope="col">Number of Items</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @items_by_year.each do |year, count| %>
+          <tr>
+            <th scope="row"><%= year %></th>
+            <td><%= count %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
   <% else %>
     <p>No items have a collection date.</p>
   <% end %>
 
   <h2 class="mt-4">Items by Country</h2>
   <%= pie_chart @items_by_country, height: "480px", ytitle: "Number of Items" %>
+  <table class="table table-sm table-striped">
+    <caption>Number of items per country</caption>
+    <thead>
+      <tr>
+        <th scope="col">Country</th>
+        <th scope="col">Number of Items</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @items_by_country.each do |country, count| %>
+        <tr>
+          <th scope="row"><%= country %></th>
+          <td><%= count %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 
   <h2 class="mt-4">Items by Recorded By</h2>
   <p>Top 10 recorded_by values; remaining values are combined as Other.</p>
   <%= pie_chart @items_by_recorder, height: "480px", ytitle: "Number of Items" %>
+  <table class="table table-sm table-striped">
+    <caption>Number of items by recorded by value</caption>
+    <thead>
+      <tr>
+        <th scope="col">Recorded By</th>
+        <th scope="col">Number of Items</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @items_by_recorder.each do |recorded_by, count| %>
+        <tr>
+          <th scope="row"><%= recorded_by %></th>
+          <td><%= count %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>

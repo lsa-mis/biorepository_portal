@@ -6,6 +6,23 @@
   <h1>Items by Collection</h1>
   <%= link_to "Back to Visual Reports", visual_reports_path, class: "btn btn-outline-primary mb-3" %>
   <%= pie_chart @items_by_collection, height: "480px" %>
+  <table class="table table-sm table-striped">
+    <caption>Number of items per collection</caption>
+    <thead>
+      <tr>
+        <th scope="col">Collection</th>
+        <th scope="col">Number of Items</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @items_by_collection.each do |collection, count| %>
+        <tr>
+          <th scope="row"><%= collection %></th>
+          <td><%= count %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 
   <h2 class="mt-4">Items by Preparation</h2>
   <% @preparation_counts_by_collection.each do |collection, preparation_counts| %>
@@ -13,6 +30,23 @@
       <h3><%= collection.division %></h3>
       <% if preparation_counts.any? %>
         <%= bar_chart preparation_counts, height: "320px", ytitle: "Items", xtitle: "Preparation Type" %>
+        <table class="table table-sm table-striped">
+          <caption>Number of items by preparation type for <%= collection.division %></caption>
+          <thead>
+            <tr>
+              <th scope="col">Preparation Type</th>
+              <th scope="col">Number of Items</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% preparation_counts.each do |preparation_type, count| %>
+              <tr>
+                <th scope="row"><%= preparation_type %></th>
+                <td><%= count %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       <% else %>
         <p>No items in this collection.</p>
       <% end %>
