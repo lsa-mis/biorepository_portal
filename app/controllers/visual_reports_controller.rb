@@ -3,7 +3,7 @@ class VisualReportsController < ApplicationController
   end
 
   def items_by_collection
-    @items_by_collection = Collection.left_joins(:items).group(:division).count
+    @items_by_collection = Collection.left_joins(:items).group(:division).count("items.id")
 
     preparation_counts = Collection.left_joins(items: :preparations)
                                    .group("collections.division", "COALESCE(NULLIF(preparations.prep_type, ''), 'No preparation')")
