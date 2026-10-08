@@ -1,0 +1,20 @@
+<% content_for :head do %>
+  <%= javascript_include_tag "Chart.bundle", "chartkick" %>
+<% end %>
+
+<div class="container-fluid">
+  <h1>Items Collected by Year</h1>
+  <%= link_to "Back to Visual Reports", visual_reports_path, class: "btn btn-outline-primary mb-3" %>
+  <% if @items_by_year.any? %>
+    <%= column_chart @items_by_year, xtitle: "Year", ytitle: "Number of Items" %>
+  <% else %>
+    <p>No items have a collection date.</p>
+  <% end %>
+
+  <h2 class="mt-4">Items by Country</h2>
+  <%= pie_chart @items_by_country, height: "480px", ytitle: "Number of Items" %>
+
+  <h2 class="mt-4">Items by Recorded By</h2>
+  <p>Top 10 recorded_by values; remaining values are combined as Other.</p>
+  <%= pie_chart @items_by_recorder, height: "480px", ytitle: "Number of Items" %>
+</div>

@@ -1,0 +1,21 @@
+<% content_for :head do %>
+  <%= javascript_include_tag "Chart.bundle", "chartkick" %>
+<% end %>
+
+<div class="container-fluid">
+  <h1>Items by Collection</h1>
+  <%= link_to "Back to Visual Reports", visual_reports_path, class: "btn btn-outline-primary mb-3" %>
+  <%= pie_chart @items_by_collection, height: "480px" %>
+
+  <h2 class="mt-4">Items by Preparation</h2>
+  <% @preparation_counts_by_collection.each do |collection, preparation_counts| %>
+    <section class="mb-4">
+      <h3><%= collection.division %></h3>
+      <% if preparation_counts.any? %>
+        <%= bar_chart preparation_counts, height: "320px", ytitle: "Items", xtitle: "Preparation Type" %>
+      <% else %>
+        <p>No items in this collection.</p>
+      <% end %>
+    </section>
+  <% end %>
+</div>
