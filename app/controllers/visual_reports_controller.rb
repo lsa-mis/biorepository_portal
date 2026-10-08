@@ -23,10 +23,6 @@ class VisualReportsController < ApplicationController
     country = Arel.sql("COALESCE(NULLIF(BTRIM(items.country), ''), 'Unknown')")
     @items_by_country = Item.group(country).order(country).count
     recorder = Arel.sql("COALESCE(NULLIF(BTRIM(items.recorded_by), ''), 'Unknown')")
-    recorder_counts = Item.group(recorder).count
-    top_recorder_counts = recorder_counts.sort_by { |name, count| [-count, name] }.first(10).to_h
-    other_count = recorder_counts.values.sum - top_recorder_counts.values.sum
-    top_recorder_counts["Other recorded_by values"] = other_count if other_count.positive?
-    @items_by_recorder = top_recorder_counts
+    @items_by_recorder = Item.group(recorder).order(recorder).count
   end
 end
