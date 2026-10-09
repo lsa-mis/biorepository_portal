@@ -90,6 +90,14 @@ p {
   font-weight: 400; 
 }
 
+.visual_report_table {
+  font-size: 0.875rem;
+
+  tbody th {
+    font-weight: 400;
+  }
+}
+
 /* Custom CSS to center-align h1 on small screens, considering Bootstrap's small breakpoint */
 @media (max-width: 576px) {
   h1 {

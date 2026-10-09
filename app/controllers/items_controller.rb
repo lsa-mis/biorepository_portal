@@ -1,6 +1,6 @@
 class ItemsController < ApplicationController
   include ActiveFiltersHelper
-  skip_before_action :authenticate_user!, only: [ :show, :search, :quick_search, :export_to_csv, :map ]
+  skip_before_action :authenticate_user!, only: [ :show, :search, :quick_search, :export_to_csv ]
   before_action :set_item, only: [ :show ]
 
   # GET /items/1 or /items/1.json
@@ -129,19 +129,6 @@ class ItemsController < ApplicationController
       end
     ensure
       response.stream.close
-    end
-  end
-
-  # GET /items/map or /items/map.json
-  def map
-    respond_to do |format|
-      format.html
-      format.json do
-        points = Item.joins(:collection)
-                     .where(decimal_latitude: -90..90, decimal_longitude: -180..180)
-                     .pluck(:id, :decimal_latitude, :decimal_longitude, :catalog_number, "collections.division")
-        render json: points
-      end
     end
   end
 

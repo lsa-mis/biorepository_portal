@@ -1,8 +1,12 @@
 class VisualReportsController < ApplicationController
+  skip_before_action :authenticate_user!
+
   def index
+    authorize :visual_report
   end
 
   def items_by_collection
+    authorize :visual_report
     @items_by_collection = Collection.left_joins(:items).group(:division).count("items.id")
 
     preparation_counts = Collection.left_joins(items: :preparations)
@@ -18,11 +22,25 @@ class VisualReportsController < ApplicationController
   end
 
   def items_in_all_collections
+    authorize :visual_report
     collection_year = Arel.sql("EXTRACT(YEAR FROM items.event_date_start)::integer")
     @items_by_year = Item.where.not(event_date_start: nil).group(collection_year).order(collection_year).count
     country = Arel.sql("COALESCE(NULLIF(BTRIM(items.country), ''), 'Unknown')")
     @items_by_country = Item.group(country).order(country).count
     recorder = Arel.sql("COALESCE(NULLIF(BTRIM(items.recorded_by), ''), 'Unknown')")
     @items_by_recorder = Item.group(recorder).order(recorder).count
+  end
+
+  def map_items
+    authorize :visual_report
+    respond_to do |format|
+      format.html
+      format.json do
+        points = Item.joins(:collection)
+                     .where(decimal_latitude: -90..90, decimal_longitude: -180..180)
+                     .pluck(:id, :decimal_latitude, :decimal_longitude, :catalog_number, "collections.division")
+        render json: points
+      end
+    end
   end
 end

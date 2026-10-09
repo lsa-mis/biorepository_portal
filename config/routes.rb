@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   get 'visual_reports', to: 'visual_reports#index'
   get 'visual_reports/items_by_collection', to: 'visual_reports#items_by_collection', as: :items_by_collection_visual_reports
   get 'visual_reports/items_in_all_collections', to: 'visual_reports#items_in_all_collections', as: :items_in_all_collections_visual_reports
+  get 'visual_reports/map', to: 'visual_reports#map_items', as: :map_items
 
   resource :profile, only: [:show, :edit, :update] do
     get :show_loan_questions
@@ -87,7 +88,6 @@ Rails.application.routes.draw do
       match 'quick_search' => 'items#quick_search', via: [:get, :post]
       match 'search' => 'items#search', via: [:get, :post]
       match 'save_search' => 'items#save_search', via: :post, as: :save_search
-      get 'map', to: 'items#map', as: :map
     end
   end
   
