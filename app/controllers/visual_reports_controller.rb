@@ -30,4 +30,17 @@ class VisualReportsController < ApplicationController
     recorder = Arel.sql("COALESCE(NULLIF(BTRIM(items.recorded_by), ''), 'Unknown')")
     @items_by_recorder = Item.group(recorder).order(recorder).count
   end
+
+  def map_items
+    authorize :visual_report
+    respond_to do |format|
+      format.html
+      format.json do
+        points = Item.joins(:collection)
+                     .where(decimal_latitude: -90..90, decimal_longitude: -180..180)
+                     .pluck(:id, :decimal_latitude, :decimal_longitude, :catalog_number, "collections.division")
+        render json: points
+      end
+    end
+  end
 end
