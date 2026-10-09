@@ -7,7 +7,7 @@
   <%= link_to "Back to Visual Reports", visual_reports_path, class: "btn btn-outline-primary mb-3" %>
   <% if @items_by_year.any? %>
     <%= column_chart @items_by_year, xtitle: "Year", ytitle: "Number of Items" %>
-    <table class="table table-sm table-striped">
+    <table class="table table-sm table-striped visual_report_table">
       <caption>Number of items collected per year</caption>
       <thead>
         <tr>
@@ -30,7 +30,7 @@
 
   <h2 class="mt-4">Items by Country</h2>
   <%= pie_chart @items_by_country, height: "480px", ytitle: "Number of Items" %>
-  <table class="table table-sm table-striped">
+  <table class="table table-sm table-striped visual_report_table">
     <caption>Number of items per country</caption>
     <thead>
       <tr>
@@ -48,9 +48,9 @@
     </tbody>
   </table>
 
-  <h2 class="mt-4">Items by Recorded By</h2>
+  <h2 class="mt-4">Items Recorded By</h2>
   <%= pie_chart @items_by_recorder, height: "480px", ytitle: "Number of Items" %>
-  <table class="table table-sm table-striped">
+  <table class="table table-sm table-striped visual_report_table">
     <caption>Number of items by recorded by value</caption>
     <thead>
       <tr>
@@ -61,7 +61,7 @@
     <tbody>
       <% @items_by_recorder.each do |recorded_by, count| %>
         <tr>
-          <th scope="row"><%= recorded_by %></th>
+            <th scope="row"><%= recorded_by %></th>
           <td><%= count %></td>
         </tr>
       <% end %>
