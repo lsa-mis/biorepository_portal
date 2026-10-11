@@ -72,6 +72,19 @@ RSpec.describe ItemImportService do
                                                                       event_date_end: Date.new(2024, 9, 20))
   end
 
+  it 'parses an ISO date range with times' do
+    import([['occ-1', 'CAT-1', '9', '2024-09-16T10:30/2024-09-20T11:45', '', '', '', 'Whole']])
+
+    expect(Item.find_by!(occurrence_id: 'occ-1')).to have_attributes(event_date_start: Date.new(2024, 9, 16),
+                                                                      event_date_end: Date.new(2024, 9, 20))
+  end
+
+  it 'parses a date with a time and time zone' do
+    import([['occ-1', 'CAT-1', '9', '2024-09-16T10:30:00-05:00', '', '', '', 'Whole']])
+
+    expect(Item.find_by!(occurrence_id: 'occ-1')).to have_attributes(event_date_start: Date.new(2024, 9, 16), event_date_end: nil)
+  end
+
   it 'reports an invalid event date' do
     result = import([['occ-1', 'CAT-1', '9', 'not a date', '', '', '', 'Whole']])
 

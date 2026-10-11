@@ -209,8 +209,10 @@ class ItemImportService
   def parse_flexible_date(string)
     return nil if string.blank?
 
-    # Drop a time part, e.g. "2024-09-16T10:30" or "2024-09-16 10:30"
-    string = string.sub(/[T ]\d{1,2}:\d{2}.*\z/, '')
+    # Drop a time part, e.g. "2024-09-16T10:30" or "2024-09-16 10:30". The time may not contain "/",
+    # so in an interval like "2024-09-16T10:30/2024-09-20" the whole-value parse fails and
+    # handle_event_date parses each endpoint separately.
+    string = string.sub(/[T ]\d{1,2}:\d{2}[^\/]*\z/, '')
     DATE_FORMATS.each do |fmt|
       date = Date.strptime(string, fmt) rescue next
       # strptime ignores trailing text and accepts a short %Y, so "9/16/24" would become
@@ -221,7 +223,7 @@ class ItemImportService
       return fmt.include?('%y') && date > Date.current ? date.prev_year(100) : date
     end
     # Fallback for written-out dates such as "16 September 2024"
-    Date.parse(string) if string.match?(/[a-z]/i)
+    Date.parse(string) if string.match?(/[a-z]{3,}/i)
   rescue ArgumentError
     nil
   end
