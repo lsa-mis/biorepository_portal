@@ -107,35 +107,24 @@ class CollectionsController < ApplicationController
   end
 
   def import
-    collection_id = params[:collection_id]
-    return redirect_to request.referer, notice: 'No file added' if params[:files].nil?
-    return redirect_to request.referer, notice: 'Only CSV files allowed' unless valid_csv_files?(params[:files])
-
+    authorize Collection, :import?
+    collection = Collection.find(params[:collection_id])
     files = params[:files]
-    identification_file = nil
-    occurrence_file = nil
-    errors = 0
+    return redirect_back(fallback_location: collection_path(collection), notice: 'No file added') if files.blank?
+    return redirect_back(fallback_location: collection_path(collection), notice: 'Only CSV files allowed') unless valid_csv_files?(files)
 
-    files.each do |file|
-      if file.original_filename.include?("identification")
-        identification_file = file
-      elsif file.original_filename.include?("occurrence")
-        occurrence_file = file
-      end
+    occurrence_file = files.find { |file| file.original_filename.downcase.include?("occurrence") }
+    identification_file = files.find { |file| file.original_filename.downcase.include?("identification") }
+    if occurrence_file.nil? && identification_file.nil?
+      return redirect_back(fallback_location: collection_path(collection),
+                           alert: 'File names must include "occurrence" or "identification"')
     end
-    if occurrence_file.present?
-      item_result = {errors:0, note: []}
-      item_result = ItemImportService.new(occurrence_file, collection_id, current_user).call
-      create_import_log_record(item_result, collection_id, 'Item')
-      errors += item_result[:errors]
-    end
-    if identification_file.present?
-      identification_result = {errors:0, note: []}
-      identification_result = IdentificationImportService.new(identification_file, collection_id, current_user).call
-      create_import_log_record(identification_result, collection_id, 'Identification')
-      errors += identification_result[:errors]
-    end
-    
+
+    # Occurrences are imported first so identifications can be linked to new items
+    errors = 0
+    errors += run_import(ItemImportService, occurrence_file, collection, 'Item') if occurrence_file
+    errors += run_import(IdentificationImportService, identification_file, collection, 'Identification') if identification_file
+
     if errors > 0
       flash[:alert] = "Import finished with #{errors} error(s). Please check reports for details"
       flash[:alert_no_timeout] = true  # Add flag to disable timeout
@@ -143,7 +132,7 @@ class CollectionsController < ApplicationController
       flash[:notice] = "Import finished successfully."
       flash[:notice_no_timeout] = true  # Add flag to disable timeout
     end
-    redirect_to request.referer
+    redirect_back(fallback_location: collection_path(collection))
   end
 
   private
@@ -160,6 +149,12 @@ class CollectionsController < ApplicationController
         return false unless File.extname(file.original_filename).downcase == ".csv"
       end
       true
+    end
+
+    def run_import(service_class, file, collection, import_type)
+      result = service_class.new(file, collection.id, current_user).call
+      create_import_log_record(result, collection.id, import_type)
+      result[:errors]
     end
 
     def create_import_log_record(result, collection_id, import_type)
