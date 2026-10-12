@@ -1,0 +1,19 @@
+<%# Data table that mirrors a chart, so screen reader users can read the values. %>
+<%# Locals: caption, label (heading for the first column), counts (hash of label => count) %>
+<table class="table table-sm table-striped visual_report_table">
+  <caption><%= caption %></caption>
+  <thead>
+    <tr>
+      <th scope="col"><%= label %></th>
+      <th scope="col">Number of Items</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% counts.each do |name, count| %>
+      <tr>
+        <th scope="row"><%= name %></th>
+        <td><%= number_with_delimiter(count) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

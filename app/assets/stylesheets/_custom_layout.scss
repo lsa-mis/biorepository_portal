@@ -98,6 +98,11 @@ p {
   }
 }
 
+.visual_report_scroll {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
 /* Custom CSS to center-align h1 on small screens, considering Bootstrap's small breakpoint */
 @media (max-width: 576px) {
   h1 {

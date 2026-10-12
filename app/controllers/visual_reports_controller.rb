@@ -25,10 +25,8 @@ class VisualReportsController < ApplicationController
     authorize :visual_report
     collection_year = Arel.sql("EXTRACT(YEAR FROM items.event_date_start)::integer")
     @items_by_year = Item.where.not(event_date_start: nil).group(collection_year).order(collection_year).count
-    country = Arel.sql("COALESCE(NULLIF(BTRIM(items.country), ''), 'Unknown')")
-    @items_by_country = Item.group(country).order(country).count
-    recorder = Arel.sql("COALESCE(NULLIF(BTRIM(items.recorded_by), ''), 'Unknown')")
-    @items_by_recorder = Item.group(recorder).order(recorder).count
+    @items_by_country = counts_by_text_column(:country).sort.to_h
+    @items_by_recorder = counts_by_text_column(:recorded_by).sort_by { |name, count| [-count, name] }.to_h
   end
 
   def map_items
@@ -42,5 +40,13 @@ class VisualReportsController < ApplicationController
         render json: points
       end
     end
+  end
+
+  private
+
+  # Item counts grouped by a text column; blank values are counted as "Unknown"
+  def counts_by_text_column(column)
+    value = Arel.sql("COALESCE(NULLIF(BTRIM(items.#{column}), ''), 'Unknown')")
+    Item.group(value).count
   end
 end
