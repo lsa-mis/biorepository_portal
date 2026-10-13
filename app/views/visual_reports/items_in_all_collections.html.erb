@@ -3,8 +3,9 @@
 <% end %>
 
 <div class="container-fluid">
-  <h1>Items in All Collections</h1>
+  <h1><%= @search_query ? "Search Results in All Collections" : "Items in All Collections" %></h1>
   <%= link_to "Back to Visual Reports", visual_reports_path, class: "btn btn-outline-primary mb-3" %>
+  <%= render "search_summary" %>
 
   <h2>Items Collected by Year</h2>
   <% if @items_by_year.any? %>

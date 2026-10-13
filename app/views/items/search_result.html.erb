@@ -71,6 +71,12 @@
               <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "search#submit" %>
             </div>
             <div class="mt-4">
+              <%= link_to items_in_all_collections_visual_reports_path(request.parameters.slice(:q)), class: "text-nowrap link_to", data: { turbo: false } do %>
+                <i class="bi bi-bar-chart"></i>
+                Show Report
+              <% end %>
+            </div>
+            <div class="mt-4">
               <%= link_to map_items_path(request.parameters.slice(:q)), class: "text-nowrap link_to", data: { turbo: false } do %>
                 <i class="bi bi-geo-alt"></i>
                 Show on Map

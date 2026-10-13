@@ -5,17 +5,7 @@
 
 <div class="container-fluid">
   <h1><%= @search_query ? "Search Results Map" : "Items Map" %></h1>
-  <% if @search_query %>
-    <%= link_to search_items_path(q: @search_query), class: "link_to d-inline-block mb-3" do %>
-      <i class="bi bi-arrow-left"></i>
-      Back to Search Results
-    <% end %>
-  <% end %>
-  <%= render partial: 'layouts/current_filters', locals: { active_filters: @active_filters, removable: false } %>
-  <p>
-    <%= pluralize(number_with_delimiter(@total_items), "item") %><%= " from #{@collections}" if @collections.present? %>.
-    <%= number_with_delimiter(@mapped_items) %> with coordinates shown on the map.
-  </p>
+  <%= render "search_summary", note: "#{number_with_delimiter(@mapped_items)} with coordinates shown on the map." %>
   <div data-controller="items-map"
        data-items-map-url-value="<%= map_items_path(q: @search_query, format: :json) %>"
        style="height: 600px;"
