@@ -1,4 +1,6 @@
 class VisualReportsController < ApplicationController
+  include ActiveFiltersHelper
+  include SearchGroupings
   skip_before_action :authenticate_user!
 
   def index
@@ -32,17 +34,41 @@ class VisualReportsController < ApplicationController
   def map_items
     authorize :visual_report
     respond_to do |format|
-      format.html
+      format.html do
+        # Pass the untransformed search query through to the JSON request so the map shows only the search results
+        @search_query = params[:q].present? ? params[:q].to_unsafe_h : nil
+        setup_search_summary
+      end
       format.json do
-        points = Item.joins(:collection)
-                     .where(decimal_latitude: -90..90, decimal_longitude: -180..180)
-                     .pluck(:id, :decimal_latitude, :decimal_longitude, :catalog_number, "collections.division")
+        points = map_items_scope.where(decimal_latitude: -90..90, decimal_longitude: -180..180)
+                                .distinct
+                                .pluck(:id, :decimal_latitude, :decimal_longitude, :catalog_number, "collections.division")
         render json: points
       end
     end
   end
 
   private
+
+  # Items matching the advanced search query (same filtering as the CSV export), or all items
+  def map_items_scope
+    @map_items_scope ||= if params[:q].present?
+      transform_search_groupings
+      Item.left_outer_joins(:current_identification, :collection).ransack(params[:q]).result
+    else
+      Item.joins(:collection)
+    end
+  end
+
+  # Selected filters and item counts shown above the map, as on the search results page
+  def setup_search_summary
+    items = map_items_scope.distinct
+    @total_items = items.count("items.id")
+    @mapped_items = items.where(decimal_latitude: -90..90, decimal_longitude: -180..180).count("items.id")
+    @collections = Collection.where(id: items.reorder("").select("items.collection_id")).order(:division).pluck(:division).join(", ")
+    setup_dynamic_fields
+    @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
+  end
 
   # Item counts grouped by a text column; blank values are counted as "Unknown"
   def counts_by_text_column(column)

@@ -71,6 +71,12 @@
               <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "search#submit" %>
             </div>
             <div class="mt-4">
+              <%= link_to map_items_path(request.parameters.slice(:q)), class: "text-nowrap link_to", data: { turbo: false } do %>
+                <i class="bi bi-geo-alt"></i>
+                Show on Map
+              <% end %>
+            </div>
+            <div class="mt-4">
               <%= link_to export_to_csv_path(request.parameters.slice(:q).merge(format: 'csv')), class: "text-nowrap link_to", data: { turbo: false } do %>
                 <i class="bi bi-download"></i>
                 Export to CSV
