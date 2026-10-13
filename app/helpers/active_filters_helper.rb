@@ -5,7 +5,7 @@ module ActiveFiltersHelper
   "preparations_prep_type_i_cont_any"          => "Preparation Type",
   "preparations_description_i_cont_any"        => "Preparation Description",
   "associated_sequences_i_cont_any"            => "Associated Sequences",
-  "catalog_number_cont_any"                    => "Catalog Number",
+  "catalog_number_i_cont_any"                  => "Catalog Number",
   "identifications_class_name_case_insensitive_cont_any"  => "Class",
   "country_case_insensitive_cont_any"          => "Country or Region",
   "county_i_cont_any"                          => "County",

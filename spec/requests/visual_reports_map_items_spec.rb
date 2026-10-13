@@ -38,7 +38,7 @@ RSpec.describe 'VisualReports map_items', type: :request do
     params = { q: { groupings: { '0' => { '0' => { 'field' => 'catalog_number_i_cont_any', 'value' => 'fish' } } } } }
     get map_items_path, params: params
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include('Catalog Number I Cont Any: "fish"')
+    expect(response.body).to include('Catalog Number: "fish"')
     expect(response.body).to include("2 items from #{collection.division}.")
     expect(response.body).to include('1 with coordinates shown on the map.')
     expect(response.body).not_to include('search#removeFilter')
