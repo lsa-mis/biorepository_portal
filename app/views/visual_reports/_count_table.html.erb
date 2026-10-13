@@ -1,18 +1,38 @@
 <%# Data table that mirrors a chart, so screen reader users can read the values. %>
-<%# Locals: caption, label (heading for the first column), counts (hash of label => count) %>
-<table class="table table-sm table-striped visual_report_table">
+<%# Locals: caption, label (heading for the first column), counts (hash of label => count), %>
+<%#         sorted_by (optional, :label or :count - the order counts are already in, defaults to :label) %>
+<% sorted_by = local_assigns.fetch(:sorted_by, :label) %>
+<% rows = if sorted_by == :count
+     counts.sort_by { |name, count| [-count, name.to_s.downcase] }
+   else
+     counts.sort_by { |name, _count| name.is_a?(Numeric) ? [0, name, ""] : [1, 0, name.to_s.downcase] }
+   end %>
+<% columns = [
+     { title: label, type: "text", sort: sorted_by == :label ? "ascending" : "none" },
+     { title: "Number of Items", type: "number", sort: sorted_by == :count ? "descending" : "none" }
+   ] %>
+<table class="table table-sm table-striped visual_report_table" data-controller="sortable-table">
   <caption><%= caption %></caption>
   <thead>
     <tr>
-      <th scope="col"><%= label %></th>
-      <th scope="col">Number of Items</th>
+      <% columns.each_with_index do |column, index| %>
+        <th scope="col" aria-sort="<%= column[:sort] %>" data-sortable-table-target="header">
+          <button type="button" class="btn btn-link p-0 fw-bold text-reset text-decoration-none"
+                  data-action="sortable-table#sort"
+                  data-sortable-table-column-param="<%= index %>"
+                  data-sortable-table-type-param="<%= column[:type] %>">
+            <%= column[:title] %>
+            <i class="bi <%= { "ascending" => "bi-arrow-up", "descending" => "bi-arrow-down" }.fetch(column[:sort], "bi-arrow-down-up text-muted") %>" aria-hidden="true"></i>
+          </button>
+        </th>
+      <% end %>
     </tr>
   </thead>
-  <tbody>
-    <% counts.each do |name, count| %>
+  <tbody data-sortable-table-target="body">
+    <% rows.each do |name, count| %>
       <tr>
-        <th scope="row"><%= name %></th>
-        <td><%= number_with_delimiter(count) %></td>
+        <th scope="row" data-sort-value="<%= name %>"><%= name %></th>
+        <td data-sort-value="<%= count %>"><%= number_with_delimiter(count) %></td>
       </tr>
     <% end %>
   </tbody>

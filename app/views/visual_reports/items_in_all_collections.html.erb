@@ -23,5 +23,5 @@
   <div class="visual_report_scroll mb-3" tabindex="0" role="region" aria-label="Items recorded by chart, scrollable">
     <%= bar_chart @items_by_recorder, height: "#{[@items_by_recorder.size * 18, 320].max}px", xtitle: "Number of Items" %>
   </div>
-  <%= render "count_table", caption: "Number of items by recorder", label: "Recorded By", counts: @items_by_recorder %>
+  <%= render "count_table", caption: "Number of items by recorder", label: "Recorded By", counts: @items_by_recorder, sorted_by: :count %>
 </div>
