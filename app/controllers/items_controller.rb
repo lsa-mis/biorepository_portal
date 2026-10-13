@@ -1,5 +1,6 @@
 class ItemsController < ApplicationController
   include ActiveFiltersHelper
+  include SearchGroupings
   skip_before_action :authenticate_user!, only: [ :show, :search, :quick_search, :export_to_csv ]
   before_action :set_item, only: [ :show ]
 
@@ -183,33 +184,6 @@ class ItemsController < ApplicationController
       end
     end
 
-    def transform_search_groupings
-      if params[:q] && params[:q][:groupings]
-        transformed_groupings = {}
-        params[:q][:groupings].each do |group_index, group_data|
-          group = {}
-          group_data.each do |field_index, field_data|
-            
-            next if field_index == "m"
-            next if field_data.class == Array
-            next unless field_data["field"].present? && field_data["value"].present?
-
-            field = field_data["field"]
-            value = field_data["value"]
-
-            group[field] ||= []
-            group[field] << value
-          end
-
-          # Wrap group in an indexed key
-          transformed_groupings[group_index] = group
-          # Add matcher if present
-          transformed_groupings[group_index]["m"] = group_data["m"].presence || "or"
-        end
-        params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
-      end
-    end
-
     def extract_collection_ids
       collection_ids = if params[:q]&.dig(:collection_id_in).present?
         params[:q][:collection_id_in]
@@ -350,21 +324,6 @@ class ItemsController < ApplicationController
       @all_collections = Collection.joins(:items).distinct.order(:division)
     end
     
-    def setup_dynamic_fields
-      @dynamic_fields = []
-      return unless params.dig(:q, :groupings).present?
-      
-      params.dig(:q, :groupings).each do |group_num, values|
-        group_pairs = []
-        values.each do |field, val|
-          
-          next if field == "m" || val.blank?
-          group_pairs << { field: field, value: val }
-        end
-        @dynamic_fields << group_pairs unless group_pairs.empty?
-      end
-    end
-
     def save_filters_to_statistic(filters)
       return if filters.blank?
       
