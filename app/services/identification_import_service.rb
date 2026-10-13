@@ -7,8 +7,7 @@ class IdentificationImportService
     @file = file
     @collection_id = collection_id
     @user = user
-    @field_names = {}
-    @specify_field_by_rails_and_table = {}
+    @columns = nil
     @log = ImportLog.new
     @notes = []
     @errors = 0
@@ -24,7 +23,7 @@ class IdentificationImportService
       # Group rows by occurrence_id
       grouped_rows = Hash.new { |h, k| h[k] = [] }
 
-      CSV.foreach(@file.path, headers: true) do |row|
+      CSV.foreach(@file.path, headers: true, encoding: 'bom|utf-8') do |row|
         occurrence_id = row.fields[0]&.delete('"')&.strip
         next if occurrence_id.blank?
 
@@ -32,19 +31,17 @@ class IdentificationImportService
       end
       items_by_occurrence = Item.where(collection_id: @collection_id, occurrence_id: grouped_rows.keys).index_by(&:occurrence_id)
 
+      missing = grouped_rows.keys - items_by_occurrence.keys
+      @log.import_logger.info("**** IdentificationImportService, #{missing.size} occurrence id(s) not found in the collection: #{missing.first(20).join(', ')}") if missing.any?
+
       grouped_rows.each do |occurrence_id, rows|
         item = items_by_occurrence[occurrence_id]
         next unless item
 
-        # Remove existing identifications for this item
-        Identification.where(item_id: item.id).delete_all
-
-        rows.each do |row|
-          save_identification(item, row)
-        end
+        replace_identifications(item, rows)
       end
     }
-    task_time = ((total_time.real / 60) % 60).round(2)
+    task_time = (total_time.real / 60).round(2)
     @log.import_logger.info("**** IdentificationImportService, Identification import completed. Total time: #{task_time} minutes.")
     @notes << "Identification import completed. File: #{@file.original_filename}. Total time: #{task_time} minutes."
     @result[:errors] = @errors
@@ -62,54 +59,48 @@ class IdentificationImportService
 
   private
 
-  def save_identification(item, row)
-    identification = item.identifications.build
+  # Replaces the item's identifications with the rows from the file. If any row fails,
+  # the item keeps its existing identifications.
+  def replace_identifications(item, rows)
+    Identification.transaction do
+      Identification.where(item_id: item.id).delete_all
+      identifications = rows.map { |row| item.identifications.build.tap { |identification| assign_fields(identification, row) } }
+      invalid = identifications.reject(&:save)
+      next if invalid.empty?
 
-    assign_fields(identification, row)
-
-    unless identification.save
-      @log.import_logger.error("**** IdentificationImportService, Failed to save identification: #{identification.errors.full_messages.join(', ')}")
-      @errors += 1
-      @notes << "Identification import: Failed to save identification. Item: #{item.occurrence_id}. Error: #{identification.errors.full_messages.join(', ')}"
+      invalid.each { |identification| add_error("Failed to save identification", item, identification.errors.full_messages.join(', ')) }
+      raise ActiveRecord::Rollback
     end
   rescue => e
-    @log.import_logger.error("**** IdentificationImportService, Error saving identification: #{e.message}")
-    @errors += 1
-    @notes << "Identification import: Error saving identification. Item: #{item.occurrence_id}. Error: #{e.message}"
+    add_error("Error saving identification", item, e.message)
   end
 
   def assign_fields(identification, row)
-    @field_names = build_field_names if @field_names.empty?
     row_hash = Hash[*row.flatten]
-    @field_names.each_with_index do |(field, _table), index|
-      next unless _table == "identifications"
-      next if field.include?("ignore")
-      field_in_row = @specify_field_by_rails_and_table[[field, _table]]
-      next if field_in_row.blank?
-      value = row_hash[field_in_row]&.strip
+    columns.each do |header, field|
+      value = row_hash[header]&.strip
       next if value.blank?
 
       if field == "current"
-        identification.current = handle_current(value)
+        current = handle_current(value)
+        identification.current = current unless current.nil?
       else
         identification.assign_attributes(field => value)
       end
     end
   end
 
-  def parse_date(value)
-    Date.parse(value) rescue nil
-  end
+  # Returns [header, rails_field] for every mapped, non-ignored identification header
+  def columns
+    @columns ||= begin
+      header = CSV.open(@file.path, encoding: 'bom|utf-8', &:readline)
+      map_fields_by_specify_field = MapField.where(specify_field: header.map { |h| h.to_s.strip }, table: ["identifications"]).index_by(&:specify_field)
 
-  def build_field_names
-    header = CSV.open(@file.path, &:readline)
-    map_fields_by_specify_field = MapField.where(specify_field: header.map { |h| h.strip }, table: ["identifications"]).index_by(&:specify_field)
+      header.filter_map do |h|
+        map_field = map_fields_by_specify_field[h.to_s.strip]
+        next if map_field.nil? || map_field.rails_field.include?("ignore")
 
-    header.each_with_object({}) do |h, hash|
-      map_field = map_fields_by_specify_field[h.strip]
-      if map_field
-        hash[map_field.rails_field] = map_field.table
-        @specify_field_by_rails_and_table[[map_field.rails_field, map_field.table]] = map_field.specify_field
+        [h, map_field.rails_field]
       end
     end
   end
@@ -118,9 +109,12 @@ class IdentificationImportService
     case value.downcase
     when "true", "1", "yes" then true
     when "false", "0", "no" then false
-    else nil
     end
-  rescue
-    nil
+  end
+
+  def add_error(message, item, detail)
+    @log.import_logger.error("**** IdentificationImportService, #{message}. Item: #{item.occurrence_id}. Error: #{detail}")
+    @errors += 1
+    @notes << "Identification import: #{message}. Item: #{item.occurrence_id}. Error: #{detail}"
   end
 end
