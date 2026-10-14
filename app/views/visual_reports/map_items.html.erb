@@ -4,9 +4,11 @@
 <% end %>
 
 <div class="container-fluid">
-  <h1>Items Map</h1>
+  <h1><%= @search_query ? "Search Results Map" : "Items Map" %></h1>
+  <%= render "search_summary", note: "#{number_with_delimiter(@mapped_items)} with coordinates shown on the map." %>
   <div data-controller="items-map"
-       data-items-map-url-value="<%= map_items_path(format: :json) %>"
+       data-items-map-url-value="<%= map_items_path(q: @search_query, format: :json) %>"
+       data-items-map-search-url-value="<%= search_items_path(q: @search_query) %>"
        style="height: 600px;"
        role="region" aria-label="Map of item collection locations"></div>
 </div>

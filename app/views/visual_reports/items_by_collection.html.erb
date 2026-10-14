@@ -13,7 +13,7 @@
     <section class="mb-4">
       <h3><%= collection.division %></h3>
       <% if preparation_counts.any? %>
-        <%= bar_chart preparation_counts, height: "320px", ytitle: "Items", xtitle: "Preparation Type" %>
+        <%= bar_chart preparation_counts, height: "320px", xtitle: "Number of Items", ytitle: "Preparation Type" %>
         <%= render "count_table", caption: "Number of items by preparation type for #{collection.division}",
                                   label: "Preparation Type", counts: preparation_counts %>
       <% else %>
