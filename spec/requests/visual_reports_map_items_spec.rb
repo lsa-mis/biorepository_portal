@@ -5,8 +5,9 @@ RSpec.describe 'VisualReports map_items', type: :request do
   let!(:bird_item) { FactoryBot.create(:item, collection: collection, catalog_number: 'BIRD-001') }
   let!(:fish_item) { FactoryBot.create(:item, collection: collection, catalog_number: 'FISH-001') }
 
+  # Item ids at single-item locations (each point is [lat, lng, count, item id])
   def map_item_ids
-    JSON.parse(response.body).map(&:first)
+    JSON.parse(response.body).map(&:last)
   end
 
   it 'returns all items without a search query' do
@@ -48,5 +49,22 @@ RSpec.describe 'VisualReports map_items', type: :request do
     get map_items_path
     expect(response.body).to include("2 items from #{collection.division}.")
     expect(response.body).not_to include('Back to Search Results')
+  end
+
+  it 'returns one point per location with the number of items there' do
+    FactoryBot.create_list(:item, 2, collection: collection, decimal_latitude: 42.280812, decimal_longitude: -83.743034)
+    get map_items_path(format: :json)
+    location = JSON.parse(response.body).find { |lat, lng, _count, _id| [lat, lng] == [42.280812, -83.743034] }
+    expect(location[2]).to eq(2)
+    expect(JSON.parse(response.body).size).to eq(3)
+  end
+
+  it 'finds the items at a location from the popup search link' do
+    here = FactoryBot.create_list(:item, 2, collection: collection, decimal_latitude: 42.280812, decimal_longitude: -83.743034)
+    get map_items_path(format: :json)
+    lat, lng = JSON.parse(response.body).find { |_lat, _lng, count, _id| count == 2 }
+    get search_items_path, params: { q: { decimal_latitude_eq: lat.to_s, decimal_longitude_eq: lng.to_s } }
+    here.each { |item| expect(response.body).to include(item.catalog_number) }
+    expect(response.body).not_to include(bird_item.catalog_number)
   end
 end

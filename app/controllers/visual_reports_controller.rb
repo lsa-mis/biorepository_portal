@@ -40,10 +40,12 @@ class VisualReportsController < ApplicationController
         @mapped_items = search_items.where(decimal_latitude: -90..90, decimal_longitude: -180..180).count
       end
       format.json do
-        points = search_items.joins(:collection)
-                             .where(decimal_latitude: -90..90, decimal_longitude: -180..180)
-                             .pluck(:id, :decimal_latitude, :decimal_longitude, :catalog_number, "collections.division")
-        render json: points
+        # One point per location, so the response grows with the number of collecting sites, not items.
+        # Each point is [latitude, longitude, item count, id of an item at that location].
+        locations = search_items.where(decimal_latitude: -90..90, decimal_longitude: -180..180)
+                                .group(:decimal_latitude, :decimal_longitude)
+                                .pluck(:decimal_latitude, :decimal_longitude, Arel.sql("COUNT(*)"), Arel.sql("MIN(items.id)"))
+        render json: locations
       end
     end
   end
