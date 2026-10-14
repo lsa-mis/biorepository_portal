@@ -29,6 +29,16 @@ Devise.setup do |config|
     idp_cert = Rails.application.credentials.dig(:okta, :staging_idp_cert)
   end
 
+  if Rails.env.phase2_staging?
+    consumer_service_url = Rails.application.credentials.phase2_staging_assertion_consumer_service_url
+    entity_id = Rails.application.credentials.phase2_staging_entity_id
+    idp_sso_service_url = Rails.application.credentials.phase2_staging_idp_sso_service_url
+    idp_logout_url = Rails.application.credentials.phase2_staging_idp_slo_target_url
+    idp_entity_id = Rails.application.credentials.phase2_staging_idp_entity_id
+    idp_cert = Rails.application.credentials.dig(:okta, :phase2_staging_idp_cert)
+  end
+
+
   if Rails.env.production?
     consumer_service_url = Rails.application.credentials.production_assertion_consumer_service_url
     entity_id = Rails.application.credentials.production_entity_id

@@ -70,6 +70,8 @@ gem 'concurrent-ruby', '~> 1.3'
 gem 'csv', '~> 3.3', '>= 3.3.5'
 gem 'solid_cache'
 gem 'lsa_tdx_feedback'
+gem 'chartkick', '>= 5.2.1'
+gem 'groupdate', '>= 6.8'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

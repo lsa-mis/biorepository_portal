@@ -1,0 +1,28 @@
+<% content_for :head do %>
+  <%= javascript_include_tag "Chart.bundle", "chartkick" %>
+<% end %>
+
+<div class="container-fluid">
+  <h1><%= @search_query ? "Search Results in All Collections" : "Items in All Collections" %></h1>
+  <%= link_to "Back to Visual Reports", visual_reports_path, class: "btn btn-outline-primary mb-3" %>
+  <%= render "search_summary" %>
+
+  <h2>Items Collected by Year</h2>
+  <% if @items_by_year.any? %>
+    <%= column_chart @items_by_year, xtitle: "Year", ytitle: "Number of Items" %>
+    <%= render "count_table", caption: "Number of items collected per year", label: "Year", counts: @items_by_year %>
+  <% else %>
+    <p>No items have a collection date.</p>
+  <% end %>
+
+  <h2 class="mt-4">Items by Country</h2>
+  <%= pie_chart @items_by_country, height: "480px" %>
+  <%= render "count_table", caption: "Number of items per country", label: "Country", counts: @items_by_country %>
+
+  <h2 class="mt-4">Items Recorded By</h2>
+  <p><%= pluralize(@items_by_recorder.size, "recorder") %>, sorted by number of items.</p>
+  <div class="visual_report_scroll mb-3" tabindex="0" role="region" aria-label="Items recorded by chart, scrollable">
+    <%= bar_chart @items_by_recorder, height: "#{[@items_by_recorder.size * 18, 320].max}px", xtitle: "Number of Items" %>
+  </div>
+  <%= render "count_table", caption: "Number of items by recorder", label: "Recorded By", counts: @items_by_recorder, sorted_by: :count %>
+</div>
