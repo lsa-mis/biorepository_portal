@@ -13,7 +13,9 @@ module VisualReportsHelper
   def preparation_search_query(collection, preparation_type)
     return if BLANK_LABELS.include?(preparation_type)
 
-    { collection_id_in: [collection.id], preparations_prep_type_case_insensitive_in: [preparation_type.downcase] }
+    # Counts are grouped by division, so search every collection with this division
+    { collection_id_in: @collection_ids_by_division&.dig(collection.division) || [collection.id],
+      preparations_prep_type_case_insensitive_in: [preparation_type.downcase] }
   end
 
   def year_search_query(year)

@@ -76,4 +76,37 @@ RSpec.describe 'VisualReports count table links', type: :request do
     unknown = country_table.css('tbody tr').select { |row| row.at_css('th').text == 'Unknown' }
     expect(unknown.map { |row| [row.at_css('td').text, row.at_css('th a')] }).to eq([['3', nil]])
   end
+
+  describe 'preparation types' do
+    let(:mammals) { FactoryBot.create(:collection, division: 'Mammals', admin_group: 'mammals_admins') }
+
+    def preparation_rows
+      get items_by_collection_visual_reports_path
+      table = Nokogiri::HTML(response.body).css('table').find { |t| t.at_css('caption').text.end_with?('for Mammals') }
+      table.css('tbody tr').map { |row| [row.at_css('th').text, row.at_css('td').text.to_i, row.at_css('th a')&.[]('href')] }
+    end
+
+    before do
+      # Two items with different spellings, and one item with both spellings
+      [['Skin'], ['skin'], ['Skin', 'SKIN']].each do |types|
+        item = FactoryBot.create(:item, collection: mammals)
+        types.each { |type| FactoryBot.create(:preparation, item: item, prep_type: type) }
+      end
+      # One item without preparations and one with a literal "No preparation" type
+      FactoryBot.create(:item, collection: mammals)
+      FactoryBot.create(:preparation, item: FactoryBot.create(:item, collection: mammals), prep_type: 'No preparation')
+    end
+
+    it 'combines case variants, counting each item once, and links to a search with the same number of items' do
+      skin = preparation_rows.find { |label, *| label.casecmp?('skin') }
+      expect(preparation_rows.count { |label, *| label.casecmp?('skin') }).to eq(1)
+      expect(skin[1]).to eq(3)
+      get skin.last
+      expect(search_total).to eq(3)
+    end
+
+    it 'combines items without a preparation type and a literal No preparation type into one unlinked row' do
+      expect(preparation_rows.select { |label, *| label == 'No preparation' }).to eq([['No preparation', 2, nil]])
+    end
+  end
 end

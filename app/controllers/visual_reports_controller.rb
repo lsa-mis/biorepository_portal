@@ -12,11 +12,16 @@ class VisualReportsController < ApplicationController
     @items_by_collection = Collection.left_joins(:items).group(:division).count("items.id")
     @collection_ids_by_division = Collection.group(:division).pluck(:division, Arel.sql("ARRAY_AGG(collections.id)")).to_h
 
+    # Preparation types that differ only in case are one group (as the search does), labelled with the most common
+    # spelling. Items without a preparation type share a group with a literal "No preparation" value.
+    prep_type = "LOWER(NULLIF(preparations.prep_type, ''))"
+    prep_group = "COALESCE(#{prep_type}, 'no preparation')"
+    prep_label = "CASE WHEN #{prep_group} = 'no preparation' THEN 'No preparation' " \
+                 "ELSE MODE() WITHIN GROUP (ORDER BY preparations.prep_type) END"
     preparation_counts = Collection.left_joins(items: :preparations)
-                                   .group("collections.division", "COALESCE(NULLIF(preparations.prep_type, ''), 'No preparation')")
-                                   .distinct
-                                   .count("items.id")
-    counts_by_division = preparation_counts.each_with_object({}) do |((division, preparation_type), count), grouped|
+                                   .group("collections.division", Arel.sql(prep_group))
+                                   .pluck("collections.division", Arel.sql(prep_label), Arel.sql("COUNT(DISTINCT items.id)"))
+    counts_by_division = preparation_counts.each_with_object({}) do |(division, preparation_type, count), grouped|
       (grouped[division] ||= {})[preparation_type] = count if count.positive?
     end
     @preparation_counts_by_collection = Collection.order(:division).map do |collection|
