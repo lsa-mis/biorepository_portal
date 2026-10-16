@@ -155,4 +155,25 @@ RSpec.describe 'VisualReports count table links', type: :request do
       expect(response.body).not_to include('q_event_date_start_lteq', 'q_recorded_by_eq')
     end
   end
+
+  describe 'rows of a report filtered by a search' do
+    amy = { 'groupings' => { '0' => { '0' => { 'field' => 'recorded_by_i_cont_any', 'value' => 'amy' } } } }
+    {
+      'a start date lower bound' => { 'event_date_start_gteq' => '2001-06-01' },
+      'a start date upper bound' => { 'event_date_start_lteq' => '2002-03-01' },
+      'both bounds and an advanced search group' => amy.merge('event_date_start_gteq' => '2001-03-01', 'event_date_start_lteq' => '2002-03-01'),
+      'a country list' => { 'country_case_insensitive_in' => ['usa', 'canada'] }
+    }.each do |description, search|
+      it "link to searches matching both the report search and the row for #{description}" do
+        expect_links_to_match_counts(items_in_all_collections_visual_reports_path(q: search))
+      end
+    end
+
+    it 'keeps the later start date when the search starts within the row year' do
+      get items_in_all_collections_visual_reports_path(q: { event_date_start_gteq: '2001-06-01' })
+      _label, count, href = table_rows.find { |label, *| label == '2001' }
+      expect(count).to eq(1)
+      expect(Rack::Utils.parse_nested_query(URI(href).query)['q']).to include('event_date_start_gteq' => '2001-06-01', 'event_date_start_lteq' => '2001-12-31')
+    end
+  end
 end
