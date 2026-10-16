@@ -42,8 +42,8 @@ module VisualReportsHelper
       next row_value if search_value.blank?
 
       case key.to_s
-      when /_gteq\z/ then [search_value, row_value].max_by { |value| search_date(value) }
-      when /_lteq\z/ then [search_value, row_value].min_by { |value| search_date(value) }
+      when /_gteq\z/ then narrower_date_bound(search_value, row_value) { |search_date, row_date| search_date > row_date }
+      when /_lteq\z/ then narrower_date_bound(search_value, row_value) { |search_date, row_date| search_date < row_date }
       when /_in\z/ then Array.wrap(search_value) & Array.wrap(row_value)
       else row_value
       end
@@ -52,10 +52,11 @@ module VisualReportsHelper
 
   private
 
-  # Date from a search bound; a bound that isn't a date sorts outside the row's range, so the row's bound is used
-  def search_date(value)
-    Date.iso8601(value.to_s)
-  rescue Date::Error
-    Date.new(-9999)
+  # The search's date bound when it is narrower than the row's (the block compares them), otherwise the row's.
+  # A search bound that isn't a date is ignored by the search (Ransack casts dates the same way), so the row's is used.
+  def narrower_date_bound(search_value, row_value)
+    search_date = ActiveModel::Type::Date.new.cast(search_value)
+    row_date = ActiveModel::Type::Date.new.cast(row_value)
+    search_date && yield(search_date, row_date) ? search_value : row_value
   end
 end

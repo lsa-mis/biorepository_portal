@@ -162,7 +162,10 @@ RSpec.describe 'VisualReports count table links', type: :request do
       'a start date lower bound' => { 'event_date_start_gteq' => '2001-06-01' },
       'a start date upper bound' => { 'event_date_start_lteq' => '2002-03-01' },
       'both bounds and an advanced search group' => amy.merge('event_date_start_gteq' => '2001-03-01', 'event_date_start_lteq' => '2002-03-01'),
-      'a country list' => { 'country_case_insensitive_in' => ['usa', 'canada'] }
+      'a country list' => { 'country_case_insensitive_in' => ['usa', 'canada'] },
+      'an invalid upper bound' => { 'event_date_start_lteq' => 'not-a-date' },
+      'an invalid lower bound' => { 'event_date_start_gteq' => 'not-a-date' },
+      'bounds in other date formats' => { 'event_date_start_gteq' => '2001/06/01', 'event_date_start_lteq' => 'March 1 2002' }
     }.each do |description, search|
       it "link to searches matching both the report search and the row for #{description}" do
         expect_links_to_match_counts(items_in_all_collections_visual_reports_path(q: search))
