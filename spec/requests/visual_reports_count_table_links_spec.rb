@@ -76,7 +76,7 @@ RSpec.describe 'VisualReports count table links', type: :request do
 
   it 'links each year, country and recorder row to a search with the same number of items' do
     rows = expect_links_to_match_counts(items_in_all_collections_visual_reports_path)
-    expect(rows.select { |label, *| label == 'Unknown' }.map(&:last)).to all(be_nil)
+    expect(rows.select { |label, *| label == 'Not available' }.map(&:last)).to all(be_nil)
   end
 
   it 'keeps the report search in the row links' do
@@ -94,13 +94,27 @@ RSpec.describe 'VisualReports count table links', type: :request do
     expect(table_rows.select { |label, *| label.casecmp?('usa') }.map { |label, count, _| [label, count] }).to eq([['USA', 3]])
   end
 
-  it 'adds blank countries and a literal Unknown country into one Unknown row' do
-    FactoryBot.create(:item, collection: fish, country: 'Unknown')
+  it 'labels blank countries and recorders Not available' do
+    get items_in_all_collections_visual_reports_path
+    expect(table_rows.select { |label, *| label == 'Not available' }.map { |_label, count, href| [count, href] }).to eq([[1, nil], [1, nil]])
+    expect(response.body).not_to include('Unknown')
+  end
+
+  it 'adds blank countries and a country spelled Not available in any case into one unlinked row' do
+    # The lowercase spelling is the most common, so it would be the group's label without canonicalizing
+    FactoryBot.create(:item, collection: fish, country: 'Not available')
+    FactoryBot.create_list(:item, 2, collection: fish, country: 'not available')
     FactoryBot.create(:item, collection: fish, country: nil)
     get items_in_all_collections_visual_reports_path
     country_table = Nokogiri::HTML(response.body).css('table').find { |t| t.at_css('caption').text == 'Number of items per country' }
-    unknown = country_table.css('tbody tr').select { |row| row.at_css('th').text == 'Unknown' }
-    expect(unknown.map { |row| [row.at_css('td').text, row.at_css('th a')] }).to eq([['3', nil]])
+    rows = country_table.css('tbody tr').select { |row| row.at_css('th').text.casecmp?('not available') }
+    expect(rows.map { |row| [row.at_css('th').text, row.at_css('td').text, row.at_css('th a')] }).to eq([['Not available', '5', nil]])
+  end
+
+  it 'links a country entered as Unknown like any other country' do
+    FactoryBot.create_list(:item, 2, collection: fish, country: 'unknown')
+    rows = expect_links_to_match_counts(items_in_all_collections_visual_reports_path)
+    expect(rows.find { |label, *| label == 'unknown' }[1]).to eq(2)
   end
 
   describe 'preparation types' do

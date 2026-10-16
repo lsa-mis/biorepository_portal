@@ -1,6 +1,8 @@
 module VisualReportsHelper
+  # Row label for items with a blank value
+  NOT_AVAILABLE = "Not available".freeze
   # Row labels for items with no value; they have no matching search filter, so they are not linked
-  BLANK_LABELS = ["Unknown", "No preparation"].freeze
+  BLANK_LABELS = [NOT_AVAILABLE, "No preparation"].freeze
 
   # Search queries for count table rows. Each returns the ransack params that find the items counted
   # in that row (using the advanced search filter fields), or nil when the row can't be searched.

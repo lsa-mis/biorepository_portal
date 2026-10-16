@@ -80,15 +80,22 @@ class VisualReportsController < ApplicationController
     @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
   end
 
-  # Item counts grouped by a text column; blank values are counted as "Unknown".
+  # Item counts grouped by a text column; blank values are counted as "Not available".
   # case_insensitive groups values that differ only in case (as the search does), labelled with the most common spelling.
   def counts_by_text_column(column, case_insensitive: false)
+    not_available = VisualReportsHelper::NOT_AVAILABLE
     value = "NULLIF(BTRIM(items.#{column}), '')"
-    return search_items.group(Arel.sql("COALESCE(#{value}, 'Unknown')")).count unless case_insensitive
+    unless case_insensitive
+      return search_items.group(Arel.sql("COALESCE(#{value}, #{Item.connection.quote(not_available)})")).count
+    end
 
-    # Blank values and a literal "Unknown" are separate groups with the same label, so their counts are summed
+    # Blank values (no label) and a value spelled like "Not available" in any case are separate groups;
+    # both get the "Not available" label and their counts are summed into one row
     search_items.group(Arel.sql("LOWER(#{value})"))
-                .pluck(Arel.sql("COALESCE(MODE() WITHIN GROUP (ORDER BY #{value}), 'Unknown')"), Arel.sql("COUNT(*)"))
-                .each_with_object(Hash.new(0)) { |(label, count), counts| counts[label] += count }
+                .pluck(Arel.sql("MODE() WITHIN GROUP (ORDER BY #{value})"), Arel.sql("COUNT(*)"))
+                .each_with_object(Hash.new(0)) do |(label, count), counts|
+                  label = not_available if label.nil? || label.casecmp?(not_available)
+                  counts[label] += count
+                end
   end
 end
