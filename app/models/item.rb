@@ -96,8 +96,14 @@ class Item < ApplicationRecord
     end
   end
 
+  # Trimmed so it matches the country counts in the visual reports
   ransacker :country_case_insensitive, type: :string do
-    Arel.sql('lower(items.country)')
+    Arel.sql('lower(btrim(items.country))')
+  end
+
+  # Exact recorder match for visual report links; trimmed like the recorder counts in the reports
+  ransacker :recorded_by_trimmed, type: :string do
+    Arel.sql('btrim(items.recorded_by)')
   end
 
   ransacker :state_province_case_insensitive, type: :string do
@@ -117,7 +123,7 @@ class Item < ApplicationRecord
     "country_case_insensitive", "county", "created_at", "decimal_latitude", "decimal_longitude", "event_date_end", "event_date_start", "event_remarks",
     "field_number", "geodetic_datum", "georeference_protocol", "georeferenced_by", "georeferenced_date", "id", "individual_count",
     "life_stage", "locality", "maximum_elevation_in_meters", "minimum_elevation_in_meters", "modified", "occurrence_id",
-    "occurrence_remarks", "organism_remarks", "other_catalog_numbers", "recorded_by", "reproductive_condition", "sampling_protocol",
+    "occurrence_remarks", "organism_remarks", "other_catalog_numbers", "recorded_by", "recorded_by_trimmed", "reproductive_condition", "sampling_protocol",
     "sex_case_insensitive", "state_province_case_insensitive", "updated_at", "verbatim_coordinates", "verbatim_elevation", "verbatim_event_date", "verbatim_locality", "vitality"]
   end
 

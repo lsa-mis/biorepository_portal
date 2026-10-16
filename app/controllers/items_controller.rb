@@ -227,11 +227,15 @@ class ItemsController < ApplicationController
 
     def build_filter_data(collection_ids)
       base_scope = Item.where(collection_id: collection_ids)
-      format_filter = ->(values) { values.select(&:present?).map { |v| [v.titleize, v.downcase] }.uniq.sort_by(&:first) }
+      # One option per filter value: case variants such as "USA" and "UsA" titleize differently but filter the same
+      format_filter = ->(values) { values.select(&:present?).map { |v| [v.titleize, v.downcase] }.uniq(&:last).sort_by(&:first) }
 
       # 1. Geographic fields — composite indexes on (collection_id, column) make these fast
       geo_data = %i[continent country state_province sex].map do |column|
-        format_filter.call(base_scope.distinct.pluck(column))
+        values = base_scope.distinct.pluck(column)
+        # The country filter matches trimmed values (Item country_case_insensitive), so list trimmed values
+        values = values.compact.map(&:strip) if column == :country
+        format_filter.call(values)
       end
 
       # 2. Taxonomy fields — scoped to collection_ids, partial indexes on identifications WHERE current=true
