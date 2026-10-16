@@ -109,4 +109,50 @@ RSpec.describe 'VisualReports count table links', type: :request do
       expect(preparation_rows.select { |label, *| label == 'No preparation' }).to eq([['No preparation', 2, nil]])
     end
   end
+
+  describe 'filters without a search form control' do
+    # Fields the browser would submit from the search form (as when Sort or Switch View changes)
+    def submitted_form_fields(sort:)
+      form = Nokogiri::HTML(response.body).at_css('form#search-form')
+      fields = form.css('input[name]').filter_map do |input|
+        next if %w[checkbox radio].include?(input['type']) && !input.key?('checked')
+        next if %w[submit button].include?(input['type'])
+        [input['name'], input['value'].to_s]
+      end
+      fields += form.css('select[name]').map do |select|
+        [select['name'], select.name == 'select' && select['name'] == 'sort' ? sort : (select.at_css('option[selected]') || select.at_css('option'))&.[]('value').to_s]
+      end
+      fields
+    end
+
+    def resubmit_with_sort(sort)
+      query = submitted_form_fields(sort: sort).map { |name, value| "#{CGI.escape(name)}=#{CGI.escape(value)}" }.join('&')
+      get "#{search_items_path}?#{query}"
+    end
+
+    {
+      'year' => ['2001', { 'event_date_start_lteq' => '2001-12-31' }],
+      'recorder' => ['Amy', { 'recorded_by_eq' => 'Amy' }]
+    }.each do |kind, (label, hidden)|
+      it "keeps the #{kind} filter when the search form is resubmitted, and lets its badge remove it" do
+        get items_in_all_collections_visual_reports_path
+        _label, count, href = table_rows.find { |row_label, *| row_label == label }
+        get href
+        expect(search_total).to eq(count)
+
+        key, value = hidden.first
+        doc = Nokogiri::HTML(response.body)
+        expect(doc.at_css("form#search-form input[type=hidden]#q_#{key}")&.[]('value')).to eq(value)
+        expect(doc.at_css("button[data-action='click->search#removeFilter'][data-key='#{key}']")&.[]('data-value')).to eq(value)
+
+        resubmit_with_sort('items.catalog_number desc')
+        expect(search_total).to eq(count)
+      end
+    end
+
+    it 'does not render the hidden fields for other searches' do
+      get search_items_path
+      expect(response.body).not_to include('q_event_date_start_lteq', 'q_recorded_by_eq')
+    end
+  end
 end
