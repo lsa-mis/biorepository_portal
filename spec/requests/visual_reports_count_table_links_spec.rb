@@ -172,6 +172,20 @@ RSpec.describe 'VisualReports count table links', type: :request do
       end
     end
 
+    it 'links rows to searches with the same number of items when the search combines its filters with AND' do
+      expect_links_to_match_counts(items_in_all_collections_visual_reports_path(q: { m: 'and', country_case_insensitive_in: ['usa'] }))
+    end
+
+    it 'does not link rows when the search combines its top-level filters with OR' do
+      search = { m: 'or', country_case_insensitive_in: ['canada'], event_date_start_gteq: '2002-01-01' }
+      get items_in_all_collections_visual_reports_path(q: search)
+      rows = table_rows
+      # The report itself still counts the OR search: Bob (Canada, 2001) and the 2002 Fish items
+      expect(response.body).to include('3 items from')
+      expect(rows.find { |label, *| label == '2001' }[1]).to eq(1)
+      expect(rows.map(&:last)).to all(be_nil)
+    end
+
     it 'keeps the later start date when the search starts within the row year' do
       get items_in_all_collections_visual_reports_path(q: { event_date_start_gteq: '2001-06-01' })
       _label, count, href = table_rows.find { |label, *| label == '2001' }

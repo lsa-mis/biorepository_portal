@@ -30,9 +30,14 @@ module VisualReportsHelper
     { recorded_by_trimmed_eq: recorder } unless BLANK_LABELS.include?(recorder)
   end
 
-  # Search results page for a row, narrowing the report's current search (if any)
+  # Search results page for a row, narrowing the report's current search (if any), or nil when it can't be narrowed.
+  # A search that combines its top-level filters with OR (q[m]=or) would need a nested group, which the search page
+  # (form, sidebar and filter badges) can't represent, so its rows are not linked.
   def count_table_search_path(query)
-    search_items_path(q: narrow_search_query(@search_query || {}, query))
+    search_query = @search_query || {}
+    return unless search_query.with_indifferent_access[:m].blank? || search_query.with_indifferent_access[:m] == "and"
+
+    search_items_path(q: narrow_search_query(search_query, query))
   end
 
   # Combines the report's search with a row's query so the result matches both: date bounds keep the

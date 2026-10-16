@@ -34,7 +34,8 @@
     <% rows.each do |name, count| %>
       <tr>
         <% query = search_query&.call(name) %>
-        <th scope="row" data-sort-value="<%= name %>"><%= query ? link_to(name, count_table_search_path(query), class: "link_to") : name %></th>
+        <% path = query && count_table_search_path(query) %>
+        <th scope="row" data-sort-value="<%= name %>"><%= path ? link_to(name, path, class: "link_to") : name %></th>
         <td data-sort-value="<%= count %>"><%= number_with_delimiter(count) %></td>
       </tr>
     <% end %>
