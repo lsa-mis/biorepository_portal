@@ -10,19 +10,22 @@
   <h2>Items Collected by Year</h2>
   <% if @items_by_year.any? %>
     <%= column_chart @items_by_year, xtitle: "Year", ytitle: "Number of Items" %>
-    <%= render "count_table", caption: "Number of items collected per year", label: "Year", counts: @items_by_year %>
+    <%= render "count_table", caption: "Number of items collected per year", label: "Year", counts: @items_by_year,
+                              search_query: ->(year) { year_search_query(year) } %>
   <% else %>
     <p>No items have a collection date.</p>
   <% end %>
 
   <h2 class="mt-4">Items by Country</h2>
   <%= pie_chart @items_by_country, height: "480px" %>
-  <%= render "count_table", caption: "Number of items per country", label: "Country", counts: @items_by_country %>
+  <%= render "count_table", caption: "Number of items per country", label: "Country", counts: @items_by_country,
+                            search_query: ->(country) { country_search_query(country) } %>
 
   <h2 class="mt-4">Items Recorded By</h2>
   <p><%= pluralize(@items_by_recorder.size, "recorder") %>, sorted by number of items.</p>
   <div class="visual_report_scroll mb-3" tabindex="0" role="region" aria-label="Items recorded by chart, scrollable">
     <%= bar_chart @items_by_recorder, height: "#{[@items_by_recorder.size * 18, 320].max}px", xtitle: "Number of Items" %>
   </div>
-  <%= render "count_table", caption: "Number of items by recorder", label: "Recorded By", counts: @items_by_recorder, sorted_by: :count %>
+  <%= render "count_table", caption: "Number of items by recorder", label: "Recorded By", counts: @items_by_recorder, sorted_by: :count,
+                            search_query: ->(recorder) { recorder_search_query(recorder) } %>
 </div>
