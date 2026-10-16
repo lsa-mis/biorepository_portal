@@ -67,6 +67,13 @@ RSpec.describe 'VisualReports count table links', type: :request do
     expect(rows.find { |label, *| label == 'No preparation' }.last).to be_nil
   end
 
+  it 'does not link rows without items' do
+    FactoryBot.create(:collection, division: 'Reptiles', admin_group: 'reptiles_admins')
+    get items_by_collection_visual_reports_path
+    expect(table_rows.find { |label, *| label == 'Reptiles' }).to eq(['Reptiles', 0, nil])
+    expect(table_rows.find { |label, *| label == 'Birds' }.last).to be_present
+  end
+
   it 'links each year, country and recorder row to a search with the same number of items' do
     rows = expect_links_to_match_counts(items_in_all_collections_visual_reports_path)
     expect(rows.select { |label, *| label == 'Unknown' }.map(&:last)).to all(be_nil)
