@@ -39,7 +39,7 @@
 
 <div class="row">
 
-  <% if @prep_types.count > 1 %>
+  <% if show_filter_group?(@prep_types, :preparations_prep_type_case_insensitive_in) %>
     <div class="col-md-6 mb-3">
       <fieldset class="mb-3" id="prep_type-filter-group">
         <legend class="h5">Preparation Type</legend>
@@ -60,7 +60,7 @@
     </div>
   <% end %>
 
-  <% if @kingdoms.count > 1 %>
+  <% if show_filter_group?(@kingdoms, :identifications_kingdom_case_insensitive_in) %>
     <div class="col-md-6 mb-3">
       <fieldset class="mb-3" id="kingdom-filter-group">
         <legend class="h5">Kingdom</legend>
@@ -81,7 +81,7 @@
     </div>
   <% end %>
 
-  <% if @phylums.count > 1 %>
+  <% if show_filter_group?(@phylums, :identifications_phylum_case_insensitive_in) %>
     <div class="col-md-6 mb-3">
       <fieldset class="mb-3" id="phylum-filter-group">
         <legend class="h5">Phylum</legend>
@@ -102,7 +102,7 @@
     </div>
   <% end %>
 
-  <% if @classes.count > 1 %>
+  <% if show_filter_group?(@classes, :identifications_class_name_case_insensitive_in) %>
     <div class="col-md-6 mb-3">
       <fieldset class="mb-3" id="class_name-filter-group">
         <legend class="h5">Class</legend>
@@ -123,7 +123,7 @@
     </div>
   <% end %>
 
-  <% if @orders.count > 1 %>
+  <% if show_filter_group?(@orders, :identifications_order_name_case_insensitive_in) %>
     <div class="col-md-6 mb-3">
       <fieldset class="mb-3" id="order_name-filter-group">
         <legend class="h5">Order</legend>
@@ -144,7 +144,7 @@
     </div>
   <% end %>
 
-  <% if @families.count > 1 %>
+  <% if show_filter_group?(@families, :identifications_family_case_insensitive_in) %>
     <div class="col-md-6 mb-3">
       <fieldset class="mb-3" id="family-filter-group">
         <legend class="h5">Family</legend>
@@ -165,7 +165,7 @@
     </div>
   <% end %>
 
-  <% if @genuses.count > 1 %>
+  <% if show_filter_group?(@genuses, :identifications_genus_case_insensitive_in) %>
     <div class="col-md-6 mb-3">
       <fieldset class="mb-3" id="genus-filter-group">
         <legend class="h5">Genus</legend>
@@ -186,7 +186,7 @@
     </div>
   <% end %>
 
-  <% if @sexs.count > 1 %>
+  <% if show_filter_group?(@sexs, :sex_case_insensitive_in) %>
     <div class="col-md-6 mb-3">
       <fieldset class="mb-3" id="sex-filter-group">
         <legend class="h5">Sex</legend>
@@ -207,7 +207,7 @@
     </div>
   <% end %>
 
-  <% if @continents.count > 1 %>
+  <% if show_filter_group?(@continents, :continent_case_insensitive_in) %>
     <div class="col-md-6 mb-3">
       <fieldset class="mb-3" id="continent-filter-group">
         <legend class="h5">Continent</legend>
@@ -228,7 +228,7 @@
     </div>
   <% end %>
   
-  <% if @countries.count > 1 %>
+  <% if show_filter_group?(@countries, :country_case_insensitive_in) %>
     <div class="col-md-6 mb-3">
       <fieldset class="mb-3" id="country-filter-group">
         <legend class="h5">Country or Region</legend>
@@ -251,7 +251,7 @@
     </div>
   <% end %>
 
-  <% if @states.count > 1 %>
+  <% if show_filter_group?(@states, :state_province_case_insensitive_in) %>
     <div class="col-md-6 mb-3">
       <fieldset class="mb-3" id="state-province-filter-group">
         <legend class="h5">State / Province</legend>

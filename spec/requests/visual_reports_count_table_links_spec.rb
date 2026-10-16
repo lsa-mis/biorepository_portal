@@ -42,6 +42,25 @@ RSpec.describe 'VisualReports count table links', type: :request do
     rows
   end
 
+  # Fields the browser would submit from the search form (as when Sort or Switch View changes)
+  def submitted_form_fields(sort:)
+    form = Nokogiri::HTML(response.body).at_css('form#search-form')
+    fields = form.css('input[name]').filter_map do |input|
+      next if %w[checkbox radio].include?(input['type']) && !input.key?('checked')
+      next if %w[submit button].include?(input['type'])
+      [input['name'], input['value'].to_s]
+    end
+    fields += form.css('select[name]').map do |select|
+      [select['name'], select.name == 'select' && select['name'] == 'sort' ? sort : (select.at_css('option[selected]') || select.at_css('option'))&.[]('value').to_s]
+    end
+    fields
+  end
+
+  def resubmit_with_sort(sort)
+    query = submitted_form_fields(sort: sort).map { |name, value| "#{CGI.escape(name)}=#{CGI.escape(value)}" }.join('&')
+    get "#{search_items_path}?#{query}"
+  end
+
   it 'links each collection and preparation type row to a search with the same number of items' do
     rows = expect_links_to_match_counts(items_by_collection_visual_reports_path)
     expect(rows.map(&:first)).to include('Birds', 'Fish', 'Skin', 'Skeleton', 'No preparation')
@@ -111,25 +130,6 @@ RSpec.describe 'VisualReports count table links', type: :request do
   end
 
   describe 'filters without a search form control' do
-    # Fields the browser would submit from the search form (as when Sort or Switch View changes)
-    def submitted_form_fields(sort:)
-      form = Nokogiri::HTML(response.body).at_css('form#search-form')
-      fields = form.css('input[name]').filter_map do |input|
-        next if %w[checkbox radio].include?(input['type']) && !input.key?('checked')
-        next if %w[submit button].include?(input['type'])
-        [input['name'], input['value'].to_s]
-      end
-      fields += form.css('select[name]').map do |select|
-        [select['name'], select.name == 'select' && select['name'] == 'sort' ? sort : (select.at_css('option[selected]') || select.at_css('option'))&.[]('value').to_s]
-      end
-      fields
-    end
-
-    def resubmit_with_sort(sort)
-      query = submitted_form_fields(sort: sort).map { |name, value| "#{CGI.escape(name)}=#{CGI.escape(value)}" }.join('&')
-      get "#{search_items_path}?#{query}"
-    end
-
     {
       'year' => ['2001', { 'event_date_start_lteq' => '2001-12-31' }],
       'recorder' => ['Amy', { 'recorded_by_trimmed_eq' => 'Amy' }]
@@ -195,6 +195,36 @@ RSpec.describe 'VisualReports count table links', type: :request do
       expect(values.grep(/canada/)).to eq(['canada'])
       get search_items_path, params: { q: { country_case_insensitive_in: ['canada'] } }
       expect(search_total).to eq(3)
+    end
+  end
+
+  describe 'checkbox filters with a single option' do
+    it 'keeps a preparation type filter from a report link when the search form is resubmitted' do
+      get items_by_collection_visual_reports_path
+      table = Nokogiri::HTML(response.body).css('table').find { |t| t.at_css('caption').text.end_with?('for Fish') }
+      skin = table.css('tbody tr').find { |row| row.at_css('th').text == 'Skin' }
+      expect(skin.at_css('td').text).to eq('1')
+      get skin.at_css('th a')['href']
+      expect(search_total).to eq(1)
+      expect(Nokogiri::HTML(response.body).at_css('input[name="q[preparations_prep_type_case_insensitive_in][]"][value="skin"][checked]')).to be_present
+
+      resubmit_with_sort('items.catalog_number desc')
+      expect(search_total).to eq(1)
+    end
+
+    it 'keeps a country filter when it is the only nonblank country and the search form is resubmitted' do
+      # Fish items have the countries "USA", "UsA" and "" (one checkbox option)
+      get search_items_path, params: { q: { collection_id_in: [fish.id.to_s], country_case_insensitive_in: ['usa'] } }
+      expect(search_total).to eq(2)
+      expect(Nokogiri::HTML(response.body).css('input[name="q[country_case_insensitive_in][]"]').map { |i| i['value'] }).to eq(['usa'])
+
+      resubmit_with_sort('items.catalog_number desc')
+      expect(search_total).to eq(2)
+    end
+
+    it 'still hides a single-option group when its filter is not used' do
+      get search_items_path, params: { q: { collection_id_in: [fish.id.to_s] } }
+      expect(response.body).not_to include('id="country-filter-group"')
     end
   end
 end

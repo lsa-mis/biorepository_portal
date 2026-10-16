@@ -91,6 +91,12 @@ module ActiveFiltersHelper
     filters_array
   end
 
+  # A checkbox filter group is shown when there is a choice to make, or when the search uses it, so the
+  # selected checkboxes keep the filter when the form is resubmitted (sort, view, per page)
+  def show_filter_group?(options, key)
+    options.count > 1 || params.dig(:q, key).present?
+  end
+
   def or_separator(index, total)
     index == total - 1 ? "" : content_tag(:span, " OR ", class: "fw-bold")
   end
