@@ -303,7 +303,7 @@
 
 <%# Filters set by visual report links that have no control in this form. Hidden fields keep them when the form %>
 <%# is resubmitted (sort, view, per page), and their filter badges can still remove them (search#removeFilter). %>
-<% %i[event_date_start_lteq recorded_by_eq].each do |key| %>
+<% %i[event_date_start_lteq recorded_by_trimmed_eq].each do |key| %>
   <% if params.dig(:q, key).present? %>
     <%= f.hidden_field key, value: params.dig(:q, key) %>
   <% end %>

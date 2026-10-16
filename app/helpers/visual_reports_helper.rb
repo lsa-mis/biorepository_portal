@@ -27,7 +27,7 @@ module VisualReportsHelper
   end
 
   def recorder_search_query(recorder)
-    { recorded_by_eq: recorder } unless BLANK_LABELS.include?(recorder)
+    { recorded_by_trimmed_eq: recorder } unless BLANK_LABELS.include?(recorder)
   end
 
   # Search results page for a row, narrowing the report's current search (if any)

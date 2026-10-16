@@ -132,7 +132,7 @@ RSpec.describe 'VisualReports count table links', type: :request do
 
     {
       'year' => ['2001', { 'event_date_start_lteq' => '2001-12-31' }],
-      'recorder' => ['Amy', { 'recorded_by_eq' => 'Amy' }]
+      'recorder' => ['Amy', { 'recorded_by_trimmed_eq' => 'Amy' }]
     }.each do |kind, (label, hidden)|
       it "keeps the #{kind} filter when the search form is resubmitted, and lets its badge remove it" do
         get items_in_all_collections_visual_reports_path
@@ -152,7 +152,7 @@ RSpec.describe 'VisualReports count table links', type: :request do
 
     it 'does not render the hidden fields for other searches' do
       get search_items_path
-      expect(response.body).not_to include('q_event_date_start_lteq', 'q_recorded_by_eq')
+      expect(response.body).not_to include('q_event_date_start_lteq', 'q_recorded_by_trimmed_eq')
     end
   end
 
@@ -174,6 +174,27 @@ RSpec.describe 'VisualReports count table links', type: :request do
       _label, count, href = table_rows.find { |label, *| label == '2001' }
       expect(count).to eq(1)
       expect(Rack::Utils.parse_nested_query(URI(href).query)['q']).to include('event_date_start_gteq' => '2001-06-01', 'event_date_start_lteq' => '2001-12-31')
+    end
+  end
+
+  describe 'values with surrounding spaces' do
+    before do
+      FactoryBot.create(:item, collection: birds, country: ' Canada ', recorded_by: ' Bob ')
+      FactoryBot.create(:item, collection: birds, country: 'canada  ', recorded_by: 'Bob')
+    end
+
+    it 'counts padded countries and recorders with the trimmed value, and links to searches with the same number of items' do
+      rows = expect_links_to_match_counts(items_in_all_collections_visual_reports_path)
+      expect(rows.select { |label, *| label.strip.casecmp?('canada') }.map { |label, count, _| [label, count] }).to eq([['Canada', 3]])
+      expect(rows.select { |label, *| label.strip == 'Bob' }.map { |label, count, _| [label, count] }).to eq([['Bob', 3]])
+    end
+
+    it 'lists padded countries as one search sidebar checkbox that finds all of them' do
+      get search_items_path
+      values = Nokogiri::HTML(response.body).css('input[name="q[country_case_insensitive_in][]"]').map { |input| input['value'] }
+      expect(values.grep(/canada/)).to eq(['canada'])
+      get search_items_path, params: { q: { country_case_insensitive_in: ['canada'] } }
+      expect(search_total).to eq(3)
     end
   end
 end
