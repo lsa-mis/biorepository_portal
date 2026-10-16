@@ -67,4 +67,13 @@ RSpec.describe 'VisualReports count table links', type: :request do
     get items_in_all_collections_visual_reports_path
     expect(table_rows.select { |label, *| label.casecmp?('usa') }.map { |label, count, _| [label, count] }).to eq([['USA', 3]])
   end
+
+  it 'adds blank countries and a literal Unknown country into one Unknown row' do
+    FactoryBot.create(:item, collection: fish, country: 'Unknown')
+    FactoryBot.create(:item, collection: fish, country: nil)
+    get items_in_all_collections_visual_reports_path
+    country_table = Nokogiri::HTML(response.body).css('table').find { |t| t.at_css('caption').text == 'Number of items per country' }
+    unknown = country_table.css('tbody tr').select { |row| row.at_css('th').text == 'Unknown' }
+    expect(unknown.map { |row| [row.at_css('td').text, row.at_css('th a')] }).to eq([['3', nil]])
+  end
 end

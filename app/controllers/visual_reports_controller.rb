@@ -81,8 +81,9 @@ class VisualReportsController < ApplicationController
     value = "NULLIF(BTRIM(items.#{column}), '')"
     return search_items.group(Arel.sql("COALESCE(#{value}, 'Unknown')")).count unless case_insensitive
 
+    # Blank values and a literal "Unknown" are separate groups with the same label, so their counts are summed
     search_items.group(Arel.sql("LOWER(#{value})"))
                 .pluck(Arel.sql("COALESCE(MODE() WITHIN GROUP (ORDER BY #{value}), 'Unknown')"), Arel.sql("COUNT(*)"))
-                .to_h
+                .each_with_object(Hash.new(0)) { |(label, count), counts| counts[label] += count }
   end
 end
