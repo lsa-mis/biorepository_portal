@@ -10,6 +10,7 @@ class VisualReportsController < ApplicationController
   def items_by_collection
     authorize :visual_report
     @items_by_collection = Collection.left_joins(:items).group(:division).count("items.id")
+    @collection_ids_by_division = Collection.group(:division).pluck(:division, Arel.sql("ARRAY_AGG(collections.id)")).to_h
 
     preparation_counts = Collection.left_joins(items: :preparations)
                                    .group("collections.division", "COALESCE(NULLIF(preparations.prep_type, ''), 'No preparation')")
@@ -28,7 +29,7 @@ class VisualReportsController < ApplicationController
     setup_search_summary
     collection_year = Arel.sql("EXTRACT(YEAR FROM items.event_date_start)::integer")
     @items_by_year = search_items.where.not(event_date_start: nil).group(collection_year).order(collection_year).count
-    @items_by_country = counts_by_text_column(:country).sort.to_h
+    @items_by_country = counts_by_text_column(:country, case_insensitive: true).sort.to_h
     @items_by_recorder = counts_by_text_column(:recorded_by).sort_by { |name, count| [-count, name] }.to_h
   end
 
@@ -74,9 +75,14 @@ class VisualReportsController < ApplicationController
     @active_filters = format_active_filters(dynamic_fields: @dynamic_fields)
   end
 
-  # Item counts grouped by a text column; blank values are counted as "Unknown"
-  def counts_by_text_column(column)
-    value = Arel.sql("COALESCE(NULLIF(BTRIM(items.#{column}), ''), 'Unknown')")
-    search_items.group(value).count
+  # Item counts grouped by a text column; blank values are counted as "Unknown".
+  # case_insensitive groups values that differ only in case (as the search does), labelled with the most common spelling.
+  def counts_by_text_column(column, case_insensitive: false)
+    value = "NULLIF(BTRIM(items.#{column}), '')"
+    return search_items.group(Arel.sql("COALESCE(#{value}, 'Unknown')")).count unless case_insensitive
+
+    search_items.group(Arel.sql("LOWER(#{value})"))
+                .pluck(Arel.sql("COALESCE(MODE() WITHIN GROUP (ORDER BY #{value}), 'Unknown')"), Arel.sql("COUNT(*)"))
+                .to_h
   end
 end

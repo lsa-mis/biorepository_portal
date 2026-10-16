@@ -1,6 +1,8 @@
 <%# Data table that mirrors a chart, so screen reader users can read the values. %>
 <%# Locals: caption, label (heading for the first column), counts (hash of label => count), %>
-<%#         sorted_by (optional, :label or :count - the order counts are already in, defaults to :label) %>
+<%#         sorted_by (optional, :label or :count - the order counts are already in, defaults to :label), %>
+<%#         search_query (optional, callable taking a row label and returning its search query, see VisualReportsHelper) %>
+<% search_query = local_assigns[:search_query] %>
 <% sorted_by = local_assigns.fetch(:sorted_by, :label) %>
 <% rows = if sorted_by == :count
      counts.sort_by { |name, count| [-count, name.to_s.downcase] }
@@ -31,7 +33,8 @@
   <tbody data-sortable-table-target="body">
     <% rows.each do |name, count| %>
       <tr>
-        <th scope="row" data-sort-value="<%= name %>"><%= name %></th>
+        <% query = search_query&.call(name) %>
+        <th scope="row" data-sort-value="<%= name %>"><%= query ? link_to(name, count_table_search_path(query), class: "link_to") : name %></th>
         <td data-sort-value="<%= count %>"><%= number_with_delimiter(count) %></td>
       </tr>
     <% end %>

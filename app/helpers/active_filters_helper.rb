@@ -48,6 +48,8 @@ module ActiveFiltersHelper
     "identifications_family_case_insensitive_in" => "Family",
     "identifications_genus_case_insensitive_in" => "Genus",
     "event_date_start_gteq" => "Event Date Start (After)",
+    "event_date_start_lteq" => "Event Date Start (Before)",
+    "recorded_by_eq" => "Recorded By",
     "event_date_end_lteq" => "Event Date End (Before)",
     "minimum_elevation_in_meters_gteq" => "Min Elevation",
     "maximum_elevation_in_meters_lteq" => "Max Elevation",

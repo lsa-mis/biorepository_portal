@@ -6,7 +6,8 @@
   <h1>Items by Collection</h1>
   <%= link_to "Back to Visual Reports", visual_reports_path, class: "btn btn-outline-primary mb-3" %>
   <%= pie_chart @items_by_collection, height: "480px" %>
-  <%= render "count_table", caption: "Number of items per collection", label: "Collection", counts: @items_by_collection %>
+  <%= render "count_table", caption: "Number of items per collection", label: "Collection", counts: @items_by_collection,
+                            search_query: ->(division) { collection_search_query(division) } %>
 
   <h2 class="mt-4">Items by Preparation</h2>
   <% @preparation_counts_by_collection.each do |collection, preparation_counts| %>
@@ -15,7 +16,8 @@
       <% if preparation_counts.any? %>
         <%= bar_chart preparation_counts, height: "320px", xtitle: "Number of Items", ytitle: "Preparation Type" %>
         <%= render "count_table", caption: "Number of items by preparation type for #{collection.division}",
-                                  label: "Preparation Type", counts: preparation_counts %>
+                                  label: "Preparation Type", counts: preparation_counts,
+                                  search_query: ->(type) { preparation_search_query(collection, type) } %>
       <% else %>
         <p>No items in this collection.</p>
       <% end %>
