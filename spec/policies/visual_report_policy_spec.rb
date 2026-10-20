@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe VisualReportPolicy, type: :policy do
   let(:report_actions) do
-    %i[index items_by_collection items_in_all_collections map_items]
+    %i[index map_items]
   end
 
   describe 'anonymous access' do

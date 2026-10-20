@@ -21,7 +21,7 @@ RSpec.describe 'VisualReports count tables', type: :request do
   end
 
   it 'renders sortable headers with rows sorted by label' do
-    get items_by_collection_visual_reports_path
+    get visual_reports_path
     expect(response).to have_http_status(:ok)
     expect(response.body).to include('data-controller="sortable-table"')
     expect(table_rows('Number of items per collection')).to eq([['Birds', '2'], ['Fish', '4']])
@@ -29,7 +29,7 @@ RSpec.describe 'VisualReports count tables', type: :request do
   end
 
   it 'renders the recorder table sorted by number of items' do
-    get items_in_all_collections_visual_reports_path
+    get visual_reports_path
     expect(table_rows('Number of items by recorder')).to eq([['Bob', '3'], ['Amy', '2'], ['Zed', '1']])
     expect(header_sort('Number of items by recorder')).to eq(%w[none descending])
   end

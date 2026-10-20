@@ -1,8 +1,25 @@
+<% content_for :head do %>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <%= javascript_include_tag "Chart.bundle", "chartkick" %>
+<% end %>
+
 <div class="container-fluid">
-  <h1>Visual Reports</h1>
-  <ul>
-    <li><%= link_to "Items by Collection", items_by_collection_visual_reports_path %></li>
-    <li><%= link_to "Items in All Collections", items_in_all_collections_visual_reports_path %></li>
-    <li><%= link_to "Items Map", map_items_path %></li>
-  </ul>
+  <h1>Metrics</h1>
+  <%= render "search_summary", note: "#{number_with_delimiter(@mapped_items)} with coordinates shown on the map." %>
+
+  <section class="mb-5">
+    <h2><%= @search_query ? "Search Results Map" : "Items Map" %></h2>
+    <%= render "items_map" %>
+  </section>
+
+  <section class="mb-5">
+    <h2><%= @search_query ? "Search Results by Collection" : "Items by Collection" %></h2>
+    <%= render "items_by_collection", level: 3 %>
+  </section>
+
+  <section class="mb-5">
+    <h2><%= @search_query ? "Search Results in All Collections" : "Items in All Collections" %></h2>
+    <%= render "items_in_all_collections", level: 3 %>
+  </section>
 </div>

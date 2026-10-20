@@ -62,26 +62,26 @@ RSpec.describe 'VisualReports count table links', type: :request do
   end
 
   it 'links each collection and preparation type row to a search with the same number of items' do
-    rows = expect_links_to_match_counts(items_by_collection_visual_reports_path)
+    rows = expect_links_to_match_counts(visual_reports_path)
     expect(rows.map(&:first)).to include('Birds', 'Fish', 'Skin', 'Skeleton', 'No preparation')
     expect(rows.find { |label, *| label == 'No preparation' }.last).to be_nil
   end
 
   it 'does not link rows without items' do
     FactoryBot.create(:collection, division: 'Reptiles', admin_group: 'reptiles_admins')
-    get items_by_collection_visual_reports_path
+    get visual_reports_path
     expect(table_rows.find { |label, *| label == 'Reptiles' }).to eq(['Reptiles', 0, nil])
     expect(table_rows.find { |label, *| label == 'Birds' }.last).to be_present
   end
 
   it 'links each year, country and recorder row to a search with the same number of items' do
-    rows = expect_links_to_match_counts(items_in_all_collections_visual_reports_path)
+    rows = expect_links_to_match_counts(visual_reports_path)
     expect(rows.select { |label, *| label == 'Not available' }.map(&:last)).to all(be_nil)
   end
 
   it 'keeps the report search in the row links' do
     search = { q: { groupings: { '0' => { '0' => { 'field' => 'recorded_by_i_cont_any', 'value' => 'amy' } } } } }
-    get items_in_all_collections_visual_reports_path, params: search
+    get visual_reports_path, params: search
     usa = table_rows.find { |label, *| label == 'USA' }
     expect(usa[1]).to eq(3)
     get usa.last
@@ -90,12 +90,12 @@ RSpec.describe 'VisualReports count table links', type: :request do
   end
 
   it 'groups countries that differ only in case, as the search does' do
-    get items_in_all_collections_visual_reports_path
+    get visual_reports_path
     expect(table_rows.select { |label, *| label.casecmp?('usa') }.map { |label, count, _| [label, count] }).to eq([['USA', 3]])
   end
 
   it 'labels blank countries and recorders Not available' do
-    get items_in_all_collections_visual_reports_path
+    get visual_reports_path
     expect(table_rows.select { |label, *| label == 'Not available' }.map { |_label, count, href| [count, href] }).to eq([[1, nil], [1, nil]])
     expect(response.body).not_to include('Unknown')
   end
@@ -105,7 +105,7 @@ RSpec.describe 'VisualReports count table links', type: :request do
     FactoryBot.create(:item, collection: fish, country: 'Not available')
     FactoryBot.create_list(:item, 2, collection: fish, country: 'not available')
     FactoryBot.create(:item, collection: fish, country: nil)
-    get items_in_all_collections_visual_reports_path
+    get visual_reports_path
     country_table = Nokogiri::HTML(response.body).css('table').find { |t| t.at_css('caption').text == 'Number of items per country' }
     rows = country_table.css('tbody tr').select { |row| row.at_css('th').text.casecmp?('not available') }
     expect(rows.map { |row| [row.at_css('th').text, row.at_css('td').text, row.at_css('th a')] }).to eq([['Not available', '5', nil]])
@@ -113,7 +113,7 @@ RSpec.describe 'VisualReports count table links', type: :request do
 
   it 'links a country entered as Unknown like any other country' do
     FactoryBot.create_list(:item, 2, collection: fish, country: 'unknown')
-    rows = expect_links_to_match_counts(items_in_all_collections_visual_reports_path)
+    rows = expect_links_to_match_counts(visual_reports_path)
     expect(rows.find { |label, *| label == 'unknown' }[1]).to eq(2)
   end
 
@@ -121,7 +121,7 @@ RSpec.describe 'VisualReports count table links', type: :request do
     let(:mammals) { FactoryBot.create(:collection, division: 'Mammals', admin_group: 'mammals_admins') }
 
     def preparation_rows
-      get items_by_collection_visual_reports_path
+      get visual_reports_path
       table = Nokogiri::HTML(response.body).css('table').find { |t| t.at_css('caption').text.end_with?('for Mammals') }
       table.css('tbody tr').map { |row| [row.at_css('th').text, row.at_css('td').text.to_i, row.at_css('th a')&.[]('href')] }
     end
@@ -156,7 +156,7 @@ RSpec.describe 'VisualReports count table links', type: :request do
       'recorder' => ['Amy', { 'recorded_by_trimmed_eq' => 'Amy' }]
     }.each do |kind, (label, hidden)|
       it "keeps the #{kind} filter when the search form is resubmitted, and lets its badge remove it" do
-        get items_in_all_collections_visual_reports_path
+        get visual_reports_path
         _label, count, href = table_rows.find { |row_label, *| row_label == label }
         get href
         expect(search_total).to eq(count)
@@ -189,17 +189,17 @@ RSpec.describe 'VisualReports count table links', type: :request do
       'bounds in other date formats' => { 'event_date_start_gteq' => '2001/06/01', 'event_date_start_lteq' => 'March 1 2002' }
     }.each do |description, search|
       it "link to searches matching both the report search and the row for #{description}" do
-        expect_links_to_match_counts(items_in_all_collections_visual_reports_path(q: search))
+        expect_links_to_match_counts(visual_reports_path(q: search))
       end
     end
 
     it 'links rows to searches with the same number of items when the search combines its filters with AND' do
-      expect_links_to_match_counts(items_in_all_collections_visual_reports_path(q: { m: 'and', country_case_insensitive_in: ['usa'] }))
+      expect_links_to_match_counts(visual_reports_path(q: { m: 'and', country_case_insensitive_in: ['usa'] }))
     end
 
     it 'does not link rows when the search combines its top-level filters with OR' do
       search = { m: 'or', country_case_insensitive_in: ['canada'], event_date_start_gteq: '2002-01-01' }
-      get items_in_all_collections_visual_reports_path(q: search)
+      get visual_reports_path(q: search)
       rows = table_rows
       # The report itself still counts the OR search: Bob (Canada, 2001) and the 2002 Fish items
       expect(response.body).to include('3 items from')
@@ -208,7 +208,7 @@ RSpec.describe 'VisualReports count table links', type: :request do
     end
 
     it 'keeps the later start date when the search starts within the row year' do
-      get items_in_all_collections_visual_reports_path(q: { event_date_start_gteq: '2001-06-01' })
+      get visual_reports_path(q: { event_date_start_gteq: '2001-06-01' })
       _label, count, href = table_rows.find { |label, *| label == '2001' }
       expect(count).to eq(1)
       expect(Rack::Utils.parse_nested_query(URI(href).query)['q']).to include('event_date_start_gteq' => '2001-06-01', 'event_date_start_lteq' => '2001-12-31')
@@ -222,7 +222,7 @@ RSpec.describe 'VisualReports count table links', type: :request do
     end
 
     it 'counts padded countries and recorders with the trimmed value, and links to searches with the same number of items' do
-      rows = expect_links_to_match_counts(items_in_all_collections_visual_reports_path)
+      rows = expect_links_to_match_counts(visual_reports_path)
       expect(rows.select { |label, *| label.strip.casecmp?('canada') }.map { |label, count, _| [label, count] }).to eq([['Canada', 3]])
       expect(rows.select { |label, *| label.strip == 'Bob' }.map { |label, count, _| [label, count] }).to eq([['Bob', 3]])
     end
@@ -238,7 +238,7 @@ RSpec.describe 'VisualReports count table links', type: :request do
 
   describe 'checkbox filters with a single option' do
     it 'keeps a preparation type filter from a report link when the search form is resubmitted' do
-      get items_by_collection_visual_reports_path
+      get visual_reports_path
       table = Nokogiri::HTML(response.body).css('table').find { |t| t.at_css('caption').text.end_with?('for Fish') }
       skin = table.css('tbody tr').find { |row| row.at_css('th').text == 'Skin' }
       expect(skin.at_css('td').text).to eq('1')
