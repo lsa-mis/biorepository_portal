@@ -63,10 +63,6 @@
               <%= select_tag "sort", options_for_select(fields_to_sort_items, selected: @sort), :"data-action" => "search#submit" %>
             </div>
             <div>
-              <label for="switch_view" class="h5">Switch View</label>
-              <%= select_tag "switch_view", options_for_select(item_views, selected: @view), :"data-action" => "search#submit" %>
-            </div>
-            <div>
               <label for="per" class="h5">Items per page:</label>
               <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "search#submit" %>
             </div>
@@ -85,7 +81,7 @@
           </div>
     <% end %>
           <%= turbo_frame_tag "items_result_list" do %>
-            <%= render partial: 'items/result_list', locals: { items: @items, view: @view } %>
+            <%= render partial: 'items/result_list', locals: { items: @items } %>
           <% end %>
         </div>
       </div>

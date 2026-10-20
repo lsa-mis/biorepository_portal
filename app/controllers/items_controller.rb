@@ -17,8 +17,6 @@ class ItemsController < ApplicationController
   end
 
   def search
-    @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
-
     collection_ids = extract_collection_ids
     
     # The cache checking is now entirely handled inside this method
@@ -64,7 +62,6 @@ class ItemsController < ApplicationController
       end
       format.html { 
         # Fallback for non-Turbo requests - set up full search data
-        @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
         collection_ids = extract_collection_ids
         setup_filter_data(collection_ids)
         setup_search_query
