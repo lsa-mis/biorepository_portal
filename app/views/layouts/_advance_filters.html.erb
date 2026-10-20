@@ -301,7 +301,7 @@
   <%= f.search_field :decimal_longitude_eq, placeholder: 'Longitude', class: "form-control form-control-sm", "data-action": "input->search#submit" %>
 </div>
 
-<%# Filters set by visual report links that have no control in this form. Hidden fields keep them when the form %>
+<%# Filters set by metrics links that have no control in this form. Hidden fields keep them when the form %>
 <%# is resubmitted (sort, view, per page), and their filter badges can still remove them (search#removeFilter). %>
 <% %i[event_date_start_lteq recorded_by_trimmed_eq].each do |key| %>
   <% if params.dig(:q, key).present? %>

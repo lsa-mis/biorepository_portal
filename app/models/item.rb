@@ -96,12 +96,12 @@ class Item < ApplicationRecord
     end
   end
 
-  # Trimmed so it matches the country counts in the visual reports
+  # Trimmed so it matches the country counts in the metrics
   ransacker :country_case_insensitive, type: :string do
     Arel.sql('lower(btrim(items.country))')
   end
 
-  # Exact recorder match for visual report links; trimmed like the recorder counts in the reports
+  # Exact recorder match for metrics links; trimmed like the recorder counts in the reports
   ransacker :recorded_by_trimmed, type: :string do
     Arel.sql('btrim(items.recorded_by)')
   end

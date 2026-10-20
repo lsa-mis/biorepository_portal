@@ -1,4 +1,4 @@
-class VisualReportPolicy < ApplicationPolicy
+class MetricPolicy < ApplicationPolicy
   
   def index?
     true

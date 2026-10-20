@@ -1,11 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe 'VisualReports index', type: :request do
+RSpec.describe 'Metrics index', type: :request do
   let(:collection) { FactoryBot.create(:collection) }
   let!(:item) { FactoryBot.create(:item, collection: collection, country: 'USA') }
 
   it 'shows all reports on one page, starting with the map' do
-    get visual_reports_path
+    get metrics_path
     expect(response).to have_http_status(:ok)
 
     doc = Nokogiri::HTML(response.body)

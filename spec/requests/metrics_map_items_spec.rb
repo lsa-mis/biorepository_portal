@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'VisualReports map_items', type: :request do
+RSpec.describe 'Metrics map_items', type: :request do
   let(:collection) { FactoryBot.create(:collection) }
   let!(:bird_item) { FactoryBot.create(:item, collection: collection, catalog_number: 'BIRD-001') }
   let!(:fish_item) { FactoryBot.create(:item, collection: collection, catalog_number: 'FISH-001') }
@@ -28,7 +28,7 @@ RSpec.describe 'VisualReports map_items', type: :request do
   end
 
   it 'passes the search query to the map data url' do
-    get visual_reports_path, params: { q: { catalog_number_cont: 'BIRD' } }
+    get metrics_path, params: { q: { catalog_number_cont: 'BIRD' } }
     expect(response).to have_http_status(:ok)
     expect(response.body).to include('Search Results Map')
     expect(response.body).to include(CGI.escapeHTML(map_items_path(q: { catalog_number_cont: 'BIRD' }, format: :json)))
@@ -37,7 +37,7 @@ RSpec.describe 'VisualReports map_items', type: :request do
   it 'shows the selected filters and item counts for an advanced search' do
     FactoryBot.create(:item, collection: collection, catalog_number: 'FISH-002', decimal_latitude: nil, decimal_longitude: nil)
     params = { q: { groupings: { '0' => { '0' => { 'field' => 'catalog_number_i_cont_any', 'value' => 'fish' } } } } }
-    get visual_reports_path, params: params
+    get metrics_path, params: params
     expect(response).to have_http_status(:ok)
     expect(response.body).to include('Catalog Number: "fish"')
     expect(response.body).to include("2 items from #{collection.division}.")
@@ -46,7 +46,7 @@ RSpec.describe 'VisualReports map_items', type: :request do
   end
 
   it 'shows the total for all items without a search query' do
-    get visual_reports_path
+    get metrics_path
     expect(response.body).to include("2 items from #{collection.division}.")
     expect(response.body).not_to include('Back to Search Results')
   end

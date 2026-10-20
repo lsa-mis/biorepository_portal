@@ -1,11 +1,11 @@
-class VisualReportsController < ApplicationController
+class MetricsController < ApplicationController
   include ActiveFiltersHelper
   include SearchGroupings
   skip_before_action :authenticate_user!
 
   # All reports on one page: the map, items by collection and items in all collections
   def index
-    authorize :visual_report
+    authorize :metric
     setup_search_summary
     load_mapped_items
     load_items_by_collection
@@ -16,7 +16,7 @@ class VisualReportsController < ApplicationController
   # One point per location, so the response grows with the number of collecting sites, not items.
   # Each point is [latitude, longitude, item count, id of an item at that location].
   def map_items
-    authorize :visual_report
+    authorize :metric
     locations = mappable_items.group(:decimal_latitude, :decimal_longitude)
                               .pluck(:decimal_latitude, :decimal_longitude, Arel.sql("COUNT(*)"), Arel.sql("MIN(items.id)"))
     render json: locations
@@ -88,7 +88,7 @@ class VisualReportsController < ApplicationController
   # Item counts grouped by a text column; blank values are counted as "Not available".
   # case_insensitive groups values that differ only in case (as the search does), labelled with the most common spelling.
   def counts_by_text_column(column, case_insensitive: false)
-    not_available = VisualReportsHelper::NOT_AVAILABLE
+    not_available = MetricsHelper::NOT_AVAILABLE
     value = "NULLIF(BTRIM(items.#{column}), '')"
     unless case_insensitive
       return search_items.group(Arel.sql("COALESCE(#{value}, #{Item.connection.quote(not_available)})")).count

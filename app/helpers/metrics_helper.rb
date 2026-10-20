@@ -1,4 +1,4 @@
-module VisualReportsHelper
+module MetricsHelper
   # Row label for items with a blank value
   NOT_AVAILABLE = "Not available".freeze
   # Row labels for items with no value; they have no matching search filter, so they are not linked

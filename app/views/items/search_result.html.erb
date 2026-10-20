@@ -67,7 +67,7 @@
               <%= select_tag :per, options_for_select([25, 50, 100, 150, 200], params[:per]), "data-action": "search#submit" %>
             </div>
             <div class="mt-4">
-              <%= link_to visual_reports_path(request.parameters.slice(:q)), class: "text-nowrap link_to", data: { turbo: false } do %>
+              <%= link_to metrics_path(request.parameters.slice(:q)), class: "text-nowrap link_to", data: { turbo: false } do %>
                 <i class="bi bi-bar-chart"></i>
                 Metrics
               <% end %>
