@@ -150,6 +150,39 @@ RSpec.describe 'Metrics count table links', type: :request do
     end
   end
 
+  describe 'preparation rows of a report filtered by a preparation search' do
+    let(:skin_and_skeleton) { FactoryBot.create(:item, collection: birds) }
+
+    before do
+      FactoryBot.create(:preparation, item: skin_and_skeleton, prep_type: 'Skin')
+      FactoryBot.create(:preparation, item: skin_and_skeleton, prep_type: 'Skeleton')
+    end
+
+    def birds_preparation_rows(search)
+      get metrics_path(q: search)
+      table = Nokogiri::HTML(response.body).css('table').find { |t| t.at_css('caption').text.end_with?('for Birds') }
+      table.css('tbody tr').map { |row| [row.at_css('th').text, row.at_css('td').text.to_i, row.at_css('th a')&.[]('href')] }
+    end
+
+    {
+      'a top-level filter' => { preparations_prep_type_case_insensitive_in: ['skin'] },
+      'an advanced search group' => { groupings: { '0' => { '0' => { 'field' => 'preparations_prep_type_i_cont_any', 'value' => 'skin' } } } }
+    }.each do |form, search|
+      it "counts other preparations of matching items but does not link them for #{form}" do
+        # The robin (Skin, Skeleton) and the new item (Skin, Skeleton) match; each is counted in the Skeleton row,
+        # which no search link could find (it would need a Skin and a different Skeleton preparation)
+        expect(birds_preparation_rows(search).map { |label, count, href| [label, count, href] })
+          .to contain_exactly(['Skeleton', 2, nil], ['Skin', 2, nil])
+      end
+    end
+
+    it 'still links preparation rows to searches with the same number of items when the search filters on something else' do
+      search = { country_case_insensitive_in: ['usa'] }
+      expect(birds_preparation_rows(search).map(&:last)).to all(be_present)
+      expect_links_to_match_counts(metrics_path(q: search))
+    end
+  end
+
   describe 'filters without a search form control' do
     {
       'year' => ['2001', { 'event_date_start_lteq' => '2001-12-31' }],

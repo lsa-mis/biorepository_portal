@@ -12,8 +12,11 @@ module MetricsHelper
     { collection_id_in: ids } if ids.present?
   end
 
+  # Not linked when the report's search filters on preparations: an item counted in a row can match the search
+  # with one preparation and the row with another, and the search can't require two different preparations
+  # (the row's filter would replace the search's, or apply to the same preparation as the search's)
   def preparation_search_query(collection, preparation_type)
-    return if BLANK_LABELS.include?(preparation_type)
+    return if BLANK_LABELS.include?(preparation_type) || search_filters_preparations?
 
     # Counts are grouped by division, so search every collection with this division
     { collection_id_in: @collection_ids_by_division&.dig(collection.division) || [collection.id],
@@ -58,6 +61,15 @@ module MetricsHelper
   end
 
   private
+
+  # Whether the report's search has a preparation filter with a value, at the top level or in an advanced search group
+  def search_filters_preparations?
+    search_query = (@search_query || {}).with_indifferent_access
+    groups = search_query[:groupings].is_a?(Hash) ? search_query[:groupings].values : []
+    fields = groups.flat_map { |group| group.is_a?(Hash) ? group.values : [] }.select { |field| field.is_a?(Hash) }
+    search_query.except(:groupings).any? { |key, value| key.start_with?("preparations_") && Array.wrap(value).any?(&:present?) } ||
+      fields.any? { |field| field[:field].to_s.start_with?("preparations_") && field[:value].present? }
+  end
 
   # The search's date bound when it is narrower than the row's (the block compares them), otherwise the row's.
   # A search bound that isn't a date is ignored by the search (Ransack casts dates the same way), so the row's is used.
