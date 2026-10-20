@@ -54,7 +54,8 @@ module MetricsHelper
       case key.to_s
       when /_gteq\z/ then narrower_date_bound(search_value, row_value) { |search_date, row_date| search_date > row_date }
       when /_lteq\z/ then narrower_date_bound(search_value, row_value) { |search_date, row_date| search_date < row_date }
-      when /_in\z/ then Array.wrap(search_value) & Array.wrap(row_value)
+      # Compared as strings: request values are strings, while row ids (such as collection ids) are integers
+      when /_in\z/ then Array.wrap(search_value).map(&:to_s) & Array.wrap(row_value).map(&:to_s)
       else row_value
       end
     end

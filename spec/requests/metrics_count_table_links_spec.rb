@@ -226,6 +226,13 @@ RSpec.describe 'Metrics count table links', type: :request do
       end
     end
 
+    it 'keeps the collection filter in collection and preparation row links' do
+      # Collection ids in the search are strings, as submitted by the search form
+      rows = expect_links_to_match_counts(metrics_path(q: { collection_id_in: [birds.id.to_s] }))
+      expect(rows.find { |label, *| label == 'Birds' }[1]).to eq(2)
+      expect(rows.find { |label, *| label == 'Skin' }[1]).to eq(1)
+    end
+
     it 'links rows to searches with the same number of items when the search combines its filters with AND' do
       expect_links_to_match_counts(metrics_path(q: { m: 'and', country_case_insensitive_in: ['usa'] }))
     end
