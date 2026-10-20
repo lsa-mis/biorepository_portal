@@ -136,50 +136,8 @@ RSpec.describe ItemsController, type: :request do
       end
     end
     
-    context 'with view switching' do
-      it 'sets view to rows when switch_view is rows' do
-        get search_items_path, params: { switch_view: 'rows' }
-        expect(response).to have_http_status(:ok)
-        # Test that the response includes expected row view elements
-        expect(response.body).to include("search")
-      end
-
-      it 'sets view to cards when switch_view is cards' do
-        get search_items_path, params: { switch_view: 'cards' }
-        expect(response).to have_http_status(:ok)
-        # Test that the response includes expected card view elements
-        expect(response.body).to include("search")
-      end
-
-      it 'defaults view when no switch_view param' do
-        get search_items_path
-        expect(response).to have_http_status(:ok)
-      end
-    end
-
-    context 'with search result card checkout labels' do
-      it 'displays the information-only checkout label for no loan request collections' do
-        collection.update!(no_loan_requests: true)
-        FactoryBot.create(:preparation, item: item)
-
-        get search_items_path, params: { switch_view: 'cards', q: { id_eq: item.id } }
-
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include('Add Preparation to Checkout (Information Request Only)')
-      end
-
-      it 'displays the standard checkout label for loan request collections' do
-        collection.update!(no_loan_requests: false)
-        FactoryBot.create(:preparation, item: item)
-
-        get search_items_path, params: { switch_view: 'cards', q: { id_eq: item.id } }
-
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include('Add Preparation to Checkout')
-        expect(response.body).not_to include('Information Request Only')
-      end
-
-      it 'does not query collections once per card when rendering dynamic labels' do
+    context 'with search result row checkout labels' do
+      it 'does not query collections once per row when rendering dynamic labels' do
         search_items = 3.times.map do |index|
           no_loan_collection = FactoryBot.create(
             :collection,
@@ -194,7 +152,7 @@ RSpec.describe ItemsController, type: :request do
         end
 
         queries = capture_sql do
-          get search_items_path, params: { switch_view: 'cards', q: { id_in: search_items.map(&:id) } }
+          get search_items_path, params: { q: { id_in: search_items.map(&:id) } }
         end
 
         collection_n_plus_one_queries = queries.select do |sql|
@@ -204,14 +162,12 @@ RSpec.describe ItemsController, type: :request do
         expect(response).to have_http_status(:ok)
         expect(collection_n_plus_one_queries).to be_empty
       end
-    end
 
-    context 'with search result row checkout labels' do
       it 'displays the information-only checkout label for no loan request collections' do
         collection.update!(no_loan_requests: true)
         FactoryBot.create(:preparation, item: item)
 
-        get search_items_path, params: { switch_view: 'rows', q: { id_eq: item.id } }
+        get search_items_path, params: { q: { id_eq: item.id } }
 
         expect(response).to have_http_status(:ok)
         expect(response.body).to include('Add Preparation to Checkout (Information Request Only)')
@@ -221,7 +177,7 @@ RSpec.describe ItemsController, type: :request do
         collection.update!(no_loan_requests: false)
         FactoryBot.create(:preparation, item: item)
 
-        get search_items_path, params: { switch_view: 'rows', q: { id_eq: item.id } }
+        get search_items_path, params: { q: { id_eq: item.id } }
 
         expect(response).to have_http_status(:ok)
         expect(response.body).to include('Add Preparation to Checkout')

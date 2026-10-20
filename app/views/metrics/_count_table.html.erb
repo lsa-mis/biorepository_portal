@@ -1,7 +1,7 @@
 <%# Data table that mirrors a chart, so screen reader users can read the values. %>
 <%# Locals: caption, label (heading for the first column), counts (hash of label => count), %>
 <%#         sorted_by (optional, :label or :count - the order counts are already in, defaults to :label), %>
-<%#         search_query (optional, callable taking a row label and returning its search query, see VisualReportsHelper) %>
+<%#         search_query (optional, callable taking a row label and returning its search query, see MetricsHelper) %>
 <% search_query = local_assigns[:search_query] %>
 <% sorted_by = local_assigns.fetch(:sorted_by, :label) %>
 <% rows = if sorted_by == :count
@@ -13,7 +13,7 @@
      { title: label, type: "text", sort: sorted_by == :label ? "ascending" : "none" },
      { title: "Number of Items", type: "number", sort: sorted_by == :count ? "descending" : "none" }
    ] %>
-<table class="table table-sm table-striped visual_report_table" data-controller="sortable-table">
+<table class="table table-sm table-striped metrics_table" data-controller="sortable-table">
   <caption><%= caption %></caption>
   <thead>
     <tr>

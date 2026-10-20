@@ -3,9 +3,5 @@
     No items available for this search.
   </div>
 <% else %>
-  <% if view == 'rows' %>
-    <%= render partial: 'result_rows', locals: { items: @items } %>
-  <% else %>
-    <%= render partial: 'result_cards', locals: { items: @items } %>
-  <% end %>
+  <%= render partial: 'result_rows', locals: { items: @items } %>
 <% end %>
