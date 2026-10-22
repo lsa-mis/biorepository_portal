@@ -83,12 +83,21 @@ To scan with decrypted credentials, run the report locally, where your own `conf
 
 ### Run the report locally
 
-Prerequisites: a local Postgres for the `test` database, and a checkout of [lsa-mis/axcess](https://github.com/lsa-mis/axcess) set up once with `make setup && make migrate`.
+Prerequisites: a local Postgres for the `test` database, and a checkout of [lsa-mis/axcess](https://github.com/lsa-mis/axcess) at the reviewed commit pinned in the script (`AXCESS_COMMIT`), set up once with `make setup`.
 
 ```sh
 AXCESS_DIR=/path/to/axcess script/ci/axcess_local.sh
 ```
 
 `script/ci/axcess_local.sh` mirrors the workflow: it prepares the test database with seeds and sample data, precompiles assets, starts Rails on `127.0.0.1:3000` (override with `APP_PORT`), crawls with the same Axcess flags, exports `json`, `md`, `xlsx`, and `csv` to `reports/axcess/` (override with `REPORT_DIR`), and prints the summary from `script/ci/axcess_report.rb`. It uses your local master key when present and stops the server on exit. Unlike the workflow, it does not limit Click-Through to one click per page, because it leaves your Axcess checkout unmodified.
+
+Because Axcess runs as your user, the script limits what it can reach:
+
+- It refuses to run unless the Axcess checkout is at `AXCESS_COMMIT` with no uncommitted changes, and it installs Axcess's dependencies exactly as `uv.lock` pins them (`uv run --frozen`). Review the Axcess changes before moving the pin.
+- `RAILS_MASTER_KEY` is unset before Axcess and the summary script start. Only the Rails steps see it.
+- Axcess's scan database, rendered pages and screenshots go to a temporary directory that is deleted on exit, not to the Axcess checkout's `data/`.
+- If `DATABASE_URL` is set, it must point at a local database whose name ends in `_test`, because the script loads the schema and seed data into it.
+
+Axcess can still read `config/master.key` from disk while the scan runs.
 
 Generated report files are ignored by Git.
