@@ -19,7 +19,8 @@
   },
   "overrides": {
     "uuid": "^14.0.0",
-    "simple-git": "^4.0.2"
+    "simple-git": "^4.0.2",
+    "vitest": "^4.1.12"
   },
   "resolutions": {
     "simple-git": "^4.0.2"
