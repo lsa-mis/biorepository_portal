@@ -23,6 +23,7 @@
     "vitest": "^4.1.12"
   },
   "resolutions": {
+    "uuid": "^14.0.0",
     "simple-git": "^4.0.2"
   }
 }
