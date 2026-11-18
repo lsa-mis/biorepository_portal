@@ -544,6 +544,7 @@ DEPENDENCIES
   ldap_lookup (~> 2.1.0)
   letter_opener_web
   lsa_tdx_feedback
+  mini_magick (~> 5.1)
   omniauth-rails_csrf_protection
   omniauth-saml
   ostruct
