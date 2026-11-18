@@ -49,6 +49,7 @@ gem "bootsnap", "~> 1.23", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
+gem 'mini_magick', '~> 5.1'
 gem "devise", "~> 5.0.4"
 gem 'omniauth-saml'
 gem 'omniauth-rails_csrf_protection'

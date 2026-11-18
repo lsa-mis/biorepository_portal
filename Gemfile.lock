@@ -85,7 +85,7 @@ GEM
     acts_as_list (1.2.6)
       activerecord (>= 6.1)
       activesupport (>= 6.1)
-    addressable (2.9.0)
+    addressable (2.9.2)
       public_suffix (>= 2.0.2, < 8.0)
     annotaterb (4.22.0)
       activerecord (>= 6.0.0)
@@ -253,7 +253,7 @@ GEM
     minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
-    msgpack (1.8.2)
+    msgpack (1.8.7)
     multi_xml (0.9.1)
       bigdecimal (>= 3.1, < 5)
     net-imap (0.6.6)
@@ -333,7 +333,7 @@ GEM
       rspec-mocks (~> 3.12)
       rspec-support (~> 3.12)
     racc (1.8.1)
-    rack (3.2.6)
+    rack (3.2.8)
     rack-protection (4.2.1)
       base64 (>= 0.1.0)
       logger (>= 1.6.0)
@@ -544,6 +544,7 @@ DEPENDENCIES
   ldap_lookup (~> 2.1.0)
   letter_opener_web
   lsa_tdx_feedback
+  mini_magick (~> 5.1)
   omniauth-rails_csrf_protection
   omniauth-saml
   ostruct
