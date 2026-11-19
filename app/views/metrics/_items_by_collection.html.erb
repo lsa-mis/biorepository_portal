@@ -1,0 +1,20 @@
+<%# Items per collection and per preparation type in each collection %>
+<%# Locals: level (heading level for the report's sections) %>
+<%= pie_chart @items_by_collection, height: "480px" %>
+<%= render "count_table", caption: "Number of items per collection", label: "Collection", counts: @items_by_collection,
+                          search_query: ->(division) { collection_search_query(division) } %>
+
+<%= content_tag "h#{level}", "Items by Preparation", class: "mt-4" %>
+<% @preparation_counts_by_collection.each do |collection, preparation_counts| %>
+  <section class="mb-4">
+    <%= content_tag "h#{level + 1}", collection.division %>
+    <% if preparation_counts.any? %>
+      <%= bar_chart preparation_counts, height: "320px", xtitle: "Number of Items", ytitle: "Preparation Type" %>
+      <%= render "count_table", caption: "Number of items by preparation type for #{collection.division}",
+                                label: "Preparation Type", counts: preparation_counts,
+                                search_query: ->(type) { preparation_search_query(collection, type) } %>
+    <% else %>
+      <p>No items in this collection.</p>
+    <% end %>
+  </section>
+<% end %>

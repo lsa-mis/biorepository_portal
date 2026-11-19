@@ -3,7 +3,7 @@
   <div class="mb-3">
     <div class="d-flex justify-content-between align-items-center mb-2">
       <h2>Select Collections:</h2>
-      <%= link_to "Clear Filters", search_items_path(switch_view: @view), class: "link_to" %>
+      <%= link_to "Clear Filters", search_items_path, class: "link_to" %>
     </div>
     <div class="flex-wrap" data-toggle="buttons">
       <% @all_collections.each do |collection| %>

@@ -1,0 +1,6 @@
+<%# Map of item collection locations, loaded from the map_items JSON for the current search %>
+<div data-controller="items-map"
+     data-items-map-url-value="<%= map_items_path(q: @search_query, format: :json) %>"
+     data-items-map-search-url-value="<%= search_items_path(q: @search_query) %>"
+     style="height: 600px;"
+     role="region" aria-label="Map of item collection locations"></div>

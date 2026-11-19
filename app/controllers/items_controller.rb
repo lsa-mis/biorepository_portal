@@ -1,5 +1,6 @@
 class ItemsController < ApplicationController
   include ActiveFiltersHelper
+  include SearchGroupings
   skip_before_action :authenticate_user!, only: [ :show, :search, :quick_search, :export_to_csv ]
   before_action :set_item, only: [ :show ]
 
@@ -16,8 +17,6 @@ class ItemsController < ApplicationController
   end
 
   def search
-    @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
-
     collection_ids = extract_collection_ids
     
     # The cache checking is now entirely handled inside this method
@@ -63,7 +62,6 @@ class ItemsController < ApplicationController
       end
       format.html { 
         # Fallback for non-Turbo requests - set up full search data
-        @view = params[:switch_view]&.in?(['rows', 'cards']) ? params[:switch_view] : 'rows'
         collection_ids = extract_collection_ids
         setup_filter_data(collection_ids)
         setup_search_query
@@ -183,33 +181,6 @@ class ItemsController < ApplicationController
       end
     end
 
-    def transform_search_groupings
-      if params[:q] && params[:q][:groupings]
-        transformed_groupings = {}
-        params[:q][:groupings].each do |group_index, group_data|
-          group = {}
-          group_data.each do |field_index, field_data|
-            
-            next if field_index == "m"
-            next if field_data.class == Array
-            next unless field_data["field"].present? && field_data["value"].present?
-
-            field = field_data["field"]
-            value = field_data["value"]
-
-            group[field] ||= []
-            group[field] << value
-          end
-
-          # Wrap group in an indexed key
-          transformed_groupings[group_index] = group
-          # Add matcher if present
-          transformed_groupings[group_index]["m"] = group_data["m"].presence || "or"
-        end
-        params[:q][:groupings] = ActionController::Parameters.new(transformed_groupings).permit!
-      end
-    end
-
     def extract_collection_ids
       collection_ids = if params[:q]&.dig(:collection_id_in).present?
         params[:q][:collection_id_in]
@@ -253,11 +224,15 @@ class ItemsController < ApplicationController
 
     def build_filter_data(collection_ids)
       base_scope = Item.where(collection_id: collection_ids)
-      format_filter = ->(values) { values.select(&:present?).map { |v| [v.titleize, v.downcase] }.uniq.sort_by(&:first) }
+      # One option per filter value: case variants such as "USA" and "UsA" titleize differently but filter the same
+      format_filter = ->(values) { values.select(&:present?).map { |v| [v.titleize, v.downcase] }.uniq(&:last).sort_by(&:first) }
 
       # 1. Geographic fields — composite indexes on (collection_id, column) make these fast
       geo_data = %i[continent country state_province sex].map do |column|
-        format_filter.call(base_scope.distinct.pluck(column))
+        values = base_scope.distinct.pluck(column)
+        # The country filter matches trimmed values (Item country_case_insensitive), so list trimmed values
+        values = values.compact.map(&:strip) if column == :country
+        format_filter.call(values)
       end
 
       # 2. Taxonomy fields — scoped to collection_ids, partial indexes on identifications WHERE current=true
@@ -350,21 +325,6 @@ class ItemsController < ApplicationController
       @all_collections = Collection.joins(:items).distinct.order(:division)
     end
     
-    def setup_dynamic_fields
-      @dynamic_fields = []
-      return unless params.dig(:q, :groupings).present?
-      
-      params.dig(:q, :groupings).each do |group_num, values|
-        group_pairs = []
-        values.each do |field, val|
-          
-          next if field == "m" || val.blank?
-          group_pairs << { field: field, value: val }
-        end
-        @dynamic_fields << group_pairs unless group_pairs.empty?
-      end
-    end
-
     def save_filters_to_statistic(filters)
       return if filters.blank?
       

@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "4.0.1"
+ruby "4.0.9"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.1.3"
@@ -49,6 +49,7 @@ gem "bootsnap", "~> 1.23", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
+gem 'mini_magick', '~> 5.1'
 gem "devise", "~> 5.0.4"
 gem 'omniauth-saml'
 gem 'omniauth-rails_csrf_protection'
@@ -70,6 +71,8 @@ gem 'concurrent-ruby', '~> 1.3'
 gem 'csv', '~> 3.3', '>= 3.3.5'
 gem 'solid_cache'
 gem 'lsa_tdx_feedback'
+gem 'chartkick', '>= 5.2.1'
+gem 'groupdate', '>= 6.8'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

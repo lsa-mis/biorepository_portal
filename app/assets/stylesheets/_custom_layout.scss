@@ -90,6 +90,19 @@ p {
   font-weight: 400; 
 }
 
+.metrics_table {
+  font-size: 0.875rem;
+
+  tbody th {
+    font-weight: 400;
+  }
+}
+
+.metrics_scroll {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
 /* Custom CSS to center-align h1 on small screens, considering Bootstrap's small breakpoint */
 @media (max-width: 576px) {
   h1 {

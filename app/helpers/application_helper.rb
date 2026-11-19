@@ -108,13 +108,6 @@ module ApplicationHelper
     end
   end
 
-  def item_views
-    [
-      [ 'Rows', 'rows' ],
-      [ 'Cards', 'cards' ]
-    ]
-  end
-
   def fields_to_sort_items
     [
       [ 'Select ...', nil ],

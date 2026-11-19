@@ -18,6 +18,8 @@ Rails.application.routes.draw do
       get 'search_statistics_report', to: 'reports#search_statistics_report'
     end
   end
+  get 'metrics', to: 'metrics#index', as: :metrics
+  get 'metrics/map', to: 'metrics#map_items', as: :map_items, defaults: { format: :json }, constraints: { format: :json }
 
   resource :profile, only: [:show, :edit, :update] do
     get :show_loan_questions

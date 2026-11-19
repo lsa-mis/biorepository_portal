@@ -1,5 +1,5 @@
 # LSA BioRepository
-![](https://img.shields.io/badge/Ruby%20Version-4.0.1-red) ![](https://img.shields.io/badge/Rails%20Version-8.1.3-red) ![](https://img.shields.io/badge/Postgresql%20Version-14.10-red)
+![](https://img.shields.io/badge/Ruby%20Version-4.0.9-red) ![](https://img.shields.io/badge/Rails%20Version-8.1.3-red) ![](https://img.shields.io/badge/Postgresql%20Version-14.10-red)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 The finished application allows researchers and public health professionals to search UMMZ collections and request biological specimens. 
