@@ -1,0 +1,215 @@
+name: Accessibility report
+
+# Run on demand from the Actions tab (Accessibility report > Run workflow).
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: accessibility-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  axcess:
+    name: Accessibility report (Axcess)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/biorepository_portal_test
+      APP_URL: http://127.0.0.1:3000
+      # Scan every public page the crawl can reach. Axcess has no "unlimited"
+      # setting, so this is only a guard against a runaway crawl.
+      AXCESS_MAX_PAGES: 5000
+      REPORT_DIR: ${{ github.workspace }}/reports/axcess
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: biorepository_portal_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      # persist-credentials: false keeps the job token out of .git/config,
+      # where the external Axcess code could otherwise read it.
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Check out latest Axcess
+        uses: actions/checkout@v4
+        with:
+          repository: lsa-mis/axcess
+          ref: main
+          path: .axcess
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Record Axcess version
+        run: |
+          mkdir -p "$REPORT_DIR"
+          # Keep Axcess's scan database, blobs and logs out of the workspace.
+          # Each path is its own setting; AUDIT_DATA_DIR alone does not move the DB.
+          data="$RUNNER_TEMP/axcess-data"
+          {
+            echo "AUDIT_DATA_DIR=$data"
+            echo "AUDIT_DB_PATH=$data/audit.db"
+            echo "AUDIT_BLOB_DIR=$data/blobs"
+            echo "AUDIT_LOG_DIR=$data/logs"
+          } >> "$GITHUB_ENV"
+          version=$(sed -n 's/^version = "\(.*\)"/\1/p' .axcess/pyproject.toml | head -1)
+          commit=$(git -C .axcess log -1 --format='%H')
+          line="Axcess ${version} @ $(git -C .axcess log -1 --format='%h %s (%cd)')"
+          echo "$line"
+          printf 'version=%s\ncommit=%s\nref=%s\n' "$version" "$commit" main > "$REPORT_DIR/axcess-version.txt"
+
+      # No RAILS_MASTER_KEY here, by design: this repository is public, so the
+      # key that decrypts config/credentials.yml.enc stays off GitHub runners.
+      # Credential lookups are nil-safe, so the app boots and every public page
+      # renders. For a run with credentials, use script/ci/axcess_local.sh.
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Prepare Rails database, sample data, and assets
+        run: |
+          bundle exec ruby -ractive_record -e 'ActiveRecord::Base.establish_connection(ENV.fetch("DATABASE_URL")); load "db/schema.rb"'
+          bin/rails db:seed
+          bin/rails runner script/ci/a11y_sample_data.rb
+          bin/rails assets:precompile
+
+      - name: Start Rails server
+        run: |
+          bin/rails server --environment test --port 3000 --binding 127.0.0.1 > log/ci-server.log 2>&1 &
+          for _ in $(seq 1 90); do
+            if curl -fsS "$APP_URL/up" > /dev/null 2>&1; then
+              echo "Rails is up at $APP_URL"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::Rails server did not become ready within 90s"
+          tail -n 100 log/ci-server.log
+          exit 1
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: .axcess/uv.lock
+
+      - name: Install Axcess and Chromium
+        working-directory: .axcess
+        run: |
+          # Axcess's build force-includes its compiled web UI, which is not in
+          # git. The CLI scan never serves the UI, so an empty folder suffices.
+          mkdir -p src/audit/web/frontend/dist
+          uv sync --frozen --no-dev
+          uv run --no-sync playwright install --with-deps chromium
+          # Create the scan database schema (what `make migrate` does).
+          mkdir -p "$AUDIT_DATA_DIR"
+          uv run --no-sync yoyo apply --database "sqlite:///$AUDIT_DB_PATH" --batch src/audit/db/migrations
+
+      # Click-Through (Axcess's check that clicks menus, tabs and dialogs and
+      # re-scans what they reveal) makes up to 100 clicks per page by default.
+      # Limit it to one. The Axcess CLI has no option for this yet, so change
+      # the default in this run's checkout, and fail loudly if the setting has
+      # moved rather than silently scanning with 100 clicks.
+      - name: Limit Click-Through to one click per page
+        working-directory: .axcess
+        run: |
+          file=src/audit/crawler/orchestrator.py
+          pattern='^    interaction_max_clicks: int = 100$'
+          if ! grep -q "$pattern" "$file"; then
+            echo "::error::interaction_max_clicks default not found in Axcess $file; update this step"
+            exit 1
+          fi
+          sed -i "s/$pattern/    interaction_max_clicks: int = 1/" "$file"
+          grep -n 'interaction_max_clicks: int = 1$' "$file"
+
+      - name: Run Axcess scan
+        working-directory: .axcess
+        run: |
+          # --block matches substrings anywhere in the URL. Filtered searches
+          # (q[...] facets) and item pages reached from them are endless
+          # permutations of the same two templates, so skip them; every page
+          # template is still scanned (about 35 pages with the sample data).
+          uv run --no-sync audit crawl "$APP_URL/" \
+            --max-pages "$AXCESS_MAX_PAGES" \
+            --axe-level AA \
+            --wcag-version 2.1 \
+            --ignore-robots \
+            --skip-ocr \
+            --skip-vlm \
+            --skip-synthesize \
+            --skip-semantic \
+            --block /export_to_csv \
+            --block /users/auth \
+            --block sign_out \
+            --block 'q%5B' \
+            --block 'return_to=%2Fitems%2Fsearch%3F'
+
+      - name: Export Axcess reports
+        working-directory: .axcess
+        run: |
+          for fmt in json markdown xlsx csv; do
+            ext=$fmt; [ "$fmt" = markdown ] && ext=md
+            uv run --no-sync audit export --format "$fmt" --output "$REPORT_DIR/axcess.$ext"
+          done
+          ls -la "$REPORT_DIR"
+
+      - name: Upload Axcess report
+        id: upload-report
+        uses: actions/upload-artifact@v4
+        with:
+          name: axcess-accessibility-report
+          path: reports/axcess/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Summarize findings
+        env:
+          AXCESS_REPORT_URL: ${{ steps.upload-report.outputs.artifact-url }}
+        run: ruby script/ci/axcess_report.rb "$REPORT_DIR/axcess.json"
+
+      # Run even when the scan was incomplete (the summarize step exits 1), so
+      # the uploaded report is still summarized and linked.
+      - name: Append Axcess report to job summary
+        if: ${{ !cancelled() && steps.upload-report.outcome == 'success' }}
+        run: |
+          report="$REPORT_DIR/axcess.md"
+          # GitHub caps each step summary at 1 MiB.
+          if [ "$(wc -c < "$report")" -lt 900000 ]; then
+            { echo "<details><summary>Full Axcess report</summary>"; echo; cat "$report"; echo; echo "</details>"; } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Full Axcess report is too large for the job summary; download the artifact." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload Rails server log
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: rails-server-log
+          path: log/ci-server.log
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Accessibility report link
+        if: ${{ !cancelled() && steps.upload-report.outcome == 'success' }}
+        env:
+          AXCESS_REPORT_URL: ${{ steps.upload-report.outputs.artifact-url }}
+        run: |
+          echo "::notice title=Accessibility report::$AXCESS_REPORT_URL"
+          echo "Accessibility report: $AXCESS_REPORT_URL"

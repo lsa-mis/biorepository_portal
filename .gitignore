@@ -49,6 +49,7 @@ public/google592431709e6edaf8.html
 /blob-report/
 /reports/*
 !/reports/README.md
+/.axcess/
 
 #VS Code -- Copilot Ignore
 .copilotignore
