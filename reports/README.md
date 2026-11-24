@@ -83,10 +83,36 @@ To scan with decrypted credentials, run the report locally, where your own `conf
 
 ### Run the report locally
 
-Prerequisites: a local Postgres for the `test` database, and a checkout of [lsa-mis/axcess](https://github.com/lsa-mis/axcess) at the reviewed commit pinned in the script (`AXCESS_COMMIT`), set up once with `make setup`.
+The scan uses two repositories: this one, and your own clone of [lsa-mis/axcess](https://github.com/lsa-mis/axcess), the scanner. `AXCESS_DIR` is the path to that clone. `make setup` below is Axcess's Makefile target, so it runs in the clone; this repository has no Makefile.
+
+You need:
+
+- [uv](https://docs.astral.sh/uv/) (`brew install uv`), which installs Axcess's Python dependencies.
+- A local Postgres reachable by the `test` settings in `config/database.yml`. The script creates `biorepository_portal_test` if it is missing and loads seeds and sample data into it.
+- This app's Ruby (`.ruby-version`) and gems (`bundle install`).
+- Nothing else listening on port 3000, or set `APP_PORT`.
+
+#### Set up Axcess once
+
+Run these from the root of this repository. They put Axcess in `~/axcess`; any folder outside this repository works.
 
 ```sh
-AXCESS_DIR=/path/to/axcess script/ci/axcess_local.sh
+git clone https://github.com/lsa-mis/axcess.git ~/axcess
+git -C ~/axcess checkout "$(sed -n 's/^AXCESS_COMMIT=//p' script/ci/axcess_local.sh)"
+mkdir -p ~/axcess/src/audit/web/frontend/dist
+make -C ~/axcess setup
+```
+
+- The checkout puts the clone on the reviewed commit pinned as `AXCESS_COMMIT` in the script, which refuses to run on any other commit. Git reports a detached HEAD; that is expected.
+- `make setup` fails with `Forced include not found: …/src/audit/web/frontend/dist` unless that folder exists. Axcess's build packages its compiled web UI from it; the scan never uses the UI, so an empty folder is enough, as in the workflow. Git ignores the folder, so the clone still counts as unmodified.
+- `make setup` ends by suggesting `make migrate` and `make fetch-models`. Skip both: the script creates its own scan database, and the scan skips the checks that need models.
+
+When `AXCESS_COMMIT` moves, the script stops and prints the `git fetch` and `git checkout` commands to run; run `make -C ~/axcess setup` again after them.
+
+#### Run the report
+
+```sh
+AXCESS_DIR=~/axcess script/ci/axcess_local.sh
 ```
 
 `script/ci/axcess_local.sh` mirrors the workflow: it prepares the test database with seeds and sample data, precompiles assets, starts Rails on `127.0.0.1:3000` (override with `APP_PORT`), crawls with the same Axcess flags, exports `json`, `md`, `xlsx`, and `csv` to `reports/axcess/` (override with `REPORT_DIR`), and prints the summary from `script/ci/axcess_report.rb`. It uses your local master key when present and stops the server on exit. Unlike the workflow, it does not limit Click-Through to one click per page, because it leaves your Axcess checkout unmodified.
@@ -101,3 +127,7 @@ Because Axcess runs as your user, the script limits what it can reach:
 Axcess can still read `config/master.key` from disk while the scan runs.
 
 Generated report files are ignored by Git.
+
+#### After a run
+
+The test database keeps the seeds and sample data, and `public/assets` keeps the precompiled assets. Before running the test suite, reset the database with `bin/rails db:test:prepare`. If your development server starts serving stale CSS or JavaScript after a run, remove the precompiled assets with `bin/rails assets:clobber`.

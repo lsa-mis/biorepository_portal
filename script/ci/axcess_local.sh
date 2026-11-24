@@ -4,10 +4,17 @@
 # only supported way to scan with decrypted credentials; the GitHub workflow
 # (.github/workflows/axcess-a11y.yml) never receives the key.
 #
-# Usage: AXCESS_DIR=/path/to/axcess script/ci/axcess_local.sh
+# Usage, from the root of this repository:
+#   AXCESS_DIR=~/axcess script/ci/axcess_local.sh
 #
-# Requires: a local Postgres reachable by the test database config, and a
-# checkout of lsa-mis/axcess at AXCESS_COMMIT, set up once with `make setup`.
+# AXCESS_DIR is your own clone of lsa-mis/axcess, a separate repository. Set it
+# up once as described in reports/README.md ("Run the report locally"): clone
+# it outside this repository, check out AXCESS_COMMIT, create the empty folder
+# src/audit/web/frontend/dist, then run `make setup` inside the clone (it is
+# Axcess's Makefile target; this repository has no Makefile). You also need uv,
+# a local Postgres reachable by the test database config, and this app's Ruby
+# and gems.
+#
 # Keep the crawl flags in sync with the "Run Axcess scan" workflow step.
 # Unlike CI, Click-Through is not limited to one click per page, because this
 # script does not modify your Axcess checkout.
