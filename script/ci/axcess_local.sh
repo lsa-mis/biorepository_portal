@@ -46,7 +46,7 @@ mkdir -p "$REPORT_DIR"
 REPORT_DIR="$(cd "$REPORT_DIR" && pwd)"
 
 # DATABASE_URL overrides config/database.yml even with RAILS_ENV=test, and the
-# steps below load the schema and seed data. Only allow a local *_test database.
+# steps below drop and recreate the database. Only allow a local *_test database.
 # The URL is never printed, because it may contain a password.
 if [ -n "${DATABASE_URL:-}" ]; then
   local_test_db='^postgres(ql)?://([^/@]*@)?(localhost|127\.0\.0\.1|\[::1\])(:[0-9]+)?/[A-Za-z0-9_]+_test(\?.*)?$'
@@ -147,8 +147,12 @@ report_progress() {
   done
 }
 
-step 1 "Preparing the test database: schema, seeds and sample data."
-quietly bin/rails db:prepare
+step 1 "Rebuilding the test database from db/schema.rb, then adding seeds and sample data."
+# Drop and recreate the test database from this branch's db/schema.rb, as CI
+# starts from an empty database, so the tables match the code being scanned.
+# db:prepare would migrate whatever the database last held, from any branch,
+# and then rewrite db/schema.rb from it.
+quietly bin/rails db:test:prepare
 quietly bin/rails db:seed
 quietly bin/rails runner script/ci/a11y_sample_data.rb
 

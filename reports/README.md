@@ -88,7 +88,7 @@ The scan uses two repositories: this one, and your own clone of [lsa-mis/axcess]
 You need:
 
 - [uv](https://docs.astral.sh/uv/) (`brew install uv`), which installs Axcess's Python dependencies.
-- A local Postgres reachable by the `test` settings in `config/database.yml`. The script creates `biorepository_portal_test` if it is missing and loads seeds and sample data into it.
+- A local Postgres reachable by the `test` settings in `config/database.yml`. Every run drops `biorepository_portal_test` and recreates it from this branch's `db/schema.rb`, then loads seeds and sample data, so anything already in that database is lost.
 - This app's Ruby (`.ruby-version`) and gems (`bundle install`).
 - Nothing else listening on port 3000, or set `APP_PORT`.
 
@@ -115,7 +115,7 @@ When `AXCESS_COMMIT` moves, the script stops and prints the `git fetch` and `git
 AXCESS_DIR=~/axcess script/ci/axcess_local.sh
 ```
 
-`script/ci/axcess_local.sh` mirrors the workflow: it prepares the test database with seeds and sample data, precompiles assets, starts Rails on `127.0.0.1:3000` (override with `APP_PORT`), crawls with the same Axcess flags, exports `json`, `md`, `xlsx`, and `csv` to `reports/axcess/` (override with `REPORT_DIR`), and prints the report from `script/ci/axcess_report.rb`. It uses your local master key when present and stops the server on exit. Unlike the workflow, it does not limit Click-Through to one click per page, because it leaves your Axcess checkout unmodified.
+`script/ci/axcess_local.sh` mirrors the workflow: it rebuilds the test database from `db/schema.rb` (`bin/rails db:test:prepare`, which never rewrites `db/schema.rb` the way `db:prepare` can) and adds seeds and sample data, precompiles assets, starts Rails on `127.0.0.1:3000` (override with `APP_PORT`), crawls with the same Axcess flags, exports `json`, `md`, `xlsx`, and `csv` to `reports/axcess/` (override with `REPORT_DIR`), and prints the report from `script/ci/axcess_report.rb`. It uses your local master key when present and stops the server on exit. Unlike the workflow, it does not limit Click-Through to one click per page, because it leaves your Axcess checkout unmodified.
 
 The terminal output is plain text, with no tables, colors, or progress bars that redraw, so it reads the same in a screen reader as on screen:
 
@@ -132,7 +132,7 @@ Because Axcess runs as your user, the script limits what it can reach:
 - It refuses to run unless the Axcess checkout is at `AXCESS_COMMIT` with no uncommitted changes, and it installs Axcess's dependencies exactly as `uv.lock` pins them (`uv run --frozen`). Review the Axcess changes before moving the pin.
 - `RAILS_MASTER_KEY` is unset before Axcess and the summary script start. Only the Rails steps see it.
 - Axcess's scan database, rendered pages and screenshots go to a temporary directory that is deleted on exit, not to the Axcess checkout's `data/`.
-- If `DATABASE_URL` is set, it must point at a local database whose name ends in `_test`, because the script loads the schema and seed data into it.
+- If `DATABASE_URL` is set, it must point at a local database whose name ends in `_test`, because the script drops and recreates it.
 
 Axcess can still read `config/master.key` from disk while the scan runs.
 
