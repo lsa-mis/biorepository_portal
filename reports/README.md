@@ -6,7 +6,7 @@
 
 1. Boots the app in the `test` environment against Postgres 18, loads `db/seeds.rb`, and adds sample collections, items, and FAQs from `script/ci/a11y_sample_data.rb` so public pages render real content.
 2. Checks out the latest [Axcess](https://github.com/lsa-mis/axcess) `main` and crawls every public page reachable from `http://127.0.0.1:3000/` (filtered-search permutations are skipped; each page template is still scanned) in headless Chromium with axe-core at WCAG 2.1 AA, plus the keyboard, focus, reflow, and visual checks. Click-Through (which clicks menus, tabs and dialogs and re-checks what they reveal) is limited to one click per page.
-3. Uploads the report, then runs `script/ci/axcess_report.rb`, which prints every finding to the job log, annotates the run, and writes a job summary that links to the report.
+3. Uploads the report, then runs `script/ci/axcess_report.rb`, which prints the findings to the job log grouped into issues (one rule failing on one element, each in a collapsible group), adds one annotation per issue, and writes a job summary that links to the report.
 4. Ends with the report link, in the last step of the log and as a notice on the run.
 
 Findings never fail the job; this is a report, not a gate. The job fails only when the scan itself cannot produce a report: the app does not boot, Axcess crashes, or fewer than 3 pages were crawled.
@@ -115,7 +115,17 @@ When `AXCESS_COMMIT` moves, the script stops and prints the `git fetch` and `git
 AXCESS_DIR=~/axcess script/ci/axcess_local.sh
 ```
 
-`script/ci/axcess_local.sh` mirrors the workflow: it prepares the test database with seeds and sample data, precompiles assets, starts Rails on `127.0.0.1:3000` (override with `APP_PORT`), crawls with the same Axcess flags, exports `json`, `md`, `xlsx`, and `csv` to `reports/axcess/` (override with `REPORT_DIR`), and prints the summary from `script/ci/axcess_report.rb`. It uses your local master key when present and stops the server on exit. Unlike the workflow, it does not limit Click-Through to one click per page, because it leaves your Axcess checkout unmodified.
+`script/ci/axcess_local.sh` mirrors the workflow: it prepares the test database with seeds and sample data, precompiles assets, starts Rails on `127.0.0.1:3000` (override with `APP_PORT`), crawls with the same Axcess flags, exports `json`, `md`, `xlsx`, and `csv` to `reports/axcess/` (override with `REPORT_DIR`), and prints the report from `script/ci/axcess_report.rb`. It uses your local master key when present and stops the server on exit. Unlike the workflow, it does not limit Click-Through to one click per page, because it leaves your Axcess checkout unmodified.
+
+The terminal output is plain text, with no tables, colors, or progress bars that redraw, so it reads the same in a screen reader as on screen:
+
+- One line per step, and a line every 30 seconds while Axcess scans with the number of pages so far.
+- The report: findings grouped into issues (one rule failing on one element, so a problem on every page is one issue with its pages listed), most severe first. Each issue gives the element, up to five pages, the problem, the WCAG criterion, and a link to the rule.
+- A summary last, where the terminal leaves you: issue and finding counts by severity, and where the full report is.
+
+Rails and Axcess output goes to `log/axcess-local.log`, and the Rails server's to `log/axcess-local-server.log`. If a step fails, the script prints the last lines of the relevant log. Set `AXCESS_VERBOSE=1` to see that output in the terminal as well.
+
+To list every page of each issue, rerun only the report, which takes a second: `A11Y_REPORT_ALL_PAGES=1 ruby script/ci/axcess_report.rb reports/axcess/axcess.json`.
 
 Because Axcess runs as your user, the script limits what it can reach:
 
